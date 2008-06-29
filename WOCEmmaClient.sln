@@ -1,0 +1,38 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOCEmmaClient", "WOCEmmaClient\WOCEmmaClient.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		DebugOE|Any CPU = DebugOE|Any CPU
+		DebugOLA|Any CPU = DebugOLA|Any CPU
+		DebugOS|Any CPU = DebugOS|Any CPU
+		DebugSIT|Any CPU = DebugSIT|Any CPU
+		Release|Any CPU = Release|Any CPU
+		ReleaseOLA|Any CPU = ReleaseOLA|Any CPU
+		ReleaseOS|Any CPU = ReleaseOS|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugOE|Any CPU.ActiveCfg = DebugOE|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugOE|Any CPU.Build.0 = DebugOE|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugOLA|Any CPU.ActiveCfg = DebugOLA|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugOLA|Any CPU.Build.0 = DebugOLA|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugOS|Any CPU.ActiveCfg = DebugOS|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugOS|Any CPU.Build.0 = DebugOS|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugSIT|Any CPU.ActiveCfg = DebugSIT|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.DebugSIT|Any CPU.Build.0 = DebugSIT|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOLA|Any CPU.ActiveCfg = ReleaseOLA|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOLA|Any CPU.Build.0 = ReleaseOLA|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOS|Any CPU.ActiveCfg = ReleaseOS|Any CPU
+		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOS|Any CPU.Build.0 = ReleaseOS|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
