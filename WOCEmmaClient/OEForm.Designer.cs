@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rdoOSCSV = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
             this.button1 = new System.Windows.Forms.Button();
             this.txtOEDirectory = new System.Windows.Forms.TextBox();
@@ -43,7 +44,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtCompID = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
-            this.rdoOSCSV = new System.Windows.Forms.RadioButton();
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
@@ -65,6 +65,17 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "OE Settings";
+            // 
+            // rdoOSCSV
+            // 
+            this.rdoOSCSV.AutoSize = true;
+            this.rdoOSCSV.Location = new System.Drawing.Point(83, 62);
+            this.rdoOSCSV.Name = "rdoOSCSV";
+            this.rdoOSCSV.Size = new System.Drawing.Size(60, 17);
+            this.rdoOSCSV.TabIndex = 3;
+            this.rdoOSCSV.TabStop = true;
+            this.rdoOSCSV.Text = "OS-csv";
+            this.rdoOSCSV.UseVisualStyleBackColor = true;
             // 
             // radioButton1
             // 
@@ -132,6 +143,8 @@
             // 
             // listBox2
             // 
+            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+                        | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(256, 12);
             this.listBox2.Name = "listBox2";
@@ -169,17 +182,6 @@
             this.button3.Text = "Stop";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // rdoOSCSV
-            // 
-            this.rdoOSCSV.AutoSize = true;
-            this.rdoOSCSV.Location = new System.Drawing.Point(83, 62);
-            this.rdoOSCSV.Name = "rdoOSCSV";
-            this.rdoOSCSV.Size = new System.Drawing.Size(60, 17);
-            this.rdoOSCSV.TabIndex = 3;
-            this.rdoOSCSV.TabStop = true;
-            this.rdoOSCSV.Text = "OS-csv";
-            this.rdoOSCSV.UseVisualStyleBackColor = true;
             // 
             // fsWatcherOS
             // 
