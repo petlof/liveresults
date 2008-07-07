@@ -14,7 +14,7 @@
     <ManifestKeyFile>WOCEmmaClient_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
-    <PublishUrl>c:\utveckling\WOC\EmmaPublishOE\</PublishUrl>
+    <PublishUrl>c:\OpenSource\EmmaPublishOE\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://www.obasen.nu/liveresultat/install/oe/publish.htm/</InstallUrl>
+    <InstallUrl>http://www.obasen.nu/liveresultat/install/oe/</InstallUrl>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -97,6 +97,7 @@
     <Reference Include="MySql.Data, Version=5.0.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\Program\MySQL\mysql-connector-net-5.0.7-noinstall\Driver\bin\net-2.0\release\MySql.Data.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />

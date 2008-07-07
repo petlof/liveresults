@@ -45,6 +45,7 @@
             this.txtCompID = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
+            this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fsWatcherOS)).BeginInit();
@@ -54,6 +55,7 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.rdoOSCSV);
             this.groupBox1.Controls.Add(this.radioButton1);
             this.groupBox1.Controls.Add(this.button1);
@@ -69,7 +71,7 @@
             // rdoOSCSV
             // 
             this.rdoOSCSV.AutoSize = true;
-            this.rdoOSCSV.Location = new System.Drawing.Point(83, 62);
+            this.rdoOSCSV.Location = new System.Drawing.Point(164, 62);
             this.rdoOSCSV.Name = "rdoOSCSV";
             this.rdoOSCSV.Size = new System.Drawing.Size(60, 17);
             this.rdoOSCSV.TabIndex = 3;
@@ -191,6 +193,17 @@
             this.fsWatcherOS.SynchronizingObject = this;
             this.fsWatcherOS.Changed += new System.IO.FileSystemEventHandler(this.fsWatcherOS_Changed);
             // 
+            // radioButton2
+            // 
+            this.radioButton2.AutoSize = true;
+            this.radioButton2.Location = new System.Drawing.Point(83, 62);
+            this.radioButton2.Name = "radioButton2";
+            this.radioButton2.Size = new System.Drawing.Size(60, 17);
+            this.radioButton2.TabIndex = 4;
+            this.radioButton2.TabStop = true;
+            this.radioButton2.Text = "OE-csv";
+            this.radioButton2.UseVisualStyleBackColor = true;
+            // 
             // OEForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -232,5 +245,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.RadioButton rdoOSCSV;
         private System.IO.FileSystemWatcher fsWatcherOS;
+        private System.Windows.Forms.RadioButton radioButton2;
     }
 }

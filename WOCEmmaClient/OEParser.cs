@@ -11,6 +11,10 @@ namespace WOCEmmaClient
         public event LogMessageDelegate OnLogMessage;
         public static char[] SplitChars = new char[] { ';', '\t' };
         private string m_Directory;
+        public OEParser()
+        {
+        }
+
         public OEParser(string directory)
         {
             m_Directory = directory;
@@ -51,7 +55,7 @@ namespace WOCEmmaClient
             System.IO.File.Delete(e.FullPath);
         }
 
-        private void AnalyzeFile(string filename)
+        public void AnalyzeFile(string filename)
         {
             System.IO.StreamReader sr =null;
             try
@@ -78,6 +82,9 @@ namespace WOCEmmaClient
                 int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost;
                 fldID = Array.IndexOf(fields, "Stno");
                 fldSI = Array.IndexOf(fields, "SI card");
+                if (fldSI == -1)
+                    fldSI = Array.IndexOf(fields, "Chip");
+
                 fldFName = Array.IndexOf(fields, "First name");
                 fldEName = Array.IndexOf(fields, "Surname");
                 fldClub = Array.IndexOf(fields, "City");
@@ -123,6 +130,7 @@ namespace WOCEmmaClient
 
                     List<ResultStruct> splittimes = new List<ResultStruct>();
                     /*parse splittimes*/
+                    List<int> codes = new List<int>();
                     for (int i = fldFirstPost; i < parts.Length - 4; i++)
                     {
                         if (parts[i + 1].Length == 0
@@ -137,6 +145,14 @@ namespace WOCEmmaClient
                             //s.ControlNo = Convert.ToInt32(parts[i]);
                             i++;
                             s.ControlCode = Convert.ToInt32(parts[i]);
+                            
+                            s.ControlCode += 1000;
+                            while (codes.Contains(s.ControlCode))
+                            {
+                                s.ControlCode += 1000;
+                            }
+                            codes.Add(s.ControlCode);
+
                             i++;
                             s.Time = strTimeToInt(parts[i]);
                             i++;

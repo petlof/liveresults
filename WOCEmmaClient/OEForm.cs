@@ -16,6 +16,7 @@ namespace WOCEmmaClient
     {
         List<EmmaMysqlClient> m_Clients;
         OSParser m_OSParser;
+        OEParser m_OEParser;
         public OEForm()
         {
             InitializeComponent();
@@ -77,7 +78,7 @@ namespace WOCEmmaClient
 
             timer1_Tick(null, null);
 
-            if (rdoOSCSV.Checked)
+            if (rdoOSCSV.Checked || radioButton2.Checked)
             {
                 m_OSParser = new OSParser();
                 m_OSParser.OnLogMessage +=
@@ -87,6 +88,15 @@ namespace WOCEmmaClient
                 };
 
                 m_OSParser.OnResult += new ResultDelegate(m_OSParser_OnResult);
+
+                m_OEParser = new OEParser();
+                m_OEParser.OnLogMessage +=
+                delegate(string msg)
+                {
+                    logit(msg);
+                };
+
+                m_OEParser.OnResult += new ResultDelegate(m_OSParser_OnResult);
 
                 fsWatcherOS.Path = txtOEDirectory.Text;
                 fsWatcherOS.Filter = "*.csv.emma";
@@ -101,6 +111,7 @@ namespace WOCEmmaClient
                 fileSystemWatcher1.IncludeSubdirectories = false;
                 fileSystemWatcher1.EnableRaisingEvents = true;
             }
+            
 
         }
 
@@ -381,9 +392,17 @@ namespace WOCEmmaClient
                     //string tmp = sr.ReadToEnd();
                     sr.Close();
 
-                    m_OSParser.AnalyzeFile(fullFilename);
+                    if (radioButton2.Checked)
+                    {
+                        m_OEParser.AnalyzeFile(fullFilename);
+                    }
+                    else if (rdoOSCSV.Checked)
+                    {
+                        m_OSParser.AnalyzeFile(fullFilename);
+                    }
 
                     File.Delete(fullFilename);
+                    processed = true;
                 }
                 catch (Exception ee)
                 {
