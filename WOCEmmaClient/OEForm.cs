@@ -78,7 +78,7 @@ namespace WOCEmmaClient
 
             timer1_Tick(null, null);
 
-            if (rdoOSCSV.Checked || radioButton2.Checked)
+            if (rdoOSCSV.Checked || radioButton2.Checked || rdoOSTeam.Checked)
             {
                 m_OSParser = new OSParser();
                 m_OSParser.OnLogMessage +=
@@ -124,9 +124,12 @@ namespace WOCEmmaClient
                     c.AddRunner(new Runner(id, name, club, Class));
                 }
                 c.SetRunnerResult(id, time, status);
-                foreach (ResultStruct r in splits)
+                if (splits != null)
                 {
-                    c.SetRunnerSplit(id, r.ControlCode, r.Time);
+                    foreach (ResultStruct r in splits)
+                    {
+                        c.SetRunnerSplit(id, r.ControlCode, r.Time);
+                    }
                 }
             }
         }
@@ -399,6 +402,10 @@ namespace WOCEmmaClient
                     else if (rdoOSCSV.Checked)
                     {
                         m_OSParser.AnalyzeFile(fullFilename);
+                    }
+                    else if (rdoOSTeam.Checked)
+                    {
+                        m_OSParser.AnalyzeTeamFile(fullFilename);
                     }
 
                     File.Delete(fullFilename);
