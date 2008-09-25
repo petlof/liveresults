@@ -30,6 +30,7 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.rdoOSTeam = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
             this.rdoOSCSV = new System.Windows.Forms.RadioButton();
             this.radioButton1 = new System.Windows.Forms.RadioButton();
@@ -46,7 +47,7 @@
             this.txtCompID = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
-            this.rdoOSTeam = new System.Windows.Forms.RadioButton();
+            this.rdoOECsvPar = new System.Windows.Forms.RadioButton();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fsWatcherOS)).BeginInit();
@@ -56,6 +57,7 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.rdoOECsvPar);
             this.groupBox1.Controls.Add(this.rdoOSTeam);
             this.groupBox1.Controls.Add(this.radioButton2);
             this.groupBox1.Controls.Add(this.rdoOSCSV);
@@ -65,10 +67,21 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 12);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(238, 115);
+            this.groupBox1.Size = new System.Drawing.Size(311, 115);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "OE Settings";
+            // 
+            // rdoOSTeam
+            // 
+            this.rdoOSTeam.AutoSize = true;
+            this.rdoOSTeam.Location = new System.Drawing.Point(98, 85);
+            this.rdoOSTeam.Name = "rdoOSTeam";
+            this.rdoOSTeam.Size = new System.Drawing.Size(96, 17);
+            this.rdoOSTeam.TabIndex = 5;
+            this.rdoOSTeam.TabStop = true;
+            this.rdoOSTeam.Text = "OS-csv (Team)";
+            this.rdoOSTeam.UseVisualStyleBackColor = true;
             // 
             // radioButton2
             // 
@@ -161,9 +174,9 @@
             this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox2.FormattingEnabled = true;
-            this.listBox2.Location = new System.Drawing.Point(256, 12);
+            this.listBox2.Location = new System.Drawing.Point(329, 12);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(276, 95);
+            this.listBox2.Size = new System.Drawing.Size(203, 95);
             this.listBox2.TabIndex = 3;
             // 
             // timer1
@@ -206,16 +219,16 @@
             this.fsWatcherOS.SynchronizingObject = this;
             this.fsWatcherOS.Changed += new System.IO.FileSystemEventHandler(this.fsWatcherOS_Changed);
             // 
-            // rdoOSTeam
+            // rdoOECsvPar
             // 
-            this.rdoOSTeam.AutoSize = true;
-            this.rdoOSTeam.Location = new System.Drawing.Point(98, 85);
-            this.rdoOSTeam.Name = "rdoOSTeam";
-            this.rdoOSTeam.Size = new System.Drawing.Size(96, 17);
-            this.rdoOSTeam.TabIndex = 5;
-            this.rdoOSTeam.TabStop = true;
-            this.rdoOSTeam.Text = "OS-csv (Team)";
-            this.rdoOSTeam.UseVisualStyleBackColor = true;
+            this.rdoOECsvPar.AutoSize = true;
+            this.rdoOECsvPar.Location = new System.Drawing.Point(204, 62);
+            this.rdoOECsvPar.Name = "rdoOECsvPar";
+            this.rdoOECsvPar.Size = new System.Drawing.Size(85, 17);
+            this.rdoOECsvPar.TabIndex = 6;
+            this.rdoOECsvPar.TabStop = true;
+            this.rdoOECsvPar.Text = "OE-csv (Par)";
+            this.rdoOECsvPar.UseVisualStyleBackColor = true;
             // 
             // OEForm
             // 
@@ -260,5 +273,6 @@
         private System.IO.FileSystemWatcher fsWatcherOS;
         private System.Windows.Forms.RadioButton radioButton2;
         private System.Windows.Forms.RadioButton rdoOSTeam;
+        private System.Windows.Forms.RadioButton rdoOECsvPar;
     }
 }

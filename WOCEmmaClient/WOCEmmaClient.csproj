@@ -14,7 +14,7 @@
     <ManifestKeyFile>WOCEmmaClient_TemporaryKey.pfx</ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
-    <PublishUrl>c:\OpenSource\EmmaPublishOE\</PublishUrl>
+    <PublishUrl>c:\OpenSource\EmmaPublishCombined\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
     <UpdateEnabled>true</UpdateEnabled>
@@ -24,7 +24,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <InstallUrl>http://www.obasen.nu/liveresultat/install/oe/</InstallUrl>
+    <InstallUrl>http://www.obasen.nu/liveresultat/install/comb/</InstallUrl>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <BootstrapperEnabled>true</BootstrapperEnabled>
   </PropertyGroup>
@@ -102,11 +102,31 @@
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmMonitor.Designer.cs">
+      <DependentUpon>FrmMonitor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FrmNewCompetition.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmNewCompetition.Designer.cs">
+      <DependentUpon>FrmNewCompetition.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IResultParser.cs" />
+    <Compile Include="NewOLAComp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewOLAComp.Designer.cs">
+      <DependentUpon>NewOLAComp.cs</DependentUpon>
+    </Compile>
     <Compile Include="SiTimecParser.cs" />
     <Compile Include="SITimecForm.cs">
       <SubType>Form</SubType>
@@ -144,6 +164,18 @@
     <Compile Include="OlaParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmMonitor.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FrmMonitor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmNewCompetition.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FrmNewCompetition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewOLAComp.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>NewOLAComp.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="SITimecForm.resx">
       <DependentUpon>SITimecForm.cs</DependentUpon>
       <SubType>Designer</SubType>
@@ -169,6 +201,26 @@
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Header.resx">
+      <DependentUpon>Header.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\InfoContainer.resx">
+      <DependentUpon>InfoContainer.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\InfoPage.resx">
+      <DependentUpon>InfoPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\Wizard.resx">
+      <DependentUpon>Wizard.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Wizard\WizardPage.resx">
+      <DependentUpon>WizardPage.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
@@ -186,6 +238,28 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="Runner.cs" />
+    <Compile Include="Wizard\Header.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\HeaderDesigner.cs" />
+    <Compile Include="Wizard\InfoContainer.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\InfoContainerDesigner.cs" />
+    <Compile Include="Wizard\InfoPage.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\InfoPageDesigner.cs" />
+    <Compile Include="Wizard\PageCollection.cs" />
+    <Compile Include="Wizard\PageEventHandler.cs" />
+    <Compile Include="Wizard\Wizard.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardDesigner.cs" />
+    <Compile Include="Wizard\WizardPage.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Wizard\WizardPageDesigner.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
@@ -193,6 +267,31 @@
       <ProductName>.NET Framework 2.0</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\softlogoLarge.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\softIconSmall.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OE.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OS.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OEImg.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OSImg.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\OLAImg.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Wizard\Wizard.bmp" />
+    <Content Include="Wizard\wizBigOnlineFolder.gif" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

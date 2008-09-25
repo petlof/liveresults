@@ -78,7 +78,7 @@ namespace WOCEmmaClient
 
             timer1_Tick(null, null);
 
-            if (rdoOSCSV.Checked || radioButton2.Checked || rdoOSTeam.Checked)
+            if (rdoOSCSV.Checked || radioButton2.Checked || rdoOSTeam.Checked || rdoOECsvPar.Checked)
             {
                 m_OSParser = new OSParser();
                 m_OSParser.OnLogMessage +=
@@ -406,6 +406,10 @@ namespace WOCEmmaClient
                     else if (rdoOSTeam.Checked)
                     {
                         m_OSParser.AnalyzeTeamFile(fullFilename);
+                    }
+                    else if (rdoOECsvPar.Checked)
+                    {
+                        m_OEParser.AnalyzeFile(fullFilename,true);
                     }
 
                     File.Delete(fullFilename);

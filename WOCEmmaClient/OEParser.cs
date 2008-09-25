@@ -57,6 +57,10 @@ namespace WOCEmmaClient
 
         public void AnalyzeFile(string filename)
         {
+            AnalyzeFile(filename, false);
+        }
+        public void AnalyzeFile(string filename,bool useExtraFields)
+        {
             System.IO.StreamReader sr =null;
             try
             {
@@ -79,24 +83,54 @@ namespace WOCEmmaClient
                 string[] fields = header.Split(SplitChars);
 
                 /*Detect OE format*/
-                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost;
+                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldText1, fldText2, fldText3;
                 fldID = Array.IndexOf(fields, "Stno");
+                if (fldID == -1)
+                    fldID = Array.IndexOf(fields, "Startnr");
+
                 fldSI = Array.IndexOf(fields, "SI card");
+
                 if (fldSI == -1)
                     fldSI = Array.IndexOf(fields, "Chip");
 
+                if (fldSI == -1)
+                    fldSI = Array.IndexOf(fields, "Bricka");
+
                 fldFName = Array.IndexOf(fields, "First name");
+                if (fldFName == -1)
+                    fldFName = Array.IndexOf(fields, "Förnamn");
                 fldEName = Array.IndexOf(fields, "Surname");
+                if (fldEName == -1)
+                    fldEName = Array.IndexOf(fields, "Efternamn");
+
                 fldClub = Array.IndexOf(fields, "City");
+                if (fldClub == -1)
+                    fldClub = Array.IndexOf(fields, "Ort");
                 fldClass = Array.IndexOf(fields, "Long");
+                if (fldClass == -1)
+                    fldClass = Array.IndexOf(fields, "Lång");
+
                 fldStart = Array.IndexOf(fields, "Start");
+
                 fldTime = Array.IndexOf(fields, "Time");
+                if (fldTime == -1)
+                    fldTime = Array.IndexOf(fields,"Tid");
+
                 fldStatus = Array.IndexOf(fields, "Wertung");
+                if (fldStatus == -1)
+                    fldStatus = Array.IndexOf(fields, "Status");
+
                 fldFirstPost = Array.IndexOf(fields, "No1");
 
+                fldText1 = Array.IndexOf(fields, "Text1");
+                fldText2 = Array.IndexOf(fields, "Text2");
+                fldText3 = Array.IndexOf(fields, "Text3");
+
+
+
+
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
-                    || fldStart == -1 || fldTime == -1
-                    || fldStart == -1 || fldFirstPost == -1)
+                    || fldStart == -1 || fldTime == -1)
                     throw new System.IO.IOException("Not OE-formatted file!");
 
                 string tmp;
@@ -119,6 +153,17 @@ namespace WOCEmmaClient
                     int start = strTimeToInt(parts[fldStart]);
                     int time = strTimeToInt(parts[fldTime]);
 
+                    if (useExtraFields && fldText1 > 0 && fldText2 > 0 && fldText3 > 0)
+                    {
+                        name += "/" + parts[fldText1].Trim('\"');
+                        club = parts[fldText3].Trim('\"');
+                        if (parts[fldText2].Trim('\"') != club)
+                        {
+                            club += "/" + parts[fldText2].Trim('\"');
+                        }
+
+                    }
+
                     int status = 0;
                     try
                     {
@@ -131,45 +176,48 @@ namespace WOCEmmaClient
                     List<ResultStruct> splittimes = new List<ResultStruct>();
                     /*parse splittimes*/
                     List<int> codes = new List<int>();
-                    for (int i = fldFirstPost; i < parts.Length - 4; i++)
+                    if (fldFirstPost >= 0)
                     {
-                        if (parts[i + 1].Length == 0
-                            || parts[i + 2].Length == 0)
+                        for (int i = fldFirstPost; i < parts.Length - 4; i++)
                         {
-                            i += 3;
-                            continue;
-                        }
-                        ResultStruct s = new ResultStruct();
-                        try
-                        {
-                            //s.ControlNo = Convert.ToInt32(parts[i]);
-                            i++;
-                            s.ControlCode = Convert.ToInt32(parts[i]);
-                            
-                            s.ControlCode += 1000;
-                            while (codes.Contains(s.ControlCode))
+                            if (parts[i + 1].Length == 0
+                                || parts[i + 2].Length == 0)
                             {
-                                s.ControlCode += 1000;
+                                i += 3;
+                                continue;
                             }
-                            codes.Add(s.ControlCode);
-
-                            i++;
-                            s.Time = strTimeToInt(parts[i]);
-                            i++;
-                            s.Place = 0;
+                            ResultStruct s = new ResultStruct();
                             try
                             {
-                                s.Place = Convert.ToInt32(parts[i]);
+                                //s.ControlNo = Convert.ToInt32(parts[i]);
+                                i++;
+                                s.ControlCode = Convert.ToInt32(parts[i]);
+
+                                s.ControlCode += 1000;
+                                while (codes.Contains(s.ControlCode))
+                                {
+                                    s.ControlCode += 1000;
+                                }
+                                codes.Add(s.ControlCode);
+
+                                i++;
+                                s.Time = strTimeToInt(parts[i]);
+                                i++;
+                                s.Place = 0;
+                                try
+                                {
+                                    s.Place = Convert.ToInt32(parts[i]);
+                                }
+                                catch
+                                { }
+
+                                splittimes.Add(s);
                             }
                             catch
-                            { }
+                            {
+                            }
 
-                            splittimes.Add(s);
                         }
-                        catch
-                        {
-                        }
-                        
                     }
                     FireOnResult(id,si,name,club,Class,start,time,status,splittimes);
                 }

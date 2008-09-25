@@ -6,9 +6,9 @@ using System.Data;
 
 namespace WOCEmmaClient
 {
-    public class OlaParser
+    public class OlaParser : IExternalSystemResultParser
     {
-        private OleDbConnection m_Connection;
+        private IDbConnection m_Connection;
         private int m_EventID;
         private int m_EventRaceId;
 
@@ -16,7 +16,7 @@ namespace WOCEmmaClient
         public event LogMessageDelegate OnLogMessage;
 
         private bool m_Continue = false;
-        public OlaParser(OleDbConnection conn, int eventID, int eventRaceId)
+        public OlaParser(IDbConnection conn, int eventID, int eventRaceId)
         {
             m_Connection = conn;
             m_EventID = eventID;
@@ -60,14 +60,32 @@ namespace WOCEmmaClient
                     {
                         m_Connection.Open();
                     }
-                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated' and results.modifyDate > ?";
-                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > ?";
-                    OleDbCommand cmd = new OleDbCommand(baseCommand, m_Connection);
-                    OleDbCommand cmdSplits = new OleDbCommand(splitbaseCommand, m_Connection);
-                    OleDbParameter param = new OleDbParameter("@date", DateTime.Now);
-                    OleDbParameter splitparam = new OleDbParameter("@date", DateTime.Now);
-                    param.DbType = DbType.DateTime;
-                    splitparam.DbType = DbType.DateTime;
+
+                    string paramOper = "?";
+                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection)
+                    {
+                        paramOper = "?date";
+                    }
+
+                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
+                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
+                    IDbCommand cmd = m_Connection.CreateCommand();
+                    cmd.CommandText = baseCommand; //new OleDbCommand(baseCommand, m_Connection);
+                    IDbCommand cmdSplits = m_Connection.CreateCommand();// new OleDbCommand(splitbaseCommand, m_Connection);
+                    cmdSplits.CommandText = splitbaseCommand;
+                    IDbDataParameter param = cmd.CreateParameter();
+                    param.ParameterName = "date";
+                    param.DbType = DbType.String;
+                    param.Value = DateTime.Now;
+
+                    IDbDataParameter splitparam = cmdSplits.CreateParameter();
+                    splitparam.ParameterName = "date";
+                    splitparam.Value = DateTime.Now;
+                    splitparam.DbType = DbType.String;
+                    //OleDbParameter param = new OleDbParameter("@date", DateTime.Now);
+                    //OleDbParameter splitparam = new OleDbParameter("@date", DateTime.Now);
+                    //param.DbType = DbType.DateTime;
+                    //splitparam.DbType = DbType.DateTime;
 
                     //param.OleDbType = OleDbType.DBTimeStamp;
                     DateTime lastDateTime = DateTime.Now.AddMonths(-120);
@@ -81,17 +99,20 @@ namespace WOCEmmaClient
                     FireLogMsg("OLA Monitor thread started");
                     while (m_Continue)
                     {
-                        OleDbDataReader reader = null;
+                        IDataReader reader = null;
                         string lastRunner = "";
                         try
                         {
                             /*Kontrollera om nya klasser*/
                             /*Kontrollera om nya resultat*/
                             //cmd.CommandText = baseCommand + "" + lastDateTime.ToString("yyyyMMddhhmmss");
-                            cmd.Parameters["@date"].Value = lastDateTime;
-                            cmdSplits.Parameters["@date"].Value = lastSplitDateTime;
+                            //param.Value = lastDateTime;
+                            (cmd.Parameters["date"] as IDbDataParameter).Value = lastDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
+                            (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); ;
+                            
 
                             string command = cmd.CommandText;
+                            cmd.Prepare();
                             reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
@@ -100,7 +121,7 @@ namespace WOCEmmaClient
                                 string famName = "", fName = "", club = "", classN = "", status = "";
                                 try
                                 {
-                                    modDate = reader.GetDateTime(0);
+                                    modDate = Convert.ToDateTime(reader[0]);
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = reader.GetInt32(8);
                                     if (runnerID == 4579)
@@ -118,8 +139,20 @@ namespace WOCEmmaClient
                                     famName = reader.GetString(3);
                                     fName = reader.GetString(4);
                                     lastRunner = fName + " " + famName;
+                                    if (lastRunner == "Kajsa Risby")
+                                    {
+                                        bool test = true;
+                                    }
                                     club = reader.GetString(5);
                                     classN = reader.GetString(6);
+                                    if (classN == "D20 E")
+                                    {
+                                        bool test2 = true;
+                                    }
+                                    if (time == -2)
+                                    {
+                                        bool st = true;
+                                    }
                                     status = reader.GetString(7);
                                     
                                 }

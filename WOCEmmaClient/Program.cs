@@ -14,6 +14,14 @@ namespace WOCEmmaClient
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
+            //FrmNewCompetition cmp = new FrmNewCompetition();
+            //if (cmp.ShowDialog() == DialogResult.Cancel)
+            //{
+            //    return;
+            //}
+            Application.Run(new FrmNewCompetition());
+            return;
+            
 #if OLA
             Application.Run(new OlaForm());
 #elif SITimec

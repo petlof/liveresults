@@ -59,5 +59,47 @@ namespace WOCEmmaClient.Properties {
                 resourceCulture = value;
             }
         }
+        
+        internal static System.Drawing.Icon OE {
+            get {
+                object obj = ResourceManager.GetObject("OE", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap OEImg {
+            get {
+                object obj = ResourceManager.GetObject("OEImg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap OLAImg {
+            get {
+                object obj = ResourceManager.GetObject("OLAImg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Icon OS {
+            get {
+                object obj = ResourceManager.GetObject("OS", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap OSImg {
+            get {
+                object obj = ResourceManager.GetObject("OSImg", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        internal static System.Drawing.Bitmap softIconSmall {
+            get {
+                object obj = ResourceManager.GetObject("softIconSmall", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }
