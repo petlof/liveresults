@@ -54,12 +54,18 @@ namespace WOCEmmaClient
 
         void m_Parser_OnLogMessage(string msg)
         {
-            if (listBox1 != null && !listBox1.IsDisposed)
+            try
             {
-                listBox1.Invoke(new MethodInvoker(delegate
+                if (listBox1 != null && !listBox1.IsDisposed)
                 {
-                    listBox1.Items.Insert(0, DateTime.Now.ToString("hh:mm:ss") + " " + msg);
-                }));
+                    listBox1.Invoke(new MethodInvoker(delegate
+                    {
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("hh:mm:ss") + " " + msg);
+                    }));
+                }
+            }
+            catch
+            {
             }
         }
 

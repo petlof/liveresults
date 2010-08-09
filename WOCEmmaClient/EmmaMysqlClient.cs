@@ -25,7 +25,7 @@ namespace WOCEmmaClient
         public static EmmaServer[] GetServersFromConfig()
         {
             List<EmmaServer> servers = new List<EmmaServer>();
-            /*int sNum = 1;
+            int sNum = 1;
             while (true)
             {
                 string server = ConfigurationSettings.AppSettings.Get("emmaServer" + sNum.ToString());
@@ -42,11 +42,11 @@ namespace WOCEmmaClient
                 servers.Add(s);
                 sNum++;
 
-            }*/
+            }
 
-            WebRequest wq = HttpWebRequest.Create("http://www.obasen.nu/liveresultat/configs/getConnectionSettings.php");
+            WebRequest wq = HttpWebRequest.Create(ConfigurationManager.AppSettings["serverpollurl"]);
             wq.Method = "POST";
-            byte[] data = Encoding.ASCII.GetBytes("key=liveemmaclient");
+            byte[] data = Encoding.ASCII.GetBytes("key=" + ConfigurationManager.AppSettings["serverpollkey"]);
             wq.ContentLength = data.Length;
             wq.ContentType = "application/x-www-form-urlencoded";
             Stream st = wq.GetRequestStream();

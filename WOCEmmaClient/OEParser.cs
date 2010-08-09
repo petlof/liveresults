@@ -260,7 +260,7 @@ namespace WOCEmmaClient
         }
     }
 
-    struct ResultStruct
+    public struct ResultStruct
     {
         public int ControlNo;
         public int ControlCode;
