@@ -176,24 +176,37 @@ namespace WOCEmmaClient
                             //s.ControlNo = Convert.ToInt32(parts[i]);
                             i++;
                             s.ControlCode = Convert.ToInt32(parts[i]);
-                            s.ControlCode += 1000;
-                            while (codes.Contains(s.ControlCode))
-                            {
-                                s.ControlCode += 1000;
-                            }
-                            codes.Add(s.ControlCode);
-                            i++;
-                            s.Time = strTimeToInt(parts[i]);
-                            i++;
-                            s.Place = 0;
-                            try
-                            {
-                                s.Place = Convert.ToInt32(parts[i]);
-                            }
-                            catch
-                            { }
 
-                            splittimes.Add(s);
+                            if (s.ControlCode == 999 && status == 0)
+                            {
+                                i++;
+                                if (time == -1)
+                                    time = strTimeToInt(parts[i]);
+
+                                i++;
+                            }
+                            else
+                            {
+
+                                s.ControlCode += 1000;
+                                while (codes.Contains(s.ControlCode))
+                                {
+                                    s.ControlCode += 1000;
+                                }
+                                codes.Add(s.ControlCode);
+                                i++;
+                                s.Time = strTimeToInt(parts[i]);
+                                i++;
+                                s.Place = 0;
+                                try
+                                {
+                                    s.Place = Convert.ToInt32(parts[i]);
+                                }
+                                catch
+                                { }
+
+                                splittimes.Add(s);
+                            }
                         }
                         catch
                         {

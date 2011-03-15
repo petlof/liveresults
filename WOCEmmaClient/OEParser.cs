@@ -193,25 +193,36 @@ namespace WOCEmmaClient
                                 i++;
                                 s.ControlCode = Convert.ToInt32(parts[i]);
 
-                                s.ControlCode += 1000;
-                                while (codes.Contains(s.ControlCode))
+                                if (s.ControlCode == 999)
+                                {                                    
+                                    i++;
+                                    if (time == -1 && status == 0)
+                                        time = strTimeToInt(parts[i]);
+
+                                    i++;
+                                }
+                                else
                                 {
                                     s.ControlCode += 1000;
-                                }
-                                codes.Add(s.ControlCode);
+                                    while (codes.Contains(s.ControlCode))
+                                    {
+                                        s.ControlCode += 1000;
+                                    }
+                                    codes.Add(s.ControlCode);
 
-                                i++;
-                                s.Time = strTimeToInt(parts[i]);
-                                i++;
-                                s.Place = 0;
-                                try
-                                {
-                                    s.Place = Convert.ToInt32(parts[i]);
-                                }
-                                catch
-                                { }
+                                    i++;
+                                    s.Time = strTimeToInt(parts[i]);
+                                    i++;
+                                    s.Place = 0;
+                                    try
+                                    {
+                                        s.Place = Convert.ToInt32(parts[i]);
+                                    }
+                                    catch
+                                    { }
 
-                                splittimes.Add(s);
+                                    splittimes.Add(s);
+                                }
                             }
                             catch
                             {

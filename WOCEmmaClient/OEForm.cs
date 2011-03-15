@@ -99,14 +99,16 @@ namespace WOCEmmaClient
                 m_OEParser.OnResult += new ResultDelegate(m_OSParser_OnResult);
 
                 fsWatcherOS.Path = txtOEDirectory.Text;
-                fsWatcherOS.Filter = "*.csv.emma";
+                //fsWatcherOS.Filter = "*.csv.emma";
+                fsWatcherOS.Filter = txtExtension.Text;
                 fsWatcherOS.EnableRaisingEvents = true;
 
             }
             else if (radioButton1.Checked)
             {    
                 fileSystemWatcher1.Path = txtOEDirectory.Text;
-                fileSystemWatcher1.Filter = "*.xml.emma";
+                //fileSystemWatcher1.Filter = "*.xml.emma";
+                fileSystemWatcher1.Filter = txtExtension.Text;
                 fileSystemWatcher1.NotifyFilter = NotifyFilters.LastWrite;
                 fileSystemWatcher1.IncludeSubdirectories = false;
                 fileSystemWatcher1.EnableRaisingEvents = true;
@@ -432,6 +434,18 @@ namespace WOCEmmaClient
             if (!processed)
             {
                 logit("Could not open " + filename + " for processing");
+            }
+        }
+
+        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+        {
+            if (rdoOECsvPar.Checked || rdoOSCSV.Checked || rdoOSTeam.Checked || radioButton2.Checked)
+            {
+                txtExtension.Text = "*.csv";
+            }
+            else
+            {
+                txtExtension.Text = "*.xml";
             }
         }
     }
