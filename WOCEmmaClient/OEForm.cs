@@ -186,7 +186,10 @@ namespace WOCEmmaClient
                             {
                                 pid = Convert.ToInt64(id);
                             }
-                            string club = personNode.SelectSingleNode("Club/ShortName").InnerText;
+                            var clubNode = personNode.SelectSingleNode("Club/ShortName");
+                            string club = "";
+                            if (clubNode != null)
+                                club = clubNode.InnerText;
                             string status = personNode.SelectSingleNode("Result/CompetitorStatus").Attributes["value"].Value;
                             string time = personNode.SelectSingleNode("Result/Time").InnerText;
                             string si = personNode.SelectSingleNode("Result/CCard/CCardId").InnerText;
