@@ -105,10 +105,9 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=5.0.7.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
+    <Reference Include="MySql.Data, Version=6.2.2.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Program\MySQL\mysql-connector-net-5.0.7-noinstall\Driver\bin\net-2.0\release\MySql.Data.dll</HintPath>
-      <Private>True</Private>
+      <HintPath>..\References\MySql.Data.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.configuration" />
@@ -325,6 +324,12 @@
   <ItemGroup>
     <Content Include="Wizard\Wizard.bmp" />
     <Content Include="Wizard\wizBigOnlineFolder.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\H2Sharp\H2Sharp.csproj">
+      <Project>{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}</Project>
+      <Name>H2Sharp</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

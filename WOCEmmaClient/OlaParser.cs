@@ -67,6 +67,12 @@ namespace WOCEmmaClient
                     {
                         paramOper = "?date";
                     }
+                    bool isH2Conn = false;
+
+                    if (m_Connection is System.Data.H2.H2Connection)
+                    {
+                        isH2Conn = true;
+                    }
 
                     /*Detect eventtype*/
 
@@ -81,9 +87,14 @@ namespace WOCEmmaClient
                         isRelay = true;
 
 
-
+                    
                     string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
-                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
+                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
+                    if (isH2Conn)
+                    {
+                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and splitTimes.modifyDate > " + paramOper;
+                    }
 
                     if (isRelay)
                     {
@@ -96,7 +107,7 @@ namespace WOCEmmaClient
                     cmdSplits.CommandText = splitbaseCommand;
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "date";
-                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection)
+                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection || m_Connection is System.Data.H2.H2Connection)
                     {
                         param.DbType = DbType.String;
                         param.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -110,7 +121,7 @@ namespace WOCEmmaClient
 
                     IDbDataParameter splitparam = cmdSplits.CreateParameter();
                     splitparam.ParameterName = "date";
-                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection)
+                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection || m_Connection is System.Data.H2.H2Connection)
                     {
                         splitparam.DbType = DbType.String;
                         splitparam.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -143,7 +154,7 @@ namespace WOCEmmaClient
                         {
                             /*Kontrollera om nya klasser*/
                             /*Kontrollera om nya resultat*/
-                            if (cmd is MySql.Data.MySqlClient.MySqlCommand)
+                            if (cmd is MySql.Data.MySqlClient.MySqlCommand || m_Connection is System.Data.H2.H2Connection)
                             {
                                 (cmd.Parameters["date"] as IDbDataParameter).Value = lastDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
                                 (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); ;
@@ -177,11 +188,11 @@ namespace WOCEmmaClient
                                     }
 
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
-                                    runnerID = Convert.ToInt32(reader["entryid"]);
+                                    runnerID = Convert.ToInt32(reader["entryid"].ToString());
                                     
                                     time = -9;
-                                    if (!reader.IsDBNull(reader.GetOrdinal("totalTime")))
-                                        time = Convert.ToInt32(reader["totalTime"]);
+                                    if (reader["totaltime"] != null && reader["totaltime"] != DBNull.Value)
+                                        time = Convert.ToInt32(reader["totalTime"].ToString());
 
                                     famName = reader["lastname"] as string;
                                     fName = reader["firstname"] as string;
@@ -266,17 +277,30 @@ namespace WOCEmmaClient
                             {
                                 string smod = Convert.ToString(reader[0]);
                                 DateTime mod;
-                                if (smod.Contains("."))
-                                    mod = DateTime.ParseExact(smod, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
-                                else 
-                                    mod = DateTime.ParseExact(smod, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                                mod = ParseDateTime(smod);
 
                                 lastSplitDateTime = (mod > lastSplitDateTime ? mod : lastSplitDateTime);
-                                DateTime pTime = DateTime.ParseExact(Convert.ToString(reader[1]), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                                string tTime = Convert.ToString(reader[1]);
+                                DateTime pTime ;
+                                pTime = ParseDateTime(tTime);
                                 int sCont = reader.GetInt32(2);
-                                int entryid = Convert.ToInt32(reader["entryid"]);
-                                DateTime startTime = DateTime.ParseExact(Convert.ToString(reader[4]), "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                                int passedCount = reader.GetInt32(reader.GetOrdinal("passedCount"));
+                                int entryid = Convert.ToInt32(reader["entryid"].ToString());
+                                DateTime startTime ;
+                                if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                {
+                                    tTime = reader["allocatedStartTime"].ToString();
+                                    startTime = ParseDateTime(tTime);
+                                }
+                                else if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                {
+                                    tTime = reader["starttime"].ToString();
+                                    startTime = ParseDateTime(tTime);
+                                }
+                                else
+                                {
+                                    continue;
+                                }
+                                int passedCount = Convert.ToInt32(reader["passedCount"].ToString());
                                 TimeSpan rTid = pTime - startTime;
                                 double time = rTid.TotalMilliseconds / 10;
                                 List<ResultStruct> times = new List<ResultStruct>();
@@ -336,6 +360,24 @@ namespace WOCEmmaClient
 
                 }
             }
+        }
+
+        private static DateTime ParseDateTime(string tTime)
+        {
+            DateTime startTime;
+            if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
+            {
+                if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss.f", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
+                {
+                    if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss.ff", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
+                    {
+                        if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
+                        {
+                        }
+                    }
+                }
+            }
+            return startTime;
         }
     }
 }

@@ -6,6 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.Data.OleDb;
+using System.Data.H2;
 
 namespace WOCEmmaClient
 {
@@ -14,7 +15,7 @@ namespace WOCEmmaClient
         public NewOLAComp()
         {
             InitializeComponent();
-            comboBox1.DataSource = new string[] { "OLA Internal Mysql", "Mysql-Server", "SQL-Server" };
+            comboBox1.DataSource = new string[] { "OLA 5.0 Internal", "OLA4 Internal Mysql", "Mysql-Server", "SQL-Server" };
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -22,15 +23,21 @@ namespace WOCEmmaClient
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
+                    txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = false;
+                    break;
+                case 1:
+                    txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtHost.Text = "localhost";
                     txtPort.Text = "3307";
                     txtUser.Text = "live";
                     txtPw.Text = "live";
                     break;
-                case 1:
+                case 2:
+                    txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtPort.Text = "3309";
                     break;
-                case 2:
+                case 3:
+                    txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtPort.Text = "1433";
                     break;
             }
@@ -100,10 +107,12 @@ namespace WOCEmmaClient
         {
             switch (comboBox1.SelectedIndex)
             {
-                case 1:
                 case 0:
-                    return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
+                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text + ";AUTO_SERVER=TRUE", "live", "live");
+                case 1:
                 case 2:
+                    return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
+                case 3:
                     return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
             }
             return null;
@@ -125,7 +134,7 @@ namespace WOCEmmaClient
                 while (reader.Read())
                 {
                     OlaComp cmp = new OlaComp();
-                    cmp.Id = Convert.ToInt32(reader["eventid"]);
+                    cmp.Id = Convert.ToInt32(reader["eventid"].ToString());
                     cmp.Name = Convert.ToString(reader["name"]);
                     cmbOLAComp.Items.Add(cmp);
                 }
@@ -173,7 +182,7 @@ namespace WOCEmmaClient
                 while (reader.Read())
                 {
                     OlaComp cmp = new OlaComp();
-                    cmp.Id = Convert.ToInt32(reader["eventraceid"]);
+                    cmp.Id = Convert.ToInt32(reader["eventraceid"].ToString());
                     cmp.Name = Convert.ToString(reader["name"]);
                     cmbOLAEtapp.Items.Add(cmp);
                 }
@@ -204,6 +213,17 @@ namespace WOCEmmaClient
             monForm.SetParser(pars as IExternalSystemResultParser);
             monForm.CompetitionID = Convert.ToInt32(txtCompID.Text);
             monForm.ShowDialog(this);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog ofd = new OpenFileDialog();
+            ofd.Filter = "OLA5 databases (*.db)|*.db";
+            ofd.FileName = txtOlaDb.Text;
+            if (ofd.ShowDialog(this) == DialogResult.OK)
+            {
+                txtOlaDb.Text = ofd.FileName;
+            }
         }
     }
 }
