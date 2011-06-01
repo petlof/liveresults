@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOCEmmaClient", "WOCEmmaClient\WOCEmmaClient.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Sharp", "H2Sharp\H2Sharp.csproj", "{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +33,22 @@ Global
 		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOLA|Any CPU.Build.0 = ReleaseOLA|Any CPU
 		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOS|Any CPU.ActiveCfg = ReleaseOS|Any CPU
 		{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}.ReleaseOS|Any CPU.Build.0 = ReleaseOS|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
+		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
