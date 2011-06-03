@@ -59,7 +59,14 @@ namespace WOCEmmaClient
                 {
                     if (m_Connection.State != System.Data.ConnectionState.Open)
                     {
-                        m_Connection.Open();
+                        if (m_Connection is System.Data.H2.H2Connection)
+                        {
+                            (m_Connection as System.Data.H2.H2Connection).Open("live", "live");
+                        }
+                        else
+                        {
+                            m_Connection.Open();
+                        }
                     }
 
                     string paramOper = "?";
@@ -178,14 +185,15 @@ namespace WOCEmmaClient
                                 {
                                     //modDate = Convert.ToDateTime(reader[0]);
                                     string sModDate = Convert.ToString(reader[0]);
-                                    if (sModDate.Contains("."))
-                                    {
-                                        modDate = DateTime.ParseExact(sModDate, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
-                                    }
-                                    else
-                                    {
-                                        modDate = DateTime.ParseExact(sModDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
-                                    }
+                                    modDate = ParseDateTime(sModDate);
+                                    //if (sModDate.Contains("."))
+                                    //{
+                                    //    modDate = DateTime.ParseExact(sModDate, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture);
+                                    //}
+                                    //else
+                                    //{
+                                    //    modDate = DateTime.ParseExact(sModDate, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture);
+                                    //}
 
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = Convert.ToInt32(reader["entryid"].ToString());

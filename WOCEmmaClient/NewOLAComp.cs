@@ -49,12 +49,18 @@ namespace WOCEmmaClient
             IDbConnection conn = null;
             try
             {
-            conn = GetDBConnection();
-            conn.Open();
-            lstDB.DataSource = null;
-            
-                string[] databases = GetDatabases(conn);
-                lstDB.DataSource = databases;
+                if (comboBox1.SelectedIndex != 0)
+                {
+                    conn = GetDBConnection();
+                    if (conn != null)
+                    {
+                        conn.Open();
+                        lstDB.DataSource = null;
+
+                        string[] databases = GetDatabases(conn);
+                        lstDB.DataSource = databases;
+                    }
+                }
             }
             catch (Exception ee)
             {
@@ -108,7 +114,7 @@ namespace WOCEmmaClient
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text + ";AUTO_SERVER=TRUE", "live", "live");
+                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","") + ";AUTO_SERVER=TRUE", "live", "live");
                 case 1:
                 case 2:
                     return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
@@ -124,25 +130,61 @@ namespace WOCEmmaClient
             IDbConnection conn = null;
             try
             {
+                if (comboBox1.SelectedIndex == 0 && !System.IO.File.Exists(txtOlaDb.Text.Replace(".h2.", ".lock.")))
+                {
+                    MessageBox.Show("OLA Does not seem to be started on server?\r\nPlease make sure OLA is running with connected clients when connecting, else all traffic will be redirected through this computer!");
+                }
                 conn = GetDBConnection(lstDB.SelectedItem as string);
                 conn.Open();
 
                 IDbCommand cmd = conn.CreateCommand();
                 cmbOLAComp.Items.Clear();
-                cmd.CommandText = "select eventid, name from Events";
-                IDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
-                {
-                    OlaComp cmp = new OlaComp();
-                    cmp.Id = Convert.ToInt32(reader["eventid"].ToString());
-                    cmp.Name = Convert.ToString(reader["name"]);
-                    cmbOLAComp.Items.Add(cmp);
-                }
-                reader.Close();
-                cmd.Dispose();
 
-                if (cmbOLAComp.Items.Count > 0)
-                    cmbOLAComp.SelectedIndex = 0;
+                cmd.CommandText = "SELECT VersionNumber FROM Version WHERE moduleId = 1";
+                try
+                {
+                    object res = cmd.ExecuteScalar();
+                }
+                catch (Exception ee)
+                {
+                    if (ee.Message.ToUpper().Contains("ENOUGH RIGHTS"))
+                    {
+                        conn.Close();
+                        conn = new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db", "") + ";AUTO_SERVER=TRUE", "root", "");
+                        try
+                        {
+                            conn.Open();
+                            cmd = conn.CreateCommand();
+                            TryApplyReadRights(cmd);
+                        }
+                        finally
+                        {
+                            conn.Close();
+                        }
+                        conn = GetDBConnection(lstDB.SelectedItem as string);
+                        conn.Open();
+                        cmd = conn.CreateCommand();
+                    }
+                }
+
+
+                cmd.CommandText = "select eventid, name from Events";
+
+
+                    IDataReader reader = cmd.ExecuteReader();
+                    while (reader.Read())
+                    {
+                        OlaComp cmp = new OlaComp();
+                        cmp.Id = Convert.ToInt32(reader["eventid"].ToString());
+                        cmp.Name = Convert.ToString(reader["name"]);
+                        cmbOLAComp.Items.Add(cmp);
+                    }
+                    reader.Close();
+                    cmd.Dispose();
+
+                    if (cmbOLAComp.Items.Count > 0)
+                        cmbOLAComp.SelectedIndex = 0;
+                
 
             }
             catch (Exception ee)
@@ -154,6 +196,23 @@ namespace WOCEmmaClient
                 if (conn != null)
                     conn.Close();
             }
+        }
+
+        private static void TryApplyReadRights(IDbCommand cmd)
+        {
+            cmd.CommandText = @"GRANT SELECT on Version to live;
+GRANT SELECT on EVENTS to live;
+GRANT SELECT ON EVENTRACES to live;
+GRANT SELECT ON RESULTS to live;
+GRANT SELECT ON PERSONS to live;
+GRANT SELECT ON Organisations to live;
+GRANT SELECT ON eventclasses to live;
+GRANT SELECT ON entries to live;
+GRANT SELECT ON raceclasses to live;
+GRANT SELECT ON splittimes to live;
+GRANT SELECT ON SplitTimeControls to live;
+GRANT SELECT ON Controls to live;";
+            cmd.ExecuteNonQuery();
         }
         private class OlaComp
         {
