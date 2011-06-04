@@ -235,6 +235,7 @@ namespace WOCEmmaClient
                                  * valid status is
                                     notStarted
                                     finishedTimeOk
+                                    finishedPunchOk
                                     disqualified
                                     finished
                                     movedUp
@@ -243,6 +244,7 @@ namespace WOCEmmaClient
                                     passed
                                     notValid
                                     notActivated
+                                    notParticipating
                                  */
                                 //EMMAClient.RunnerStatus rstatus = EMMAClient.RunnerStatus.Passed;
                                 int rstatus = 0;
@@ -266,6 +268,7 @@ namespace WOCEmmaClient
                                         rstatus = 3;
                                         //rstatus = EMMAClient.RunnerStatus.MissingPunch;
                                         break;
+                                    case "notParticipating":
                                     case "walkOver":
                                         rstatus = 11;
                                         //rstatus = EMMAClient.RunnerStatus.WalkOver;
