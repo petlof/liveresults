@@ -31,14 +31,17 @@ namespace WOCEmmaClient
                     txtPort.Text = "3307";
                     txtUser.Text = "live";
                     txtPw.Text = "live";
+                    panel1.Visible = false;
                     break;
                 case 2:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtPort.Text = "3309";
+                    panel1.Visible = false;
                     break;
                 case 3:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtPort.Text = "1433";
+                    panel1.Visible = false;
                     break;
             }
         }

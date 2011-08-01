@@ -10,8 +10,9 @@
     <RootNamespace>WOCEmmaClient</RootNamespace>
     <AssemblyName>EmmaClient</AssemblyName>
     <IsWebBootstrapper>true</IsWebBootstrapper>
-    <ManifestCertificateThumbprint>186397F73BA5CC56FD82016D26343F0A5544A556</ManifestCertificateThumbprint>
-    <ManifestKeyFile>WOCEmmaClient_1_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestCertificateThumbprint>7261AEFB70AA319CE1CBA5FFA90919ED9971EFD3</ManifestCertificateThumbprint>
+    <ManifestKeyFile>
+    </ManifestKeyFile>
     <GenerateManifests>true</GenerateManifests>
     <SignManifests>true</SignManifests>
     <FileUpgradeFlags>
@@ -19,6 +20,9 @@
     <UpgradeBackupLocation>
     </UpgradeBackupLocation>
     <OldToolsVersion>2.0</OldToolsVersion>
+    <SignAssembly>false</SignAssembly>
+    <AssemblyOriginatorKeyFile>
+    </AssemblyOriginatorKeyFile>
     <PublishUrl>c:\OpenSource\EmmaPublishCombined\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -237,12 +241,10 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="App.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
-    <None Include="WOCEmmaClient_TemporaryKey.pfx" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
@@ -318,8 +320,8 @@
     <None Include="Resources\OSImg.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="App.config" />
     <None Include="Resources\OLAImg.bmp" />
-    <None Include="WOCEmmaClient_1_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Wizard\Wizard.bmp" />
