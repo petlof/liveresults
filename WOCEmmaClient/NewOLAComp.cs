@@ -35,7 +35,7 @@ namespace WOCEmmaClient
                     break;
                 case 2:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
-                    txtPort.Text = "3309";
+                    txtPort.Text = "3306";
                     panel1.Visible = false;
                     break;
                 case 3:

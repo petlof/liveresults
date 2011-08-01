@@ -84,7 +84,7 @@ namespace WOCEmmaClient
                     string form = cmd.ExecuteScalar() as string;
                     bool isRelay = false;
 
-                    if (form == "relay")
+                    if (form.ToLower().Contains("relay"))
                         isRelay = true;
 
                     /* detect ola version*/
@@ -107,8 +107,8 @@ namespace WOCEmmaClient
 
                     if (isRelay)
                     {
-                        baseCommand = "select results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.relayPersonId as entryId, results.finishTime, results.allocatedStartTime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
-                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.relayPersonId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime  from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
+                        baseCommand = "select results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.relayPersonId as entryId, results.finishTime, results.allocatedStartTime, (select firststarttime from raceclasses rc where rc.eventClassId = eventclasses.EventClassID and rc.relayleg=1 and rc.eventRaceId = " + m_EventRaceId + ") as firststarttime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.relayPersonId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime  from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and splitTimes.modifyDate > " + paramOper;
                     }
                     
                     cmd.CommandText = baseCommand; //new OleDbCommand(baseCommand, m_Connection);
@@ -208,10 +208,13 @@ namespace WOCEmmaClient
                                         classN = classN + "-" + Convert.ToString(reader["relayLeg"]);
                                         if (reader["finishTime"] != DBNull.Value)
                                         {
-                                            //DateTime ft = Convert.ToDateTime(reader["finishTime"]);
-                                            //DateTime ast = Convert.ToDateTime(reader["allocatedStartTime"]);
-                                            
-                                            //time = (int)(((TimeSpan)(ft - ast)).TotalSeconds * 100);
+                                            DateTime ft = ParseDateTime(reader["finishTime"].ToString());
+
+                                            if (reader["firststarttime"] != DBNull.Value)
+                                            {
+                                                DateTime ast = ParseDateTime(reader["firststarttime"].ToString());
+                                                time = (int)(((TimeSpan)(ft - ast)).TotalSeconds * 100);
+                                            }
                                         }
                                     }
                                     
