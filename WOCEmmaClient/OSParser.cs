@@ -78,23 +78,39 @@ namespace WOCEmmaClient
                 string header = sr.ReadLine();
 
                 string[] fields = header.Split(SplitChars);
+                bool isOs2010Files = fields[0].StartsWith("OS");
 
                 /*Detect OS format*/
-                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldLeg;
+                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldLeg, fldFinish;
                 fldID = Array.IndexOf(fields, "Stno");
                 fldLeg = Array.IndexOf(fields, "Leg");
                 fldSI = Array.IndexOf(fields, "SI card");
                 if (fldSI == -1)
                 {
                     fldSI = Array.IndexOf(fields, "Chip");
+                    if (fldSI == -1)
+                        fldSI = Array.IndexOf(fields, "Chipno"); //OS2010
                 }
                 fldFName = Array.IndexOf(fields, "Vorname");
+                if (fldFName == -1)
+                    fldFName = Array.IndexOf(fields, "First name"); //os 2010
+
                 fldEName = Array.IndexOf(fields, "Nachname");
+                if (fldEName == -1)
+                    fldEName = Array.IndexOf(fields, "Surname"); //OS2010
+
                 fldClub = Array.IndexOf(fields, "Club");
+                if (fldClub == -1)
+                    fldClub = Array.IndexOf(fields, "Team");
+
                 fldClass = Array.IndexOf(fields, "Short");
                 fldStart = Array.IndexOf(fields, "Start");
+                fldFinish = Array.IndexOf(fields, "Finish");
                 fldTime = Array.IndexOf(fields, "Time");
                 fldStatus = Array.IndexOf(fields, "Wertung");
+                if (fldStatus == -1)
+                    fldStatus = Array.IndexOf(fields, "Classifier");
+
                 fldFirstPost = Array.IndexOf(fields, "No1");
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
@@ -127,6 +143,7 @@ namespace WOCEmmaClient
                 }
 
                 string tmp;
+                Dictionary<string, int> teamStartTimes = new Dictionary<string, int>();
                 while ((tmp = sr.ReadLine()) != null)
                 {
                     string[] parts = tmp.Split(SplitChars);
@@ -145,6 +162,21 @@ namespace WOCEmmaClient
                     string Class = parts[fldClass].Trim('\"') + "-" + parts[fldLeg].Trim('\"');
                     int start = strTimeToInt(parts[fldStart]);
                     int time = strTimeToInt(parts[fldTime]);
+
+                    if (isOs2010Files)
+                    {
+                        string key = parts[fldClass].Trim('\"') + ";" + club;
+                        if (!teamStartTimes.ContainsKey(key))
+                        {
+                            teamStartTimes.Add(key, start);
+                        }
+                        else if (teamStartTimes[key] > start)
+                        {
+                            teamStartTimes[key] = start;
+                        }
+
+                        time = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                    }
 
                     int status = 0;
                     try

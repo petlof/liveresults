@@ -77,7 +77,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(79, 61);
             this.button2.TabIndex = 2;
-            this.button2.Text = "OE-Speaker";
+            this.button2.Text = "OL-Einzel";
             this.button2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
