@@ -82,57 +82,65 @@ namespace WOCEmmaClient
 
                 /*Detect OS format*/
                 int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldLeg, fldFinish;
-                fldID = Array.IndexOf(fields, "Stno");
-                fldLeg = Array.IndexOf(fields, "Leg");
-                fldSI = Array.IndexOf(fields, "SI card");
-                if (fldSI == -1)
-                {
-                    fldSI = Array.IndexOf(fields, "Chip");
-                    if (fldSI == -1)
-                        fldSI = Array.IndexOf(fields, "Chipno"); //OS2010
-                }
-                fldFName = Array.IndexOf(fields, "Vorname");
-                if (fldFName == -1)
-                    fldFName = Array.IndexOf(fields, "First name"); //os 2010
 
-                fldEName = Array.IndexOf(fields, "Nachname");
-                if (fldEName == -1)
-                    fldEName = Array.IndexOf(fields, "Surname"); //OS2010
+                string[] stoNoFieldNames = { "Stno", "Lnro", "Stnr", "Startnr" };
+                string[] legFieldNames = {"Leg","Osuus","Lnr","Sträcka"};
 
-                fldClub = Array.IndexOf(fields, "Club");
-                if (fldClub == -1)
-                    fldClub = Array.IndexOf(fields, "Team");
 
-                fldClass = Array.IndexOf(fields, "Short");
-                fldStart = Array.IndexOf(fields, "Start");
-                fldFinish = Array.IndexOf(fields, "Finish");
-                fldTime = Array.IndexOf(fields, "Time");
-                fldStatus = Array.IndexOf(fields, "Wertung");
-                if (fldStatus == -1)
-                    fldStatus = Array.IndexOf(fields, "Classifier");
+                string[] chipNoFieldNames = {
+                                            "SI card",
+                                            "SI bricka",
+                                            "Bricka",
+                                            "Chipno", //OS2010 - ENG
+                                            "Korttinro", //OS2010 - FIN
+                                            "Chipnr", //OS2010 - GER
+                                            "Bricknr" //OS2010 - SWE
+                                        };
+                string[] firstNameFieldNames = {"Vorname","First name", "Etunimi","Förnamn"};
+                string[] lastNameFieldNames = { "Nachname", "Surname", "Sukunimi", "Efternamn" };
+                string[] clubFieldNames = { "Club", "Team", "Joukkue", "Staffel", "Lag", "Klubb" };
+                string[] classFieldNames = { "Short", "Lyhyt", "Kurz", "Kort" };
+                string[] startFieldNames = { "Start", "Lähtö" };
+                string[] finishFieldNames = { "Finish", "Maali", "Ziel", "Mål" };
+                string[] timeFieldNames = { "Time", "Aika", "Zeit", "Tid" };
+                string[] statusFieldNames = { "Classifier", "Tila", "Wertung", "Status" };
+                string[] no1FieldNames = { "No1", "Nro1", "Nr1" };
 
-                fldFirstPost = Array.IndexOf(fields, "No1");
+                fldID = GetFieldFromHeader(fields, stoNoFieldNames);
+                fldLeg = GetFieldFromHeader(fields, legFieldNames);
+                fldSI = GetFieldFromHeader(fields, chipNoFieldNames);
+                fldFName = GetFieldFromHeader(fields, firstNameFieldNames);
+                fldEName = GetFieldFromHeader(fields, lastNameFieldNames);
+                fldClub = GetFieldFromHeader(fields, clubFieldNames);
+
+                fldClass = GetFieldFromHeader(fields, classFieldNames);
+                fldStart = GetFieldFromHeader(fields, startFieldNames);
+                fldFinish = GetFieldFromHeader(fields, finishFieldNames);
+                fldTime = GetFieldFromHeader(fields, timeFieldNames);
+                fldStatus = GetFieldFromHeader(fields, statusFieldNames);
+
+                fldFirstPost = GetFieldFromHeader(fields, no1FieldNames);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
                     || fldStart == -1 || fldTime == -1
                     || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
                 {
-                    /*Try detect swedish format??*/
-                    fldID = Array.IndexOf(fields, "Startnr");
-                    fldLeg = Array.IndexOf(fields, "Sträcka");
-                    fldSI = Array.IndexOf(fields, "SI bricka");
-                    if (fldSI == -1)
+                    /*Try detect fixedFormat*/
+                    if (fields[0] == "OS0016")
                     {
-                        fldSI = Array.IndexOf(fields, "Bricka");
+                        fldID = 1;
+                        fldLeg = 3;
+                        fldSI = 13;
+                        fldFName = 6;
+                        fldEName = 5;
+                        fldClub = 17;
+                        fldClass = 19;
+                        fldStart = 9;
+                        fldFinish = 10;
+                        fldTime = 11;
+                        fldStatus = 12;
+                        fldFirstPost = 27;
                     }
-                    fldFName = Array.IndexOf(fields, "Vorname");
-                    fldEName = Array.IndexOf(fields, "Nachname");
-                    fldClub = Array.IndexOf(fields, "Klubb");
-                    fldClass = Array.IndexOf(fields, "Kort");
-                    fldStart = Array.IndexOf(fields, "Start");
-                    fldTime = Array.IndexOf(fields, "Tid");
-                    fldStatus = Array.IndexOf(fields, "Wertung");
-                    fldFirstPost = Array.IndexOf(fields, "Nr1");
                     
                     if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
                    || fldStart == -1 || fldTime == -1
@@ -250,7 +258,7 @@ namespace WOCEmmaClient
             }
             catch (Exception ee)
             {
-                FireLogMsg("ERROR in OEPArser: " + ee.Message);
+                FireLogMsg("ERROR in OSParser: " + ee.Message);
             }
             finally
             {
@@ -258,6 +266,19 @@ namespace WOCEmmaClient
                     sr.Close();
             }
             
+        }
+
+        private static int GetFieldFromHeader(string[] fields, string[] fieldNames)
+        {
+            int fld = -1;
+            for (int i = 0; i < fieldNames.Length; i++)
+            {
+
+                fld = Array.IndexOf(fields, fieldNames[i]);
+                if (fld >= 0)
+                    break;
+            }
+            return fld;
         }
 
         public void AnalyzeTeamFile(string filename)
