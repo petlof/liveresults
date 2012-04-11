@@ -183,7 +183,10 @@ namespace WOCEmmaClient
                             teamStartTimes[key] = start;
                         }
 
-                        time = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                        if (time >= 0)
+                        {
+                            time = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                        }
                     }
 
                     int status = 0;
