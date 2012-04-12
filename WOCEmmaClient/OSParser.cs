@@ -225,7 +225,6 @@ namespace WOCEmmaClient
                                 i++;
                                 if (time == -1)
                                     time = strTimeToInt(parts[i]);
-
                                 i++;
                             }
                             else
