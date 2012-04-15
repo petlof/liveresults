@@ -39,6 +39,8 @@ namespace WOCEmmaClient
             {
                 if (!client.IsRunnerAdded(id))
                     client.AddRunner(new Runner(id, name, club, Class));
+                else
+                    client.UpdateRunnerInfo(id, name, club, Class);
 
                 if (time != -2)
                 {

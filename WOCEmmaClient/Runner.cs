@@ -99,6 +99,11 @@ namespace WOCEmmaClient
             {
                 return m_club;
             }
+            set
+            {
+                m_club = value;
+                RunnerUpdated = true;
+            }
         }
 
         public string Class
@@ -106,6 +111,11 @@ namespace WOCEmmaClient
             get
             {
                 return m_Class;
+            }
+            set
+            {
+                m_Class = value;
+                RunnerUpdated = true;
             }
         }
 
@@ -173,6 +183,11 @@ namespace WOCEmmaClient
             get
             {
                 return m_name;
+            }
+            set
+            {
+                m_name = value;
+                RunnerUpdated = true;
             }
         }
     }

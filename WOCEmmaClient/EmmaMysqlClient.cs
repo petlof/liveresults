@@ -170,6 +170,40 @@ namespace WOCEmmaClient
             mainTh.Start();
         }
 
+        public void UpdateRunnerInfo(int id, string name, string club, string Class)
+        {
+            if (m_Runners.ContainsKey(id))
+            {
+                Runner cur = m_Runners[id] as Runner;
+                bool isUpdated = false;
+                if (cur.Name != name)
+                {
+                    cur.Name = name;
+                    isUpdated = true;
+                }
+                if (cur.Class != Class)
+                {
+                    cur.Class = Class;
+                    isUpdated = true;
+                }
+                if (cur.Club != club)
+                {
+                    cur.Club = club;
+                    isUpdated = true;
+                }
+                if (isUpdated)
+                {
+                    cur.RunnerUpdated = true;
+                    m_RunnersToUpdate.Add(cur);
+
+                    if (!m_CurrentlyBuffering)
+                    {
+                        FireLogMsg("Runnerinfo changed [" + cur.Name + "]");
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Adds a Runner to this competition
         /// </summary>
