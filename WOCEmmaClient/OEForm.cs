@@ -125,6 +125,9 @@ namespace WOCEmmaClient
                 {
                     c.AddRunner(new Runner(id, name, club, Class));
                 }
+                else
+                    c.UpdateRunnerInfo(id, name, club, Class);
+
                 c.SetRunnerResult(id, time, status);
                 if (splits != null)
                 {
