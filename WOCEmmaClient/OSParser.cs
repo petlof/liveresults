@@ -152,6 +152,7 @@ namespace WOCEmmaClient
 
                 string tmp;
                 Dictionary<string, int> teamStartTimes = new Dictionary<string, int>();
+                Dictionary<string, int> teamStatuses = new Dictionary<string, int>();
                 while ((tmp = sr.ReadLine()) != null)
                 {
                     string[] parts = tmp.Split(SplitChars);
@@ -171,24 +172,6 @@ namespace WOCEmmaClient
                     int start = strTimeToInt(parts[fldStart]);
                     int time = strTimeToInt(parts[fldTime]);
 
-                    if (isOs2010Files)
-                    {
-                        string key = parts[fldClass].Trim('\"') + ";" + club;
-                        if (!teamStartTimes.ContainsKey(key))
-                        {
-                            teamStartTimes.Add(key, start);
-                        }
-                        else if (teamStartTimes[key] > start)
-                        {
-                            teamStartTimes[key] = start;
-                        }
-
-                        if (time >= 0)
-                        {
-                            time = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
-                        }
-                    }
-
                     int status = 0;
                     try
                     {
@@ -201,6 +184,37 @@ namespace WOCEmmaClient
                     catch
                     {
                     }
+
+                    if (isOs2010Files)
+                    {
+                        string key = parts[fldClass].Trim('\"') + ";" + club;
+                        if (!teamStartTimes.ContainsKey(key))
+                        {
+                            teamStartTimes.Add(key, start);
+                        }
+                        else if (teamStartTimes[key] > start)
+                        {
+                            teamStartTimes[key] = start;
+                        }
+
+                        if (teamStatuses.ContainsKey(key))
+                        {
+                            int earlierStatus = teamStatuses[key];
+                            if (status == 0 && earlierStatus != 0)
+                                status = earlierStatus;
+                        }
+                        else if (status != 0)
+                        {
+                            teamStatuses.Add(key, status);
+                        }
+
+                        if (time >= 0)
+                        {
+                            time = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                        }
+                    }
+
+                    
 
                     List<ResultStruct> splittimes = new List<ResultStruct>();
                     /*parse splittimes*/
