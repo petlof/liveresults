@@ -8,15 +8,6 @@ include_once("emmalang_en.php");
 include_once("emmalang_$lang.php");
 include_once("classEmma.class.php");
 $currentComp = new Emma($_GET['comp']);
-
-//if (isset($_POST['newUpdTime']))
-//{
-//  $_SESSION['updTime'] = $_POST['newUpdTime'];
-//}
-//else if (!isset($_SESSION['updTime']))
-//{
-//  $_SESSION['updTime'] = "60";
-//}
 
 $updTime = "60";
 
@@ -26,16 +17,13 @@ if (isset($_GET['updTime']))
 if ($updTime < 15)
   $updTime = "15";
 
-
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT);
-
 $times = Array("15" => $_UP15SEK, "30" => $_UP30SEK, "60" => $_UP60SEK, "120" => $_UP120SEK, "-1" => $_UPNEVER);
-
 echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
-?>
+?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
-        "http://www.w3.org/TR/html4/loose.dtd">
-<html>
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
 <head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= ($_GET['class'] != '' ? ">> ".$_GET['class'] : "")?></title>
 <?php if ($updTime != "-1") {?> <META HTTP-EQUIV="refresh" CONTENT="<?=$updTime?>;"><?php }?>
 <META HTTP-EQUIV="expires" CONTENT="-1">

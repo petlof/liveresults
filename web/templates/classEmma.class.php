@@ -173,7 +173,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	  return $this->m_CompDate;
 	  //return "2006-05-25";
 	}
-	function Classes()
+	function Classes()
 	{
 		$ret = Array();
 		$q = "SELECT Class From Runners where TavId = ". $this->m_CompId ." Group By Class";
