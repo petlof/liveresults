@@ -76,9 +76,14 @@ elseif ($_GET['method'] == 'getclassresults')
 		$lastTime = -9999;
 		$winnerTime = 0;
 		$resultsAsArray = false;
-
+		$unformattedTimes = false;
 		if (isset($_GET['resultsAsArray']))
 			$resultsAsArray  = true;
+		if (isset($_GET['unformattedTimes']) && $_GET['unformattedTimes'] == "true")
+		{
+			$unformattedTimes = true;
+		}
+
 		foreach ($results as $res)
 		{
 			if (!$first)
@@ -101,23 +106,42 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			if ($time > 0 && $status == 0)
 			{
-				$timeplus = "+".formatTime($time-$winnerTime,$res['Status'],$RunnerStatus);
+				$timeplus = $time-$winnerTime;
+			}
+
+			$age = time()-strtotime($res['Changed']);
+			$modified = $age < 120 ? 1:0;
+
+			if (!$unformattedTimes)
+			{
+				$time = formatTime($res['Time'],$res['Status'],$RunnerStatus);
+				$timeplus = "+".formatTime($timeplus,$res['Status'],$RunnerStatus);
+
 			}
 
 			if($resultsAsArray)
 			{
-				$ret .= "[\"$cp\", \"".$res['Name']."\", \"".$res['Club']."\", ".$res['Time'].", ".$res['Status'].", ".($time-$winnerTime)."]";
+				$ret .= "[\"$cp\", \"".$res['Name']."\", \"".$res['Club']."\", ".$res['Time'].", ".$res['Status'].", ".($time-$winnerTime).",$modified]";
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".formatTime($res['Time'],$res['Status'],$RunnerStatus)."\", \"timeplus\": \"$timeplus\"}";
+				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$res['Status'].", \"timeplus\": \"$timeplus\" ".($modified ? ", \"DT_RowClass\": \"new_result\"" : "")."}";
 			}
 			$first = false;
 			$place++;
 			$lastTime = $time;
 		}
-		echo("{ \"status\": \"OK\", \"results\": [$ret]");
-		echo(", \"hash\": \"". MD5($ret)."\"}");
+		$hash = MD5($ret);
+
+		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+		{
+			echo("{ \"status\": \"NOT MODIFIED\"}");
+		}
+		else
+		{
+			echo("{ \"status\": \"OK\", \"className\": \"".$_GET['class']."\", \"results\": [$ret]");
+			echo(", \"hash\": \"". $hash."\"}");
+		}
 }
 else
 {

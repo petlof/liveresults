@@ -34,4 +34,7 @@ $_STATUSOT="ö. maxtid";
 
 $_FIRSTPAGECHOOSE = "Välj tävling att följa";
 $_FIRSTPAGEARCHIVE = "Arkiv";
+
+//new 2.0
+$_LOADINGRESULTS = "Laddar resultat...";
 ?>

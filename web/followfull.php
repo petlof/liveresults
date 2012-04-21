@@ -34,7 +34,7 @@ $(document).ready(function()
 	  success: updateClassList,
 	  dataType: "json"
 	});
-	currentTable = $('#divResults').dataTable( {
+	/*currentTable = $('#divResults').dataTable( {
 			"bPaginate": false,
 	        "bLengthChange": false,
 	        "bFilter": false,
@@ -51,7 +51,7 @@ $(document).ready(function()
 	            { "sTitle": "Status", "bVisible": false },
 	            { "sTitle": "Tid+", "sClass": "center" }
 	        ]
-    } );
+    } );*/
 
 });
 
@@ -72,53 +72,64 @@ function updateClassList(data)
 }
 
 var currentTable = null;
+
 function chooseClass(className)
 {
 	if (currentTable != null)
 		currentTable.fnDestroy();
+	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
+	//&resultsAsArray=true
 	$.ajax({
 		  url: "api.php",
-		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&resultsAsArray=true&class="+className,
+		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className,
 		  success: updateClassResults,
 		  dataType: "json"
 	});
 }
 function updateClassResults(data)
 {
-	if (data.results != null)
+	if (data.status == "OK")
 	{
-		currentTable = $('#divResults').dataTable( {
-				"bPaginate": false,
-				"bLengthChange": false,
-				"bFilter": false,
-				"bSort": true,
-				"bInfo" : false,
-				"bAutoWidth": false,
-				"aaData": data.results,
-				"aaSorting" : [[4,"asc"],[3, "asc"]],
-				"aoColumnDefs": [
-					{ "sTitle": "#", "bSortable" : false, "aTargets" : [0] },
-					{ "sTitle": "<?=$_NAME?>","bSortable" : false,"aTargets" : [1] },
-					{ "sTitle": "<?=$_CLUB?>","bSortable" : false ,"aTargets" : [2]},
-					{ "sTitle": "Tid", "sClass": "center", "sType": "numeric","aDataSort": [ 4, 3 ], "aTargets" : [3],"bUseRendered": false,
-						"fnRender": function ( o, val )
-						{
-          					return formatTime(o.aData[3],o.aData[4]);
-        				},
-        			},
-        			{ "sTitle": "Status", "bVisible" : false,"aTargets" : [4],"sType": "numeric"},
+		if (data.className != null)
+		{
+			$('#resultsHeader').html('<b>'+data.className + '</b>');
+		}
 
-					{ "sTitle": "Tid+", "sClass": "center","bSortable" : false,"aTargets" : [5],
-						"fnRender": function ( o, val )
-											{
-												if (o.aData[4] != 0)
-													return "";
-												else
-					          						return "+" + formatTime(o.aData[5],o.aData[4]);
-        				}
-					}
-				]
-		} );
+		if (data.results != null)
+		{
+			currentTable = $('#divResults').dataTable( {
+					"bPaginate": false,
+					"bLengthChange": false,
+					"bFilter": false,
+					"bSort": true,
+					"bInfo" : false,
+					"bAutoWidth": false,
+					"aaData": data.results,
+					"aaSorting" : [[4,"asc"],[3, "asc"]],
+					"aoColumnDefs": [
+						{ "sTitle": "#", "bSortable" : false, "aTargets" : [0], "mDataProp": "place" },
+						{ "sTitle": "<?=$_NAME?>","bSortable" : false,"aTargets" : [1], "mDataProp": "name" },
+						{ "sTitle": "<?=$_CLUB?>","bSortable" : false ,"aTargets" : [2], "mDataProp": "club"},
+						{ "sTitle": "Tid", "sClass": "center", "sType": "numeric","aDataSort": [ 4, 3 ], "aTargets" : [3],"bUseRendered": false, "mDataProp": "result",
+							"fnRender": function ( o, val )
+							{
+								return formatTime(o.aData.result,o.aData.status);
+							},
+						},
+						{ "sTitle": "Status", "bVisible" : false,"aTargets" : [4],"sType": "numeric", "mDataProp": "status"},
+
+						{ "sTitle": "Tid+", "sClass": "center","bSortable" : false,"aTargets" : [5],"mDataProp": "timeplus",
+							"fnRender": function ( o, val )
+												{
+													if (o.aData.status != 0)
+														return "";
+													else
+														return "+" + formatTime(o.aData.timeplus,o.aData.status);
+							}
+						}
+					]
+			} );
+		}
     }
 }
 
@@ -232,7 +243,8 @@ function str_pad(number, length) {
 </div>
 </td>
 
-			<td valign=top><table id="divResults" width="100%">
+			<td valign=top>			<div id="resultsHeader"><b><?=$_NOCLASSCHOSEN?></b></div>
+<table id="divResults" width="100%">
 </table><br/><br/>
 
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>

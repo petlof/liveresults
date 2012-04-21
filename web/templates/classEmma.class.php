@@ -238,9 +238,6 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	function getSplitsForClass($className,$split)
 	{
 		$ret = Array();
-
-
-
 		$q = "SELECT Runners.Name, Runners.Club, Results.Time,Results.Status, Results.Changed From Runners,Results where Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = ".$this->m_CompId ." AND Runners.Class = '".$className."' and Results.Status <> -1 AND (Results.Time <> -1 or (Results.Time = -1 and (Results.Status = 2 or Results.Status=3))) AND Results.Control = $split ORDER BY Results.Status, Results.Time";
 		if ($result = mysql_query($q,$this->m_Conn))
 		{
