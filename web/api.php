@@ -69,7 +69,9 @@ elseif ($_GET['method'] == 'getclassresults')
 {
 
 		$currentComp = new Emma($_GET['comp']);
-		$results = $currentComp->getSplitsForClass($_GET['class'],1000);
+		$results = $currentComp->getAllSplitsForClass($_GET['class']);
+		$splits = $currentComp->getSplitControlsForClass($_GET['class']);
+
 		$ret = "";
 		$first = true;
 		$place = 1;
@@ -79,11 +81,23 @@ elseif ($_GET['method'] == 'getclassresults')
 		$unformattedTimes = false;
 		if (isset($_GET['resultsAsArray']))
 			$resultsAsArray  = true;
+
 		if (isset($_GET['unformattedTimes']) && $_GET['unformattedTimes'] == "true")
 		{
 			$unformattedTimes = true;
 		}
 
+		$splitJSON = "[";
+		foreach ($splits as $split)
+		{
+			if (!$first)
+				$splitJSON .=",";
+			$splitJSON .= "{ \"code\": ".$split['code'] .", \"name\": \"".$split['name']."\"}";
+			$first = false;
+		}
+		$splitJSON .= "]";
+
+		$first = true;
 		foreach ($results as $res)
 		{
 			if (!$first)
@@ -139,7 +153,7 @@ elseif ($_GET['method'] == 'getclassresults')
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", \"className\": \"".$_GET['class']."\", \"results\": [$ret]");
+			echo("{ \"status\": \"OK\", \"className\": \"".$_GET['class']."\", \"splitcontrols\": $splitJSON, \"results\": [$ret]");
 			echo(", \"hash\": \"". $hash."\"}");
 		}
 }

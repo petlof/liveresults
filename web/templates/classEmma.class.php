@@ -249,10 +249,72 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		}
 		else
 			die(mysql_error());
-		return $ret;
-
-		return $ret;
+		return $ret;
 	}
+		function getAllSplitsForClass($className)
+
+		{
+
+			$ret = Array();
+
+
+			$q = "SELECT Runners.Name, Runners.Club, Results.Time ,Results.Status, Results.Changed, Results.DbID, Results.Control From Runners,Results where Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = ".$this->m_CompId ." AND Runners.Class = '".$className."'  ORDER BY Results.Dbid";
+
+			if ($result = mysql_query($q,$this->m_Conn))
+
+			{
+
+				while ($row = mysql_fetch_array($result))
+
+				{
+					$dbId = $row['DbID'];
+
+					if (!isset($ret[$dbId]))
+					{
+						$ret[$dbId] = Array();
+						$ret[$dbId]["Name"] = $row['Name'];
+						$ret[$dbId]["Club"] = $row['Club'];
+					}
+
+					$split = $row['Control'];
+					if ($split == 1000)
+					{
+						$ret[$dbId]["Time"] = $row['Time'];
+						$ret[$dbId]["Status"] = $row['Status'];
+						$ret[$dbId]["Changed"] = $row['Changed'];
+
+					}
+					else
+					{
+						$ret[$dbId][$split."_time"] = $row['Time'];
+						$ret[$dbId][$split."_status"] = $row['Status'];
+						$ret[$dbId][$split."_changed"] = $row['Changed'];
+					}
+				}
+
+				mysql_free_result($result);
+
+			}
+
+			else
+
+				die(mysql_error());
+
+			function timeSorter($a,$b)
+				{
+					if ($a['Status'] != $b['Status'])
+						return $a['Status'] - $b['Status'];
+					else
+						return $a['Time'] - $b['Time'];
+				}
+
+
+			usort($ret,'timeSorter');
+			return $ret;
+
+	}
+
+
 }
 
 ?>

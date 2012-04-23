@@ -97,6 +97,42 @@ function updateClassResults(data)
 
 		if (data.results != null)
 		{
+			columns = Array();
+			columns.push({ "sTitle": "#", "bSortable" : false, "aTargets" : [0], "mDataProp": "place" });
+			columns.push({ "sTitle": "<?=$_NAME?>","bSortable" : false,"aTargets" : [1], "mDataProp": "name" });
+			columns.push({ "sTitle": "<?=$_CLUB?>","bSortable" : false ,"aTargets" : [2], "mDataProp": "club"});
+
+			var col = 3;
+			if (data.splitcontrols != null)
+			{
+				$.each(data.splitcontrols,
+					function(key,value)
+					{
+						console.debug("Split " + value.name);
+						columns.push({ "sTitle": value.name,"aTargets" : [col++],"mDataProp": "result"});
+					});
+			}
+
+			columns.push({ "sTitle": "Tid", "sClass": "center", "sType": "numeric","aDataSort": [ col+1, col ], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
+							"fnRender": function ( o, val )
+							{
+								return formatTime(o.aData.result,o.aData.status);
+							},
+						});
+
+			col++;
+			columns.push({ "sTitle": "Status", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "status"});
+			columns.push({ "sTitle": "Tid+", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
+							"fnRender": function ( o, val )
+												{
+													if (o.aData.status != 0)
+														return "";
+													else
+														return "+" + formatTime(o.aData.timeplus,o.aData.status);
+							}
+						});
+
+			console.debug(columns.length);
 			currentTable = $('#divResults').dataTable( {
 					"bPaginate": false,
 					"bLengthChange": false,
@@ -106,28 +142,7 @@ function updateClassResults(data)
 					"bAutoWidth": false,
 					"aaData": data.results,
 					"aaSorting" : [[4,"asc"],[3, "asc"]],
-					"aoColumnDefs": [
-						{ "sTitle": "#", "bSortable" : false, "aTargets" : [0], "mDataProp": "place" },
-						{ "sTitle": "<?=$_NAME?>","bSortable" : false,"aTargets" : [1], "mDataProp": "name" },
-						{ "sTitle": "<?=$_CLUB?>","bSortable" : false ,"aTargets" : [2], "mDataProp": "club"},
-						{ "sTitle": "Tid", "sClass": "center", "sType": "numeric","aDataSort": [ 4, 3 ], "aTargets" : [3],"bUseRendered": false, "mDataProp": "result",
-							"fnRender": function ( o, val )
-							{
-								return formatTime(o.aData.result,o.aData.status);
-							},
-						},
-						{ "sTitle": "Status", "bVisible" : false,"aTargets" : [4],"sType": "numeric", "mDataProp": "status"},
-
-						{ "sTitle": "Tid+", "sClass": "center","bSortable" : false,"aTargets" : [5],"mDataProp": "timeplus",
-							"fnRender": function ( o, val )
-												{
-													if (o.aData.status != 0)
-														return "";
-													else
-														return "+" + formatTime(o.aData.timeplus,o.aData.status);
-							}
-						}
-					]
+					"aoColumnDefs": columns
 			} );
 		}
     }
