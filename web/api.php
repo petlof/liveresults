@@ -53,17 +53,29 @@ elseif ($_GET['method'] == 'getclasses')
 
 		$currentComp = new Emma($_GET['comp']);
 		$classes = $currentComp->Classes();
-		echo("{ \"classes\": [");
+		$ret = "";
 		$first = true;
 
 		foreach ($classes as $class)
 		{
 			if (!$first)
-				echo(",");
-			echo("{\"className\": \"".$class['Class']."\"}");
+				$ret.=",";
+			$ret .="{\"className\": \"".$class['Class']."\"}";
 			$first = false;
 		}
-		echo("]}");
+
+		$hash = MD5($ret);
+
+		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+		{
+			echo("{ \"status\": \"NOT MODIFIED\"}");
+		}
+		else
+		{
+			echo("{ \"status\": \"OK\", \"classes\" : [$ret]");
+			echo(", \"hash\": \"". $hash."\"}");
+		}
+
 }
 elseif ($_GET['method'] == 'getclassresults')
 {
@@ -139,7 +151,32 @@ elseif ($_GET['method'] == 'getclassresults')
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$res['Status'].", \"timeplus\": \"$timeplus\" ".($modified ? ", \"DT_RowClass\": \"new_result\"" : "")."}";
+				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$res['Status'].", \"timeplus\": \"$timeplus\" ".($modified ? ", \"DT_RowClass\": \"new_result\"" : "");
+
+				if (count($splits) > 0)
+				{
+					$ret .= ", \"splits\": {";
+					$firstspl = true;
+					foreach ($splits as $split)
+					{
+						if (!$firstspl)
+								$ret .=",";
+						if (isset($res[$split['code']."_time"]))
+						{
+							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": 0";
+						}
+						else
+						{
+							$ret .= "\"".$split['code']."\": \"\",\"".$split['code']."_status\": 1";
+						}
+
+						$firstspl = false;
+					}
+
+					$ret .="}";
+				}
+
+				$ret .= "}";
 			}
 			$first = false;
 			$place++;

@@ -28,47 +28,40 @@ echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
 $(document).ready(function()
 {
 	$("#divClasses").html("Laddar klasser...");
-	$.ajax({
-	  url: "api.php",
-	  data: "comp=<?=$_GET['comp']?>&method=getclasses",
-	  success: updateClassList,
-	  dataType: "json"
-	});
-	/*currentTable = $('#divResults').dataTable( {
-			"bPaginate": false,
-	        "bLengthChange": false,
-	        "bFilter": false,
-	        "bSort": true,
-	        "bInfo" : false,
-        "bAutoWidth": false,
-	        "aaData": [
-	        ],
-	        "aoColumns": [
-	            { "sTitle": "#" },
-	            { "sTitle": "<?=$_NAME?>" },
-	            { "sTitle": "<?=$_CLUB?>" },
-	            { "sTitle": "Tid", "sClass": "center" },
-	            { "sTitle": "Status", "bVisible": false },
-	            { "sTitle": "Tid+", "sClass": "center" }
-	        ]
-    } );*/
-
+	updateClassList();
 });
 
-function updateClassList(data)
+function updateClassList()
 {
-	if (data != null && data.classes != null)
+	$.ajax({
+		  url: "api.php",
+		  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
+		  success: resp_updateClassList,
+		  dataType: "json"
+	});
+
+}
+
+var lastClassListHash = "";
+function resp_updateClassList(data)
+{
+	if (data != null && data.status == "OK")
 	{
-	str = ""
-		$.each(data.classes,
-			function(key, value)
-			{
-				str += "<a href=\"javascript:chooseClass('" + value.className + "')\">" + value.className + "</a><br/>";
-			}
-		);
-		$("#divClasses").html(str);
+		if (data.classes != null)
+		{
+			str = ""
+			$.each(data.classes,
+				function(key, value)
+				{
+					str += "<a href=\"javascript:chooseClass('" + value.className + "')\">" + value.className + "</a><br/>";
+				}
+			);
+			$("#divClasses").html(str);
+			lastClassListHash = data.hash;
+		}
 	}
 
+	setTimeout(updateClassList,60000);
 }
 
 var currentTable = null;
@@ -77,6 +70,9 @@ function chooseClass(className)
 {
 	if (currentTable != null)
 		currentTable.fnDestroy();
+
+	$('#divResults').html('');
+
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
 	//&resultsAsArray=true
 	$.ajax({
@@ -93,6 +89,7 @@ function updateClassResults(data)
 		if (data.className != null)
 		{
 			$('#resultsHeader').html('<b>'+data.className + '</b>');
+			$('#resultsControls').show();
 		}
 
 		if (data.results != null)
@@ -108,12 +105,21 @@ function updateClassResults(data)
 				$.each(data.splitcontrols,
 					function(key,value)
 					{
-						console.debug("Split " + value.name);
-						columns.push({ "sTitle": value.name,"aTargets" : [col++],"mDataProp": "result"});
+						columns.push({ "sTitle": value.name, "sClass": "center","sType": "numeric","aDataSort" : [col+1,col],"aTargets" : [col], "bUseRendered" : false, "mDataProp" : "splits." + value.code, "fnRender": function ( o, val )
+							{
+									if (o.aData.splits[value.code+"_status"] != 0)
+										return "";
+									else
+										return formatTime(o.aData.splits[value.code],0);
+							}
+						});
+						col++
+						columns.push({ "sTitle": value.name + "_Status", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "splits." + value.code + "_status"});
 					});
 			}
 
-			columns.push({ "sTitle": "Tid", "sClass": "center", "sType": "numeric","aDataSort": [ col+1, col ], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
+			timecol = col;
+			columns.push({ "sTitle": "<?=$_CONTROLFINISH?>", "sClass": "center", "sType": "numeric","aDataSort": [ col+1, col ], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
 							"fnRender": function ( o, val )
 							{
 								return formatTime(o.aData.result,o.aData.status);
@@ -122,7 +128,7 @@ function updateClassResults(data)
 
 			col++;
 			columns.push({ "sTitle": "Status", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "status"});
-			columns.push({ "sTitle": "Tid+", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
+			columns.push({ "sTitle": "", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
 							"fnRender": function ( o, val )
 												{
 													if (o.aData.status != 0)
@@ -141,7 +147,7 @@ function updateClassResults(data)
 					"bInfo" : false,
 					"bAutoWidth": false,
 					"aaData": data.results,
-					"aaSorting" : [[4,"asc"],[3, "asc"]],
+					"aaSorting" : [[timecol+1,"asc"],[timecol, "asc"]],
 					"aoColumnDefs": columns
 			} );
 		}
@@ -184,6 +190,28 @@ function str_pad(number, length) {
 
 }
 
+function changeFontSize(val)
+{
+	var size = $("td").css("font-size");
+	var newSize = parseInt(size.replace(/px/, "")) + val;
+	$("td").css("font-size",newSize + "px");
+}
+
+var updateAutomatically = true;
+
+function setAutomaticUpdate(val)
+{
+	updateAutomatically = val;
+	if (updateAutomatically)
+	{
+		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href=\"javascript:setAutomaticUpdate(false);\"><?=$_OFF?></a>");
+	}
+	else
+	{
+		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <a href=\"javascript:setAutomaticUpdate(true);\"><?=$_ON?></a> | <?=$_OFF?>");
+	}
+}
+
 </script>
 </head>
 <body>
@@ -218,7 +246,7 @@ function str_pad(number, length) {
     <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="0" width="100%">
              <tr>
-               <td><a href="../index.php?lang=<?=$lang?>&"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
+               <td><a href="index.php?lang=<?=$lang?>&"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
 <td align=right></td>
              </tr>
        </table>
@@ -227,7 +255,7 @@ function str_pad(number, length) {
 <!-- End SUB MENU -->
   <tr>
     <td class="searchmenu" colspan="2" style="padding: 5px;" valign=top>
-       <table border="0" cellpadding="0" cellspacing="0" width="600">
+       <table border="0" cellpadding="0" cellspacing="0">
              <tr>
                <td valign=top>
 			<?php if (!isset($_GET['comp']))
@@ -250,16 +278,19 @@ function str_pad(number, length) {
 			    echo(date("H:i:s",strtotime($pass['Changed'])).": ".$pass['Name']." (".$pass['class'].") ". ($pass['Control'] == "1000" ? $_LASTPASSFINISHED : $_LASTPASSPASSED." ".$pass['pname'])." $_LASTPASSWITHTIME " .formatTime($pass['Time'],$pass['Status'],$RunnerStatus)." <br>");
 			   			  }
 ?>
-</td></tr></table><br>
+</td><td valign="top" style="padding-left: 5px">
+<span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
+<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/>
+</td>
+</tr></table><br>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
-			<td width=70 valign=top><b><?=$_CHOOSECLASS?></b><br>
+			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
 <div id="divClasses">
 </div>
 </td>
 
-			<td valign=top>			<div id="resultsHeader"><b><?=$_NOCLASSCHOSEN?></b></div>
-<table id="divResults" width="100%">
+			<td valign=top>			<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span></div><table id="divResults" width="100%">
 </table><br/><br/>
 
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>

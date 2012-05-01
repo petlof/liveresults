@@ -11,7 +11,7 @@ table.dataTable {
 }
 
 table.dataTable thead th {
-	padding: 3px 0px 3px 10px;
+	padding: 3px 18px 3px 10px;
 	cursor: pointer;
 	*cursor: hand;
 }
@@ -31,6 +31,21 @@ table.dataTable td.dataTables_empty {
 
 table.dataTable tr.odd { background-color: #E2E4FF; }
 table.dataTable tr.even { background-color: white; }
+
+.sorting_asc {
+	background: url('../images/sort_asc.png') no-repeat center right;
+	padding: 0 4px;
+}
+.sorting_desc {
+	background: url('../images/sort_desc.png') no-repeat center right;
+	padding: 0 4px;
+}
+
+.sorting {
+background: url('../images/sort_both.png?ids') no-repeat center right;
+padding: 0 4px;
+color: #054BFF;
+}
 
 table.dataTable tr.odd td.sorting_1 { background-color: #D3D6FF; }
 table.dataTable tr.odd td.sorting_2 { background-color: #DADCFF; }

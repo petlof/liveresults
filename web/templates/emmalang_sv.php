@@ -37,4 +37,10 @@ $_FIRSTPAGEARCHIVE = "Arkiv";
 
 //new 2.0
 $_LOADINGRESULTS = "Laddar resultat...";
+$_ON = "På";
+$_OFF = "Av";
+$_TEXTSIZE = "Textstorlek";
+$_LARGER = "Större";
+$_SMALLER = "Mindre";
+
 ?>

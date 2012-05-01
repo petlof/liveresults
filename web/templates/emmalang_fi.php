@@ -33,6 +33,15 @@ $_STATUSOT="max aika";
 
 $_FIRSTPAGECHOOSE = "Valitse seurattava kilpailu";
 $_FIRSTPAGEARCHIVE = "Arkisto";
-$_FIRSTPAGELIVE = "Online"
+$_FIRSTPAGELIVE = "Online";
+
+//new 2.0
+$_LOADINGRESULTS = "Laddar resultat...";
+$_ON = "Ota käyttöön";
+$_OFF = "Poista käytöstä";
+$_TEXTSIZE = "Textstorlek";
+$_LARGER = "Större";
+$_SMALLER = "Mindre";
+
 
 ?>

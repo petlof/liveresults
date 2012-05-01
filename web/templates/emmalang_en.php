@@ -34,6 +34,14 @@ $_STATUSOT="ot";
 
 $_FIRSTPAGECHOOSE = "Choose competition to follow";
 $_FIRSTPAGEARCHIVE = "Archive";
-$_FIRSTPAGELIVE = "Live"
+$_FIRSTPAGELIVE = "Live";
+
+//new 2.0
+$_LOADINGRESULTS = "Loading results...";
+$_ON = "On";
+$_OFF = "Off";
+$_TEXTSIZE = "Textsize";
+$_LARGER = "Bigger";
+$_SMALLER = "Smaller";
 
 ?>
