@@ -32,6 +32,7 @@ td.submenu table tr td a:hover {text-decoration: underline; color:#0000FF;}
 
 tr.new_result { background-color: #FFCCCC !important; }
 tr.new_result td.sorting_2 { background-color: #FFBBBB !important; }
+tr.new_result td.sorting_1 { background-color: #FFBBBB !important; }
 
 /*-------------------------*/
 /*--- SITE WIDE CLASSES ---*/
