@@ -65,14 +65,16 @@ function resp_updateClassList(data)
 }
 
 var currentTable = null;
-
+var resUpdateTimeout = null;
 function chooseClass(className)
 {
 	if (currentTable != null)
 		currentTable.fnDestroy();
 
-	$('#divResults').html('');
+	clearTimeout(resUpdateTimeout);
 
+	$('#divResults').html('');
+	curClassName = className;
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
 	//&resultsAsArray=true
 	$.ajax({
@@ -81,7 +83,39 @@ function chooseClass(className)
 		  success: updateClassResults,
 		  dataType: "json"
 	});
+	resUpdateTimeout = setTimeout(checkForClassUpdate,15000);
 }
+
+var curClassName = "";
+var lastClassHash = "";
+function checkForClassUpdate()
+{
+	if (currentTable != null)
+	{
+		$.ajax({
+			  url: "api.php",
+			  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
+			  success: resp_updateClassResults,
+			  dataType: "json"
+		});
+	}
+
+}
+
+function resp_updateClassResults(data)
+{
+	if (data.status == "OK")
+	{
+		if (currentTable != null)
+		{
+			currentTable.fnClearTable();
+			currentTable.fnAddData(data.results,true);
+			lastClassHash = data.hash;
+		}
+	}
+	resUpdateTimeout = setTimeout(checkForClassUpdate,15000);
+}
+
 function updateClassResults(data)
 {
 	if (data.status == "OK")
@@ -150,6 +184,8 @@ function updateClassResults(data)
 					"aaSorting" : [[timecol+1,"asc"],[timecol, "asc"]],
 					"aoColumnDefs": columns
 			} );
+
+			lastClassHash = data.hash;
 		}
     }
 }
