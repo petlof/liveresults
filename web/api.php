@@ -32,21 +32,31 @@ elseif ($_GET['method'] == 'getlastpassings')
 
 		$currentComp = new Emma($_GET['comp']);
 		$lastPassings = $currentComp->getLastPassings(5);
-		echo("{ \"passings\": [");
-		$first = true;
 
+		$first = true;
+		$ret = "";
 		foreach ($lastPassings as $pass)
 		{
 			if (!$first)
-				echo(",");
-			echo("{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
+				$ret .=",";
+			$ret .= "{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
 					\"runnerName\": \"".$pass['Name']."\",
 					\"class\": \"".$pass['class']."\",
 					\"control\": ".$pass['Control'].",
-					\"time\": \"" .formatTime($pass['Time'],$pass['Status'],$RunnerStatus)."\" }");
+					\"controlName\" : \"".$pass['pname']."\",
+					\"time\": \"" .formatTime($pass['Time'],$pass['Status'],$RunnerStatus)."\" }";
 			$first = false;
 		}
-		echo("]}");
+
+		$hash = MD5($ret);
+		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+		{
+			echo("{ \"status\": \"NOT MODIFIED\"}");
+		}
+		else
+		{
+			echo("{ \"status\": \"OK\", \"passings\" : [$ret], \"hash\": \"$hash\"}");
+		}
 }
 elseif ($_GET['method'] == 'getclasses')
 {
@@ -151,7 +161,7 @@ elseif ($_GET['method'] == 'getclassresults')
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$res['Status'].", \"timeplus\": \"$timeplus\" ".($modified ? ", \"DT_RowClass\": \"new_result\"" : "");
+				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$res['Status'].", \"timeplus\": \"$timeplus\" ";
 
 				if (count($splits) > 0)
 				{
@@ -164,6 +174,9 @@ elseif ($_GET['method'] == 'getclassresults')
 						if (isset($res[$split['code']."_time"]))
 						{
 							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": 0";
+							$spage = time()-strtotime($res[$split['code'].'_changed']);
+							if ($spage < 120)
+								$modified = true;
 						}
 						else
 						{
@@ -174,6 +187,11 @@ elseif ($_GET['method'] == 'getclassresults')
 					}
 
 					$ret .="}";
+				}
+
+				if ($modified)
+				{
+					$ret .= ", \"DT_RowClass\": \"new_result\"";
 				}
 
 				$ret .= "}";

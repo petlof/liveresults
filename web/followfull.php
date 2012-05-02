@@ -24,25 +24,50 @@ echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
 <script language="javascript" type="text/javascript" src="js/jquery-ui-1.8.19.custom.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
-<script language="javascript" type="text/javascript">
+<script language="javascript" type="text/javascript">var updateAutomatically = true;
+var updateInterval = 15000;
+var classUpdateInterval = 60000;
+
+var classUpdateTimer = null;
+var passingsUpdateTimer = null;
+
 $(document).ready(function()
 {
 	$("#divClasses").html("Laddar klasser...");
 	updateClassList();
+	updateLastPassings();
 });
 
 function updateClassList()
 {
-	$.ajax({
-		  url: "api.php",
-		  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
-		  success: resp_updateClassList,
-		  dataType: "json"
-	});
+	if (updateAutomatically)
+	{
+		$.ajax({
+			  url: "api.php",
+			  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
+			  success: resp_updateClassList,
+			  dataType: "json"
+		});
+	}
+
+}
+
+function updateLastPassings()
+{
+	if (updateAutomatically)
+	{
+		$.ajax({
+			  url: "api.php",
+			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&last_hash="+lastPassingsUpdateHash,
+			  success: resp_updateLastPassings,
+			  dataType: "json"
+		});
+	}
 
 }
 
 var lastClassListHash = "";
+var lastPassingsUpdateHash = "";
 function resp_updateClassList(data)
 {
 	if (data != null && data.status == "OK")
@@ -61,7 +86,28 @@ function resp_updateClassList(data)
 		}
 	}
 
-	setTimeout(updateClassList,60000);
+	classUpdateTimer = setTimeout(updateClassList,classUpdateInterval);
+}
+
+function resp_updateLastPassings(data)
+{
+	if (data != null && data.status == "OK")
+	{
+		if (data.passings != null)
+		{
+			str = ""
+			$.each(data.passings,
+				function(key, value)
+				{
+					str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:chooseClass('" + value.class + "')\">" + value.class + "</a>) " + (value.control == 1000 ? "<?=$_LASTPASSFINISHED?>" : "<?=$_LASTPASSPASSED?> " + value.controlName) + " <?=$_LASTPASSWITHTIME ?> " + value.time + "<br/>";
+				}
+			);
+			$("#divLastPassings").html(str);
+			lastPassingsUpdateHash = data.hash;
+		}
+	}
+
+	passingsUpdateTimer = setTimeout(updateLastPassings,updateInterval);
 }
 
 var currentTable = null;
@@ -76,31 +122,54 @@ function chooseClass(className)
 	$('#divResults').html('');
 	curClassName = className;
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
-	//&resultsAsArray=true
 	$.ajax({
 		  url: "api.php",
 		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className,
 		  success: updateClassResults,
 		  dataType: "json"
 	});
-	resUpdateTimeout = setTimeout(checkForClassUpdate,15000);
+	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
 }
 
 var curClassName = "";
 var lastClassHash = "";
 function checkForClassUpdate()
 {
-	if (currentTable != null)
+	if (updateAutomatically)
 	{
-		$.ajax({
-			  url: "api.php",
-			  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
-			  success: resp_updateClassResults,
-			  dataType: "json"
-		});
+		if (currentTable != null)
+		{
+			$.ajax({
+				  url: "api.php",
+				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
+				  success: resp_updateClassResults,
+				  dataType: "json"
+			});
+		}
 	}
 
 }
+
+function setAutomaticUpdate(val)
+{
+	updateAutomatically = val;
+	if (updateAutomatically)
+	{
+		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href=\"javascript:setAutomaticUpdate(false);\"><?=$_OFF?></a>");
+		checkForClassUpdate();
+		updateLastPassings();
+		checkForClassUpdate();
+
+	}
+	else
+	{
+		clearTimeout(resUpdateTimeout);
+		clearTimeout(passingsUpdateTimer);
+		clearTimeout(classUpdateTimer);
+		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <a href=\"javascript:setAutomaticUpdate(true);\"><?=$_ON?></a> | <?=$_OFF?>");
+	}
+}
+
 
 function resp_updateClassResults(data)
 {
@@ -113,7 +182,7 @@ function resp_updateClassResults(data)
 			lastClassHash = data.hash;
 		}
 	}
-	resUpdateTimeout = setTimeout(checkForClassUpdate,15000);
+	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
 }
 
 function updateClassResults(data)
@@ -233,20 +302,6 @@ function changeFontSize(val)
 	$("td").css("font-size",newSize + "px");
 }
 
-var updateAutomatically = true;
-
-function setAutomaticUpdate(val)
-{
-	updateAutomatically = val;
-	if (updateAutomatically)
-	{
-		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href=\"javascript:setAutomaticUpdate(false);\"><?=$_OFF?></a>");
-	}
-	else
-	{
-		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <a href=\"javascript:setAutomaticUpdate(true);\"><?=$_ON?></a> | <?=$_OFF?>");
-	}
-}
 
 </script>
 </head>
@@ -306,14 +361,7 @@ function setAutomaticUpdate(val)
 			<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= isset($_GET['class']) ? ", ".$_GET['class'] : "" ?></h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
-			<td valign=top><b><?=$_LASTPASSINGS?></b><br>
-<?php
-			   			   $lastPassings = $currentComp->getLastPassings(3);
-			foreach ($lastPassings as $pass)
-			  {
-			    echo(date("H:i:s",strtotime($pass['Changed'])).": ".$pass['Name']." (".$pass['class'].") ". ($pass['Control'] == "1000" ? $_LASTPASSFINISHED : $_LASTPASSPASSED." ".$pass['pname'])." $_LASTPASSWITHTIME " .formatTime($pass['Time'],$pass['Status'],$RunnerStatus)." <br>");
-			   			  }
-?>
+			<td valign=top><b><?=$_LASTPASSINGS?></b><br><div id="divLastPassings"></div>
 </td><td valign="top" style="padding-left: 5px">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/>
