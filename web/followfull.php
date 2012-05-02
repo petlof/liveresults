@@ -44,6 +44,7 @@ function updateClassList()
 	{
 		$.ajax({
 			  url: "api.php",
+			  cache: false,
 			  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
 			  success: resp_updateClassList,
 			  dataType: "json"
@@ -58,6 +59,7 @@ function updateLastPassings()
 	{
 		$.ajax({
 			  url: "api.php",
+			  cache: false,
 			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&last_hash="+lastPassingsUpdateHash,
 			  success: resp_updateLastPassings,
 			  dataType: "json"
@@ -124,6 +126,7 @@ function chooseClass(className)
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
 	$.ajax({
 		  url: "api.php",
+		  cache: false,
 		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className,
 		  success: updateClassResults,
 		  dataType: "json"
@@ -141,6 +144,7 @@ function checkForClassUpdate()
 		{
 			$.ajax({
 				  url: "api.php",
+				  cache: false,
 				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
 				  success: resp_updateClassResults,
 				  dataType: "json"
@@ -170,6 +174,50 @@ function setAutomaticUpdate(val)
 	}
 }
 
+var curClassSplits = null;
+function updateResultVirtualPosition(data)
+{
+	var virtualArr = Array();
+	for (i = 0; i < data.length; i++)
+	{
+		if (data[i].place == "")
+		{
+			/*Not finished*/
+			if (curClassSplits != null)
+			{
+				for (s = curClassSplits.length -1; s >= 0; s--)
+				{
+					splitCode = curClassSplits[s].code;
+					if (data[i].splits[splitCode] != "")
+					{
+						for (op = 0; op < virtualArr.length; op++)
+						{
+							if (virtualArr[op].splits[splitCode] != "" &&
+							virtualArr[op].splits[splitCode] > data[i].splits[splitCode])
+							{
+								/*insert here*/
+								virtualArr.splice(op,0,data[i]);
+								break;
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		else
+		{
+			virtualArr.push(data[i]);
+		}
+	}
+
+	for (i = 0; i < virtualArr.length; i++)
+	{
+		virtualArr[i].virtual_position = i;
+	}
+
+}
+
 
 function resp_updateClassResults(data)
 {
@@ -177,6 +225,7 @@ function resp_updateClassResults(data)
 	{
 		if (currentTable != null)
 		{
+			updateResultVirtualPosition(data.results);
 			currentTable.fnClearTable();
 			currentTable.fnAddData(data.results,true);
 			lastClassHash = data.hash;
@@ -201,6 +250,10 @@ function updateClassResults(data)
 			columns.push({ "sTitle": "#", "bSortable" : false, "aTargets" : [0], "mDataProp": "place" });
 			columns.push({ "sTitle": "<?=$_NAME?>","bSortable" : false,"aTargets" : [1], "mDataProp": "name" });
 			columns.push({ "sTitle": "<?=$_CLUB?>","bSortable" : false ,"aTargets" : [2], "mDataProp": "club"});
+
+			curClassSplits = data.splitcontrols;
+
+			updateResultVirtualPosition(data.results);
 
 			var col = 3;
 			if (data.splitcontrols != null)
@@ -241,7 +294,8 @@ function updateClassResults(data)
 							}
 						});
 
-			console.debug(columns.length);
+			columns.push({ "sTitle": "", "bVisible" : false, "aTargets" : [col++], "mDataProp": "virtual_position" });
+
 			currentTable = $('#divResults').dataTable( {
 					"bPaginate": false,
 					"bLengthChange": false,
@@ -250,7 +304,8 @@ function updateClassResults(data)
 					"bInfo" : false,
 					"bAutoWidth": false,
 					"aaData": data.results,
-					"aaSorting" : [[timecol+1,"asc"],[timecol, "asc"]],
+					//"aaSorting" : [[timecol+1,"asc"],[timecol, "asc"]],
+					"aaSorting" : [[col-1, "asc"]],
 					"aoColumnDefs": columns
 			} );
 
@@ -264,7 +319,7 @@ runnerStatus[0]= "<?=$_STATUSOK?>";
 runnerStatus[1]= "<?=$_STATUSDNS?>";
 runnerStatus[11] =  "<?=$_STATUSWO?>";
 runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
-runnerStatus[9] = "<?=$_STATUSNOTSTARTED?>";
+runnerStatus[9] = "";
 runnerStatus[3] = "<?=$_STATUSMP?>";
 runnerStatus[4] = "<?=$_STATUSDSQ?>";
 runnerStatus[5] = "<?=$_STATUSOT?>";

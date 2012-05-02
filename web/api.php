@@ -131,8 +131,19 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			$status = $res['Status'];
 			$cp = $place;
-			if ($status != 0 || $time < 0)
+
+			if ($time == "")
+				$status = 9;
+
+			if ($status == 9)
+			{
+				$cp = "";
+
+			}
+			elseif ($status != 0 || $time < 0)
+			{
 				$cp = "-";
+			}
 			elseif ($time == $lastTime)
 			{
 				$cp = "=";
@@ -157,11 +168,11 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			if($resultsAsArray)
 			{
-				$ret .= "[\"$cp\", \"".$res['Name']."\", \"".$res['Club']."\", ".$res['Time'].", ".$res['Status'].", ".($time-$winnerTime).",$modified]";
+				$ret .= "[\"$cp\", \"".$res['Name']."\", \"".$res['Club']."\", ".$res['Time'].", ".$status.", ".($time-$winnerTime).",$modified]";
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$res['Status'].", \"timeplus\": \"$timeplus\" ";
+				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$status.", \"timeplus\": \"$timeplus\" ";
 
 				if (count($splits) > 0)
 				{
@@ -200,8 +211,8 @@ elseif ($_GET['method'] == 'getclassresults')
 			$place++;
 			$lastTime = $time;
 		}
-		$hash = MD5($ret);
 
+		$hash = MD5($ret);
 		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
 		{
 			echo("{ \"status\": \"NOT MODIFIED\"}");
