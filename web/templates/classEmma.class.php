@@ -275,7 +275,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 						$ret[$dbId]["Name"] = $row['Name'];
 						$ret[$dbId]["Club"] = $row['Club'];
 						$ret[$dbId]["Time"] = "";
-						$ret[$dbId]["Status"] = "";
+						$ret[$dbId]["Status"] = "9";
 						$ret[$dbId]["Changed"] = "";
 					}
 

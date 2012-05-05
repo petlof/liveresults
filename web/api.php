@@ -12,6 +12,9 @@ include_once("templates/classEmma.class.php");
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT);
 
 header('content-type: application/json; charset=iso-8859-1');
+header('cache-control: max-age=15');
+header('pragma: public');
+header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 15));
 ///Method returns all competitions available
 if ($_GET['method'] == 'getcompetitions')
 {

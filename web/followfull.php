@@ -44,7 +44,7 @@ function updateClassList()
 	{
 		$.ajax({
 			  url: "api.php",
-			  cache: false,
+			  //cache: false,
 			  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
 			  success: resp_updateClassList,
 			  dataType: "json"
@@ -59,7 +59,7 @@ function updateLastPassings()
 	{
 		$.ajax({
 			  url: "api.php",
-			  cache: false,
+			  //cache: false,
 			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&last_hash="+lastPassingsUpdateHash,
 			  success: resp_updateLastPassings,
 			  dataType: "json"
@@ -101,7 +101,7 @@ function resp_updateLastPassings(data)
 			$.each(data.passings,
 				function(key, value)
 				{
-					str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:chooseClass('" + value.class + "')\">" + value.class + "</a>) " + (value.control == 1000 ? "<?=$_LASTPASSFINISHED?>" : "<?=$_LASTPASSPASSED?> " + value.controlName) + " <?=$_LASTPASSWITHTIME ?> " + value.time + "<br/>";
+					str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:chooseClass('" + value["class"] + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? "<?=$_LASTPASSFINISHED?>" : "<?=$_LASTPASSPASSED?> " + value["controlName"]) + " <?=$_LASTPASSWITHTIME ?> " + value["time"] + "<br/>";
 				}
 			);
 			$("#divLastPassings").html(str);
@@ -126,7 +126,7 @@ function chooseClass(className)
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
 	$.ajax({
 		  url: "api.php",
-		  cache: false,
+		  //cache: false,
 		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className,
 		  success: updateClassResults,
 		  dataType: "json"
@@ -144,7 +144,7 @@ function checkForClassUpdate()
 		{
 			$.ajax({
 				  url: "api.php",
-				  cache: false,
+				  //cache: false,
 				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
 				  success: resp_updateClassResults,
 				  dataType: "json"
@@ -177,47 +177,153 @@ function setAutomaticUpdate(val)
 var curClassSplits = null;
 function updateResultVirtualPosition(data)
 {
-	var virtualArr = Array();
-	for (i = 0; i < data.length; i++)
+
+	if (curClassSplits != null)
 	{
-		if (data[i].place == "")
+		for (s = 0; s < curClassSplits.length; s++)
 		{
-			/*Not finished*/
-			if (curClassSplits != null)
+			splitCode = curClassSplits[s].code;
+			data.sort(function(a,b) { return a.splits[splitCode] - b.splits[splitCode];});
+
+			lastPos = 1;
+			posCnt = 1;
+			lastTime = -1;
+			for (i = 0; i < data.length; i++)
 			{
-				for (s = curClassSplits.length -1; s >= 0; s--)
+				if (data[i].splits[splitCode] != "")
 				{
-					splitCode = curClassSplits[s].code;
-					if (data[i].splits[splitCode] != "")
+					if (lastTime == data[i].splits[splitCode])
+						data[i].splits[splitCode + "-place"] = lastPos;
+					else
 					{
-						for (op = 0; op < virtualArr.length; op++)
-						{
-							if (virtualArr[op].splits[splitCode] != "" &&
-							virtualArr[op].splits[splitCode] > data[i].splits[splitCode])
-							{
-								/*insert here*/
-								virtualArr.splice(op,0,data[i]);
-								break;
-							}
-						}
-						break;
+						data[i].splits[splitCode + "-place"] = posCnt;
+						lastPos = posCnt;
 					}
+					lastTime = data[i].splits[splitCode];
+					posCnt++;
+				}
+				else
+				{
+				data[i].splits[splitCode + "-place"] = "";
 				}
 			}
-		}
-		else
-		{
-			virtualArr.push(data[i]);
+
 		}
 	}
 
-	for (i = 0; i < virtualArr.length; i++)
+	data.sort(resultSorter);
+
+	/* move down runners that have not finished to the correct place*/
+	firstFinishedIdx = 0;
+	for (i = 0; i < data.length; i++)
 	{
-		virtualArr[i].virtual_position = i;
+		if (data[i].place != "")
+		{
+			firstFinishedIdx = i;
+			break;
+		}
+	}
+
+	tmp = Array();
+	for (i = 0; i < firstFinishedIdx; i++)
+		tmp.push(data[i]);
+
+	data.splice(0,firstFinishedIdx);
+
+	tmp.sort(sortByDist);
+
+	for (i = 0; i < tmp.length; i++)
+	{
+		if (curClassSplits != null)
+		{
+			insertIntoResults(tmp[i],data);
+		}
+		else
+		{
+			data.push(tmp[i]);
+		}
+	}
+
+
+	for (i = 0; i < data.length; i++)
+	{
+		data[i].virtual_position = i;
 	}
 
 }
 
+function sortByDist(a,b)
+{
+	for (s = curClassSplits.length-1; s >= 0; s--)
+	{
+		splitCode = curClassSplits[s].code;
+		if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
+			return 1;
+		else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
+			return -1;
+	}
+	return 0;
+}
+
+function insertIntoResults(result, data)
+{
+	for (s = curClassSplits.length-1; s >= 0; s--)
+	{
+		splitCode = curClassSplits[s].code;
+		if (result.splits[splitCode] != "")
+		{
+			for (d = 0; d < data.length; d++)
+			{
+				if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode]))
+				{
+					data.splice(d,0,result);
+					return;
+				}
+			}
+		}
+	}
+}
+
+function resultSorter(a,b)
+{
+	if (a.place != "" && b.place != "")
+	{
+		if (a.status != b.status)
+			return a.status - b.status;
+		else
+		{
+			if (a.result == b.result)
+			{
+				if (a.place == "=" && b.place != "=")
+				{
+					return 1;
+				}
+				else if (b.place == "=" && a.place != "=")
+				{
+					return -1;
+				}
+			}
+			else
+			{
+				return a.result - b.result;
+			}
+		}
+
+	}
+	else if (a.place == "-" || a.place != "" )
+	{
+		return 1;
+	}
+	else if (b.place == "-" || b.place != "" )
+	{
+			return -1;
+	}
+	else
+	{
+
+		return 0;
+	}
+}
 
 function resp_updateClassResults(data)
 {
@@ -261,12 +367,12 @@ function updateClassResults(data)
 				$.each(data.splitcontrols,
 					function(key,value)
 					{
-						columns.push({ "sTitle": value.name, "sClass": "center","sType": "numeric","aDataSort" : [col+1,col],"aTargets" : [col], "bUseRendered" : false, "mDataProp" : "splits." + value.code, "fnRender": function ( o, val )
+						columns.push({ "sTitle": value.name, "sClass": "left","sType": "numeric","aDataSort" : [col+1,col],"aTargets" : [col], "bUseRendered" : false, "mDataProp" : "splits." + value.code, "fnRender": function ( o, val )
 							{
 									if (o.aData.splits[value.code+"_status"] != 0)
 										return "";
 									else
-										return formatTime(o.aData.splits[value.code],0);
+										return formatTime(o.aData.splits[value.code],0) + " (" +o.aData.splits[value.code + "-place"] + ")";
 							}
 						});
 						col++
@@ -275,11 +381,18 @@ function updateClassResults(data)
 			}
 
 			timecol = col;
-			columns.push({ "sTitle": "<?=$_CONTROLFINISH?>", "sClass": "center", "sType": "numeric","aDataSort": [ col+1, col ], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
+			columns.push({ "sTitle": "<?=$_CONTROLFINISH?>", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col ], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
 							"fnRender": function ( o, val )
 							{
-								return formatTime(o.aData.result,o.aData.status);
-							},
+								if (o.aData.place == "-" || o.aData.place == "")
+								{
+									return formatTime(o.aData.result,o.aData.status);
+								}
+								else
+								{
+									return formatTime(o.aData.result,o.aData.status) +" (" + o.aData.place +")";
+								}
+							}
 						});
 
 			col++;
@@ -294,7 +407,7 @@ function updateClassResults(data)
 							}
 						});
 
-			columns.push({ "sTitle": "", "bVisible" : false, "aTargets" : [col++], "mDataProp": "virtual_position" });
+			columns.push({ "sTitle": "VP", "bVisible" : true, "aTargets" : [col++], "mDataProp": "virtual_position" });
 
 			currentTable = $('#divResults').dataTable( {
 					"bPaginate": false,
