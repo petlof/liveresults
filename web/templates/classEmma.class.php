@@ -1,7 +1,7 @@
 <?php
 class Emma
 {
-	public static $db_server = "192.168.0.183";
+	public static $db_server = "ec2-46-137-133-46.eu-west-1.compute.amazonaws.com"; //"192.168.0.183";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";

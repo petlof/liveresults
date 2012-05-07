@@ -21,7 +21,7 @@ echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
 <link rel="stylesheet" type="text/css" href="css/style.css"><link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller.css">
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-<script language="javascript" type="text/javascript" src="js/jquery-ui-1.8.19.custom.min.js"></script>
+<!--<script language="javascript" type="text/javascript" src="js/jquery-ui-1.8.19.custom.min.js"></script>-->
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
 <script language="javascript" type="text/javascript">var updateAutomatically = true;
@@ -44,9 +44,9 @@ function updateClassList()
 	{
 		$.ajax({
 			  url: "api.php",
-			  //cache: false,
 			  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
 			  success: resp_updateClassList,
+			  error: function(xhr, ajaxOptions, thrownError) {classUpdateTimer = setTimeout(updateClassList,classUpdateInterval);},
 			  dataType: "json"
 		});
 	}
@@ -59,9 +59,9 @@ function updateLastPassings()
 	{
 		$.ajax({
 			  url: "api.php",
-			  //cache: false,
 			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&last_hash="+lastPassingsUpdateHash,
 			  success: resp_updateLastPassings,
+			  error: function(xhr, ajaxOptions, thrownError) { passingsUpdateTimer = setTimeout(updateLastPassings,updateInterval);},
 			  dataType: "json"
 		});
 	}
@@ -147,6 +147,7 @@ function checkForClassUpdate()
 				  //cache: false,
 				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
 				  success: resp_updateClassResults,
+				  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);},
 				  dataType: "json"
 			});
 		}
@@ -335,6 +336,11 @@ function resultSorter(a,b)
 				{
 					return -1;
 				}
+				else
+				{
+					return 0;
+				}
+
 			}
 			else
 			{
