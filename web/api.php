@@ -169,6 +169,7 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			}
 
+
 			if($resultsAsArray)
 			{
 				$ret .= "[\"$cp\", \"".$res['Name']."\", \"".$res['Club']."\", ".$res['Time'].", ".$status.", ".($time-$winnerTime).",$modified]";
@@ -201,6 +202,15 @@ elseif ($_GET['method'] == 'getclassresults')
 					}
 
 					$ret .="}";
+				}
+
+				if (isset($res["start"]))
+				{
+					$ret .= ", \"start\": ".$res["start"];
+				}
+				else
+				{
+					$ret .= ", \"start\": \"\"";
 				}
 
 				if ($modified)

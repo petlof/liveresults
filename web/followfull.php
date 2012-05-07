@@ -180,6 +180,11 @@ function updateResultVirtualPosition(data)
 
 	if (curClassSplits != null)
 	{
+		for (i = 0; i < data.length; i++)
+		{
+			data[i].haveSplits = false;
+		}
+
 		for (s = 0; s < curClassSplits.length; s++)
 		{
 			splitCode = curClassSplits[s].code;
@@ -192,6 +197,8 @@ function updateResultVirtualPosition(data)
 			{
 				if (data[i].splits[splitCode] != "")
 				{
+					data[i].haveSplits = true;
+
 					if (lastTime == data[i].splits[splitCode])
 						data[i].splits[splitCode + "-place"] = lastPos;
 					else
@@ -204,7 +211,7 @@ function updateResultVirtualPosition(data)
 				}
 				else
 				{
-				data[i].splits[splitCode + "-place"] = "";
+					data[i].splits[splitCode + "-place"] = "";
 				}
 			}
 
@@ -214,7 +221,7 @@ function updateResultVirtualPosition(data)
 	data.sort(resultSorter);
 
 	/* move down runners that have not finished to the correct place*/
-	firstFinishedIdx = 0;
+	firstFinishedIdx = -1;
 	for (i = 0; i < data.length; i++)
 	{
 		if (data[i].place != "")
@@ -224,9 +231,14 @@ function updateResultVirtualPosition(data)
 		}
 	}
 
+	if (firstFinishedIdx == -1)
+		firstFinishedIdx = data.length-1;
+
 	tmp = Array();
 	for (i = 0; i < firstFinishedIdx; i++)
+	{
 		tmp.push(data[i]);
+	}
 
 	data.splice(0,firstFinishedIdx);
 
@@ -234,14 +246,10 @@ function updateResultVirtualPosition(data)
 
 	for (i = 0; i < tmp.length; i++)
 	{
-		if (curClassSplits != null)
-		{
-			insertIntoResults(tmp[i],data);
-		}
-		else
-		{
+		if (data.length == 0)
 			data.push(tmp[i]);
-		}
+		else
+			insertIntoResults(tmp[i],data);
 	}
 
 
@@ -267,21 +275,46 @@ function sortByDist(a,b)
 
 function insertIntoResults(result, data)
 {
-	for (s = curClassSplits.length-1; s >= 0; s--)
+	haveSplit = false;
+	if (curClassSplits != null)
 	{
-		splitCode = curClassSplits[s].code;
-		if (result.splits[splitCode] != "")
+		for (s = curClassSplits.length-1; s >= 0; s--)
 		{
-			for (d = 0; d < data.length; d++)
+			splitCode = curClassSplits[s].code;
+			if (result.splits[splitCode] != "")
 			{
-				if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode]))
+				haveSplit=true;
+				for (d = 0; d < data.length; d++)
 				{
-					data.splice(d,0,result);
-					return;
+					if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode]))
+					{
+						data.splice(d,0,result);
+						return;
+					}
 				}
 			}
 		}
 	}
+
+	if (result.start != "")
+	{
+		for (d = 0; d < data.length; d++)
+		{
+			if (data[d].place == "-")
+			{
+				data.splice(d,0,result);
+				return;
+			}
+			if (data[d].start != "" && data[d].start> result.start && !haveSplit && !data[d].haveSplits)
+			{
+				data.splice(d,0,result);
+				return;
+			}
+
+		}
+	}
+
+	data.push(tmp[i]);
 }
 
 function resultSorter(a,b)
@@ -362,6 +395,22 @@ function updateClassResults(data)
 			updateResultVirtualPosition(data.results);
 
 			var col = 3;
+			columns.push({ "sTitle": "Start", "sClass": "left", "sType": "numeric","aDataSort": [col], "aTargets" : [col],"bUseRendered": false, "mDataProp": "start",
+			"fnRender": function ( o, val )
+										{
+											if (o.aData.start =="")
+											{
+												return "";
+											}
+											else
+											{
+												return formatTime(o.aData.start,0,true);
+											}
+										}
+									});
+
+			col++;
+
 			if (data.splitcontrols != null)
 			{
 				$.each(data.splitcontrols,
@@ -407,7 +456,7 @@ function updateClassResults(data)
 							}
 						});
 
-			columns.push({ "sTitle": "VP", "bVisible" : true, "aTargets" : [col++], "mDataProp": "virtual_position" });
+			columns.push({ "sTitle": "VP", "bVisible" : false, "aTargets" : [col++], "mDataProp": "virtual_position" });
 
 			currentTable = $('#divResults').dataTable( {
 					"bPaginate": false,
@@ -437,6 +486,7 @@ runnerStatus[3] = "<?=$_STATUSMP?>";
 runnerStatus[4] = "<?=$_STATUSDSQ?>";
 runnerStatus[5] = "<?=$_STATUSOT?>";
 
+
 function formatTime(time,status)
 {
 	if (status != 0)
@@ -451,6 +501,34 @@ function formatTime(time,status)
   	 return str_pad(minutes,2) +":" +str_pad(seconds,2);
   	}
 }
+
+function formatTime(time,status, showHours)
+{
+	if (status != 0)
+  	{
+  		return runnerStatus[status];
+  	}
+  	else
+  	{
+  		if (showHours)
+  		{
+			hours= Math.floor(time/360000);
+	  		minutes = Math.floor((time-hours*360000)/6000);
+			seconds = Math.floor((time-minutes*6000-hours*360000)/100);
+
+  	 		return str_pad(hours,2) +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
+  		}
+  		else
+  		{
+			minutes = Math.floor(time/6000);
+			seconds = Math.floor((time-minutes*6000)/100);
+
+			return str_pad(minutes,2) +":" +str_pad(seconds,2);
+  	 	}
+  	}
+}
+
+
 
 function str_pad(number, length) {
 
@@ -542,7 +620,7 @@ function changeFontSize(val)
 </div>
 </td>
 
-			<td valign=top>			<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span></div><table id="divResults" width="100%">
+			<td valign=top>			<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><a href="javascript:newWin()"><img class="eI" align="right" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="Öppna i nytt fönster" title="Öppna i nytt fönster"/></a></div><table id="divResults" width="100%">
 </table><br/><br/>
 
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
@@ -565,7 +643,8 @@ function changeFontSize(val)
 </body>
 </html>
 <?php
-
+
+
 function formatTime($time,$status,& $RunnerStatus)
 {
   global $lang;

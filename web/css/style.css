@@ -34,6 +34,14 @@ tr.new_result { background-color: #FFCCCC !important; }
 tr.new_result td.sorting_2 { background-color: #FFBBBB !important; }
 tr.new_result td.sorting_1 { background-color: #FFBBBB !important; }
 
+
+.eI {
+background: url('../images/sprite_black2.png') no-repeat -63px -63px;
+height: 21px;
+width: 21px;
+}
+
+
 /*-------------------------*/
 /*--- SITE WIDE CLASSES ---*/
 /*-------------------------*/
