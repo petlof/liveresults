@@ -614,7 +614,7 @@ function changeFontSize(val)
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 			<tr>
 			<td valign=top><b><?=$_LASTPASSINGS?></b><br><div id="divLastPassings"></div>
-</td><td valign="top" style="padding-left: 5px">
+</td><td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/>
 </td>
