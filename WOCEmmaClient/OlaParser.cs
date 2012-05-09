@@ -97,11 +97,11 @@ namespace WOCEmmaClient
                     bool isOla5 = version >= 500;
 
 
-                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
+                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
                     string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
                     if (isOla5)
                     {
-                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
+                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and results.runnerStatus != 'notActivated' and results.modifyDate > " + paramOper;
                         splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and splitTimes.modifyDate > " + paramOper;
                     }
 
@@ -181,7 +181,7 @@ namespace WOCEmmaClient
                             while (reader.Read())
                             {
                                 DateTime modDate = DateTime.MinValue;
-                                int time = 0, position = 0, runnerID = 0;
+                                int time = 0, position = 0, runnerID = 0, iStartTime = 0;
                                 string famName = "", fName = "", club = "", classN = "", status = "";
                                 try
                                 {
@@ -203,6 +203,26 @@ namespace WOCEmmaClient
                                     classN = reader["shortname"] as string; // reader.GetString(6);
                                     status = reader["runnerStatus"] as string; // reader.GetString(7);
 
+
+                                    DateTime startTime = DateTime.MinValue;
+                                    
+                                    if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                    {
+                                        string tTime = reader["allocatedStartTime"].ToString();
+                                        startTime = ParseDateTime(tTime);
+                                    }
+                                    if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    {
+                                        string tTime = reader["starttime"].ToString();
+                                        startTime = ParseDateTime(tTime);
+                                    }
+
+                                    iStartTime = 0;
+                                    if (startTime > DateTime.MinValue)
+                                    {
+                                        iStartTime = (int)(startTime.TimeOfDay.TotalSeconds * 100);
+                                    }
+                                    
                                     if (isRelay)
                                     {
                                         classN = classN + "-" + Convert.ToString(reader["relayLeg"]);
@@ -274,7 +294,7 @@ namespace WOCEmmaClient
                                         break;
                                 }
                                 if (rstatus != 9 && rstatus != 10)
-                                    FireOnResult(runnerID, 0, fName + " " + famName, club, classN, 0, time, rstatus, new List<ResultStruct>());
+                                    FireOnResult(runnerID, 0, fName + " " + famName, club, classN, iStartTime, time, rstatus, new List<ResultStruct>());
 
                             }
                             reader.Close();
@@ -294,6 +314,7 @@ namespace WOCEmmaClient
                                 int sCont = reader.GetInt32(2);
                                 int entryid = Convert.ToInt32(reader["entryid"].ToString());
                                 DateTime startTime;
+
                                 if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
                                 {
                                     tTime = reader["allocatedStartTime"].ToString();

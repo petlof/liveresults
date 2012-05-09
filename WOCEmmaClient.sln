@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOCEmmaClient", "WOCEmmaCli
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Sharp", "H2Sharp\H2Sharp.csproj", "{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResSimulator", "LiveResSimulator\LiveResSimulator.csproj", "{7959B35A-48F2-406D-9366-2A82EA10B50A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -49,6 +51,22 @@ Global
 		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
 		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
+		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

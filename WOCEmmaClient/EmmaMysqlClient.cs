@@ -43,32 +43,34 @@ namespace WOCEmmaClient
                 sNum++;
 
             }
-
-            WebRequest wq = HttpWebRequest.Create(ConfigurationManager.AppSettings["serverpollurl"]);
-            wq.Method = "POST";
-            byte[] data = Encoding.ASCII.GetBytes("key=" + ConfigurationManager.AppSettings["serverpollkey"]);
-            wq.ContentLength = data.Length;
-            wq.ContentType = "application/x-www-form-urlencoded";
-            Stream st = wq.GetRequestStream();
-            st.Write(data, 0, data.Length);
-            st.Flush();
-            st.Close();
-            WebResponse ws = wq.GetResponse();
-            StreamReader sr = new StreamReader(ws.GetResponseStream());
-            string resp = sr.ReadToEnd();
-            if (resp.Trim().Length > 0)
+            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["serverpollurl"]))
             {
-                string[] lines = resp.Trim().Split('\n');
-                foreach (string line in lines)
+                WebRequest wq = HttpWebRequest.Create(ConfigurationManager.AppSettings["serverpollurl"]);
+                wq.Method = "POST";
+                byte[] data = Encoding.ASCII.GetBytes("key=" + ConfigurationManager.AppSettings["serverpollkey"]);
+                wq.ContentLength = data.Length;
+                wq.ContentType = "application/x-www-form-urlencoded";
+                Stream st = wq.GetRequestStream();
+                st.Write(data, 0, data.Length);
+                st.Flush();
+                st.Close();
+                WebResponse ws = wq.GetResponse();
+                StreamReader sr = new StreamReader(ws.GetResponseStream());
+                string resp = sr.ReadToEnd();
+                if (resp.Trim().Length > 0)
                 {
-                    string[] parts = line.Split(';');
-                    EmmaServer s = new EmmaServer();
-                    s.host = parts[0];
-                    s.user = parts[1];
-                    s.pw = parts[2];
-                    s.db = parts[3];
+                    string[] lines = resp.Trim().Split('\n');
+                    foreach (string line in lines)
+                    {
+                        string[] parts = line.Split(';');
+                        EmmaServer s = new EmmaServer();
+                        s.host = parts[0];
+                        s.user = parts[1];
+                        s.pw = parts[2];
+                        s.db = parts[3];
 
-                    servers.Add(s);
+                        servers.Add(s);
+                    }
                 }
             }
 
@@ -282,6 +284,24 @@ namespace WOCEmmaClient
 
         }
 
+        public void SetRunnerStartTime(int runnerID, int starttime)
+        {
+            if (!IsRunnerAdded(runnerID))
+                throw new ApplicationException("Runner is not added! {" + runnerID + "} [SetRunnerStartTime]");
+            Runner r = (Runner)m_Runners[runnerID];
+
+            if (r.HasStartTimeChanged(starttime))
+            {
+                r.SetStartTime(starttime);
+                m_RunnersToUpdate.Add(r);
+                if (!m_CurrentlyBuffering)
+                {
+                    FireLogMsg("Runner starttime Changed: [" + r.Name + ", t: " + starttime + "}]");
+                }
+            }
+
+        }
+
         public void Stop()
         {
             m_Continue = false;
@@ -339,7 +359,7 @@ namespace WOCEmmaClient
                                     cmd.Parameters.AddWithValue("?starttime", r.StartTime);
                                     cmd.Parameters.AddWithValue("?status", r.Status);
                                     //cmd.CommandText = "REPLACE INTO Results VALUES(" + m_CompID + "," + r.ID + ",0," + r.StartTime + "," + r.Status + ",Now())";
-                                    cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,0,?starttime,?status,Now())";
+                                    cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,100,?starttime,?status,Now())";
                                     cmd.ExecuteNonQuery();
                                     cmd.Parameters.Clear();
                                     FireLogMsg("Runner " + r.Name + "s starttime updated in DB");

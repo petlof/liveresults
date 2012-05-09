@@ -42,6 +42,10 @@ namespace WOCEmmaClient
                 else
                     client.UpdateRunnerInfo(id, name, club, Class);
 
+                if (start > 0)
+                    client.SetRunnerStartTime(id, start);
+                    
+
                 if (time != -2)
                 {
                     client.SetRunnerResult(id, time, status);
