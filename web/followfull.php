@@ -657,7 +657,7 @@ function newWin()
 </td><?php }?>
 
 
-			<td valign=top>		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><?php if (!$isSingleClass) {?><span align="right" style="margin-left: 10px"><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="Öppna i nytt fönster" border="0" title="Öppna i nytt fönster"/> Open in new window</a> <span id="txtResetSorting"></span></span><?php }?></div><table id="divResults" width="100%">
+			<td valign=top>		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="Öppna i nytt fönster" border="0" title="Öppna i nytt fönster"/> Open in new window</a> <?php }?><span id="txtResetSorting"></span></span></div><table id="divResults" width="100%">
 </table><br/><br/>
 
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
