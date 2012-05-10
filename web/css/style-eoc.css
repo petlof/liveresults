@@ -1,0 +1,83 @@
+/*------------------------------*/
+/* --- GENERAL TAGS CLASSES --- */
+/*------------------------------*/
+
+body {background-color: #ffffff; margin-top:5px; margin-left:5px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
+
+/* html documents within iframes */
+body.iframed {margin-left:0px; margin-right:0px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
+
+table {font-size:1em;}
+td{font-family: arial, helvetica, verdana, geneva, sans-serif; font-size:1em; line-height: 1.4em;}
+
+a:link {font-size:1em; color:#F1592A;}
+a:visited {font-size:1em; color:#F1592A;}
+a:hover{color:#FFA02B; text-decoration:underline;}
+
+textarea{font-size: 1.1em; font-family: arial, helvetica, verdana, geneva, sans-serif;}
+select{font-size: 1em;}
+input{font-size: 1em;}
+
+h1{font-size:1em; font-weight:normal; margin-bottom: 0px;}
+h2{font-size:1em; font-weight:normal; margin-bottom: 0px;}
+h3{font-size:1em; font-weight:normal; margin-bottom: 0px;}
+
+/* Submenu classes */
+/*td.submenu{background: #3A5C9C; border-left:1px solid #ABC9EF; border-right:1px solid #ABC9EF;}*/
+td.submenu{background: #dddddd;}
+td.submenu table tr td {background: #dddddd; color:#000000; padding:3px 9px 3px 9px; font-weight:bold;}
+td.submenu table tr td a:link, td.submenu table tr td a:visited {color: #000000; text-decoration: none;}
+td.submenu table tr td a:hover {text-decoration: underline; color:#0000FF;}
+
+
+tr.new_result { background-color: #FF8B68 !important; }
+tr.new_result td.sorting_2 { background-color: #FF8B68 !important; }
+tr.new_result td.sorting_1 { background-color: #FF8B68 !important; }
+
+
+.eI {
+background: url('../images/sprite_black2.png') no-repeat -63px -63px;
+height: 21px;
+width: 21px;
+}
+
+.eR {
+background: url('../images/sprite_black2.png') no-repeat -21px -63px;
+height: 21px;
+width: 21px;
+}
+
+
+/*-------------------------*/
+/*--- SITE WIDE CLASSES ---*/
+/*-------------------------*/
+
+/* Container for entire conent area */
+.maindiv{width:100%; display:block;}
+
+.small {font-size: 0.8em;}
+.large {font-size: 1.167em;}
+.bold{font-weight: bold;}
+.red {color: #be0101;}
+.green {color: #2e8d03;}
+.darkblue {color: #3A5C9C;}
+.grey {	color: #666666;	}
+
+
+/*-------------------------------*/
+/*--- HEADER & FOOTER CLASSES ---*/
+/*-------------------------------*/
+
+/* Main menu tabs */
+.mttop{display:block; background: #FFF; height: 1px; background: #ABC9EF; margin: 0px 1px 0px 1px;}
+td.menuchosen, td.menu{padding:2px 9px 4px 9px; color:#FFFFFF; font-weight:bold; font-size:1em; border-left:1px solid #ABC9EF; border-right:1px solid #0B5280;}
+td.menuchosen{background: #3A5C9C;}
+td.menu{background: #6C95CD;}
+td.menu a:link, td.menu a:visited, td.menuchosen a:link, td.menuchosen a:visited {color: #FFFFFF; text-decoration: none;}
+td.menuchosen a:hover {text-decoration: none; color:#C0D6FF;}
+
+
+/* Category tree (used on spash and tree pages as well) */
+.categories{background: #F4F8FD; border:1px solid #ABC9EF;}
+.categoriesheader{color:#FFA02B; font-size:1.27em; font-weight:bold;}
+

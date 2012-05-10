@@ -8,8 +8,16 @@ include_once("templates/emmalang_en.php");
 include_once("templates/emmalang_$lang.php");
 include_once("templates/classEmma.class.php");
 $currentComp = new Emma($_GET['comp']);
+$isSingleClass = isset($_GET['class']);
+$showPath = false;
+$singleClass = "";
+if ($isSingleClass)
+	$singleClass = $_GET['class'];
+
+$showLastPassings = !$isSingleClass || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
 
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT);
+
 echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
@@ -18,13 +26,13 @@ echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
 <head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</title>
 <META HTTP-EQUIV="expires" CONTENT="-1">
 <meta http-equiv="Content-Type" content="text/html">
-<link rel="stylesheet" type="text/css" href="css/style.css"><link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
-<link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller.css">
+<link rel="stylesheet" type="text/css" href="css/style-eoc.css"><link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
-<!--<script language="javascript" type="text/javascript" src="js/jquery-ui-1.8.19.custom.min.js"></script>-->
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
-<script language="javascript" type="text/javascript">var updateAutomatically = true;
+<script language="javascript" type="text/javascript">
+var updateAutomatically = true;
 var updateInterval = 15000;
 var classUpdateInterval = 60000;
 
@@ -33,9 +41,24 @@ var passingsUpdateTimer = null;
 
 $(document).ready(function()
 {
-	$("#divClasses").html("Laddar klasser...");
-	updateClassList();
+	<?php if ($isSingleClass)
+	{?>
+		chooseClass('<?=$singleClass?>');
+	<?php }
+	else
+	{?>
+		$("#divClasses").html("Laddar klasser...");
+		updateClassList();
+
+		if(window.location.hash) {
+      		var hash = window.location.hash.substring(1);
+      		chooseClass(hash);
+      	}
+	<?php }?>
+
+<?php if ($showLastPassings){?>
 	updateLastPassings();
+	<?php }?>
 });
 
 function updateClassList()
@@ -131,6 +154,10 @@ function chooseClass(className)
 		  success: updateClassResults,
 		  dataType: "json"
 	});
+
+	<?php if (!$isSingleClass) {?>
+	window.location.hash = className;
+<?php }?>
 	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
 }
 
@@ -474,12 +501,33 @@ function updateClassResults(data)
 					"aaData": data.results,
 					//"aaSorting" : [[timecol+1,"asc"],[timecol, "asc"]],
 					"aaSorting" : [[col-1, "asc"]],
-					"aoColumnDefs": columns
+					"aoColumnDefs": columns,
+					 "fnPreDrawCallback": function( oSettings ) {
+					      if ( oSettings.aaSorting[0][0] != col-1) {
+					        $("#txtResetSorting").html("&nbsp;&nbsp;<a href=\"javascript:resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> Reset to default sorting</a>");
+      					  }
+      					  }
 			} );
 
 			lastClassHash = data.hash;
 		}
     }
+}
+
+function resetSorting()
+{
+	idxCol = 0;
+	$.each(currentTable.fnSettings().aoColumns, function(idx,val)
+	{
+		if (val.sTitle=="VP")
+		{
+			idxCol = idx;
+		}
+	});
+
+	currentTable.fnSort([ [idxCol,'asc']]);
+	$("#txtResetSorting").html("");
+
 }
 
 var runnerStatus = Array();
@@ -554,39 +602,19 @@ function changeFontSize(val)
 	$("td").css("font-size",newSize + "px");
 }
 
+function newWin()
+{
+	window.open('followfull.php?comp=<?= $_GET['comp']?>&lang=<?= $lang?>&class='+curClassName,'','status=0,toolbar=0,location=0,menubar=0,directories=0,scrollbars=1,resizable=1,width=900,height=600');
+}
+
 
 </script>
-</head>
+</head>
 <body>
 <!-- MAIN DIV -->
 <div class="maindiv">
-<!-- LOGO AND TOP BANNER -->
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-  <tr>
-    <td align="left"></td>
-  </tr>
-</table>
-
-
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-  <tr>
-     <td valign="bottom">
-
-<!-- MAIN MENU FLAPS - Two rows, note that left and right styles differs from middle ones -->
-     <table border="0" cellpadding="0" cellspacing="0">
-          <!-- Top row with rounded corners -->
-          <tr>
-               <td colspan="4"><span class="mttop"></span></td>
-          </tr>
-     </table>
-
-     </td>
-     <td align="right" valign="bottom">
-
-     </td>
-  </tr>
-  <tr>
-    <td class="submenu" colspan="2">
+<table border="0" cellpadding="0" cellspacing="0" width="100%"><?php if (!$isSingleClass && $showPath) {?>
+  <tr>    <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="0" width="100%">
              <tr>
                <td><a href="index.php?lang=<?=$lang?>&"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
@@ -594,10 +622,10 @@ function changeFontSize(val)
              </tr>
        </table>
      </td>
-  </tr>
+  </tr><?php }?>
 <!-- End SUB MENU -->
   <tr>
-    <td class="searchmenu" colspan="2" style="padding: 5px;" valign=top>
+    <td class="searchmenu" colspan="2" style="" valign=top>
        <table border="0" cellpadding="0" cellspacing="0">
              <tr>
                <td valign=top>
@@ -610,23 +638,26 @@ function changeFontSize(val)
 			else
 			{
 			?>
-			<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= isset($_GET['class']) ? ", ".$_GET['class'] : "" ?></h1>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-			<tr>
+<?php if($showLastPassings){?>
+			<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= isset($_GET['class']) ? ", ".$_GET['class'] : "" ?></h1>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000; color:#fff; padding: 10px; margin-top: 3px">
+			<tr>			<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>
 			<td valign=top><b><?=$_LASTPASSINGS?></b><br><div id="divLastPassings"></div>
 </td><td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
-<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/>
+<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
+<a href="doc/help.html" target="_blank">Instructions / Help</a>
 </td>
-</tr></table><br>
+</tr></table><br><?php }?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-			<tr>
+			<tr><?php if (!$isSingleClass){?>
 			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
 <div id="divClasses">
 </div>
-</td>
+</td><?php }?>
+
 
-			<td valign=top>			<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><a href="javascript:newWin()"><img class="eI" align="right" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="Öppna i nytt fönster" title="Öppna i nytt fönster"/></a></div><table id="divResults" width="100%">
+			<td valign=top>		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><?php if (!$isSingleClass) {?><span align="right" style="margin-left: 10px"><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="Öppna i nytt fönster" border="0" title="Öppna i nytt fönster"/> Open in new window</a> <span id="txtResetSorting"></span></span><?php }?></div><table id="divResults" width="100%">
 </table><br/><br/>
 
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
@@ -642,7 +673,7 @@ function changeFontSize(val)
   </tr>
 
 </table>
-<p align=center>&copy;2012, Peter Löfås, <?=$_NOTICE?></p>
+<p align=center>&copy;2012, EOC2012, <?=$_NOTICE?></p>
 
 </div>
 <br><br>
