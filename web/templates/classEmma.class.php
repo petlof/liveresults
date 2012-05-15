@@ -1,7 +1,7 @@
 <?php
 class Emma
 {
-	public static $db_server = "ec2-46-137-133-46.eu-west-1.compute.amazonaws.com"; //"192.168.0.183";
+	public static $db_server = "192.168.0.183";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
@@ -217,8 +217,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
   function getLastPassings($num)
   {
     $ret = Array();
-	$q = "SELECT Runners.Name, Runners.class, Runners.Club, Results.Time,Results.Status, Results.Changed, Results.Control, splitcontrols.name as pname From Runners,Results left join splitcontrols on (Results.Control = splitcontrols.Code and Runners.class = splitcontrols.classname and splitcontrols.tavid=".$this->m_CompId.") where Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = Results.TavId and Results.Status <> -1 AND Results.Time <> -1 ORDER BY Results.changed desc limit 3";
-	$q = "SELECT Runners.Name, Runners.class, Runners.Club, Results.Time,Results.Status, Results.Changed, Results.Control, splitcontrols.name as pname From Results inner join Runners on Results.DbId = Runners.DbId Left join splitcontrols on (splitcontrols.code = Results.Control and splitcontrols.tavid=".$this->m_CompId." and Runners.class = splitcontrols.classname) where Results.TavId =".$this->m_CompId." AND Runners.TavId = Results.TavId and Results.Status <> -1 AND Results.Time <> -1 and Results.control <> 100 ORDER BY Results.changed desc limit 3";
+	$q = "SELECT Runners.Name, Runners.class, Runners.Club, Results.Time,Results.Status, Results.Changed, Results.Control, splitcontrols.name as pname From Results inner join Runners on Results.DbId = Runners.DbId left join splitcontrols on (splitcontrols.code = Results.Control and splitcontrols.tavid=".$this->m_CompId." and Runners.class = splitcontrols.classname) where Results.TavId =".$this->m_CompId." AND Runners.TavId = Results.TavId and Results.Status <> -1 AND Results.Time <> -1 AND Results.Status <> 9 and Results.Status <> 10 and Results.control <> 100 ORDER BY Results.changed desc limit 3";
 		if ($result = mysql_query($q,$this->m_Conn))
 		{
 			while ($row = mysql_fetch_array($result))

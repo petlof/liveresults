@@ -539,6 +539,8 @@ runnerStatus[9] = "";
 runnerStatus[3] = "<?=$_STATUSMP?>";
 runnerStatus[4] = "<?=$_STATUSDSQ?>";
 runnerStatus[5] = "<?=$_STATUSOT?>";
+runnerStatus[9] = "";
+runnerStatus[10] = "";
 
 
 function formatTime(time,status)
