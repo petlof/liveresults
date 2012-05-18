@@ -648,7 +648,7 @@ function newWin()
 </td><td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
-<a href="doc/help.html" target="_blank">Instructions / Help</a>
+<a href="dok/help.html" target="_blank">Instructions / Help</a>
 </td>
 </tr></table><br><?php }?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
