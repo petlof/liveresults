@@ -141,6 +141,11 @@ namespace WOCEmmaClient
                         SetRunnerResult(dbid, time, (int)reader["status"]);
                         numResults++;
                     }
+                    else if (control == 100)
+                    {
+                        SetRunnerStartTime(dbid, time);
+                        numResults++;
+                    }
                     else
                     {
                         numResults++;

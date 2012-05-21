@@ -117,7 +117,7 @@ namespace WOCEmmaClient
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","") + ";AUTO_SERVER=TRUE", "live", "live");
+                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","") + ";AUTO_SERVER=TRUE", "root", "");
                 case 1:
                 case 2:
                     return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : ""));

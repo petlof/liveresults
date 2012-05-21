@@ -61,7 +61,7 @@ namespace WOCEmmaClient
                     {
                         if (m_Connection is System.Data.H2.H2Connection)
                         {
-                            (m_Connection as System.Data.H2.H2Connection).Open("live", "live");
+                            (m_Connection as System.Data.H2.H2Connection).Open("root", "");
                         }
                         else
                         {
@@ -286,6 +286,8 @@ namespace WOCEmmaClient
                                         //rstatus = EMMAClient.RunnerStatus.MissingPunch;
                                         break;
                                     case "notParticipating":
+                                        rstatus = 999;
+                                        break;
                                     case "walkOver":
                                         rstatus = 11;
                                         //rstatus = EMMAClient.RunnerStatus.WalkOver;
@@ -294,7 +296,7 @@ namespace WOCEmmaClient
                                         rstatus = 12;
                                         break;
                                 }
-                                //if (rstatus != 9 && rstatus != 10)
+                                if (rstatus != 999)
                                     FireOnResult(runnerID, 0, fName + " " + famName, club, classN, iStartTime, time, rstatus, new List<ResultStruct>());
 
                             }
@@ -316,7 +318,7 @@ namespace WOCEmmaClient
                                 int entryid = Convert.ToInt32(reader["entryid"].ToString());
                                 DateTime startTime;
 
-                                if (reader["firstStartTime"] != null && reader["firstStartTime"] != DBNull.Value)
+                                if (isRelay && reader["firstStartTime"] != null && reader["firstStartTime"] != DBNull.Value)
                                 {
                                     tTime = reader["firstStartTime"].ToString();
                                     startTime = ParseDateTime(tTime);
