@@ -324,6 +324,7 @@ function insertIntoResults(result, data)
 		}
 	}
 
+
 	if (result.start != "")
 	{
 		for (d = 0; d < data.length; d++)
@@ -333,7 +334,10 @@ function insertIntoResults(result, data)
 				data.splice(d,0,result);
 				return;
 			}
-			if (data[d].start != "" && data[d].start> result.start && !haveSplit && !data[d].haveSplits)
+			if (result.place == "" && data[d].place != "")
+			{
+			}
+			else if (data[d].start != "" && data[d].start> result.start && !haveSplit && !data[d].haveSplits)
 			{
 				data.splice(d,0,result);
 				return;
