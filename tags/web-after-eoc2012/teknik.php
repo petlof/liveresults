@@ -1,0 +1,94 @@
+<html>
+<head><title>Liveresultat på nätet</title>
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script language="javascript">
+function colorRow(row)
+{
+var el = document.getElementById(row);
+if (el == null)
+  return;
+el.style.backgroundColor = "#C0D6FF";
+}
+function resetRow(row)
+{
+var el = document.getElementById(row);
+if (el == null)
+  return;
+el.style.backgroundColor = "";
+}
+</script>
+</head>
+<body topmargin="0" leftmargin="0">
+<!-- MAIN DIV -->
+<div class="maindiv">
+<table width="759" cellpadding="0" cellspacing="0" border="0" ID="Table6">
+	<tr>
+
+
+		<TR>
+			<TD>
+		<a href="/liveresultat/"><img src="/pics/header.jpg" alt="Svenska Orienteringsförbundet" align="left" width="759" height="91" border="0"></a>
+			</TD>
+		</TR>
+
+
+</table>
+
+
+<table border="0" cellpadding="0" cellspacing="0" width="759">
+  <tr>
+     <td valign="bottom">
+
+<!-- MAIN MENU FLAPS - Two rows, note that left and right styles differs from middle ones -->
+     <table border="0" cellpadding="0" cellspacing="0">
+          <!-- Top row with rounded corners -->
+          <tr>
+               <td colspan="4"><span class="mttop"></td>
+          </tr>
+     </table>
+
+     </td>
+     <td align="right" valign="bottom">
+
+     </td>
+  </tr>
+  <tr>
+    <td class="submenu" colspan="2">
+       <table border="0" cellpadding="0" cellspacing="0">
+             <tr>
+               <td><a href="index.php">Välj tävling</a></td>
+             </tr>
+       </table>
+     </td>
+  </tr>
+<!-- End SUB MENU -->
+  <tr>
+    <td class="searchmenu" colspan="2" style="padding: 5px;">
+<b>Liveresultat på nätet - Den bästa livebevakningen</b><br>
+Speakerljud i all ära, men att ha konstant uppdaterade resultat på nätet är ändå bättre<br>
+Därför startades ett projekt där vi ville åstadkomma just detta.<br><br>
+<b>1 sekunds fördröjning!</b><br>
+Ja, faktiskt. Under optimala förhållanden där TC är uppkopplat via bredband så ser EMMA-systemet till att resultat finns tillgängliga på internet med en fördröjning av så lite som 1 sekund.<br>
+Vid sämre förhållanden där modem uppkoppling eller GPRS används blir fördröjningen längre, men tack vare ett slimmat protokoll kommer resultat ut på nätet fort även vid dåliga GPRS uppkopplingar.<br>
+<div style="background-color: #FFFFFF; border: 1px black dotted; padding: 5px;">
+<i>Nyckeltal medelfördröjning från utstämpling till resultat på internet</i><br>
+* OLA och Bredband, ~1-3sekunder<br>
+* OLA och Modem/GPRS, ~1-10sekunder<br>
+* OLEinzel och bredband, ~15 sekunder<br>
+* OLEinzel och modem/GPRS, ~15-30sekunder<br>
+Anledningen till den längre ledtiden för OLEinzel är att vi där ej har direkt tillgång till databasen utan måste förlita oss på CSV-export vilket man ej kan göra hur ofta som helst.
+</div><br><br>
+
+Vill du som arrangör också erbjuda liveresultat på nätet från er tävling, kontakta <a href="mailto:peter@lofas.se">Peter Löfås</a>. Vi stödjer både tävlingar med OLA och OLEinzel10*.<br>
+* OLEinzel är bara i teststadiet ännu då vi inte är nöjda med prestandan<br><br>
+
+<a href="index.php">Tillbaka</a><br><br>
+     </td>
+  </tr>
+
+</table>
+
+</div>
+
+</body>
+</html>
