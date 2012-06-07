@@ -1,13 +1,20 @@
-<?php
+<?php
 date_default_timezone_set("Europe/Stockholm");
-$lang = "sv";
+$lang = "sv";
+
 if (isset($_GET['lang']))
- $lang = $_GET['lang'];
-
-include_once("templates/emmalang_en.php");
-include_once("templates/emmalang_$lang.php");
-include_once("templates/classEmma.class.php");
-$currentComp = new Emma($_GET['comp']);
+ $lang = $_GET['lang'];
+
+
+
+include_once("templates/emmalang_en.php");
+
+include_once("templates/emmalang_$lang.php");
+
+include_once("templates/classEmma.class.php");
+
+$currentComp = new Emma($_GET['comp']);
+
 $isSingleClass = isset($_GET['class']);
 $showPath = true;
 $singleClass = "";
@@ -15,21 +22,28 @@ if ($isSingleClass)
 	$singleClass = $_GET['class'];
 
 $showLastPassings = !$isSingleClass || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
-
-$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT);
 
-echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
+
+$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT);
+
+
+echo("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-<head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</title>
-<META HTTP-EQUIV="expires" CONTENT="-1"><meta http-equiv="Content-Type" content="text/html"><link rel="stylesheet" type="text/css" href="css/style-eoc.css"><link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
+<head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</title>
+
+<META HTTP-EQUIV="expires" CONTENT="-1">
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<link rel="stylesheet" type="text/css" href="css/style-eoc.css">
+<link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
-<script language="javascript" type="text/javascript">
+<script language="javascript" type="text/javascript">
+
 var updateAutomatically = true;
 var updateInterval = 15000;
 var classUpdateInterval = 60000;
@@ -614,10 +628,15 @@ function newWin()
 
 </script>
 </head>
-<body>
-<!-- MAIN DIV -->
-<div class="maindiv">
-<table border="0" cellpadding="0" cellspacing="0" width="100%"><?php if (!$isSingleClass && $showPath) {?>
+<body>
+
+<!-- MAIN DIV -->
+
+<div class="maindiv">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+<?php if (!$isSingleClass && $showPath) {?>
 <tr>
     <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
@@ -629,87 +648,159 @@ function newWin()
                <td><a href="http://emmaclient.codeplex.com/wikipage?title=For%20Developers%20%28API%29" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
        </table>
      </td>
-  </tr><?php }?>
-<!-- End SUB MENU -->
-  <tr>
-    <td class="searchmenu" colspan="2" style="" valign=top>
-       <table border="0" cellpadding="0" cellspacing="0">
-             <tr>
-               <td valign=top>
-			<?php if (!isset($_GET['comp']))
-			{
-			?>
-				<h1 class="categoriesheader">Ett fel uppstod? Har du valt t‰vling?</h1>
-			<?php
-			}
-			else
-			{
-			?>
+  </tr>
+<?php }?>
+<!-- End SUB MENU -->
+
+  <tr>
+
+    <td class="searchmenu" colspan="2" style="" valign=top>
+
+       <table border="0" cellpadding="0" cellspacing="0">
+
+             <tr>
+
+               <td valign=top>
+
+			<?php if (!isset($_GET['comp']))
+
+			{
+
+			?>
+
+				<h1 class="categoriesheader">Ett fel uppstod? Har du valt t√§vling?</h1>
+
+			<?php
+
+			}
+
+			else
+
+			{
+
+			?>
+
 <?php if($showLastPassings){?>
 			<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= isset($_GET['class']) ? ", ".$_GET['class'] : "" ?></h1>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000; color:#fff; padding: 10px; margin-top: 3px">
-			<tr>			<?php //ADD CUSTOMIZED LOGO IF NEEDED<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>?>
-			<td valign=top><b><?=$_LASTPASSINGS?></b><br><div id="divLastPassings"></div>
-</td><td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000; color:#fff; padding: 10px; margin-top: 3px">
+
+			<tr>
+			<?php //ADD CUSTOMIZED LOGO IF NEEDED<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>?>
+			<td valign=top><b><?=$_LASTPASSINGS?></b><br>
+<div id="divLastPassings">
+</div>
+</td>
+<td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
 <a href="dok/help.html" target="_blank">Instructions / Help</a>
 </td>
-</tr></table><br><?php }?>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-			<tr><?php if (!$isSingleClass){?>
-			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
+</tr></table><br>
+<?php }?>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+			<tr>
+<?php if (!$isSingleClass){?>
+			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
+
 <div id="divClasses">
 </div>
-</td><?php }?>
+</td>
+<?php }?>
 
-
-			<td valign=top>		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="÷ppna i nytt fˆnster" border="0" title="÷ppna i nytt fˆnster"/> Open in new window</a> <?php }?><span id="txtResetSorting"></span></span></div><table id="divResults" width="100%">
+
+
+			<td valign=top>
+		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="√ñppna i nytt f√∂nster" border="0" title="√ñppna i nytt f√∂nster"/> Open in new window</a> <?php }?><span id="txtResetSorting"></span></span></div>
+<table id="divResults" width="100%">
 </table><br/><br/>
 
-<font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
-</td>
-			</tr>
-			</table>
-			<?php }?>
-		</td>
-	     </tr>
-	</table>
-
-     </td>
-  </tr>
-
-</table>
-<p align=center>&copy;2012, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
-
-</div>
-<br><br>
-</body>
-</html>
-<?php
+<font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
+
+</td>
+
+			</tr>
+
+			</table>
+
+			<?php }?>
+
+		</td>
+
+	     </tr>
+
+	</table>
 
 
-function formatTime($time,$status,& $RunnerStatus)
-{
-  global $lang;
-  if ($status != "0")
-  {
-    return $RunnerStatus[$status]; //$status;
-  }
-   if ($lang == "fi")
-{
-  $hours = floor($time/360000);
-  $minutes = floor(($time-$hours*360000)/6000);
-  $seconds = floor(($time-$hours*360000 - $minutes*6000)/100);
-  return str_pad("".$hours,2,"0",STR_PAD_LEFT) .":" .str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
-}
-else
-{
-
-
-  $minutes = floor($time/6000);
-  $seconds = floor(($time-$minutes*6000)/100);
-  return str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
-}
-}
+
+     </td>
+
+  </tr>
+
+
+
+</table>
+
+<p align=center>&copy;2012, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
+
+
+
+</div>
+
+<br><br>
+
+</body>
+
+</html>
+
+<?php
+
+
+
+function formatTime($time,$status,& $RunnerStatus)
+
+{
+
+  global $lang;
+
+  if ($status != "0")
+
+  {
+
+    return $RunnerStatus[$status]; //$status;
+
+  }
+
+   if ($lang == "fi")
+
+{
+
+  $hours = floor($time/360000);
+
+  $minutes = floor(($time-$hours*360000)/6000);
+
+  $seconds = floor(($time-$hours*360000 - $minutes*6000)/100);
+
+  return str_pad("".$hours,2,"0",STR_PAD_LEFT) .":" .str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
+
+}
+
+else
+
+{
+
+
+
+
+
+  $minutes = floor($time/6000);
+
+  $seconds = floor(($time-$minutes*6000)/100);
+
+  return str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
+
+}
+
+}
+
 ?>
