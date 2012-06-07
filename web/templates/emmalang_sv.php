@@ -42,5 +42,8 @@ $_OFF = "Av";
 $_TEXTSIZE = "Textstorlek";
 $_LARGER = "Större";
 $_SMALLER = "Mindre";
+$_OPENINNEW = "Öppna i nytt fönster";
+$_FORORGANIZERS = "Information för arrangörer";
+$_FORDEVELOPERS = "Information for utvecklare (api)";
 
 ?>

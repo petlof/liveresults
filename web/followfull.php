@@ -9,7 +9,7 @@ include_once("templates/emmalang_$lang.php");
 include_once("templates/classEmma.class.php");
 $currentComp = new Emma($_GET['comp']);
 $isSingleClass = isset($_GET['class']);
-$showPath = false;
+$showPath = true;
 $singleClass = "";
 if ($isSingleClass)
 	$singleClass = $_GET['class'];
@@ -24,9 +24,7 @@ echo("<?xml version=\"1.0\" encoding=\"iso-8859-1\" ?>");
         "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</title>
-<META HTTP-EQUIV="expires" CONTENT="-1">
-<meta http-equiv="Content-Type" content="text/html">
-<link rel="stylesheet" type="text/css" href="css/style-eoc.css"><link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
+<META HTTP-EQUIV="expires" CONTENT="-1"><meta http-equiv="Content-Type" content="text/html"><link rel="stylesheet" type="text/css" href="css/style-eoc.css"><link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
@@ -620,14 +618,17 @@ function newWin()
 <!-- MAIN DIV -->
 <div class="maindiv">
 <table border="0" cellpadding="0" cellspacing="0" width="100%"><?php if (!$isSingleClass && $showPath) {?>
-  <tr>    <td class="submenu" colspan="2">
-       <table border="0" cellpadding="0" cellspacing="0" width="100%">
-             <tr>
-               <td><a href="index.php?lang=<?=$lang?>&"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
-<td align=right></td>
-             </tr>
-       </table>
-     </td>
+<tr>
+    <td class="submenu" colspan="2">
+       <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
+             <tr>
+               <td><a href="index.php"><a href="index.php?lang=<?=$lang?>&"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</a></td>
+               <td>|</td>
+				<td><a href="http://emmaclient.codeplex.com/documentation" target="_blank"><?=$_FORORGANIZERS?></a></td>
+               <td>|</td>
+               <td><a href="http://emmaclient.codeplex.com/wikipage?title=For%20Developers%20%28API%29" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
+       </table>
+     </td>
   </tr><?php }?>
 <!-- End SUB MENU -->
   <tr>
@@ -647,7 +648,7 @@ function newWin()
 <?php if($showLastPassings){?>
 			<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= isset($_GET['class']) ? ", ".$_GET['class'] : "" ?></h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000; color:#fff; padding: 10px; margin-top: 3px">
-			<tr>			<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>
+			<tr>			<?php //ADD CUSTOMIZED LOGO IF NEEDED<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>?>
 			<td valign=top><b><?=$_LASTPASSINGS?></b><br><div id="divLastPassings"></div>
 </td><td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
@@ -679,7 +680,7 @@ function newWin()
   </tr>
 
 </table>
-<p align=center>&copy;2012, EOC2012, <?=$_NOTICE?></p>
+<p align=center>&copy;2012, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
 
 </div>
 <br><br>

@@ -42,6 +42,8 @@ $_OFF = "Poista käytöstä";
 $_TEXTSIZE = "Textstorlek";
 $_LARGER = "Större";
 $_SMALLER = "Mindre";
-
+$_OPENINNEW = "Open in new window";
+$_FORORGANIZERS = "Information for organizers";
+$_FORDEVELOPERS = "Information for developers (api)";
 
 ?>

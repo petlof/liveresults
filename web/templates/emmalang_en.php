@@ -43,5 +43,7 @@ $_OFF = "Off";
 $_TEXTSIZE = "Textsize";
 $_LARGER = "Bigger";
 $_SMALLER = "Smaller";
-
+$_OPENINNEW = "Open in new window";
+$_FORORGANIZERS = "Information for organizers";
+$_FORDEVELOPERS = "Information for developers (api)";
 ?>
