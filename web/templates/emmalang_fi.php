@@ -36,14 +36,14 @@ $_FIRSTPAGEARCHIVE = "Arkisto";
 $_FIRSTPAGELIVE = "Online";
 
 //new 2.0
-$_LOADINGRESULTS = "Laddar resultat...";
-$_ON = "Ota käyttöön";
-$_OFF = "Poista käytöstä";
-$_TEXTSIZE = "Textstorlek";
-$_LARGER = "Större";
-$_SMALLER = "Mindre";
-$_OPENINNEW = "Open in new window";
-$_FORORGANIZERS = "Information for organizers";
-$_FORDEVELOPERS = "Information for developers (api)";
-
+$_LOADINGRESULTS = "Ladataan tuloksia...";
+$_ON = "On";
+$_OFF = "Off";
+$_TEXTSIZE = "Tekstikoko";
+$_LARGER = "Suurempi";
+$_SMALLER = "Pienempi";
+$_OPENINNEW = "Avaa uudessa ikkunassa";
+$_FORORGANIZERS = "Tietoja järjestäjille";
+$_FORDEVELOPERS = "Tietoja kehittäjille (api)";
+$_RESETTODEFAULT = "Palaa oletuslajitteluun";
 ?>
