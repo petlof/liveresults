@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.30729</ProductVersion>
+    <ProductVersion>9.0.21022</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
@@ -143,23 +143,11 @@
       <DependentUpon>NewOLAComp.cs</DependentUpon>
     </Compile>
     <Compile Include="SiTimecParser.cs" />
-    <Compile Include="SITimecForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="SITimecForm.Designer.cs">
-      <DependentUpon>SITimecForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="OEForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="OEForm.Designer.cs">
       <DependentUpon>OEForm.cs</DependentUpon>
-    </Compile>
-    <Compile Include="OSSpeakerForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OSSpeakerForm.Designer.cs">
-      <DependentUpon>OSSpeakerForm.cs</DependentUpon>
     </Compile>
     <Compile Include="OSParser.cs" />
     <Compile Include="OLAForm.cs">
@@ -191,17 +179,9 @@
       <SubType>Designer</SubType>
       <DependentUpon>NewOLAComp.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="SITimecForm.resx">
-      <DependentUpon>SITimecForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
     <EmbeddedResource Include="OEForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>OEForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OSSpeakerForm.resx">
-      <DependentUpon>OSSpeakerForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="OLAForm.resx">
       <DependentUpon>OLAForm.cs</DependentUpon>

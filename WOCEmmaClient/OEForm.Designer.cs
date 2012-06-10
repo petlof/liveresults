@@ -46,7 +46,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
             this.label4 = new System.Windows.Forms.Label();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.chkUploadStarttimes = new System.Windows.Forms.CheckBox();
             this.cmbFormat = new System.Windows.Forms.ComboBox();
             this.label5 = new System.Windows.Forms.Label();
             this.lblFormatInfo = new System.Windows.Forms.Label();
@@ -200,15 +200,15 @@
             this.label4.TabIndex = 9;
             this.label4.Text = "Servers";
             // 
-            // checkBox1
+            // chkUploadStarttimes
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(332, 107);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(107, 17);
-            this.checkBox1.TabIndex = 10;
-            this.checkBox1.Text = "Upload starttimes";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.chkUploadStarttimes.AutoSize = true;
+            this.chkUploadStarttimes.Location = new System.Drawing.Point(332, 107);
+            this.chkUploadStarttimes.Name = "chkUploadStarttimes";
+            this.chkUploadStarttimes.Size = new System.Drawing.Size(107, 17);
+            this.chkUploadStarttimes.TabIndex = 10;
+            this.chkUploadStarttimes.Text = "Upload starttimes";
+            this.chkUploadStarttimes.UseVisualStyleBackColor = true;
             // 
             // cmbFormat
             // 
@@ -241,7 +241,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(592, 444);
-            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.chkUploadStarttimes);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.txtCompID);
@@ -280,7 +280,7 @@
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtExtension;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox chkUploadStarttimes;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbFormat;
         private System.Windows.Forms.Label lblFormatInfo;
