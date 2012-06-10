@@ -142,6 +142,7 @@
     <Compile Include="NewOLAComp.Designer.cs">
       <DependentUpon>NewOLAComp.cs</DependentUpon>
     </Compile>
+    <Compile Include="OXTools.cs" />
     <Compile Include="SiTimecParser.cs" />
     <Compile Include="OEForm.cs">
       <SubType>Form</SubType>

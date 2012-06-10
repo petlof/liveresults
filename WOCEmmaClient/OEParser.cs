@@ -72,44 +72,16 @@ namespace WOCEmmaClient
                 string[] fields = header.Split(SplitChars);
 
                 /*Detect OE format*/
-                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldText1, fldText2, fldText3;
-                fldID = Array.IndexOf(fields, "Stno");
-                if (fldID == -1)
-                    fldID = Array.IndexOf(fields, "Startnr");
+                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldText1, fldText2, fldText3, fldFinish, fldLeg;
 
-                fldSI = Array.IndexOf(fields, "SI card");
+                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldText1, out fldText2, out fldText3);
 
-                if (fldSI == -1)
-                    fldSI = Array.IndexOf(fields, "Chip");
-
-                if (fldSI == -1)
-                    fldSI = Array.IndexOf(fields, "Bricka");
-
-                fldFName = Array.IndexOf(fields, "First name");
-                if (fldFName == -1)
-                    fldFName = Array.IndexOf(fields, "Förnamn");
-                fldEName = Array.IndexOf(fields, "Surname");
-                if (fldEName == -1)
-                    fldEName = Array.IndexOf(fields, "Efternamn");
-
-                fldClub = Array.IndexOf(fields, "City");
-                if (fldClub == -1)
-                    fldClub = Array.IndexOf(fields, "Ort");
-                fldClass = Array.IndexOf(fields, "Long");
-                if (fldClass == -1)
-                    fldClass = Array.IndexOf(fields, "Lång");
-
-                fldStart = Array.IndexOf(fields, "Start");
-
-                fldTime = Array.IndexOf(fields, "Time");
-                if (fldTime == -1)
-                    fldTime = Array.IndexOf(fields,"Tid");
-
-                fldStatus = Array.IndexOf(fields, "Wertung");
-                if (fldStatus == -1)
-                    fldStatus = Array.IndexOf(fields, "Status");
-
-                fldFirstPost = Array.IndexOf(fields, "No1");
+                if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
+           || fldStart == -1 || fldTime == -1
+           || fldStart == -1 || fldFirstPost == -1)
+                {
+                    throw new System.IO.IOException("Not OE-formatted file!");
+                }
 
                 fldText1 = Array.IndexOf(fields, "Text1");
                 fldText2 = Array.IndexOf(fields, "Text2");

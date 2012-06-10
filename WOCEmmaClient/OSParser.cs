@@ -81,73 +81,26 @@ namespace WOCEmmaClient
                 bool isOs2010Files = fields[0].StartsWith("OS");
 
                 /*Detect OS format*/
-                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldLeg, fldFinish;
-
-                string[] stoNoFieldNames = { "Stno", "Lnro", "Stnr", "Startnr" };
-                string[] legFieldNames = {"Leg","Osuus","Lnr","Sträcka"};
-
-
-                string[] chipNoFieldNames = {
-                                            "SI card",
-                                            "SI bricka",
-                                            "Bricka",
-                                            "Chipno", //OS2010 - ENG
-                                            "Korttinro", //OS2010 - FIN
-                                            "Chipnr", //OS2010 - GER
-                                            "Bricknr" //OS2010 - SWE
-                                        };
-                string[] firstNameFieldNames = {"Vorname","First name", "Etunimi","Förnamn"};
-                string[] lastNameFieldNames = { "Nachname", "Surname", "Sukunimi", "Efternamn" };
-                string[] clubFieldNames = { "Club", "Team", "Joukkue", "Staffel", "Lag", "Klubb" };
-                string[] classFieldNames = { "Short", "Lyhyt", "Kurz", "Kort" };
-                string[] startFieldNames = { "Start", "Lähtö" };
-                string[] finishFieldNames = { "Finish", "Maali", "Ziel", "Mål" };
-                string[] timeFieldNames = { "Time", "Aika", "Zeit", "Tid" };
-                string[] statusFieldNames = { "Classifier", "Tila", "Wertung", "Status" };
-                string[] no1FieldNames = { "No1", "Nro1", "Nr1" };
-
-                fldID = GetFieldFromHeader(fields, stoNoFieldNames);
-                fldLeg = GetFieldFromHeader(fields, legFieldNames);
-                fldSI = GetFieldFromHeader(fields, chipNoFieldNames);
-                fldFName = GetFieldFromHeader(fields, firstNameFieldNames);
-                fldEName = GetFieldFromHeader(fields, lastNameFieldNames);
-                fldClub = GetFieldFromHeader(fields, clubFieldNames);
-
-                fldClass = GetFieldFromHeader(fields, classFieldNames);
-                fldStart = GetFieldFromHeader(fields, startFieldNames);
-                fldFinish = GetFieldFromHeader(fields, finishFieldNames);
-                fldTime = GetFieldFromHeader(fields, timeFieldNames);
-                fldStatus = GetFieldFromHeader(fields, statusFieldNames);
-
-                fldFirstPost = GetFieldFromHeader(fields, no1FieldNames);
+                int fldID;
+                int fldSI;
+                int fldFName;
+                int fldEName;
+                int fldClub;
+                int fldClass;
+                int fldStart;
+                int fldTime;
+                int fldStatus;
+                int fldFirstPost;
+                int fldLeg;
+                int fldFinish;
+                int fldTxt1, fldTxt2, fldTxt3;
+                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
-                    || fldStart == -1 || fldTime == -1
-                    || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
+           || fldStart == -1 || fldTime == -1
+           || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
                 {
-                    /*Try detect fixedFormat*/
-                    if (fields[0] == "OS0016")
-                    {
-                        fldID = 1;
-                        fldLeg = 3;
-                        fldSI = 13;
-                        fldFName = 6;
-                        fldEName = 5;
-                        fldClub = 17;
-                        fldClass = 19;
-                        fldStart = 9;
-                        fldFinish = 10;
-                        fldTime = 11;
-                        fldStatus = 12;
-                        fldFirstPost = 27;
-                    }
-                    
-                    if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
-                   || fldStart == -1 || fldTime == -1
-                   || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
-                    {
-                        throw new System.IO.IOException("Not OS-formatted file!");
-                    }
+                    throw new System.IO.IOException("Not OS-formatted file!");
                 }
 
                 string tmp;
@@ -280,19 +233,8 @@ namespace WOCEmmaClient
             
         }
 
-        private static int GetFieldFromHeader(string[] fields, string[] fieldNames)
-        {
-            int fld = -1;
-            for (int i = 0; i < fieldNames.Length; i++)
-            {
 
-                fld = Array.IndexOf(fields, fieldNames[i]);
-                if (fld >= 0)
-                    break;
-            }
-            return fld;
-        }
-
+        
         public void AnalyzeTeamFile(string filename)
         {
             System.IO.StreamReader sr = null;
