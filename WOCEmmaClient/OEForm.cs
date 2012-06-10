@@ -9,6 +9,7 @@ using System.IO;
 using System.Threading;
 using System.Xml;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 
 namespace WOCEmmaClient
 {
@@ -18,7 +19,7 @@ namespace WOCEmmaClient
         OSParser m_OSParser;
         OEParser m_OEParser;
 
-        enum Format { IOFXML, OECSV, OESPEAKERCSV, OECSVTEAM, OECSVPAR }
+        enum Format { IOFXML, OECSV, OSCSV, OECSVTEAM, OECSVPAR }
         class FormatItem
         {
             public string Name { get; set; }
@@ -46,12 +47,42 @@ namespace WOCEmmaClient
             m_Clients = new List<EmmaMysqlClient>();
 
             supportedFormats.Add(new FormatItem("IOF-XML", "Export files in IOF-XML (version 2 supported)", Format.IOFXML));
-            supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3", Format.OECSV));
-            supportedFormats.Add(new FormatItem("OESpeaker-csv", "CSV files exported from OESpeaker 10.3", Format.OESPEAKERCSV));
-            supportedFormats.Add(new FormatItem("OE-csv (Team)", "Team-CSV files exported from OLEinzel 10.3", Format.OECSVTEAM));
+            supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3 and 11", Format.OECSV));
+            supportedFormats.Add(new FormatItem("OS-csv", "CSV files exported from OLStaffel 10.3 and 11", Format.OSCSV));
+            supportedFormats.Add(new FormatItem("OS-csv (Team)", "Team-CSV files exported from OSStaffel 10.3", Format.OECSVTEAM));
             supportedFormats.Add(new FormatItem("OE-csv (Par)", "Special format for DalaDubbeln from OLEinzel 10.3", Format.OECSVPAR));
             cmbFormat.DataSource = supportedFormats;
             cmbFormat.SelectedIndex = 0;
+
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EmmaClient");
+            
+
+            string file = Path.Combine(path, "oesetts.xml");
+            if (File.Exists(file))
+            {
+                try
+                {
+                    var fs = File.OpenRead(file);
+                    XmlSerializer ser = new XmlSerializer(typeof(Settings));
+                    Settings s = ser.Deserialize(fs) as Settings;
+                    fs.Close();
+                    if (s != null)
+                    {
+                        txtOEDirectory.Text = s.Location;
+                        txtExtension.Text = s.extension;
+                        txtCompID.Text = s.CompID.ToString();
+                        for (int i = 0; i < supportedFormats.Count; i++)
+                        {
+                            if (supportedFormats[i].Name == s.Format)
+                                cmbFormat.SelectedIndex = i;
+                        }
+
+                    }
+                }
+                catch
+                {
+                }
+            }
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -113,7 +144,7 @@ namespace WOCEmmaClient
             FormatItem format = cmbFormat.SelectedItem as FormatItem;
 
 
-            if ( format.Format == Format.OECSV || format.Format == Format.OECSVPAR || format.Format == Format.OECSVTEAM || format.Format == Format.OESPEAKERCSV)
+            if ( format.Format == Format.OECSV || format.Format == Format.OECSVPAR || format.Format == Format.OECSVTEAM || format.Format == Format.OSCSV)
             {
                 m_OSParser = new OSParser();
                 m_OSParser.OnLogMessage +=
@@ -452,7 +483,7 @@ namespace WOCEmmaClient
                     {
                         m_OEParser.AnalyzeFile(fullFilename);
                     }
-                    else if (format.Format == Format.OESPEAKERCSV)
+                    else if (format.Format == Format.OSCSV)
                     {
                         m_OSParser.AnalyzeFile(fullFilename);
                     }
@@ -506,6 +537,43 @@ namespace WOCEmmaClient
                     txtExtension.Text = "*.csv";
                 }
             }
+        }
+
+        private void OEForm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            try
+            {
+                Settings s = new Settings()
+                {
+                    Location = txtOEDirectory.Text,
+                    CompID = int.Parse(txtCompID.Text),
+                    extension = txtExtension.Text,
+                    Format = (cmbFormat.SelectedItem as FormatItem).Name
+
+                };
+
+                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EmmaClient");
+                if (!Directory.Exists(path))
+                    Directory.CreateDirectory(path);
+
+                string file = Path.Combine(path, "oesetts.xml");
+                var fs = File.Create(file);
+                XmlSerializer ser = new XmlSerializer(typeof(Settings));
+                ser.Serialize(fs, s);
+                fs.Close();
+            }
+            catch
+            {
+            }
+        }
+
+        [Serializable]
+        public class Settings
+        {
+            public string Location { get; set; }
+            public int  CompID { get; set; }
+            public string extension { get; set; }
+            public string Format { get; set; }
         }
     }
 }

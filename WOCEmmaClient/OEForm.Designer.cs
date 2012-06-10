@@ -30,6 +30,9 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblFormatInfo = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.cmbFormat = new System.Windows.Forms.ComboBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtExtension = new System.Windows.Forms.TextBox();
             this.button1 = new System.Windows.Forms.Button();
@@ -47,9 +50,6 @@
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
             this.label4 = new System.Windows.Forms.Label();
             this.chkUploadStarttimes = new System.Windows.Forms.CheckBox();
-            this.cmbFormat = new System.Windows.Forms.ComboBox();
-            this.label5 = new System.Windows.Forms.Label();
-            this.lblFormatInfo = new System.Windows.Forms.Label();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fsWatcherOS)).BeginInit();
@@ -71,6 +71,32 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "OE Settings";
+            // 
+            // lblFormatInfo
+            // 
+            this.lblFormatInfo.Location = new System.Drawing.Point(7, 135);
+            this.lblFormatInfo.Name = "lblFormatInfo";
+            this.lblFormatInfo.Size = new System.Drawing.Size(298, 38);
+            this.lblFormatInfo.TabIndex = 11;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 95);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(39, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "Format";
+            // 
+            // cmbFormat
+            // 
+            this.cmbFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbFormat.FormattingEnabled = true;
+            this.cmbFormat.Location = new System.Drawing.Point(10, 111);
+            this.cmbFormat.Name = "cmbFormat";
+            this.cmbFormat.Size = new System.Drawing.Size(295, 21);
+            this.cmbFormat.TabIndex = 9;
+            this.cmbFormat.SelectedIndexChanged += new System.EventHandler(this.cmbFormat_SelectedIndexChanged);
             // 
             // label3
             // 
@@ -212,32 +238,6 @@
             this.chkUploadStarttimes.Text = "Upload starttimes";
             this.chkUploadStarttimes.UseVisualStyleBackColor = true;
             // 
-            // cmbFormat
-            // 
-            this.cmbFormat.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbFormat.FormattingEnabled = true;
-            this.cmbFormat.Location = new System.Drawing.Point(10, 111);
-            this.cmbFormat.Name = "cmbFormat";
-            this.cmbFormat.Size = new System.Drawing.Size(295, 21);
-            this.cmbFormat.TabIndex = 9;
-            this.cmbFormat.SelectedIndexChanged += new System.EventHandler(this.cmbFormat_SelectedIndexChanged);
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(7, 95);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(39, 13);
-            this.label5.TabIndex = 10;
-            this.label5.Text = "Format";
-            // 
-            // lblFormatInfo
-            // 
-            this.lblFormatInfo.Location = new System.Drawing.Point(7, 135);
-            this.lblFormatInfo.Name = "lblFormatInfo";
-            this.lblFormatInfo.Size = new System.Drawing.Size(298, 38);
-            this.lblFormatInfo.TabIndex = 11;
-            // 
             // OEForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -254,6 +254,7 @@
             this.Controls.Add(this.groupBox1);
             this.Name = "OEForm";
             this.Text = "EMMA Client, OLEinzel MultiServer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OEForm_FormClosing);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).EndInit();
