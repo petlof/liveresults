@@ -17,11 +17,41 @@ namespace WOCEmmaClient
         List<EmmaMysqlClient> m_Clients;
         OSParser m_OSParser;
         OEParser m_OEParser;
+
+        enum Format { IOFXML, OECSV, OESPEAKERCSV, OECSVTEAM, OECSVPAR }
+        class FormatItem
+        {
+            public string Name { get; set; }
+            public string Description { get; set; }
+            public Format Format { get; set; }
+            public FormatItem(string Name, string Description, Format format)
+            {
+                this.Name = Name;
+                this.Description = Description;
+                this.Format = format;
+            }
+
+            public override string ToString()
+            {
+                return Name;
+            }
+        }
+
+        List<FormatItem> supportedFormats = new List<FormatItem>();
+
         public OEForm()
         {
             InitializeComponent();
             fileSystemWatcher1.Changed += new FileSystemEventHandler(fileSystemWatcher1_Changed);
             m_Clients = new List<EmmaMysqlClient>();
+
+            supportedFormats.Add(new FormatItem("IOF-XML", "Export files in IOF-XML (version 2 supported)", Format.IOFXML));
+            supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3", Format.OECSV));
+            supportedFormats.Add(new FormatItem("OESpeaker-csv", "CSV files exported from OESpeaker 10.3", Format.OESPEAKERCSV));
+            supportedFormats.Add(new FormatItem("OE-csv (Team)", "Team-CSV files exported from OLEinzel 10.3", Format.OECSVTEAM));
+            supportedFormats.Add(new FormatItem("OE-csv (Par)", "Special format for DalaDubbeln from OLEinzel 10.3", Format.OECSVPAR));
+            cmbFormat.DataSource = supportedFormats;
+            cmbFormat.SelectedIndex = 0;
         }
 
         protected override void OnClosing(CancelEventArgs e)
@@ -78,7 +108,10 @@ namespace WOCEmmaClient
 
             timer1_Tick(null, null);
 
-            if (rdoOSCSV.Checked || radioButton2.Checked || rdoOSTeam.Checked || rdoOECsvPar.Checked)
+            FormatItem format = cmbFormat.SelectedItem as FormatItem;
+
+
+            if ( format.Format == Format.OECSV || format.Format == Format.OECSVPAR || format.Format == Format.OECSVTEAM || format.Format == Format.OESPEAKERCSV)
             {
                 m_OSParser = new OSParser();
                 m_OSParser.OnLogMessage +=
@@ -104,17 +137,14 @@ namespace WOCEmmaClient
                 fsWatcherOS.EnableRaisingEvents = true;
 
             }
-            else if (radioButton1.Checked)
-            {    
+            else if (format.Format == Format.IOFXML)
+            {
                 fileSystemWatcher1.Path = txtOEDirectory.Text;
-                //fileSystemWatcher1.Filter = "*.xml.emma";
                 fileSystemWatcher1.Filter = txtExtension.Text;
                 fileSystemWatcher1.NotifyFilter = NotifyFilters.LastWrite;
                 fileSystemWatcher1.IncludeSubdirectories = false;
                 fileSystemWatcher1.EnableRaisingEvents = true;
             }
-            
-
         }
 
         void m_OSParser_OnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> splits)
@@ -403,19 +433,21 @@ namespace WOCEmmaClient
                     //string tmp = sr.ReadToEnd();
                     sr.Close();
 
-                    if (radioButton2.Checked)
+                    FormatItem format = cmbFormat.SelectedItem as FormatItem;
+
+                    if (format.Format == Format.OECSV)
                     {
                         m_OEParser.AnalyzeFile(fullFilename);
                     }
-                    else if (rdoOSCSV.Checked)
+                    else if (format.Format == Format.OESPEAKERCSV)
                     {
                         m_OSParser.AnalyzeFile(fullFilename);
                     }
-                    else if (rdoOSTeam.Checked)
+                    else if (format.Format == Format.OECSVTEAM)
                     {
                         m_OSParser.AnalyzeTeamFile(fullFilename);
                     }
-                    else if (rdoOECsvPar.Checked)
+                    else if (format.Format == Format.OECSVPAR)
                     {
                         m_OEParser.AnalyzeFile(fullFilename,true);
                     }
@@ -443,15 +475,23 @@ namespace WOCEmmaClient
             }
         }
 
-        private void radioButton1_CheckedChanged(object sender, EventArgs e)
+
+        private void cmbFormat_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (rdoOECsvPar.Checked || rdoOSCSV.Checked || rdoOSTeam.Checked || radioButton2.Checked)
+            lblFormatInfo.Text = "";
+            if (cmbFormat.SelectedItem != null)
             {
-                txtExtension.Text = "*.csv";
-            }
-            else
-            {
-                txtExtension.Text = "*.xml";
+                lblFormatInfo.Text = (cmbFormat.SelectedItem as FormatItem).Description;
+
+
+                if ((cmbFormat.SelectedItem as FormatItem).Format == Format.IOFXML)
+                {
+                    txtExtension.Text = "*.xml";
+                }
+                else
+                {
+                    txtExtension.Text = "*.csv";
+                }
             }
         }
     }
