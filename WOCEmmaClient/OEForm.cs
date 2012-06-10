@@ -251,10 +251,10 @@ namespace WOCEmmaClient
                             if (!string.IsNullOrEmpty(starttime) && chkUploadStarttimes.Checked)
                                 istarttime = ParseTime(starttime);
 
-                            int itime = -1;
+                            int itime = -9;
                             itime = ParseTime(time);
 
-                            int istatus = 0;
+                            int istatus = 10;
 
                             switch (status)
                             {
@@ -266,8 +266,8 @@ namespace WOCEmmaClient
                                     istatus = 4;
                                     break;
                                 case "DidNotFinish":
-                                    istatus = 2;
-                                    itime = -2;
+                                    istatus = 3;
+                                    itime = -3;
                                     break;
                                 case "DidNotStart":
                                     istatus = 1;
@@ -364,7 +364,7 @@ namespace WOCEmmaClient
 
         private static int ParseTime(string time)
         {
-            int itime = -1;
+            int itime = -9;
             string[] timeParts = time.Split(':');
             if (timeParts.Length == 3)
             {
