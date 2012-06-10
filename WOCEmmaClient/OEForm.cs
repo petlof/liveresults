@@ -159,6 +159,10 @@ namespace WOCEmmaClient
                 else
                     c.UpdateRunnerInfo(id, name, club, Class);
 
+
+                if (start >= 0)
+                    c.SetRunnerStartTime(id, start);
+
                 c.SetRunnerResult(id, time, status);
                 if (splits != null)
                 {

@@ -172,14 +172,10 @@ namespace WOCEmmaClient
                     int start = strTimeToInt(parts[fldStart]);
                     int time = strTimeToInt(parts[fldTime]);
 
-                    int status = 0;
+                    int status = 9;
                     try
                     {
                         status = Convert.ToInt32(parts[fldStatus]);
-                        if (status != 0)
-                        {
-                            bool test = true;
-                        }
                     }
                     catch
                     {
@@ -520,7 +516,7 @@ namespace WOCEmmaClient
             }
             catch (Exception ee)
             {
-                return -1;
+                return -9;
             }
             
         }
