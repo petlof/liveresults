@@ -203,6 +203,8 @@
             // chkUploadStarttimes
             // 
             this.chkUploadStarttimes.AutoSize = true;
+            this.chkUploadStarttimes.Checked = true;
+            this.chkUploadStarttimes.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkUploadStarttimes.Location = new System.Drawing.Point(332, 107);
             this.chkUploadStarttimes.Name = "chkUploadStarttimes";
             this.chkUploadStarttimes.Size = new System.Drawing.Size(107, 17);

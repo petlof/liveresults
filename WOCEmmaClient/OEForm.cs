@@ -86,9 +86,15 @@ namespace WOCEmmaClient
                 return;
             }
 
+            if (string.IsNullOrEmpty(txtCompID.Text))
+            {
+                MessageBox.Show(this, "You must enter a competition-ID", "Start OE Monitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             listBox1.Items.Clear();
             m_Clients.Clear();
-            logit("Connecting to obasen to fetch server information");
+            logit("Reading servers from config (eventually resolving online)");
             Application.DoEvents();
             EmmaMysqlClient.EmmaServer[] servers = EmmaMysqlClient.GetServersFromConfig();
             logit("Got servers from obasen...");
@@ -100,10 +106,6 @@ namespace WOCEmmaClient
                 client.OnLogMessage += new LogMessageDelegate(client_OnLogMessage);
                 client.Start();
                 m_Clients.Add(client);
-                //lstServers.Items.Add(client);
-                //m_Client = new EmmaMysqlClient(ConfigurationSettings.AppSettings.Get("emmaServer"), 3306, ConfigurationSettings.AppSettings.Get("emmaUser"), ConfigurationSettings.AppSettings.Get("emmaPw"), ConfigurationSettings.AppSettings.Get("emmaDB"), Convert.ToInt32(txtCompID.Text));
-                //m_Client.OnLogMessage += new LogMessageDelegate(OnLogMessage);
-                //m_Client.Start();
             }
 
             timer1_Tick(null, null);
@@ -132,7 +134,6 @@ namespace WOCEmmaClient
                 m_OEParser.OnResult += new ResultDelegate(m_OSParser_OnResult);
 
                 fsWatcherOS.Path = txtOEDirectory.Text;
-                //fsWatcherOS.Filter = "*.csv.emma";
                 fsWatcherOS.Filter = txtExtension.Text;
                 fsWatcherOS.EnableRaisingEvents = true;
 
@@ -225,6 +226,7 @@ namespace WOCEmmaClient
                                 club = clubNode.InnerText;
                             string status = personNode.SelectSingleNode("Result/CompetitorStatus").Attributes["value"].Value;
                             string time = personNode.SelectSingleNode("Result/Time").InnerText;
+                            string starttime = personNode.SelectSingleNode("Result/StartTime/Clock").InnerText;
                             string si = personNode.SelectSingleNode("Result/CCard/CCardId").InnerText;
                             int iSi;
                             if (!Int32.TryParse(si, out iSi))
@@ -232,7 +234,6 @@ namespace WOCEmmaClient
                                 //NO SICARD!
                                 logit("No SICard for Runner: " + familyname + " " + givenname);
                             }
-                            //logit("person: " + givenname + " " + familyname + ", " + club + " [" + status + "-" + time);
                             int dbid = 0;
                             if (pid < Int32.MaxValue && pid > 0)
                             {
@@ -246,6 +247,10 @@ namespace WOCEmmaClient
                             {
                                 logit("Cant generate DBID for runner: " + givenname + " " + familyname);
                             }
+                            int istarttime = -1;
+                            if (!string.IsNullOrEmpty(starttime) && chkUploadStarttimes.Checked)
+                                istarttime = ParseTime(starttime);
+
                             int itime = -1;
                             itime = ParseTime(time);
 
@@ -321,6 +326,10 @@ namespace WOCEmmaClient
                                 {
                                     c.AddRunner(new Runner(dbid, givenname + " " + familyname, club, className));
                                 }
+
+                                if (istarttime > -1)
+                                    c.SetRunnerStartTime(dbid, istarttime);
+
                                 c.SetRunnerResult(dbid, itime, istatus);
                                 for (int split = 0; split < lsplitCodes.Count; split++)
                                 {
