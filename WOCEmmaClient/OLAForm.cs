@@ -17,11 +17,11 @@ namespace WOCEmmaClient
         //private EmmaMysqlClient m_Client = null;
         private OlaParser m_Parser = null;
 
-        private LogDelegate m_LogDelegate;
+        private LogMessageDelegate m_LogDelegate;
         public OlaForm()
         {
             InitializeComponent();
-            m_LogDelegate = new LogDelegate(LogMsg);
+            m_LogDelegate = new LogMessageDelegate(LogMsg);
             loadSettings();           
         }
 

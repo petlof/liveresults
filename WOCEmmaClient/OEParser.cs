@@ -23,17 +23,6 @@ namespace WOCEmmaClient
             fsWatcher.Renamed += new System.IO.RenamedEventHandler(fsWatcher_Renamed);
         }
 
-        public void Start()
-        {
-            string[] files = System.IO.Directory.GetFiles(m_Directory, "*.csv");
-            foreach (string f in files)
-            {
-                AnalyzeFile(System.IO.Path.Combine(m_Directory, f));
-                System.IO.File.Delete(System.IO.Path.Combine(m_Directory, f));
-            }
-
-        }
-
         private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
         {
             if (OnResult != null)
