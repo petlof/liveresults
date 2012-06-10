@@ -27,7 +27,7 @@ namespace WOCEmmaClient
 
         private void button2_MouseEnter(object sender, EventArgs e)
         {
-            lblInfo.Text = "Export liveresults from OE-Speaker automatic XML-export";
+            lblInfo.Text = "Export liveresults by generic IOF-XML and from SportSoftware OE/OS 20003/2010";
         }
 
         private void button3_MouseEnter(object sender, EventArgs e)

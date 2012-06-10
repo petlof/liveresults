@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.txtExtension = new System.Windows.Forms.TextBox();
             this.rdoOECsvPar = new System.Windows.Forms.RadioButton();
             this.rdoOSTeam = new System.Windows.Forms.RadioButton();
             this.radioButton2 = new System.Windows.Forms.RadioButton();
@@ -48,8 +50,8 @@
             this.txtCompID = new System.Windows.Forms.TextBox();
             this.button3 = new System.Windows.Forms.Button();
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
-            this.txtExtension = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fsWatcherOS)).BeginInit();
@@ -57,8 +59,6 @@
             // 
             // groupBox1
             // 
-            this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Controls.Add(this.txtExtension);
             this.groupBox1.Controls.Add(this.rdoOECsvPar);
@@ -75,6 +75,23 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "OE Settings";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 59);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(98, 13);
+            this.label3.TabIndex = 8;
+            this.label3.Text = "Exportfile extension";
+            // 
+            // txtExtension
+            // 
+            this.txtExtension.Location = new System.Drawing.Point(10, 75);
+            this.txtExtension.Name = "txtExtension";
+            this.txtExtension.Size = new System.Drawing.Size(112, 20);
+            this.txtExtension.TabIndex = 7;
+            this.txtExtension.Text = "*.xml";
             // 
             // rdoOECsvPar
             // 
@@ -171,7 +188,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(12, 196);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(528, 225);
+            this.listBox1.Size = new System.Drawing.Size(728, 225);
             this.listBox1.TabIndex = 1;
             // 
             // button2
@@ -194,9 +211,9 @@
             this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox2.FormattingEnabled = true;
-            this.listBox2.Location = new System.Drawing.Point(329, 12);
+            this.listBox2.Location = new System.Drawing.Point(329, 32);
             this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(203, 95);
+            this.listBox2.Size = new System.Drawing.Size(403, 69);
             this.listBox2.TabIndex = 3;
             // 
             // timer1
@@ -239,28 +256,32 @@
             this.fsWatcherOS.SynchronizingObject = this;
             this.fsWatcherOS.Changed += new System.IO.FileSystemEventHandler(this.fsWatcherOS_Changed);
             // 
-            // txtExtension
+            // label4
             // 
-            this.txtExtension.Location = new System.Drawing.Point(10, 75);
-            this.txtExtension.Name = "txtExtension";
-            this.txtExtension.Size = new System.Drawing.Size(112, 20);
-            this.txtExtension.TabIndex = 7;
-            this.txtExtension.Text = "*.xml";
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(329, 12);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(43, 13);
+            this.label4.TabIndex = 9;
+            this.label4.Text = "Servers";
             // 
-            // label3
+            // checkBox1
             // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(7, 59);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(98, 13);
-            this.label3.TabIndex = 8;
-            this.label3.Text = "Exportfile extension";
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(332, 107);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(107, 17);
+            this.checkBox1.TabIndex = 10;
+            this.checkBox1.Text = "Upload starttimes";
+            this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // OEForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(544, 444);
+            this.ClientSize = new System.Drawing.Size(744, 444);
+            this.Controls.Add(this.checkBox1);
+            this.Controls.Add(this.label4);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.txtCompID);
             this.Controls.Add(this.label2);
@@ -302,5 +323,7 @@
         private System.Windows.Forms.RadioButton rdoOECsvPar;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.TextBox txtExtension;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.CheckBox checkBox1;
     }
 }

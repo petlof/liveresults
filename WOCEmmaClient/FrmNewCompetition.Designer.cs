@@ -73,7 +73,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(114, 61);
             this.button2.TabIndex = 2;
-            this.button2.Text = "OLEinzel / OLStaffel";
+            this.button2.Text = "XML and OE/OS";
             this.button2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
@@ -91,17 +91,16 @@
             // 
             // lblInfo
             // 
-            this.lblInfo.AutoSize = true;
             this.lblInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.lblInfo.Location = new System.Drawing.Point(13, 109);
             this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(0, 20);
+            this.lblInfo.Size = new System.Drawing.Size(466, 46);
             this.lblInfo.TabIndex = 2;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 140);
+            this.label2.Location = new System.Drawing.Point(13, 155);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(82, 13);
             this.label2.TabIndex = 3;
@@ -113,9 +112,9 @@
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(16, 157);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(16, 171);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(463, 100);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(463, 86);
             this.flowLayoutPanel2.TabIndex = 4;
             // 
             // FrmNewCompetition
