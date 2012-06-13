@@ -2,10 +2,11 @@
 $CHARSET = 'iso-8859-1';
 class Emma
 {
-	public static $db_server = "54.247.190.244";
+	public static $db_server = "54.247.188.244";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
+	public static $MYSQL_CHARSET = "latin1";
 	var $m_CompId;
    var $m_CompName;
    var $m_CompDate;
@@ -14,7 +15,7 @@ class Emma
         public static function GetCompetitions()
         {
           $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-	  mysql_select_db(self::$db_database);
+	  mysql_select_db(self::$db_database);	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
@@ -32,7 +33,8 @@ class Emma
 public static function GetRadioControls($compid)
         {	$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
-	  mysql_select_db(self::$db_database);
+	  mysql_select_db(self::$db_database);	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
+
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
@@ -62,6 +64,7 @@ public static function DelRadioControl($compid,$code,$classname)
         {
         $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	  mysql_select_db(self::$db_database);
+	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
 
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
@@ -79,6 +82,7 @@ public static function DelRadioControl($compid,$code,$classname)
         {
           $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	  mysql_select_db(self::$db_database);
+	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
 
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
@@ -94,6 +98,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
         {
           $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	  mysql_select_db(self::$db_database);
+	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
 
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
@@ -108,6 +113,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
         {
          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	  mysql_select_db(self::$db_database);
+	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
 
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
@@ -127,6 +133,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
         {
          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	  mysql_select_db(self::$db_database);
+	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
 
 	  if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
@@ -146,7 +153,8 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	{
 		$this->m_CompId = $compID;
 		$this->m_Conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-		mysql_select_db(self::$db_database,$this->m_Conn);
+		mysql_select_db(self::$db_database,$this->m_Conn);		mysql_set_charset(self::$MYSQL_CHARSET,$this->m_Conn);
+
 		/* check connection */
 		if (mysql_errno()) {
 	   		printf("Connect failed: %s\n", mysql_error());
