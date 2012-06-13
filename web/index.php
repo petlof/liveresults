@@ -12,12 +12,12 @@ include_once("./templates/emmalang_sv.php");
 include_once("./templates/emmalang_$lang.php");
 
 
-echo("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 ?>
 
 <html>
 <head><title><?=$_TITLE?></title>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html;charset=<?=$CHARSET?>">
 <link rel="stylesheet" type="text/css" href="css/style-eoc.css">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
@@ -86,12 +86,12 @@ el.style.backgroundColor = "";
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?> |
 
 			<p style="font-size: 12px; background-color: #CFCFCF; padding: 10px">
-				Tj√§nsten liveresultat p√• n√§tet √§r uppgraderad till en ny version med mer och b√§ttre funktionalitet
+				Tj‰nsten liveresultat pÂ n‰tet ‰r uppgraderad till en ny version med mer och b‰ttre funktionalitet
 			</p>
 
 						<h1 class="categoriesheader"><?=$_CHOOSECMP?></h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" id="tblComps">
-			<tr><th>Datum</th><th>Namn</th><th>Arrang√∂r</th></tr>
+			<tr><th>Datum</th><th>Namn</th><th>Arrangˆr</th></tr>
 <?php
 	$comps = Emma::GetCompetitions();
 	foreach ($comps as $comp)

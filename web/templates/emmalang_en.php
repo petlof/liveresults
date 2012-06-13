@@ -46,4 +46,10 @@ $_SMALLER = "Smaller";
 $_OPENINNEW = "Open in new window";
 $_FORORGANIZERS = "Information for organizers";
 $_FORDEVELOPERS = "Information for developers (api)";
+$_RESETTODEFAULT = "Reset to default sorting";
+$_OPENINNEWWINDOW = "Open in new window";
+$_INSTRUCTIONSHELP = "Instruction / help";
+$_LOADINGCLASSES = "Loading classes";
+$_START = "Start";
+
 ?>

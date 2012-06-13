@@ -17,6 +17,10 @@ $currentComp = new Emma($_GET['comp']);
 
 $isSingleClass = isset($_GET['class']);
 $showPath = true;
+
+if (isset($_GET['showpath']) && $_GET['showpath'] == "false")
+  $showPath = false;
+
 $singleClass = "";
 if ($isSingleClass)
 	$singleClass = $_GET['class'];
@@ -24,10 +28,10 @@ if ($isSingleClass)
 $showLastPassings = !$isSingleClass || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
 
 
-$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT);
+$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
 
-echo("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
+echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
@@ -35,7 +39,7 @@ echo("<?xml version=\"1.0\" encoding=\"utf-8\" ?>");
 <head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</title>
 
 <META HTTP-EQUIV="expires" CONTENT="-1">
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8">
+<meta http-equiv="Content-Type" content="text/html;charset=<?=$CHARSET?>">
 <link rel="stylesheet" type="text/css" href="css/style-eoc.css">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
@@ -59,7 +63,7 @@ $(document).ready(function()
 	<?php }
 	else
 	{?>
-		$("#divClasses").html("Laddar klasser...");
+		$("#divClasses").html("<?=$_LOADINGCLASSES?>...");
 		updateClassList();
 
 		if(window.location.hash) {
@@ -94,7 +98,7 @@ function updateLastPassings()
 	{
 		$.ajax({
 			  url: "api.php",
-			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&last_hash="+lastPassingsUpdateHash,
+			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&lang=<?=$lang?>&last_hash="+lastPassingsUpdateHash,
 			  success: resp_updateLastPassings,
 			  error: function(xhr, ajaxOptions, thrownError) { passingsUpdateTimer = setTimeout(updateLastPassings,updateInterval);},
 			  dataType: "json"
@@ -161,7 +165,6 @@ function chooseClass(className)
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
 	$.ajax({
 		  url: "api.php",
-		  //cache: false,
 		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className,
 		  success: updateClassResults,
 		  dataType: "json"
@@ -183,7 +186,6 @@ function checkForClassUpdate()
 		{
 			$.ajax({
 				  url: "api.php",
-				  //cache: false,
 				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
 				  success: resp_updateClassResults,
 				  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);},
@@ -424,7 +426,7 @@ function resp_updateClassResults(data)
 
 function updateClassResults(data)
 {
-	if (data.status == "OK")
+	if (data != null && data.status == "OK")
 	{
 		if (data.className != null)
 		{
@@ -444,7 +446,7 @@ function updateClassResults(data)
 			updateResultVirtualPosition(data.results);
 
 			var col = 3;
-			columns.push({ "sTitle": "Start", "sClass": "left", "sType": "numeric","aDataSort": [col], "aTargets" : [col],"bUseRendered": false, "mDataProp": "start",
+			columns.push({ "sTitle": "<?=$_START?>", "sClass": "left", "sType": "numeric","aDataSort": [col], "aTargets" : [col],"bUseRendered": false, "mDataProp": "start",
 			"fnRender": function ( o, val )
 										{
 											if (o.aData.start =="")
@@ -479,7 +481,7 @@ function updateClassResults(data)
 			}
 
 			timecol = col;
-			columns.push({ "sTitle": "<?=$_CONTROLFINISH?>", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col ], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
+			columns.push({ "sTitle": "<?=$_CONTROLFINISH?>", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
 							"fnRender": function ( o, val )
 							{
 								if (o.aData.place == "-" || o.aData.place == "")
@@ -515,12 +517,11 @@ function updateClassResults(data)
 					"bInfo" : false,
 					"bAutoWidth": false,
 					"aaData": data.results,
-					//"aaSorting" : [[timecol+1,"asc"],[timecol, "asc"]],
 					"aaSorting" : [[col-1, "asc"]],
 					"aoColumnDefs": columns,
 					 "fnPreDrawCallback": function( oSettings ) {
 					      if ( oSettings.aaSorting[0][0] != col-1) {
-					        $("#txtResetSorting").html("&nbsp;&nbsp;<a href=\"javascript:resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> Reset to default sorting</a>");
+					        $("#txtResetSorting").html("&nbsp;&nbsp;<a href=\"javascript:resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> <?=$_RESETTODEFAULT?></a>");
       					  }
       					  }
 			} );
@@ -549,6 +550,7 @@ function resetSorting()
 var runnerStatus = Array();
 runnerStatus[0]= "<?=$_STATUSOK?>";
 runnerStatus[1]= "<?=$_STATUSDNS?>";
+runnerStatus[2]= "<?=$_STATUSDNF?>";
 runnerStatus[11] =  "<?=$_STATUSWO?>";
 runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
 runnerStatus[9] = "";
@@ -558,48 +560,29 @@ runnerStatus[5] = "<?=$_STATUSOT?>";
 runnerStatus[9] = "";
 runnerStatus[10] = "";
 
-
 function formatTime(time,status)
 {
+
 	if (status != 0)
   	{
   		return runnerStatus[status];
   	}
   	else
   	{
+  	<?php if ($lang == 'fi'){?>
+  				hours= Math.floor(time/360000);
+		  		minutes = Math.floor((time-hours*360000)/6000);
+				seconds = Math.floor((time-minutes*6000-hours*360000)/100);
+
+  	 		return str_pad(hours,2) +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
+  	<?php }else {?>
   	 minutes = Math.floor(time/6000);
 	 seconds = Math.floor((time-minutes*6000)/100);
 
   	 return str_pad(minutes,2) +":" +str_pad(seconds,2);
+  	 <?php }?>
   	}
 }
-
-function formatTime(time,status, showHours)
-{
-	if (status != 0)
-  	{
-  		return runnerStatus[status];
-  	}
-  	else
-  	{
-  		if (showHours)
-  		{
-			hours= Math.floor(time/360000);
-	  		minutes = Math.floor((time-hours*360000)/6000);
-			seconds = Math.floor((time-minutes*6000-hours*360000)/100);
-
-  	 		return str_pad(hours,2) +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
-  		}
-  		else
-  		{
-			minutes = Math.floor(time/6000);
-			seconds = Math.floor((time-minutes*6000)/100);
-
-			return str_pad(minutes,2) +":" +str_pad(seconds,2);
-  	 	}
-  	}
-}
-
 
 
 function str_pad(number, length) {
@@ -680,10 +663,16 @@ function newWin()
 
 			?>
 
+<?php if (!$showPath) {?>
+<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
+<?php }?>
+<?php if (!$isSingleClass) {?>
+			| <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
+			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
+			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?> |
+<?php }?>
 <?php if($showLastPassings){?>
-			<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>] <?= isset($_GET['class']) ? ", ".$_GET['class'] : "" ?></h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000; color:#fff; padding: 10px; margin-top: 3px">
-
 			<tr>
 			<?php //ADD CUSTOMIZED LOGO IF NEEDED<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>?>
 			<td valign=top><b><?=$_LASTPASSINGS?></b><br>
@@ -693,7 +682,7 @@ function newWin()
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
-<a href="dok/help.html" target="_blank">Instructions / Help</a>
+<a href="dok/help.html" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
 </td>
 </tr></table><br>
 <?php }?>
@@ -711,7 +700,7 @@ function newWin()
 
 
 			<td valign=top>
-		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="Öppna i nytt fönster" border="0" title="Öppna i nytt fönster"/> Open in new window</a> <?php }?><span id="txtResetSorting"></span></span></div>
+		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"/> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
 <table id="divResults" width="100%">
 </table><br/><br/>
 

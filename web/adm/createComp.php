@@ -1,10 +1,10 @@
-<? 
+<?
 include_once("../templates/classEmma.class.php");
 
 if (isset($_POST['btnSubmit']))
 {
 	Emma::CreateCompetition($_POST['name'],$_POST['org'],$_POST['date']);
-	header("Location: /liveresultat/adm/admincompetitions.php");
+	header("Location: admincompetitions.php");
 	exit;
 }
 
