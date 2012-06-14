@@ -266,7 +266,14 @@ function formatTime($time,$status,& $RunnerStatus)
 
   $seconds = floor(($time-$hours*360000 - $minutes*6000)/100);
 
-  return str_pad("".$hours,2,"0",STR_PAD_LEFT) .":" .str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
+  if ($hours > 0)
+  {
+  	return $hours .":" .str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
+  }
+  else
+  {
+  	return $minutes.":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
+  }
 
 }
 

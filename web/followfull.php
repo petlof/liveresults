@@ -574,7 +574,11 @@ function formatTime(time,status)
 		  		minutes = Math.floor((time-hours*360000)/6000);
 				seconds = Math.floor((time-minutes*6000-hours*360000)/100);
 
-  	 		return str_pad(hours,2) +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
+			if (hours > 0)
+  	 			return hours +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
+  	 		else
+  	 			return minutes +":" +str_pad(seconds,2);
+
   	<?php }else {?>
   	 minutes = Math.floor(time/6000);
 	 seconds = Math.floor((time-minutes*6000)/100);
