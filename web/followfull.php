@@ -560,8 +560,27 @@ runnerStatus[5] = "<?=$_STATUSOT?>";
 runnerStatus[9] = "";
 runnerStatus[10] = "";
 
-function formatTime(time,status)
+function formatTime(time,status, showHours, padZeros)
 {
+
+	if (arguments.length==2)
+	{
+	<?php if ($lang == 'fi'){?>
+		showHours = true;
+		padZeros = false;
+		<?php } else { ?>
+		showHours = false;
+		padZeros = true;
+		<?php }?>
+	}
+	else if (arguments.length==3)
+		{
+		<?php if ($lang == 'fi'){?>
+			padZeros = false;
+			<?php } else { ?>
+			padZeros = true;
+			<?php }?>
+	}
 
 	if (status != 0)
   	{
@@ -569,22 +588,43 @@ function formatTime(time,status)
   	}
   	else
   	{
-  	<?php if ($lang == 'fi'){?>
+  		if (showHours)
+  		{
   				hours= Math.floor(time/360000);
 		  		minutes = Math.floor((time-hours*360000)/6000);
 				seconds = Math.floor((time-minutes*6000-hours*360000)/100);
 
+
 			if (hours > 0)
+			{
+				if (padZeros)
+					hours = str_pad(hours,2);
+
   	 			return hours +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
+  	 		}
   	 		else
+  	 		{
+  	 			if (padZeros)
+					minutes = str_pad(minutes,2);
   	 			return minutes +":" +str_pad(seconds,2);
+  	 		}
 
-  	<?php }else {?>
-  	 minutes = Math.floor(time/6000);
-	 seconds = Math.floor((time-minutes*6000)/100);
+		}
+		else
+		{
 
-  	 return str_pad(minutes,2) +":" +str_pad(seconds,2);
-  	 <?php }?>
+  	 		minutes = Math.floor(time/6000);
+	 		seconds = Math.floor((time-minutes*6000)/100);
+
+			if (padZeros)
+			{
+  	 			return str_pad(minutes,2) +":" +str_pad(seconds,2);
+  	 		}
+  	 		else
+  	 		{
+  	 			return minutes +":" +str_pad(seconds,2);
+  	 		}
+  	 	}
   	}
 }
 
