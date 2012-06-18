@@ -165,7 +165,7 @@ function chooseClass(className)
 	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
 	$.ajax({
 		  url: "api.php",
-		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className,
+		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className<?php if ($currentComp->IsMultiDayEvent()) {echo('+"&includetotal=true"');}?>,
 		  success: updateClassResults,
 		  dataType: "json"
 	});
@@ -186,7 +186,7 @@ function checkForClassUpdate()
 		{
 			$.ajax({
 				  url: "api.php",
-				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash ,
+				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash<?php if ($currentComp->IsMultiDayEvent()) {echo('+"&includetotal=true"');}?> ,
 				  success: resp_updateClassResults,
 				  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);},
 				  dataType: "json"
@@ -507,6 +507,36 @@ function updateClassResults(data)
 							}
 						});
 
+			<?php if ($currentComp->IsMultiDayEvent())
+			{?>
+						columns.push({ "sTitle": "Total", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "totalresult",
+										"fnRender": function ( o, val )
+										{
+											if (o.aData.totalplace == "-" || o.aData.totalplace == "")
+											{
+												return formatTime(o.aData.totalresult,o.aData.totalstatus);
+											}
+											else
+											{
+												return formatTime(o.aData.totalresult,o.aData.totalstatus) +" (" + o.aData.totalplace +")";
+											}
+										}
+									});
+
+						col++;
+						columns.push({ "sTitle": "TotalStatus", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "totalstatus"});
+						/*columns.push({ "sTitle": "T", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
+										"fnRender": function ( o, val )
+															{
+																if (o.aData.status != 0)
+																	return "";
+																else
+																	return "+" + formatTime(o.aData.timeplus,o.aData.status);
+										}
+									});*/
+
+			<?php }?>
+
 			columns.push({ "sTitle": "VP", "bVisible" : false, "aTargets" : [col++], "mDataProp": "virtual_position" });
 
 			currentTable = $('#divResults').dataTable( {
@@ -695,7 +725,7 @@ function newWin()
 
 			?>
 
-				<h1 class="categoriesheader">Ett fel uppstod? Har du valt t√§vling?</h1>
+				<h1 class="categoriesheader">Ett fel uppstod? Har du valt t‰vling?</h1>
 
 			<?php
 

@@ -33,6 +33,7 @@ namespace WOCEmmaClient
             m_Class = Class;
         }
 
+
         public int ID
         {
             get

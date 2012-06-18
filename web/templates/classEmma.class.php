@@ -2,7 +2,7 @@
 $CHARSET = 'iso-8859-1';
 class Emma
 {
-	public static $db_server = "54.247.188.244";
+	public static $db_server = "ec2-54-247-138-223.eu-west-1.compute.amazonaws.com";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
@@ -10,7 +10,10 @@ class Emma
 	var $m_CompId;
    var $m_CompName;
    var $m_CompDate;
-   var $m_TimeDiff = 0;
+   var $m_TimeDiff = 0;   var $m_IsMultiDayEvent = false;
+   var $m_MultiDayStage = -1;
+   var $m_MultiDayParent = -1;
+
 	var $m_Conn;
         public static function GetCompetitions()
         {
@@ -168,19 +171,28 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		    $this->m_CompDate = date("Y-m-d",strtotime($tmp["compDate"]));
 
 		    $this->m_TimeDiff = $tmp["timediff"]*3600;
+		    if (isset($tmp['multidaystage']))
+		    {
+		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null)
+		    	{
+		    		$this->m_IsMultiDayEvent = true;
+		    		$this->m_MultiDayStage = $tmp['multidaystage'];
+		    		$this->m_MultiDayParent = $tmp['multidayparent'];
+		    	}
+		    }
+
 		  }
 	}
+	function IsMultiDayEvent()
+	{
+		return $this->m_IsMultiDayEvent;
+	}
 
 	function CompName()
-	{
-
-	  return $this->m_CompName;
-	  //		return "Elitserien sprint, kval";
-	}
+	{	  return $this->m_CompName;	}
 	function CompDate()
 	{
 	  return $this->m_CompDate;
-	  //return "2006-05-25";
 	}
 	function Classes()
 	{
@@ -280,6 +292,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 					if (!isset($ret[$dbId]))
 					{
 						$ret[$dbId] = Array();
+						$ret[$dbId]["DbId"] = $dbId;
 						$ret[$dbId]["Name"] = $row['Name'];
 						$ret[$dbId]["Club"] = $row['Club'];
 						$ret[$dbId]["Time"] = "";
@@ -316,18 +329,137 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 				die(mysql_error());
 
-			function timeSorter($a,$b)
-				{
-					if ($a['Status'] != $b['Status'])
-						return $a['Status'] - $b['Status'];
-					else
-						return $a['Time'] - $b['Time'];
-				}
 
+
+				function timeSorter($a,$b)
+					{
+						if ($a['Status'] != $b['Status'])
+							return $a['Status'] - $b['Status'];
+						else
+							return $a['Time'] - $b['Time'];
+					}
 
 			usort($ret,'timeSorter');
 			return $ret;
 
+	}
+
+
+
+	function getTotalResultsForClass($className)
+	{
+				$ret = Array();
+
+				$q = "Select TavId,multidaystage from Login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
+
+				$ar = Array();
+				$comps = "(";
+				if ($result = mysql_query($q,$this->m_Conn))
+				{
+					$f = 1;
+					while ($row = mysql_fetch_array($result))
+					{
+						$ar[$row["TavId"]] = $row["TavId"];
+						if ($f == 0)
+							$comps .=",";
+						$comps .= $row["TavId"];
+						$f = 0;
+					}
+				}
+				mysql_free_result($result);
+				$comps .= ")";
+
+
+				$q = "SELECT Results.Time, Results.Status, Results.TavId, Results.DbID From Runners,Results where results.Control = 1000 and Results.DbID = Runners.DbId AND Results.TavId in $comps AND Runners.TavId = Results.TavId AND Runners.Class = '".$className."'  ORDER BY Results.Dbid";
+
+				if ($result = mysql_query($q,$this->m_Conn))
+
+				{
+					while ($row = mysql_fetch_array($result))
+
+					{
+						$dbId = $row['DbID'];
+
+						if (!isset($ret[$dbId]))
+						{
+							$ret[$dbId] = Array();
+							$ret[$dbId]["DbId"]  = $dbId;
+							$ret[$dbId]["Time"] = 0;
+							$ret[$dbId]["Status"] = 0;
+							foreach ($ar as $c)
+							{
+								$ret[$dbId]["c_".$c] = false;
+							}
+						}
+
+						$ret[$dbId]["Time"] += (int)$row['Time'];
+						$status = (int)$row['Status'];
+						if ($status > $ret[$dbId]["Status"] )
+						{
+							$ret[$dbId]["Status"] = $status;
+						}
+						$ret[$dbId]["c_".$row['TavId']] = true;
+					}
+
+					mysql_free_result($result);
+
+					//print_r($ret);
+
+					/*set DNS on those missing any comp*/
+					foreach($ret as $key => $val)
+					{
+						$haveAll = true;
+						foreach ($ar as $c)
+						{
+							if (!$val["c_".$c] )
+							{
+								$haveAll = false;
+								break;
+							}
+						}
+						if (!$haveAll)
+						{
+							$ret[$key]['Status'] = 1;
+						}
+					}
+
+				}
+
+				else
+
+					die(mysql_error());
+
+
+
+			$sres = Array();
+			foreach ($ret as $key=>$res)
+			{
+					$sres[$res["DbId"]]["DbId"] = $res["DbId"];
+					$sres[$res["DbId"]]["Time"] = $res["Time"];
+					$sres[$res["DbId"]]["Status"] = $res["Status"];
+			}
+
+
+			usort($sres,'timeSorter');
+
+			$pl = 0;
+			$lastTime = -1;
+			foreach ($sres as $tr)
+			{
+				if ($tr['Status'] == 0)
+				{
+					if ($tr['Time'] > $lastTime)
+						$pl++;
+					$ret[$tr['DbId']]["Place"] = $pl;
+				}
+				else
+				{
+					$ret[$tr['DbId']]["Place"] = "-";
+				}
+			}
+
+//print_r($ret);
+			return $ret;
 	}
 
 

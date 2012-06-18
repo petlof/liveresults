@@ -97,6 +97,24 @@ elseif ($_GET['method'] == 'getclassresults')
 		$results = $currentComp->getAllSplitsForClass($_GET['class']);
 		$splits = $currentComp->getSplitControlsForClass($_GET['class']);
 
+		$total = null;
+		$retTotal = false;
+		if (isset($_GET['includetotal']) && $_GET['includetotal'] == "true")
+		{
+			$retTotal = true;
+			$total = $currentComp->getTotalResultsForClass($_GET['class']);
+
+			foreach ($results as $key=>$res)
+			{
+				$id = $res['DbId'];
+
+				$results[$key]["totaltime"] = $total[$id]["Time"];
+				$results[$key]["totalstatus"] = $total[$id]["Status"];
+				$results[$key]["totalplace"] = $total[$id]["Place"];
+			}
+		}
+
+
 		$ret = "";
 		$first = true;
 		$place = 1;
@@ -169,6 +187,12 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			}
 
+			$tot = "";
+			if ($retTotal)
+			{
+				$tot = ", \"totalresult\": ".($res['totaltime']). ", \"totalstatus\": ".$res['totalstatus']. ", \"totalplace\": \"".$res['totalplace']."\"";
+			}
+
 
 			if($resultsAsArray)
 			{
@@ -176,7 +200,7 @@ elseif ($_GET['method'] == 'getclassresults')
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$status.", \"timeplus\": \"$timeplus\" ";
+				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$status.", \"timeplus\": \"$timeplus\" $tot";
 
 				if (count($splits) > 0)
 				{
