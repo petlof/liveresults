@@ -5,12 +5,8 @@ $lang = "sv";
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
 
-
-
 include_once("templates/emmalang_en.php");
-
 include_once("templates/emmalang_$lang.php");
-
 include_once("templates/classEmma.class.php");
 
 $currentComp = new Emma($_GET['comp']);
@@ -26,8 +22,6 @@ if ($isSingleClass)
 	$singleClass = $_GET['class'];
 
 $showLastPassings = !$isSingleClass || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
-
-
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
 
@@ -43,539 +37,62 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 <link rel="stylesheet" type="text/css" href="css/style-eoc.css">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
+<!-- DEBUG -->
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>
+
+<!-- RELEASE-->
+<!--<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>-->
 
 <script language="javascript" type="text/javascript">
 
-var updateAutomatically = true;
-var updateInterval = 15000;
-var classUpdateInterval = 60000;
 
-var classUpdateTimer = null;
-var passingsUpdateTimer = null;
-
-$(document).ready(function()
-{
-	<?php if ($isSingleClass)
-	{?>
-		chooseClass('<?=$singleClass?>');
-	<?php }
-	else
-	{?>
-		$("#divClasses").html("<?=$_LOADINGCLASSES?>...");
-		updateClassList();
-
-		if(window.location.hash) {
-      		var hash = window.location.hash.substring(1);
-      		chooseClass(hash);
-      	}
-	<?php }?>
-
-<?php if ($showLastPassings){?>
-	updateLastPassings();
-	<?php }?>
-});
-
-function updateClassList()
-{
-	if (updateAutomatically)
-	{
-		$.ajax({
-			  url: "api.php",
-			  data: "comp=<?=$_GET['comp']?>&method=getclasses&last_hash="+lastClassListHash,
-			  success: resp_updateClassList,
-			  error: function(xhr, ajaxOptions, thrownError) {classUpdateTimer = setTimeout(updateClassList,classUpdateInterval);},
-			  dataType: "json"
-		});
-	}
-
-}
-
-function updateLastPassings()
-{
-	if (updateAutomatically)
-	{
-		$.ajax({
-			  url: "api.php",
-			  data: "comp=<?=$_GET['comp']?>&method=getlastpassings&lang=<?=$lang?>&last_hash="+lastPassingsUpdateHash,
-			  success: resp_updateLastPassings,
-			  error: function(xhr, ajaxOptions, thrownError) { passingsUpdateTimer = setTimeout(updateLastPassings,updateInterval);},
-			  dataType: "json"
-		});
-	}
-
-}
-
-var lastClassListHash = "";
-var lastPassingsUpdateHash = "";
-function resp_updateClassList(data)
-{
-	if (data != null && data.status == "OK")
-	{
-		if (data.classes != null)
-		{
-			str = ""
-			$.each(data.classes,
-				function(key, value)
-				{
-					str += "<a href=\"javascript:chooseClass('" + value.className + "')\">" + value.className + "</a><br/>";
-				}
-			);
-			$("#divClasses").html(str);
-			lastClassListHash = data.hash;
-		}
-	}
-
-	classUpdateTimer = setTimeout(updateClassList,classUpdateInterval);
-}
-
-function resp_updateLastPassings(data)
-{
-	if (data != null && data.status == "OK")
-	{
-		if (data.passings != null)
-		{
-			str = ""
-			$.each(data.passings,
-				function(key, value)
-				{
-					str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:chooseClass('" + value["class"] + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? "<?=$_LASTPASSFINISHED?>" : "<?=$_LASTPASSPASSED?> " + value["controlName"]) + " <?=$_LASTPASSWITHTIME ?> " + value["time"] + "<br/>";
-				}
-			);
-			$("#divLastPassings").html(str);
-			lastPassingsUpdateHash = data.hash;
-		}
-	}
-
-	passingsUpdateTimer = setTimeout(updateLastPassings,updateInterval);
-}
-
-var currentTable = null;
-var resUpdateTimeout = null;
-function chooseClass(className)
-{
-	if (currentTable != null)
-		currentTable.fnDestroy();
-
-	clearTimeout(resUpdateTimeout);
-
-	$('#divResults').html('');
-	curClassName = className;
-	$('#resultsHeader').html('<?=$_LOADINGRESULTS?>');
-	$.ajax({
-		  url: "api.php",
-		  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+className<?php if ($currentComp->IsMultiDayEvent()) {echo('+"&includetotal=true"');}?>,
-		  success: updateClassResults,
-		  dataType: "json"
-	});
-
-	<?php if (!$isSingleClass) {?>
-	window.location.hash = className;
-<?php }?>
-	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
-}
-
-var curClassName = "";
-var lastClassHash = "";
-function checkForClassUpdate()
-{
-	if (updateAutomatically)
-	{
-		if (currentTable != null)
-		{
-			$.ajax({
-				  url: "api.php",
-				  data: "comp=<?=$_GET['comp']?>&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash<?php if ($currentComp->IsMultiDayEvent()) {echo('+"&includetotal=true"');}?> ,
-				  success: resp_updateClassResults,
-				  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);},
-				  dataType: "json"
-			});
-		}
-	}
-
-}
-
-function setAutomaticUpdate(val)
-{
-	updateAutomatically = val;
-	if (updateAutomatically)
-	{
-		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href=\"javascript:setAutomaticUpdate(false);\"><?=$_OFF?></a>");
-		checkForClassUpdate();
-		updateLastPassings();
-		checkForClassUpdate();
-
-	}
-	else
-	{
-		clearTimeout(resUpdateTimeout);
-		clearTimeout(passingsUpdateTimer);
-		clearTimeout(classUpdateTimer);
-		$("#setAutomaticUpdateText").html("<b><?=$_AUTOUPDATE?>:</b> <a href=\"javascript:setAutomaticUpdate(true);\"><?=$_ON?></a> | <?=$_OFF?>");
-	}
-}
-
-var curClassSplits = null;
-function updateResultVirtualPosition(data)
-{
-
-	if (curClassSplits != null)
-	{
-		for (i = 0; i < data.length; i++)
-		{
-			data[i].haveSplits = false;
-		}
-
-		for (s = 0; s < curClassSplits.length; s++)
-		{
-			splitCode = curClassSplits[s].code;
-			data.sort(function(a,b) { return a.splits[splitCode] - b.splits[splitCode];});
-
-			lastPos = 1;
-			posCnt = 1;
-			lastTime = -1;
-			for (i = 0; i < data.length; i++)
-			{
-				if (data[i].splits[splitCode] != "")
-				{
-					data[i].haveSplits = true;
-
-					if (lastTime == data[i].splits[splitCode])
-						data[i].splits[splitCode + "-place"] = lastPos;
-					else
-					{
-						data[i].splits[splitCode + "-place"] = posCnt;
-						lastPos = posCnt;
-					}
-					lastTime = data[i].splits[splitCode];
-					posCnt++;
-				}
-				else
-				{
-					data[i].splits[splitCode + "-place"] = "";
-				}
-			}
-
-		}
-	}
-
-	data.sort(resultSorter);
-
-	/* move down runners that have not finished to the correct place*/
-	firstFinishedIdx = -1;
-	for (i = 0; i < data.length; i++)
-	{
-		if (data[i].place != "")
-		{
-			firstFinishedIdx = i;
-			break;
-		}
-	}
-
-	if (firstFinishedIdx == -1)
-		firstFinishedIdx = data.length-1;
-
-	tmp = Array();
-	for (i = 0; i < firstFinishedIdx; i++)
-	{
-		tmp.push(data[i]);
-	}
-
-	data.splice(0,firstFinishedIdx);
-
-	tmp.sort(sortByDist);
-
-	for (i = 0; i < tmp.length; i++)
-	{
-		if (data.length == 0)
-			data.push(tmp[i]);
-		else
-			insertIntoResults(tmp[i],data);
-	}
-
-
-	for (i = 0; i < data.length; i++)
-	{
-		data[i].virtual_position = i;
-	}
-
-}
-
-function sortByDist(a,b)
-{
-	for (s = curClassSplits.length-1; s >= 0; s--)
-	{
-		splitCode = curClassSplits[s].code;
-		if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
-			return 1;
-		else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
-			return -1;
-	}
-	return 0;
-}
-
-function insertIntoResults(result, data)
-{
-	haveSplit = false;
-	if (curClassSplits != null)
-	{
-		for (s = curClassSplits.length-1; s >= 0; s--)
-		{
-			splitCode = curClassSplits[s].code;
-			if (result.splits[splitCode] != "")
-			{
-				haveSplit=true;
-				for (d = 0; d < data.length; d++)
-				{
-					if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode]))
-					{
-						data.splice(d,0,result);
-						return;
-					}
-				}
-			}
-		}
-	}
-
-
-	if (result.start != "")
-	{
-		for (d = 0; d < data.length; d++)
-		{
-			if (data[d].place == "-")
-			{
-				data.splice(d,0,result);
-				return;
-			}
-			if (result.place == "" && data[d].place != "")
-			{
-			}
-			else if (data[d].start != "" && data[d].start> result.start && !haveSplit && !data[d].haveSplits)
-			{
-				data.splice(d,0,result);
-				return;
-			}
-
-		}
-	}
-
-	data.push(tmp[i]);
-}
-
-function resultSorter(a,b)
-{
-	if (a.place != "" && b.place != "")
-	{
-		if (a.status != b.status)
-			return a.status - b.status;
-		else
-		{
-			if (a.result == b.result)
-			{
-				if (a.place == "=" && b.place != "=")
-				{
-					return 1;
-				}
-				else if (b.place == "=" && a.place != "=")
-				{
-					return -1;
-				}
-				else
-				{
-					return 0;
-				}
-
-			}
-			else
-			{
-				return a.result - b.result;
-			}
-		}
-
-	}
-	else if (a.place == "-" || a.place != "" )
-	{
-		return 1;
-	}
-	else if (b.place == "-" || b.place != "" )
-	{
-			return -1;
-	}
-	else
-	{
-
-		return 0;
-	}
-}
-
-function resp_updateClassResults(data)
-{
-	if (data.status == "OK")
-	{
-		if (currentTable != null)
-		{
-			updateResultVirtualPosition(data.results);
-			currentTable.fnClearTable();
-			currentTable.fnAddData(data.results,true);
-			lastClassHash = data.hash;
-		}
-	}
-	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
-}
-
-function updateClassResults(data)
-{
-	if (data != null && data.status == "OK")
-	{
-		if (data.className != null)
-		{
-			$('#resultsHeader').html('<b>'+data.className + '</b>');
-			$('#resultsControls').show();
-		}
-
-		if (data.results != null)
-		{
-			columns = Array();
-			columns.push({ "sTitle": "#", "bSortable" : false, "aTargets" : [0], "mDataProp": "place" });
-			columns.push({ "sTitle": "<?=$_NAME?>","bSortable" : false,"aTargets" : [1], "mDataProp": "name" });
-			columns.push({ "sTitle": "<?=$_CLUB?>","bSortable" : false ,"aTargets" : [2], "mDataProp": "club"});
-
-			curClassSplits = data.splitcontrols;
-
-			updateResultVirtualPosition(data.results);
-
-			var col = 3;
-			columns.push({ "sTitle": "<?=$_START?>", "sClass": "left", "sType": "numeric","aDataSort": [col], "aTargets" : [col],"bUseRendered": false, "mDataProp": "start",
-			"fnRender": function ( o, val )
-										{
-											if (o.aData.start =="")
-											{
-												return "";
-											}
-											else
-											{
-												return formatTime(o.aData.start,0,true);
-											}
-										}
-									});
-
-			col++;
-
-			if (data.splitcontrols != null)
-			{
-				$.each(data.splitcontrols,
-					function(key,value)
-					{
-						columns.push({ "sTitle": value.name, "sClass": "left","sType": "numeric","aDataSort" : [col+1,col],"aTargets" : [col], "bUseRendered" : false, "mDataProp" : "splits." + value.code, "fnRender": function ( o, val )
-							{
-									if (o.aData.splits[value.code+"_status"] != 0)
-										return "";
-									else
-										return formatTime(o.aData.splits[value.code],0) + " (" +o.aData.splits[value.code + "-place"] + ")";
-							}
-						});
-						col++
-						columns.push({ "sTitle": value.name + "_Status", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "splits." + value.code + "_status"});
-					});
-			}
-
-			timecol = col;
-			columns.push({ "sTitle": "<?=$_CONTROLFINISH?>", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
-							"fnRender": function ( o, val )
-							{
-								if (o.aData.place == "-" || o.aData.place == "")
-								{
-									return formatTime(o.aData.result,o.aData.status);
-								}
-								else
-								{
-									return formatTime(o.aData.result,o.aData.status) +" (" + o.aData.place +")";
-								}
-							}
-						});
-
-			col++;
-			columns.push({ "sTitle": "Status", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "status"});
-			columns.push({ "sTitle": "", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
-							"fnRender": function ( o, val )
-												{
-													if (o.aData.status != 0)
-														return "";
-													else
-														return "+" + formatTime(o.aData.timeplus,o.aData.status);
-							}
-						});
-
-			<?php if ($currentComp->IsMultiDayEvent())
-			{?>
-						columns.push({ "sTitle": "Total", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "totalresult",
-										"fnRender": function ( o, val )
-										{
-											if (o.aData.totalplace == "-" || o.aData.totalplace == "")
-											{
-												return formatTime(o.aData.totalresult,o.aData.totalstatus);
-											}
-											else
-											{
-												return formatTime(o.aData.totalresult,o.aData.totalstatus) +" (" + o.aData.totalplace +")";
-											}
-										}
-									});
-
-						col++;
-						columns.push({ "sTitle": "TotalStatus", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "totalstatus"});
-						/*columns.push({ "sTitle": "T", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
-										"fnRender": function ( o, val )
-															{
-																if (o.aData.status != 0)
-																	return "";
-																else
-																	return "+" + formatTime(o.aData.timeplus,o.aData.status);
-										}
-									});*/
-
-			<?php }?>
-
-			columns.push({ "sTitle": "VP", "bVisible" : false, "aTargets" : [col++], "mDataProp": "virtual_position" });
-
-			currentTable = $('#divResults').dataTable( {
-					"bPaginate": false,
-					"bLengthChange": false,
-					"bFilter": false,
-					"bSort": true,
-					"bInfo" : false,
-					"bAutoWidth": false,
-					"aaData": data.results,
-					"aaSorting" : [[col-1, "asc"]],
-					"aoColumnDefs": columns,
-					 "fnPreDrawCallback": function( oSettings ) {
-					      if ( oSettings.aaSorting[0][0] != col-1) {
-					        $("#txtResetSorting").html("&nbsp;&nbsp;<a href=\"javascript:resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> <?=$_RESETTODEFAULT?></a>");
-      					  }
-      					  }
-			} );
-
-			lastClassHash = data.hash;
-		}
-    }
-}
-
-function resetSorting()
-{
-	idxCol = 0;
-	$.each(currentTable.fnSettings().aoColumns, function(idx,val)
-	{
-		if (val.sTitle=="VP")
-		{
-			idxCol = idx;
-		}
-	});
-
-	currentTable.fnSort([ [idxCol,'asc']]);
-	$("#txtResetSorting").html("");
-
-}
+var res = null;
+
+var Resources = {
+	_TITLE: "<?= $_TITLE?>",
+	_CHOOSECMP: "<?=$_CHOOSECMP?>",
+	_AUTOUPDATE: "<?=$_AUTOUPDATE?>",
+	_LASTPASSINGS: "<?=$_LASTPASSINGS?>",
+	_LASTPASSFINISHED: "<?=$_LASTPASSFINISHED?>",
+	_LASTPASSPASSED: "<?=$_LASTPASSPASSED?>",
+	_LASTPASSWITHTIME: "<?=$_LASTPASSWITHTIME?>",
+	_CHOOSECLASS: "<?=$_CHOOSECLASS?>",
+	_NOCLASSESYET: "<?=$_NOCLASSESYET?>",
+	_CONTROLFINISH: "<?=$_CONTROLFINISH?>",
+	_NAME: "<?=$_NAME?>",
+	_CLUB: "<?=$_CLUB?>",
+	_TIME: "<?=$_TIME?>",
+	_NOCLASSCHOSEN: "<?=$_NOCLASSCHOSEN?>",
+	_HELPREDRESULTS: "<?=$_HELPREDRESULTS?>",
+	_NOTICE: "<?=$_NOTICE?>",
+	_STATUSDNS: "<?=$_STATUSDNS ?>",
+	_STATUSDNF: "<?=$_STATUSDNF?>",
+	_STATUSWO: "<?=$_STATUSWO?>",
+	_STATUSMOVEDUP: "<?=$_STATUSMOVEDUP?>",
+	_STATUSNOTSTARTED: "<?=$_STATUSNOTSTARTED?>",
+	_STATUSOK: "<?=$_STATUSOK ?>",
+	_STATUSMP: "<?=$_STATUSMP ?>",
+	_STATUSDSQ: "<?=$_STATUSDSQ?>",
+	_STATUSOT: "<?=$_STATUSOT?>",
+	_FIRSTPAGECHOOSE: "<?=$_FIRSTPAGECHOOSE ?>",
+	_FIRSTPAGEARCHIVE: "<?=$_FIRSTPAGEARCHIVE?>",
+	_LOADINGRESULTS: "<?=$_LOADINGRESULTS ?>",
+	_ON: "<?=$_ON ?>",
+	_OFF: "<?=$_OFF?>",
+	_TEXTSIZE: "<?=$_TEXTSIZE ?>",
+	_LARGER: "<?=$_LARGER?>",
+	_SMALLER: "<?=$_SMALLER?>",
+	_OPENINNEW: "<?=$_OPENINNEW?>",
+	_FORORGANIZERS: "<?=$_FORORGANIZERS ?>",
+	_FORDEVELOPERS: "<?=$_FORDEVELOPERS ?>",
+	_RESETTODEFAULT: "<?=$_RESETTODEFAULT?>",
+	_OPENINNEWWINDOW: "<?=$_OPENINNEWWINDOW?>",
+	_INSTRUCTIONSHELP: "<?=$_INSTRUCTIONSHELP?>",
+	_LOADINGCLASSES: "<?=$_LOADINGCLASSES ?>",
+	_START: "<?=$_START?>"
+};
 
 var runnerStatus = Array();
 runnerStatus[0]= "<?=$_STATUSOK?>";
@@ -590,85 +107,31 @@ runnerStatus[5] = "<?=$_STATUSOT?>";
 runnerStatus[9] = "";
 runnerStatus[10] = "";
 
-function formatTime(time,status, showHours, padZeros)
+
+$(document).ready(function()
 {
+	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= ($isSingleClass ? "true": "false")?>,"setAutomaticUpdateText", runnerStatus);
+	<?php if ($isSingleClass)
+	{?>
+		res.chooseClass('<?=$singleClass?>');
+	<?php }
+	else
+	{?>
+		$("#divClasses").html("<?=$_LOADINGCLASSES?>...");
+		res.updateClassList();
 
-	if (arguments.length==2)
-	{
-	<?php if ($lang == 'fi'){?>
-		showHours = true;
-		padZeros = false;
-		<?php } else { ?>
-		showHours = false;
-		padZeros = true;
-		<?php }?>
-	}
-	else if (arguments.length==3)
-		{
-		<?php if ($lang == 'fi'){?>
-			padZeros = false;
-			<?php } else { ?>
-			padZeros = true;
-			<?php }?>
-	}
+		if(window.location.hash) {
+      		var hash = window.location.hash.substring(1);
+      		res.chooseClass(hash);
+      	}
+	<?php }?>
 
-	if (status != 0)
-  	{
-  		return runnerStatus[status];
-  	}
-  	else
-  	{
-  		if (showHours)
-  		{
-  				hours= Math.floor(time/360000);
-		  		minutes = Math.floor((time-hours*360000)/6000);
-				seconds = Math.floor((time-minutes*6000-hours*360000)/100);
+<?php if ($showLastPassings){?>
+	res.updateLastPassings();
+	<?php }?>
+});
 
 
-			if (hours > 0)
-			{
-				if (padZeros)
-					hours = str_pad(hours,2);
-
-  	 			return hours +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
-  	 		}
-  	 		else
-  	 		{
-  	 			if (padZeros)
-					minutes = str_pad(minutes,2);
-  	 			return minutes +":" +str_pad(seconds,2);
-  	 		}
-
-		}
-		else
-		{
-
-  	 		minutes = Math.floor(time/6000);
-	 		seconds = Math.floor((time-minutes*6000)/100);
-
-			if (padZeros)
-			{
-  	 			return str_pad(minutes,2) +":" +str_pad(seconds,2);
-  	 		}
-  	 		else
-  	 		{
-  	 			return minutes +":" +str_pad(seconds,2);
-  	 		}
-  	 	}
-  	}
-}
-
-
-function str_pad(number, length) {
-
-    var str = '' + number;
-    while (str.length < length) {
-        str = '0' + str;
-    }
-
-    return str;
-
-}
 
 function changeFontSize(val)
 {
@@ -676,12 +139,6 @@ function changeFontSize(val)
 	var newSize = parseInt(size.replace(/px/, "")) + val;
 	$("td").css("font-size",newSize + "px");
 }
-
-function newWin()
-{
-	window.open('followfull.php?comp=<?= $_GET['comp']?>&lang=<?= $lang?>&class='+curClassName,'','status=0,toolbar=0,location=0,menubar=0,directories=0,scrollbars=1,resizable=1,width=900,height=600');
-}
-
 
 </script>
 </head>
@@ -754,7 +211,7 @@ function newWin()
 </div>
 </td>
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
-<span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
+<span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
 <a href="dok/help.html" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
 </td>
@@ -774,7 +231,7 @@ function newWin()
 
 
 			<td valign=top>
-		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"/> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
+		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"/> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
 <table id="divResults" width="100%">
 </table><br/><br/>
 
@@ -815,55 +272,3 @@ function newWin()
 </body>
 
 </html>
-
-<?php
-
-
-
-function formatTime($time,$status,& $RunnerStatus)
-
-{
-
-  global $lang;
-
-  if ($status != "0")
-
-  {
-
-    return $RunnerStatus[$status]; //$status;
-
-  }
-
-   if ($lang == "fi")
-
-{
-
-  $hours = floor($time/360000);
-
-  $minutes = floor(($time-$hours*360000)/6000);
-
-  $seconds = floor(($time-$hours*360000 - $minutes*6000)/100);
-
-  return str_pad("".$hours,2,"0",STR_PAD_LEFT) .":" .str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
-
-}
-
-else
-
-{
-
-
-
-
-
-  $minutes = floor($time/6000);
-
-  $seconds = floor(($time-$minutes*6000)/100);
-
-  return str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
-
-}
-
-}
-
-?>
