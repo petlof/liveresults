@@ -111,6 +111,7 @@ elseif ($_GET['method'] == 'getclassresults')
 				$results[$key]["totaltime"] = $total[$id]["Time"];
 				$results[$key]["totalstatus"] = $total[$id]["Status"];
 				$results[$key]["totalplace"] = $total[$id]["Place"];
+				$results[$key]["totalplus"] = $total[$id]["TotalPlus"];
 			}
 		}
 
@@ -190,7 +191,7 @@ elseif ($_GET['method'] == 'getclassresults')
 			$tot = "";
 			if ($retTotal)
 			{
-				$tot = ", \"totalresult\": ".($res['totaltime']). ", \"totalstatus\": ".$res['totalstatus']. ", \"totalplace\": \"".$res['totalplace']."\"";
+				$tot = ", \"totalresult\": ".($res['totaltime']). ", \"totalstatus\": ".$res['totalstatus']. ", \"totalplace\": \"".$res['totalplace']."\", \"totalplus\": ".($res['totalplus']);
 			}
 
 

@@ -38,12 +38,12 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <!-- DEBUG -->
-<script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<!--<script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>
+<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>-->
 
 <!-- RELEASE-->
-<!--<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>-->
+<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>
 
 <script language="javascript" type="text/javascript">
 
@@ -91,7 +91,8 @@ var Resources = {
 	_OPENINNEWWINDOW: "<?=$_OPENINNEWWINDOW?>",
 	_INSTRUCTIONSHELP: "<?=$_INSTRUCTIONSHELP?>",
 	_LOADINGCLASSES: "<?=$_LOADINGCLASSES ?>",
-	_START: "<?=$_START?>"
+	_START: "<?=$_START?>",
+	_TOTAL: "<?=$_TOTAL?>"
 };
 
 var runnerStatus = Array();

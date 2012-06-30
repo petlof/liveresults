@@ -50,5 +50,6 @@ $_OPENINNEWWINDOW = "Öppna i nytt fönster";
 $_INSTRUCTIONSHELP = "Instruktioner / Hjälp";
 $_LOADINGCLASSES = "Laddar klasser";
 $_START = "Start";
+$_TOTAL = "Total";
 
 ?>

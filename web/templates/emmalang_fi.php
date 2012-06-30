@@ -50,5 +50,5 @@ $_OPENINNEWWINDOW = "Avaa uudessa ikkunassa";
 $_INSTRUCTIONSHELP = "Ohjeet";
 $_LOADINGCLASSES = "Ladataan sarjoja";
 $_START = "Lähtö";
-
+$_TOTAL = "Kokonaistulos";
 ?>

@@ -51,5 +51,5 @@ $_OPENINNEWWINDOW = "Open in new window";
 $_INSTRUCTIONSHELP = "Instruction / help";
 $_LOADINGCLASSES = "Loading classes";
 $_START = "Start";
-
+$_TOTAL = "Total";
 ?>

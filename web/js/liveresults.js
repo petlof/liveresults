@@ -235,7 +235,7 @@ this.updateClassResults = function (data)
 			if (_isMultiDay)
 			{
 			
-						columns.push({ "sTitle": "Total", "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "totalresult",
+						columns.push({ "sTitle": Resources["_TOTAL"], "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "totalresult",
 										"fnRender": function ( o, val )
 										{
 											if (o.aData.totalplace == "-" || o.aData.totalplace == "")
@@ -251,15 +251,15 @@ this.updateClassResults = function (data)
 
 						col++;
 						columns.push({ "sTitle": "TotalStatus", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "totalstatus"});
-						/*columns.push({ "sTitle": "T", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
+						columns.push({ "sTitle": Resources["_TOTAL"] +"+", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "totalplus",
 										"fnRender": function ( o, val )
 															{
-																if (o.aData.status != 0)
+																if (o.aData.totalstatus != 0)
 																	return "";
 																else
-																	return "+" + formatTime(o.aData.timeplus,o.aData.status);
+																	return "+" + formatTime(o.aData.totalplus,o.aData.totalstatus);
 										}
-									});*/
+									});
 
 			}
 

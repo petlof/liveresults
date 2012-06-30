@@ -444,17 +444,26 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 			$pl = 0;
 			$lastTime = -1;
+			$bestTime = -1;
+
+
 			foreach ($sres as $tr)
 			{
+
 				if ($tr['Status'] == 0)
 				{
+					if ($bestTime == -1)
+						$bestTime = $tr['Time'];
+
 					if ($tr['Time'] > $lastTime)
 						$pl++;
 					$ret[$tr['DbId']]["Place"] = $pl;
+					$ret[$tr['DbId']]["TotalPlus"] = $tr['Time'] - $bestTime;
 				}
 				else
 				{
 					$ret[$tr['DbId']]["Place"] = "-";
+					$ret[$tr['DbId']]["TotalPlus"] = 0;
 				}
 			}
 
