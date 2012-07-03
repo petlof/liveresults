@@ -271,6 +271,70 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 			die(mysql_error());
 		return $ret;
 	}
+		function getClubResults($compId, $club)
+
+		{
+
+			$ret = Array();
+
+
+			$q = "SELECT Runners.Name, Runners.Club, Results.Time, Runners.Class ,Results.Status, Results.Changed, Results.DbID, Results.Control ";
+			$q .= ", (select count(*)+1 from Results sr, Runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=Results.TavId and sru.class = Runners.class and sr.status = 0 and sr.time < Results.time and sr.Control=1000) as place ";
+			$q .= ", Results.Time - (select min(time) from Results sr, Runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=Results.TavId and sru.class = Runners.class and sr.status = 0 and sr.Control=1000) as timeplus ";
+			$q .= "From Runners,Results where ";
+			$q .= "Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = ".$this->m_CompId ." and Runners.Club = '$club' and (Results.Control=1000 or Results.Control=100) ORDER BY Runners.Class, Runners.Name";
+
+			if ($result = mysql_query($q,$this->m_Conn))
+
+			{
+
+				while ($row = mysql_fetch_array($result))
+
+				{
+					$dbId = $row['DbID'];
+					if (!isset($ret[$dbId]))
+					{
+
+						$ret[$dbId] = Array();
+						$ret[$dbId]["DbId"] = $dbId;
+						$ret[$dbId]["Name"] = $row['Name'];
+						$ret[$dbId]["Club"] = $row['Club'];
+						$ret[$dbId]["Class"] = $row['Class'];
+						$ret[$dbId]["Time"] = "";
+						$ret[$dbId]["TimePlus"] = "";
+						$ret[$dbId]["Status"] = "9";
+						$ret[$dbId]["Changed"] = "";
+						$ret[$dbId]["Place"]  = "";
+					}
+
+					$split = $row['Control'];
+					if ($split == 1000)
+					{
+						$ret[$dbId]["Time"] = $row['Time'];
+						$ret[$dbId]["Status"] = $row['Status'];
+						$ret[$dbId]["Changed"] = $row['Changed'];
+						$ret[$dbId]["Place"] = $row['place'];
+						$ret[$dbId]["TimePlus"] = $row['timeplus'];
+
+					}
+					elseif ($split == 100)
+					{
+						$ret[$dbId]["start"] = $row['Time'];
+					}
+				}
+
+				mysql_free_result($result);
+
+			}
+
+			else
+
+				die(mysql_error());
+
+
+			return $ret;
+	}
+
 		function getAllSplitsForClass($className)
 
 		{

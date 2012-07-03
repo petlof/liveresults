@@ -12,16 +12,20 @@ include_once("templates/classEmma.class.php");
 $currentComp = new Emma($_GET['comp']);
 
 $isSingleClass = isset($_GET['class']);
+$isSingleClub = isset($_GET['club']);
 $showPath = true;
 
 if (isset($_GET['showpath']) && $_GET['showpath'] == "false")
   $showPath = false;
 
 $singleClass = "";
+$singleClub = "";
 if ($isSingleClass)
 	$singleClass = $_GET['class'];
+if ($isSingleClub)
+	$singleClub = utf8_decode(rawurldecode($_GET['club']));
 
-$showLastPassings = !$isSingleClass || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
+$showLastPassings = !($isSingleClass || $isSingleClub) || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
 
@@ -38,12 +42,12 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <!-- DEBUG -->
-<!--<script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
-<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>-->
+<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>
 
 <!-- RELEASE-->
-<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>
+<!--<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>-->
 
 <script language="javascript" type="text/javascript">
 
@@ -111,19 +115,30 @@ runnerStatus[10] = "";
 
 $(document).ready(function()
 {
-	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= ($isSingleClass ? "true": "false")?>,"setAutomaticUpdateText", runnerStatus);
+	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText", runnerStatus);
 	<?php if ($isSingleClass)
 	{?>
 		res.chooseClass('<?=$singleClass?>');
 	<?php }
-	else
+	else if ($isSingleClub)
+	{?>
+		res.viewClubResults('<?=$singleClub?>');
+	<?php }
+		else
 	{?>
 		$("#divClasses").html("<?=$_LOADINGCLASSES?>...");
 		res.updateClassList();
 
 		if(window.location.hash) {
       		var hash = window.location.hash.substring(1);
-      		res.chooseClass(hash);
+      		if (hash.indexOf('club::') >= 0)
+      		{
+      			res.viewClubResults(hash.substring(6));
+      		}
+      		else
+      		{
+      			res.chooseClass(hash);
+      		}
       	}
 	<?php }?>
 
@@ -151,7 +166,7 @@ function changeFontSize(val)
 
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
 
-<?php if (!$isSingleClass && $showPath) {?>
+<?php if (!$isSingleClass && !$isSingleClub && $showPath) {?>
 <tr>
     <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
@@ -198,7 +213,7 @@ function changeFontSize(val)
 <?php if (!$showPath) {?>
 <h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
 <?php }?>
-<?php if (!$isSingleClass) {?>
+<?php if (!$isSingleClass && !$isSingleClub) {?>
 			| <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
 			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?> |
@@ -221,7 +236,7 @@ function changeFontSize(val)
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
 			<tr>
-<?php if (!$isSingleClass){?>
+<?php if (!$isSingleClass && !$isSingleClub){?>
 			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
 
 <div id="divClasses">

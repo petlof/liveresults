@@ -21,6 +21,9 @@ LiveResults.AjaxViewer = function(compId, lang, classesDiv,lastPassingsDiv, resu
 	var curClassName = "";
 	var lastClassHash = "";
 	
+	var curClubName = "";
+	var lastClubHash = "";
+	
 	var curClassSplits = null;
 
 
@@ -133,6 +136,24 @@ checkForClassUpdate = function ()
 	
 };
 
+checkForClubUpdate = function ()
+{
+		if (updateAutomatically)
+		{
+			if (currentTable != null)
+			{
+				$.ajax({
+					  url: "api.php",
+					  data: "comp="+_compId+"&method=getclubresults&unformattedTimes=true&club="+encodeURIComponent(curClubName) + "&last_hash=" +lastClubHash + (_isMultiDay ? "&includetotal=true" : ""),
+					  success: resp_updateClubResults,
+					  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClubUpdate,updateInterval);},
+					  dataType: "json"
+				});
+			}
+		}
+	
+};
+
 
 resp_updateClassResults = function (data)
 {
@@ -147,6 +168,20 @@ resp_updateClassResults = function (data)
 		}
 	}
 	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
+};
+
+resp_updateClubResults = function (data)
+{
+	if (data.status == "OK")
+	{
+		if (currentTable != null)
+		{
+			currentTable.fnClearTable();
+			currentTable.fnAddData(data.results,true);
+			lastClubHash = data.hash;
+		}
+	}
+	resUpdateTimeout = setTimeout(checkForClubUpdate,updateInterval);
 };
 
 this.updateClassResults = function (data)
@@ -164,7 +199,13 @@ this.updateClassResults = function (data)
 			columns = Array();
 			columns.push({ "sTitle": "#", "bSortable" : false, "aTargets" : [0], "mDataProp": "place" });
 			columns.push({ "sTitle": Resources["_NAME"],"bSortable" : false,"aTargets" : [1], "mDataProp": "name" });
-			columns.push({ "sTitle": Resources["_CLUB"],"bSortable" : false ,"aTargets" : [2], "mDataProp": "club"});
+			columns.push({ "sTitle": Resources["_CLUB"],"bSortable" : false ,"aTargets" : [2], "mDataProp": "club",
+			"fnRender": function ( o, val )
+				{
+					return "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + o.aData.club + "')\">" + o.aData.club + "</a>";
+				}
+										
+			});
 
 			curClassSplits = data.splitcontrols;
 
@@ -251,7 +292,7 @@ this.updateClassResults = function (data)
 
 						col++;
 						columns.push({ "sTitle": "TotalStatus", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "totalstatus"});
-						columns.push({ "sTitle": Resources["_TOTAL"] +"+", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "totalplus",
+						columns.push({ "sTitle": "", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "totalplus",
 										"fnRender": function ( o, val )
 															{
 																if (o.aData.totalstatus != 0)
@@ -286,6 +327,123 @@ this.updateClassResults = function (data)
 		}
     }
 };
+
+this.updateClubResults = function (data)
+{
+	if (data != null && data.status == "OK")
+	{
+		if (data.clubName != null)
+		{
+			$('#' + _resultsHeaderDiv).html('<b>'+data.clubName + '</b>');
+			$('#' + _resultsControlsDiv).show();
+		}
+
+		if (data.results != null)
+		{
+			columns = Array();
+			columns.push({ "sTitle": "#", "aTargets" : [0], "mDataProp": "place" });
+			columns.push({ "sTitle": Resources["_NAME"],"aTargets" : [1], "mDataProp": "name" });
+			columns.push({ "sTitle": Resources["_CLUB"],"bSortable" : false ,"aTargets" : [2], "mDataProp": "club" });
+
+			var col = 3;
+			columns.push({ "sTitle": Resources["_START"], "sClass": "left", "sType": "numeric","aDataSort": [col], "aTargets" : [col],"bUseRendered": false, "mDataProp": "start",
+			"fnRender": function ( o, val )
+										{
+											if (o.aData.start =="")
+											{
+												return "";
+											}
+											else
+											{
+												return formatTime(o.aData.start,0,true);
+											}
+										}
+									});
+
+			col++;
+
+			timecol = col;
+			columns.push({ "sTitle": Resources["_CONTROLFINISH"], "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "result",
+							"fnRender": function ( o, val )
+							{
+								if (o.aData.place == "-" || o.aData.place == "")
+								{
+									return formatTime(o.aData.result,o.aData.status);
+								}
+								else
+								{
+									return formatTime(o.aData.result,o.aData.status) +" (" + o.aData.place +")";
+								}
+							}
+						});
+
+			col++;
+			columns.push({ "sTitle": "Status", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "status"});
+			columns.push({ "sTitle": "", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "timeplus",
+							"fnRender": function ( o, val )
+												{
+													if (o.aData.status != 0)
+														return "";
+													else
+														return "+" + formatTime(o.aData.timeplus,o.aData.status);
+							}
+						});
+
+			if (false && _isMultiDay)
+			{
+			
+						columns.push({ "sTitle": Resources["_TOTAL"], "sClass": "left", "sType": "numeric","aDataSort": [ col+1, col, 0], "aTargets" : [col],"bUseRendered": false, "mDataProp": "totalresult",
+										"fnRender": function ( o, val )
+										{
+											if (o.aData.totalplace == "-" || o.aData.totalplace == "")
+											{
+												return formatTime(o.aData.totalresult,o.aData.totalstatus);
+											}
+											else
+											{
+												return formatTime(o.aData.totalresult,o.aData.totalstatus) +" (" + o.aData.totalplace +")";
+											}
+										}
+									});
+
+						col++;
+						columns.push({ "sTitle": "TotalStatus", "bVisible" : false,"aTargets" : [col++],"sType": "numeric", "mDataProp": "totalstatus"});
+						columns.push({ "sTitle": "", "sClass": "center","bSortable" : false,"aTargets" : [col++],"mDataProp": "totalplus",
+										"fnRender": function ( o, val )
+															{
+																if (o.aData.totalstatus != 0)
+																	return "";
+																else
+																	return "+" + formatTime(o.aData.totalplus,o.aData.totalstatus);
+										}
+									});
+
+			}
+
+
+			currentTable = $('#' + _resultsDiv).dataTable( {
+					"bPaginate": false,
+					"bLengthChange": false,
+					"bFilter": false,
+					"bSort": true,
+					"bInfo" : false,
+					"bAutoWidth": false,
+					"aaData": data.results,
+					"aaSorting" : [[0, "asc"]],
+					"aoColumnDefs": columns,
+					 "fnPreDrawCallback": function( oSettings ) {
+					      if ( oSettings.aaSorting[0][0] != 0) {
+					        $("#" + _txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + Resources["_RESETTODEFAULT"] + "</a>");
+      					  }
+      					  }
+			} );
+
+			lastClassHash = data.hash;
+		}
+    }
+};
+
+
 
 this.resetSorting = function ()
 {
@@ -384,9 +542,41 @@ str_pad = function(number, length) {
 
 this.newWin = function()
 {
-	window.open('followfull.php?comp=' + _compId + '&lang=' + _lang + '&class='+curClassName,'','status=0,toolbar=0,location=0,menubar=0,directories=0,scrollbars=1,resizable=1,width=900,height=600');
+	var url = 'followfull.php?comp=' + _compId + '&lang=' + _lang;
+	
+	if (curClassName != null)
+		url += '&class='+encodeURIComponent(curClassName);
+	else 
+		url += '&club='+encodeURIComponent(curClubName);
+	
+	window.open(url,'','status=0,toolbar=0,location=0,menubar=0,directories=0,scrollbars=1,resizable=1,width=900,height=600');
 };
 
+this.viewClubResults = function(clubName)
+{
+	if (currentTable != null)
+		currentTable.fnDestroy();
+
+	clearTimeout(resUpdateTimeout);
+
+	$('#divResults').html('');
+	curClubName = clubName;
+	curClassName = null;
+	$('#resultsHeader').html(Resources["_LOADINGRESULTS"]);
+	
+	$.ajax({
+			  url: "api.php",
+			  data: "comp=" + compId + "&method=getclubresults&unformattedTimes=true&club="+encodeURIComponent(clubName)+ (_isMultiDay ? "&includetotal=true" : ""),
+			  success: this.updateClubResults,
+			  dataType: "json"
+	});
+	
+	if (!_isSingleClass) {
+		window.location.hash = "club::" + clubName;
+	}
+	
+	resUpdateTimeout = setTimeout(checkForClubUpdate,updateInterval);
+};
 
 this.chooseClass = function(className)
 {
@@ -397,6 +587,7 @@ this.chooseClass = function(className)
 
 	$('#divResults').html('');
 	curClassName = className;
+	curClubName = null
 	$('#resultsHeader').html(Resources["_LOADINGRESULTS"]);
 	$.ajax({
 		  url: "api.php",

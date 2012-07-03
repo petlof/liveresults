@@ -90,6 +90,87 @@ elseif ($_GET['method'] == 'getclasses')
 		}
 
 }
+elseif ($_GET['method'] == 'getclubresults')
+{
+		$currentComp = new Emma($_GET['comp']);
+		$club = utf8_decode(rawurldecode($_GET['club']));
+		$results = $currentComp->getClubResults($_GET['comp'], $club);
+		$ret = "";
+		$unformattedTimes = false;
+		$first = true;
+
+		if (isset($_GET['unformattedTimes']) && $_GET['unformattedTimes'] == "true")
+		{
+			$unformattedTimes = true;
+		}
+
+		foreach ($results as $res)
+		{
+			$time = $res['Time'];
+			$status = $res['Status'];
+
+			if ($time == "")
+				$status = 9;
+
+			$cp = $res['Place'];
+			if ($status == 9 || $status == 10)
+			{
+				$cp = "";
+
+			}
+			elseif ($status != 0 || $time < 0)
+			{
+				$cp = "-";
+			}
+
+			$timeplus = $res['TimePlus'];
+
+			$age = time()-strtotime($res['Changed']);
+			$modified = $age < 120 ? 1:0;
+
+			if (!$unformattedTimes)
+			{
+				$time = formatTime($res['Time'],$res['Status'],$RunnerStatus);
+				$timeplus = "+".formatTime($timeplus,$res['Status'],$RunnerStatus);
+
+			}
+
+			if (!$first)
+				$ret .= ",";
+
+			$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\",\"class\": \"".$res['Class']."\", \"result\": \"".$time."\",\"status\" : ".$status.", \"timeplus\": \"$timeplus\"";
+
+
+			if (isset($res["start"]))
+			{
+				$ret .= ", \"start\": ".$res["start"];
+			}
+			else
+			{
+				$ret .= ", \"start\": \"\"";
+			}
+
+			if ($modified)
+			{
+				$ret .= ", \"DT_RowClass\": \"new_result\"";
+			}
+
+			$ret .= "}";
+
+			$first = false;
+		}
+
+		$hash = MD5($ret);
+		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+		{
+			echo("{ \"status\": \"NOT MODIFIED\"}");
+		}
+		else
+		{
+			echo("{ \"status\": \"OK\", \"clubName\": \"".$club."\", \"results\": [$ret]");
+			echo(", \"hash\": \"". $hash."\"}");
+		}
+}
 elseif ($_GET['method'] == 'getclassresults')
 {
 
@@ -318,6 +399,52 @@ else
 
 }
 
+}
+
+function urlRawDecode($raw_url_encoded)
+{
+    # Hex conversion table
+    $hex_table = array(
+        0 => 0x00,
+        1 => 0x01,
+        2 => 0x02,
+        3 => 0x03,
+        4 => 0x04,
+        5 => 0x05,
+        6 => 0x06,
+        7 => 0x07,
+        8 => 0x08,
+        9 => 0x09,
+        "A"=> 0x0a,
+        "B"=> 0x0b,
+        "C"=> 0x0c,
+        "D"=> 0x0d,
+        "E"=> 0x0e,
+        "F"=> 0x0f
+    );
+
+    # Fixin' latin character problem
+        if(preg_match_all("/\%C3\%([A-Z0-9]{2})/i", $raw_url_encoded,$res))
+        {
+            $res = array_unique($res = $res[1]);
+            $arr_unicoded = array();
+            foreach($res as $key => $value){
+                $arr_unicoded[] = chr(
+                        (0xc0 | ($hex_table[substr($value,0,1)]<<4))
+                       | (0x03 & $hex_table[substr($value,1,1)])
+                );
+                $res[$key] = "%C3%" . $value;
+            }
+
+            $raw_url_encoded = str_replace(
+                                    $res,
+                                    $arr_unicoded,
+                                    $raw_url_encoded
+                        );
+        }
+
+        # Return decoded  raw url encoded data
+        return rawurldecode($raw_url_encoded);
 }
 
 
