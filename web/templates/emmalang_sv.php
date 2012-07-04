@@ -51,5 +51,5 @@ $_INSTRUCTIONSHELP = "Instruktioner / Hjälp";
 $_LOADINGCLASSES = "Laddar klasser";
 $_START = "Start";
 $_TOTAL = "Total";
-
+$_CLASS = "Klass";
 ?>

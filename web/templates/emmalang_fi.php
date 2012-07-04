@@ -51,4 +51,5 @@ $_INSTRUCTIONSHELP = "Ohjeet";
 $_LOADINGCLASSES = "Ladataan sarjoja";
 $_START = "Lähtö";
 $_TOTAL = "Kokonaistulos";
+$_CLASS = "Sarja";
 ?>

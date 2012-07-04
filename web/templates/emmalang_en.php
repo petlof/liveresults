@@ -52,4 +52,5 @@ $_INSTRUCTIONSHELP = "Instruction / help";
 $_LOADINGCLASSES = "Loading classes";
 $_START = "Start";
 $_TOTAL = "Total";
+$_CLASS = "Class";
 ?>

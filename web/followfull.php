@@ -41,13 +41,23 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 <link rel="stylesheet" type="text/css" href="css/style-eoc.css">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
+
+<?php
+$debug = false;
+if ($debug)
+{
+?>
 <!-- DEBUG -->
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/liveresults.js"></script>
-
+<?php }
+else
+{?>
 <!-- RELEASE-->
-<!--<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>-->
+<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>
+<?php }?>
 
 <script language="javascript" type="text/javascript">
 
@@ -96,7 +106,8 @@ var Resources = {
 	_INSTRUCTIONSHELP: "<?=$_INSTRUCTIONSHELP?>",
 	_LOADINGCLASSES: "<?=$_LOADINGCLASSES ?>",
 	_START: "<?=$_START?>",
-	_TOTAL: "<?=$_TOTAL?>"
+	_TOTAL: "<?=$_TOTAL?>",
+	_CLASS: "<?=$_CLASS?>"
 };
 
 var runnerStatus = Array();
@@ -128,18 +139,6 @@ $(document).ready(function()
 	{?>
 		$("#divClasses").html("<?=$_LOADINGCLASSES?>...");
 		res.updateClassList();
-
-		if(window.location.hash) {
-      		var hash = window.location.hash.substring(1);
-      		if (hash.indexOf('club::') >= 0)
-      		{
-      			res.viewClubResults(hash.substring(6));
-      		}
-      		else
-      		{
-      			res.chooseClass(hash);
-      		}
-      	}
 	<?php }?>
 
 <?php if ($showLastPassings){?>

@@ -344,8 +344,15 @@ this.updateClubResults = function (data)
 			columns.push({ "sTitle": "#", "aTargets" : [0], "mDataProp": "place" });
 			columns.push({ "sTitle": Resources["_NAME"],"aTargets" : [1], "mDataProp": "name" });
 			columns.push({ "sTitle": Resources["_CLUB"],"bSortable" : false ,"aTargets" : [2], "mDataProp": "club" });
+			columns.push({ "sTitle": Resources["_CLASS"],"aTargets" : [3], "mDataProp": "class",
+			"fnRender": function ( o, val )
+							{
+								return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + o.aData.class + "')\">" + o.aData.class+ "</a>";
+							}
+													
+			});
 
-			var col = 3;
+			var col = 4;
 			columns.push({ "sTitle": Resources["_START"], "sClass": "left", "sType": "numeric","aDataSort": [col], "aTargets" : [col],"bUseRendered": false, "mDataProp": "start",
 			"fnRender": function ( o, val )
 										{
@@ -438,7 +445,7 @@ this.updateClubResults = function (data)
       					  }
 			} );
 
-			lastClassHash = data.hash;
+			lastClubHash = data.hash;
 		}
     }
 };
@@ -597,7 +604,7 @@ this.chooseClass = function(className)
 	});
 
 	if (!_isSingleClass) {
-	window.location.hash = className;
+		window.location.hash = className;
 	}
 	resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);
 };
@@ -814,5 +821,29 @@ resultSorter = function(a,b)
 		return 0;
 	}
 };
+
+	$(window).hashchange( function(){
+		if(window.location.hash) {
+			var hash = window.location.hash.substring(1);
+				if (hash.indexOf('club::') >= 0)
+		      		{
+		      			var cl = hash.substring(6);
+		      			if (cl != curClubName)
+		      			{
+		      				LiveResults.Instance.viewClubResults(hash.substring(6));
+		      			}
+		      		}
+		      		else
+		      		{
+		      			var cl = hash;
+					if (cl != curClassName)
+		      			{
+		      				LiveResults.Instance.chooseClass(hash);
+		      			}
+		      		}
+      		}
+	});
+	
+ $(window).hashchange();
 
 };
