@@ -210,7 +210,7 @@ function changeFontSize(val)
 			?>
 
 <?php if (!$showPath) {?>
-<h1 class="categoriesheader"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
+<h1 class="categoriesheader" style="margin-bottom: 4px; color: black"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
 <?php }?>
 <?php if (!$isSingleClass && !$isSingleClub) {?>
 			| <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
@@ -218,9 +218,9 @@ function changeFontSize(val)
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?> |
 <?php }?>
 <?php if($showLastPassings){?>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000; color:#fff; padding: 10px; margin-top: 3px">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#EEFBCD; color:#000; padding: 10px; margin-top: 3px">
 			<tr>
-			<?php //ADD CUSTOMIZED LOGO IF NEEDED<td width="161"><img src="http://www.eoc2012.se/wp-content/themes/eoc2012/images/logo.gif"/></td>?>
+			<!--Customized logo --><td width="161"><img src="images/fin5.png"/></td>
 			<td valign=top><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings">
 </div>
@@ -228,7 +228,7 @@ function changeFontSize(val)
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
 <b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
-<a href="dok/help.html" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
+<a href="dok/help.php?lang=<?=$lang?>" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
 </td>
 </tr></table><br>
 <?php }?>

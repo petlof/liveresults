@@ -107,7 +107,7 @@ resp_updateLastPassings = function (data)
 				$.each(data.passings,
 					function(key, value)
 					{
-						str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:LiveResults.Instance.chooseClass('" + value["class"] + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? Resources["_LASTPASSFINISHED"] : Resources["_LASTPASSPASSED"] + value["controlName"]) + " " + Resources["_LASTPASSWITHTIME"] + " " + value["time"] + "<br/>";
+						str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:LiveResults.Instance.chooseClass('" + value["class"] + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? Resources["_LASTPASSFINISHED"] : Resources["_LASTPASSPASSED"] + " " + value["controlName"]) + " " + Resources["_LASTPASSWITHTIME"] + " " + value["time"] + "<br/>";
 					}
 				);
 				$("#" + _lastPassingsDiv).html(str);
