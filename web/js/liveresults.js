@@ -347,7 +347,7 @@ this.updateClubResults = function (data)
 			columns.push({ "sTitle": Resources["_CLASS"],"aTargets" : [3], "mDataProp": "class",
 			"fnRender": function ( o, val )
 							{
-								return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + o.aData.class + "')\">" + o.aData.class+ "</a>";
+								return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + o.aData["class"] + "')\">" + o.aData["class"] + "</a>";
 							}
 													
 			});
