@@ -15,6 +15,12 @@ header('content-type: application/json; charset='.$CHARSET);
 header('cache-control: max-age=15');
 header('pragma: public');
 header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 15));
+
+if (!isset($_GET['method']))
+{
+    $_GET['method'] = null;
+}
+
 ///Method returns all competitions available
 if ($_GET['method'] == 'getcompetitions')
 {
@@ -344,6 +350,9 @@ elseif ($_GET['method'] == 'getclassresults')
 }
 else
 {
+    $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
+    header($protocol . ' ' . 400 . ' Bad Request');
+	
 	echo("{ \"status\": \"ERR\", \"message\": \"No method given\"}");
 }
 
