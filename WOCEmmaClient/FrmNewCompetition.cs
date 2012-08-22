@@ -5,6 +5,7 @@ using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using System.IO;
 
 namespace WOCEmmaClient
 {
@@ -65,6 +66,30 @@ namespace WOCEmmaClient
         {
             OEForm frm = new OEForm();
             frm.ShowDialog();
+        }
+
+        private void button1_Click_1(object sender, EventArgs e)
+        {
+            FrmMonitor monForm = new FrmMonitor();
+            //OlaParser pars = new OlaParser(GetDBConnection(lstDB.SelectedItem as string), (cmbOLAComp.SelectedItem as OlaComp).Id, (cmbOLAEtapp.SelectedItem as OlaComp).Id);
+            string comp = "middle-quali";
+
+            string[] lines = File.ReadAllLines("wocinfo.txt");
+            int compId = int.Parse(lines[0]);
+            List<string> urls = new List<string>();
+            for (int i = 1; i < lines.Length; i++)
+                urls.Add(lines[i]);
+            /*WocParser wp = new WocParser(new string[] {
+                "http://www.woc2012.ch/results/live/" + comp + "-women-heat-a.json",
+                "http://www.woc2012.ch/results/live/" + comp + "-women-heat-b.json",
+                "http://www.woc2012.ch/results/live/" + comp + "-women-heat-c.json",
+            "http://www.woc2012.ch/results/live/" + comp + "-men-heat-a.json",
+                "http://www.woc2012.ch/results/live/" + comp + "-men-heat-b.json",
+                "http://www.woc2012.ch/results/live/" + comp + "-men-heat-c.json"});*/
+            WocParser wp = new WocParser(urls.ToArray());
+            monForm.SetParser(wp as IExternalSystemResultParser);
+            monForm.CompetitionID = compId;
+            monForm.ShowDialog(this);
         }
     }
 }
