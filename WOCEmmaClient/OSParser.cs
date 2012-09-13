@@ -129,6 +129,9 @@ namespace WOCEmmaClient
                     try
                     {
                         status = Convert.ToInt32(parts[fldStatus]);
+                        if (status == 0 && time < 0)
+                            status = 9;
+
                     }
                     catch
                     {
