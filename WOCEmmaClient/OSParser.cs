@@ -268,19 +268,11 @@ namespace WOCEmmaClient
                 fldID = Array.IndexOf(fields, "Stno");
                 fldName = Array.IndexOf(fields, "Name");
                 fldFirstRunner = Array.IndexOf(fields, "Nachname");
-                /*fldSI = Array.IndexOf(fields, "SI card");
-                if (fldSI == -1)
-                {
-                    fldSI = Array.IndexOf(fields, "Chip");
-                }
-                fldFName = Array.IndexOf(fields, "Vorname");
-                fldEName = Array.IndexOf(fields, "Nachname");*/
+                
                 fldClub = Array.IndexOf(fields, "Club");
                 fldClass = Array.IndexOf(fields, "Short");
                 fldStart = Array.IndexOf(fields, "Start");
-                /*fldTime = Array.IndexOf(fields, "Time");
-                fldStatus = Array.IndexOf(fields, "Wertung");
-                fldFirstPost = Array.IndexOf(fields, "No1");*/
+                
 
                 if (fldID == -1 || fldClub == -1 || fldClass == -1 || fldName == -1 || fldFirstRunner == -1)
                 {
@@ -288,19 +280,10 @@ namespace WOCEmmaClient
                     fldID = Array.IndexOf(fields, "Startnr");
                     fldName = Array.IndexOf(fields, "Namn");
                     fldFirstRunner = Array.IndexOf(fields, "Efternamn");
-                    /*fldSI = Array.IndexOf(fields, "SI bricka");
-                    if (fldSI == -1)
-                    {
-                        fldSI = Array.IndexOf(fields, "Bricka");
-                    }
-                    fldFName = Array.IndexOf(fields, "Vorname");
-                    fldEName = Array.IndexOf(fields, "Nachname");*/
+                    
                     fldClub = Array.IndexOf(fields, "Ort");
                     fldClass = Array.IndexOf(fields, "Kort");
                     fldStart = Array.IndexOf(fields, "Start");
-                    /*fldTime = Array.IndexOf(fields, "Tid");
-                    fldStatus = Array.IndexOf(fields, "Wertung");
-                    fldFirstPost = Array.IndexOf(fields, "Nr1");*/
 
                     if (fldID == -1 || fldClub == -1 || fldClass == -1 || fldName == -1)
                     {
@@ -351,10 +334,14 @@ namespace WOCEmmaClient
                         {
                         }
 
-                        int status = 0;
+                        int status = 9;
                         try
                         {
                             status = Convert.ToInt32(parts[fldNextRunner + 7]);
+
+                            if (status == 0 && time < 0)
+                                status = 9;
+
                             if (status != 0)
                             {
                                 bool test = true;
