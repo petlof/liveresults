@@ -140,12 +140,7 @@ namespace WOCEmmaClient
                         splitparam.DbType = DbType.DateTime;
                         splitparam.Value = DateTime.Now;
                     }
-                    //OleDbParameter param = new OleDbParameter("@date", DateTime.Now);
-                    //OleDbParameter splitparam = new OleDbParameter("@date", DateTime.Now);
-                    //param.DbType = DbType.DateTime;
-                    //splitparam.DbType = DbType.DateTime;
-
-                    //param.OleDbType = OleDbType.DBTimeStamp;
+                   
                     DateTime lastDateTime = DateTime.Now.AddMonths(-120);
                     DateTime lastSplitDateTime = DateTime.Now.AddMonths(-120);
                     param.Value = lastDateTime;
@@ -155,9 +150,9 @@ namespace WOCEmmaClient
                     cmdSplits.Parameters.Add(splitparam);
 
                     FireLogMsg("OLA Monitor thread started");
+                    IDataReader reader = null;
                     while (m_Continue)
                     {
-                        IDataReader reader = null;
                         string lastRunner = "";
                         try
                         {
@@ -305,62 +300,69 @@ namespace WOCEmmaClient
                             reader = cmdSplits.ExecuteReader();
                             while (reader.Read())
                             {
-                                string smod = Convert.ToString(reader[0]);
-                                DateTime mod;
-                                mod = ParseDateTime(smod); 
-                                
-                                lastSplitDateTime = (mod > lastSplitDateTime ? mod : lastSplitDateTime);
-
-                                string tTime = Convert.ToString(reader[1]);
-                                DateTime pTime;
-                                pTime = ParseDateTime(tTime);
-                                int sCont = reader.GetInt32(2);
-                                int entryid = Convert.ToInt32(reader["entryid"].ToString());
-                                DateTime startTime;
-
-                                if (isRelay && reader["firstStartTime"] != null && reader["firstStartTime"] != DBNull.Value)
+                                try
                                 {
-                                    tTime = reader["firstStartTime"].ToString();
-                                    startTime = ParseDateTime(tTime);
+                                    string smod = Convert.ToString(reader[0]);
+                                    DateTime mod;
+                                    mod = ParseDateTime(smod);
+
+                                    lastSplitDateTime = (mod > lastSplitDateTime ? mod : lastSplitDateTime);
+
+                                    string tTime = Convert.ToString(reader[1]);
+                                    DateTime pTime;
+                                    pTime = ParseDateTime(tTime);
+                                    int sCont = reader.GetInt32(2);
+                                    int entryid = Convert.ToInt32(reader["entryid"].ToString());
+                                    DateTime startTime;
+
+                                    if (isRelay && reader["firstStartTime"] != null && reader["firstStartTime"] != DBNull.Value)
+                                    {
+                                        tTime = reader["firstStartTime"].ToString();
+                                        startTime = ParseDateTime(tTime);
+                                    }
+                                    else if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                    {
+                                        tTime = reader["allocatedStartTime"].ToString();
+                                        startTime = ParseDateTime(tTime);
+                                    }
+                                    else if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    {
+                                        tTime = reader["starttime"].ToString();
+                                        startTime = ParseDateTime(tTime);
+                                    }
+                                    else
+                                    {
+                                        continue;
+                                    }
+                                    int passedCount = Convert.ToInt32(reader["passedCount"].ToString());
+
+                                    TimeSpan rTid = pTime - startTime;
+                                    double time = rTid.TotalMilliseconds / 10;
+                                    List<ResultStruct> times = new List<ResultStruct>();
+                                    ResultStruct t = new ResultStruct();
+                                    t.ControlCode = sCont + 1000 * passedCount;
+                                    t.ControlNo = 0;
+                                    t.Time = (int)time;
+                                    times.Add(t);
+
+                                    string sfamName = reader["lastname"] as string;
+                                    string sfName = reader["firstname"] as string;
+                                    string name = (string.IsNullOrEmpty(sfName) ? "" : (sfName + " ")) + sfamName;
+
+                                    string club = reader["clubname"] as string; //.GetString(5);
+                                    string classn = reader["shortname"] as string; // reader.GetString(6);
+
+                                    if (isRelay)
+                                    {
+                                        classn = classn + "-" + Convert.ToString(reader["relayLeg"]);
+                                    }
+
+                                    FireOnResult(entryid, 0, name, club, classn, 0, -2, 0, times);
                                 }
-                                else if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                catch (Exception ee)
                                 {
-                                    tTime = reader["allocatedStartTime"].ToString();
-                                    startTime = ParseDateTime(tTime);
+                                    FireLogMsg(ee.Message);
                                 }
-                                else if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
-                                {
-                                    tTime = reader["starttime"].ToString();
-                                    startTime = ParseDateTime(tTime);
-                                }
-                                else
-                                {
-                                    continue;
-                                }
-                                int passedCount = Convert.ToInt32(reader["passedCount"].ToString());
-
-                                TimeSpan rTid = pTime - startTime;
-                                double time = rTid.TotalMilliseconds / 10;
-                                List<ResultStruct> times = new List<ResultStruct>();
-                                ResultStruct t = new ResultStruct();
-                                t.ControlCode = sCont + 1000*passedCount;
-                                t.ControlNo = 0;
-                                t.Time = (int)time;
-                                times.Add(t);
-
-                                string sfamName = reader["lastname"] as string;
-                                string sfName = reader["firstname"] as string;
-                                string name = (string.IsNullOrEmpty(sfName) ? "" : (sfName + " ")) + sfamName;
-
-                                string club = reader["clubname"] as string; //.GetString(5);
-                                string classn = reader["shortname"] as string; // reader.GetString(6);
-
-                                if (isRelay)
-                                {
-                                    classn = classn + "-" + Convert.ToString(reader["relayLeg"]);
-                                }
-
-                                FireOnResult(entryid, 0,name,club,classn, 0, -2, 0, times);
                             }
                             reader.Close();
 
@@ -371,6 +373,8 @@ namespace WOCEmmaClient
                             if (reader != null)
                                 reader.Close();
                             FireLogMsg("OLA Parser: " + ee.Message + " {parsing: " + lastRunner);
+
+                            System.Threading.Thread.Sleep(100);
 
                             switch (m_Connection.State)
                             {
