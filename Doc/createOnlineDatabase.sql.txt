@@ -1,0 +1,47 @@
+ CREATE TABLE `login` (
+  `user` varchar(50) NOT NULL DEFAULT '',
+  `pass` varchar(50) DEFAULT NULL,
+  `tavid` int(11) DEFAULT NULL,
+  `compName` varchar(50) DEFAULT NULL,
+  `compDate` datetime DEFAULT NULL,
+  `public` tinyint(1) DEFAULT NULL,
+  `organizer` varchar(50) DEFAULT NULL,
+  `timediff` int(11) NOT NULL DEFAULT '0',
+  `multidaystage` int(11) DEFAULT NULL,
+  `multidayparent` int(11) DEFAULT NULL,
+  PRIMARY KEY (`user`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ CREATE TABLE `results` (
+  `tavid` int(11) NOT NULL DEFAULT '0',
+  `dbid` int(11) NOT NULL DEFAULT '0',
+  `control` int(11) NOT NULL DEFAULT '0',
+  `time` int(11) NOT NULL DEFAULT '0',
+  `status` int(11) DEFAULT '0',
+  `changed` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`tavid`,`dbid`,`control`),
+  KEY `Results_Indexd` (`tavid`,`status`,`time`),
+  KEY `resIndex2` (`tavid`,`dbid`,`control`,`status`,`time`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+ CREATE TABLE `runners` (
+  `tavid` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `club` varchar(50) DEFAULT NULL,
+  `class` varchar(50) DEFAULT NULL,
+  `brick` int(11) DEFAULT NULL,
+  `dbid` int(11) NOT NULL DEFAULT '0',
+  PRIMARY KEY (`dbid`,`tavid`),
+  KEY `runners_class` (`class`),
+  KEY `runnersComp_class` (`tavid`,`class`),
+  KEY `runnersComp_club` (`tavid`,`club`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1;
+
+CREATE TABLE `splitcontrols` (
+  `tavid` int(11) NOT NULL DEFAULT '0',
+  `classname` varchar(50) NOT NULL DEFAULT '',
+  `corder` int(11) NOT NULL DEFAULT '0',
+  `code` int(11) NOT NULL DEFAULT '0',
+  `name` varchar(50) DEFAULT NULL,
+  PRIMARY KEY (`tavid`,`classname`,`corder`,`code`)
+) ENGINE=MyISAM DEFAULT CHARSET=latin1; 
