@@ -8,8 +8,8 @@
     <ProjectGuid>{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>WOCEmmaClient</RootNamespace>
-    <AssemblyName>EmmaClient</AssemblyName>
+    <RootNamespace>LiveResults.Client</RootNamespace>
+    <AssemblyName>LiveResults.Client</AssemblyName>
     <IsWebBootstrapper>true</IsWebBootstrapper>
     <ManifestCertificateThumbprint>7261AEFB70AA319CE1CBA5FFA90919ED9971EFD3</ManifestCertificateThumbprint>
     <ManifestKeyFile>
@@ -139,6 +139,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Result.cs" />
     <Compile Include="WocParser.cs" />
     <Compile Include="FrmMonitor.cs">
       <SubType>Form</SubType>
@@ -152,7 +153,7 @@
     <Compile Include="FrmNewCompetition.Designer.cs">
       <DependentUpon>FrmNewCompetition.cs</DependentUpon>
     </Compile>
-    <Compile Include="IResultParser.cs" />
+    <Compile Include="IExternalSystemResultParser.cs" />
     <Compile Include="NewOLAComp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -168,12 +169,6 @@
       <DependentUpon>OEForm.cs</DependentUpon>
     </Compile>
     <Compile Include="OSParser.cs" />
-    <Compile Include="OLAForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="OLAForm.Designer.cs">
-      <DependentUpon>OLAForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="EmmaMysqlClient.cs" />
     <Compile Include="OEParser.cs" />
     <Compile Include="OlaParser.cs" />
@@ -194,10 +189,6 @@
     <EmbeddedResource Include="OEForm.resx">
       <SubType>Designer</SubType>
       <DependentUpon>OEForm.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="OLAForm.resx">
-      <DependentUpon>OLAForm.cs</DependentUpon>
-      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
