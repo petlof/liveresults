@@ -179,17 +179,18 @@ elseif ($_GET['method'] == 'getclubresults')
 }
 elseif ($_GET['method'] == 'getclassresults')
 {
-
+		die(utf8_decode(rawurldecode(urlencode($_GET['class']))));
+		$class = $_GET['class'];
 		$currentComp = new Emma($_GET['comp']);
-		$results = $currentComp->getAllSplitsForClass($_GET['class']);
-		$splits = $currentComp->getSplitControlsForClass($_GET['class']);
+		$results = $currentComp->getAllSplitsForClass($class);
+		$splits = $currentComp->getSplitControlsForClass($class);
 
 		$total = null;
 		$retTotal = false;
 		if (isset($_GET['includetotal']) && $_GET['includetotal'] == "true")
 		{
 			$retTotal = true;
-			$total = $currentComp->getTotalResultsForClass($_GET['class']);
+			$total = $currentComp->getTotalResultsForClass($class);
 
 			foreach ($results as $key=>$res)
 			{
@@ -344,7 +345,7 @@ elseif ($_GET['method'] == 'getclassresults')
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", \"className\": \"".$_GET['class']."\", \"splitcontrols\": $splitJSON, \"results\": [$ret]");
+			echo("{ \"status\": \"OK\", \"className\": \"".$class."\", \"splitcontrols\": $splitJSON, \"results\": [$ret]");
 			echo(", \"hash\": \"". $hash."\"}");
 		}
 }
@@ -352,7 +353,7 @@ else
 {
     $protocol = (isset($_SERVER['SERVER_PROTOCOL']) ? $_SERVER['SERVER_PROTOCOL'] : 'HTTP/1.0');
     header($protocol . ' ' . 400 . ' Bad Request');
-	
+
 	echo("{ \"status\": \"ERR\", \"message\": \"No method given\"}");
 }
 

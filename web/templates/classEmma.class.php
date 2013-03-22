@@ -3,6 +3,7 @@ $CHARSET = 'iso-8859-1';
 class Emma
 {
 	public static $db_server = "ec2-54-247-138-223.eu-west-1.compute.amazonaws.com";
+	/*public static $db_server = "127.0.0.1";*/
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";

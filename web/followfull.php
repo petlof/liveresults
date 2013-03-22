@@ -218,9 +218,10 @@ function changeFontSize(val)
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?> |
 <?php }?>
 <?php if($showLastPassings){?>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#EEFBCD; color:#000; padding: 10px; margin-top: 3px">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 3px">
 			<tr>
-			<!--Customized logo --><td width="161"><img src="images/fin5.png"/></td>
+			<!--Customized logo --><!--<td width="161">
+			<img src="images/fin5.png"/></td>-->
 			<td valign=top><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings">
 </div>

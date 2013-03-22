@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project xmlns="http://schemas.microsoft.com/developer/MsBuild/2003">
+    <UsingTask
+        TaskName="CompressorTask"
+        AssemblyFile="Yahoo.Yui.Compressor.dll" />
+    <!-- Define the output locations. These can be set via the msbuild command line using
+         /p:SourceLocation="$(ProjectDir)"
+         /p:CssOutputFile=$(ProjectDir)../whatever...
+         /p:JavaScriptOutputFile=$(ProjectDir)../whatever...
+         
+         If they are not supplied or are empty, then we the value whatever is supplied, below.
+    -->
+    <PropertyGroup>
+        <CssOutputFile Condition=" '$(CssOutputFile)'=='' ">liveres.comb.css</CssOutputFile>
+        <JavaScriptOutputFile Condition=" '$(JavaScriptOutputFile)'=='' ">liveresults.min.js</JavaScriptOutputFile>
+    </PropertyGroup>
+    
+    
+    <Target Name="MyTaskTarget">
+        <ItemGroup>
+            <!-- Single files, listed in order of dependency -->
+            <!--<CssFiles Include="$(SourceLocation)/css/style-eoc.css"/>
+            <CssFiles Include="$(SourceLocation)css/jquery.dataTables_themeroller-eoc.css"/>
+            <CssFiles Include="$(SourceLocation)/css/ui-darkness/jquery-ui-1.8.19.custom.css"/>-->
+            
+            <!--<JavaScriptFiles Include=$(SourceLocation)"/js/jquery-1.7.2.min.js"/>
+            <JavaScriptFiles Include=$(SourceLocation)"/js/jquery.dataTables.min.js"/>-->
+            <JavaScriptFiles Include=$(SourceLocation)"/js/liveresults.js"/>
+            
+        </ItemGroup>
+        <CompressorTask
+            CssFiles="@(CssFiles)"
+            DeleteCssFiles="false"
+            CssOutputFile="$(CssOutputFile)"
+            CssCompressionType="YuiStockCompression"
+            JavaScriptCompressionType="YuiStockCompression"
+            JavaScriptFiles="@(JavaScriptFiles)"
+            ObfuscateJavaScript="True"
+            PreserveAllSemicolons="False"
+            DisableOptimizations="Nope"
+            EncodingType="Default"
+            DeleteJavaScriptFiles="false"
+            LineBreakPosition="-1"
+            JavaScriptOutputFile="$(JavaScriptOutputFile)"
+            LoggingType="ALittleBit"
+            ThreadCulture="en-au"
+            IsEvalIgnored="false"
+            />
+    </Target>
+</Project>
