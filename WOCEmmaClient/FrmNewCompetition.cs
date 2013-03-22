@@ -7,7 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.IO;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public partial class FrmNewCompetition : Form
     {

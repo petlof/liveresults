@@ -4,8 +4,9 @@ using System.Text;
 using System.Data.OleDb;
 using System.Data;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
+    [Obsolete("The SITimec parser is not maintained, probably won't work either but kept here for historic reasons")]
     public class SiTimecParser
     {
         private OleDbConnection m_Connection;
@@ -19,11 +20,12 @@ namespace WOCEmmaClient
             m_Connection = conn;
         }
 
-        private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        private void FireOnResult(Result newResult)
         {
             if (OnResult != null)
             {
-                OnResult(id, SI, name, club, Class, start, time, status, results);
+                OnResult(newResult);
             }
         }
         private void FireLogMsg(string msg)
@@ -160,7 +162,17 @@ namespace WOCEmmaClient
 
                                 }
                                 if (rstatus != 9 && rstatus != 10)
-                                    FireOnResult(runnerID, 0, fName + " " + famName, club, classN, 0, time, rstatus, new List<ResultStruct>());
+                                    FireOnResult(new Result()
+                                    {
+                                        ID = runnerID,
+                                        RunnerName = fName + " " + famName,
+                                        RunnerClub = club,
+                                        Class = classN,
+                                        StartTime = 0,
+                                        Time = time,
+                                        Status = rstatus,
+                                        SplitTimes = new List<ResultStruct>()
+                                    });
                             }
                             reader.Close();
 

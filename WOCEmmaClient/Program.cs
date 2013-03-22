@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Windows.Forms;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     static class Program
     {

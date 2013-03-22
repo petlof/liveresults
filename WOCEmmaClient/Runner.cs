@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Text;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public class Runner
     {

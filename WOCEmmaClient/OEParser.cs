@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
-    public delegate void ResultDelegate(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> splits);
+    //public delegate void ResultDelegate(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> splits);
+    
     public class OEParser
     {
         public event ResultDelegate OnResult;
@@ -23,11 +24,12 @@ namespace WOCEmmaClient
             fsWatcher.Renamed += new System.IO.RenamedEventHandler(fsWatcher_Renamed);
         }
 
-        private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        private void FireOnResult(Result newResult)
         {
             if (OnResult != null)
             {
-                OnResult(id, SI, name, club, Class, start,time,status, results);
+                OnResult(newResult);
             }
         }
         private void FireLogMsg(string msg)
@@ -73,8 +75,8 @@ namespace WOCEmmaClient
 
                 /*Detect OE format*/
                 int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldText1, fldText2, fldText3, fldFinish, fldLeg;
-
-                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldText1, out fldText2, out fldText3);
+                int fldTotalTime;
+                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldText1, out fldText2, out fldText3, out fldTotalTime);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
            || fldStart == -1 || fldTime == -1
@@ -191,7 +193,17 @@ namespace WOCEmmaClient
 
                         }
                     }
-                    FireOnResult(id,si,name,club,Class,start,time,status,splittimes);
+                    FireOnResult(new Result()
+                    {
+                        ID = id,
+                        RunnerName = name,
+                        RunnerClub = club,
+                        Class = Class,
+                        StartTime = start,
+                        Time = time,
+                        Status = status,
+                        SplitTimes = splittimes
+                    });
                 }
             }
             catch (Exception ee)

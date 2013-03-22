@@ -11,7 +11,7 @@ using System.Xml;
 using System.Text.RegularExpressions;
 using System.Xml.Serialization;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public partial class OEForm : Form
     {
@@ -179,27 +179,27 @@ namespace WOCEmmaClient
             }
         }
 
-        void m_OSParser_OnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> splits)
+        void m_OSParser_OnResult(Result newResult)
         {
             foreach (EmmaMysqlClient c in m_Clients)
             {
-                if (!c.IsRunnerAdded(id))
+                if (!c.IsRunnerAdded(newResult.ID))
                 {
-                    c.AddRunner(new Runner(id, name, club, Class));
+                    c.AddRunner(new Runner(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class));
                 }
                 else
-                    c.UpdateRunnerInfo(id, name, club, Class);
+                    c.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class);
 
 
-                if (start >= 0)
-                    c.SetRunnerStartTime(id, start);
+                if (newResult.StartTime >= 0)
+                    c.SetRunnerStartTime(newResult.ID, newResult.StartTime);
 
-                c.SetRunnerResult(id, time, status);
-                if (splits != null)
+                c.SetRunnerResult(newResult.ID, newResult.Time, newResult.Status);
+                if (newResult.SplitTimes != null)
                 {
-                    foreach (ResultStruct r in splits)
+                    foreach (ResultStruct r in newResult.SplitTimes)
                     {
-                        c.SetRunnerSplit(id, r.ControlCode, r.Time);
+                        c.SetRunnerSplit(newResult.ID, r.ControlCode, r.Time);
                     }
                 }
             }

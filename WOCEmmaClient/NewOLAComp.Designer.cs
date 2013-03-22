@@ -1,4 +1,4 @@
-﻿namespace WOCEmmaClient
+﻿namespace LiveResults.Client
 {
     partial class NewOLAComp
     {

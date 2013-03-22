@@ -8,7 +8,7 @@ using System.Threading;
 using System.Net;
 using System.IO;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public delegate void LogMessageDelegate(string msg);
 

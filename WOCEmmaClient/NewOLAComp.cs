@@ -8,7 +8,7 @@ using System.Windows.Forms;
 using System.Data.OleDb;
 using System.Data.H2;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public partial class NewOLAComp : Form
     {

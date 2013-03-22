@@ -1,4 +1,4 @@
-﻿namespace WOCEmmaClient
+﻿namespace LiveResults.Client
 {
     partial class FrmNewCompetition
     {
@@ -52,7 +52,7 @@
             // 
             // btnOLA
             // 
-            this.btnOLA.Image = global::WOCEmmaClient.Properties.Resources.OLAImg;
+            this.btnOLA.Image = global::LiveResults.Client.Properties.Resources.OLAImg;
             this.btnOLA.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOLA.Location = new System.Drawing.Point(3, 3);
             this.btnOLA.Name = "btnOLA";
@@ -67,7 +67,7 @@
             // 
             // button2
             // 
-            this.button2.Image = global::WOCEmmaClient.Properties.Resources.OEImg;
+            this.button2.Image = global::LiveResults.Client.Properties.Resources.OEImg;
             this.button2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.button2.Location = new System.Drawing.Point(73, 3);
             this.button2.Name = "button2";

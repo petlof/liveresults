@@ -7,7 +7,7 @@ using System.Globalization;
 using System.Net;
 using System.Web.Script.Serialization;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public class WocParser : IExternalSystemResultParser
     {
@@ -21,11 +21,12 @@ namespace WOCEmmaClient
             this.urls = urls;
         }
 
-        private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        private void FireOnResult(Result newResult)
         {
             if (OnResult != null)
             {
-                OnResult(id, SI, name, club, Class, start, time, status, results);
+                OnResult(newResult);
             }
         }
         private void FireLogMsg(string msg)
@@ -119,7 +120,17 @@ namespace WOCEmmaClient
                                     splits.Add(new ResultStruct() { ControlCode = code, Time = stime });
                                 }
                             }
-                            FireOnResult(r.id, -1, r.cell.name, r.cell.federation, r.cell.Class, start, time, status, splits);
+                            FireOnResult(new Result()
+                            {
+                                ID = r.id,
+                                RunnerName = r.cell.name,
+                                RunnerClub = r.cell.federation,
+                                Class = r.cell.Class,
+                                StartTime = start,
+                                Time = time,
+                                Status = status,
+                                SplitTimes = splits
+                            });
                         }
                     }
                     System.Threading.Thread.Sleep(15000);

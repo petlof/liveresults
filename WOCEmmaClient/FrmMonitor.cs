@@ -6,7 +6,7 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public partial class FrmMonitor : Form
     {
@@ -33,27 +33,30 @@ namespace WOCEmmaClient
             m_Parser.OnResult += new ResultDelegate(m_Parser_OnResult);
         }
 
-        void m_Parser_OnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> splits)
+        void m_Parser_OnResult(Result newResult)
         {
             foreach (EmmaMysqlClient client in m_Clients)
             {
-                if (!client.IsRunnerAdded(id))
-                    client.AddRunner(new Runner(id, name, club, Class));
+                if (!client.IsRunnerAdded(newResult.ID))
+                    client.AddRunner(new Runner(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class));
                 else
-                    client.UpdateRunnerInfo(id, name, club, Class);
+                    client.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class);
 
-                if (start > 0)
-                    client.SetRunnerStartTime(id, start);
-                    
+                if (newResult.StartTime > 0)
+                    client.SetRunnerStartTime(newResult.ID, newResult.StartTime);
 
-                if (time != -2)
+
+                if (newResult.Time != -2)
                 {
-                    client.SetRunnerResult(id, time, status);
+                    client.SetRunnerResult(newResult.ID, newResult.Time, newResult.Status);
                 }
 
-                foreach (ResultStruct str in splits)
+                if (newResult.SplitTimes != null)
                 {
-                    client.SetRunnerSplit(id, str.ControlCode, str.Time);
+                    foreach (ResultStruct str in newResult.SplitTimes)
+                    {
+                        client.SetRunnerSplit(newResult.ID, str.ControlCode, str.Time);
+                    }
                 }
             }
         }

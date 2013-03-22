@@ -5,7 +5,7 @@ using System.Data.OleDb;
 using System.Data;
 using System.Globalization;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public class OlaParser : IExternalSystemResultParser
     {
@@ -24,11 +24,12 @@ namespace WOCEmmaClient
             m_EventRaceId = eventRaceId;
         }
 
-        private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        private void FireOnResult(Result newResult)
         {
             if (OnResult != null)
             {
-                OnResult(id, SI, name, club, Class, start, time, status, results);
+                OnResult(newResult);
             }
         }
         private void FireLogMsg(string msg)
@@ -185,7 +186,7 @@ namespace WOCEmmaClient
                                     modDate = ParseDateTime(sModDate);
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = Convert.ToInt32(reader["entryid"].ToString());
-                                    
+
                                     time = -9;
                                     if (reader["totaltime"] != null && reader["totaltime"] != DBNull.Value)
                                         time = Convert.ToInt32(reader["totalTime"].ToString());
@@ -193,14 +194,14 @@ namespace WOCEmmaClient
                                     famName = reader["lastname"] as string;
                                     fName = reader["firstname"] as string;
                                     lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
-                                    
+
                                     club = reader["clubname"] as string; //.GetString(5);
                                     classN = reader["shortname"] as string; // reader.GetString(6);
                                     status = reader["runnerStatus"] as string; // reader.GetString(7);
 
 
                                     DateTime startTime = DateTime.MinValue;
-                                    
+
                                     if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
                                     {
                                         string tTime = reader["allocatedStartTime"].ToString();
@@ -211,14 +212,14 @@ namespace WOCEmmaClient
                                         string tTime = reader["starttime"].ToString();
                                         startTime = ParseDateTime(tTime);
                                     }
-                                    
+
 
                                     iStartTime = 0;
                                     if (startTime > DateTime.MinValue)
                                     {
                                         iStartTime = (int)(startTime.TimeOfDay.TotalSeconds * 100);
                                     }
-                                    
+
                                     if (isRelay)
                                     {
                                         classN = classN + "-" + Convert.ToString(reader["relayLeg"]);
@@ -233,7 +234,7 @@ namespace WOCEmmaClient
                                             }
                                         }
                                     }
-                                    
+
                                 }
                                 catch (Exception ee)
                                 {
@@ -292,8 +293,17 @@ namespace WOCEmmaClient
                                         break;
                                 }
                                 if (rstatus != 999)
-                                    FireOnResult(runnerID, 0, fName + " " + famName, club, classN, iStartTime, time, rstatus, new List<ResultStruct>());
-
+                                    FireOnResult(
+                                        new Result()
+                                        {
+                                            ID = runnerID,
+                                            RunnerName = fName + " " + famName,
+                                            RunnerClub = club,
+                                            Class = classN,
+                                            StartTime = iStartTime,
+                                            Time = time,
+                                            Status = rstatus
+                                        });
                             }
                             reader.Close();
 
@@ -357,7 +367,17 @@ namespace WOCEmmaClient
                                         classn = classn + "-" + Convert.ToString(reader["relayLeg"]);
                                     }
 
-                                    FireOnResult(entryid, 0, name, club, classn, 0, -2, 0, times);
+                                    FireOnResult(new Result()
+                                    {
+                                        ID = entryid,
+                                        RunnerName = name,
+                                        RunnerClub = club,
+                                        Class = classn,
+                                        StartTime = 0,
+                                        Time = -2,
+                                        Status = 0,
+                                        SplitTimes = times
+                                    });
                                 }
                                 catch (Exception ee)
                                 {

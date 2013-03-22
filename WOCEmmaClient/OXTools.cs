@@ -2,11 +2,14 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
+    /// <summary>
+    /// Common tools for parsing OS/OE files
+    /// </summary>
     public class OXTools
     {
-        internal static void DetectOXCSVFormat(string[] fields, out int fldID, out int fldSI, out int fldFName, out int fldEName, out int fldClub, out int fldClass, out int fldStart, out int fldTime, out int fldStatus, out int fldFirstPost, out int fldLeg, out int fldFinish, out int fldTxt1, out int fldTxt2, out int fldTxt3)
+        internal static void DetectOXCSVFormat(string[] fields, out int fldID, out int fldSI, out int fldFName, out int fldEName, out int fldClub, out int fldClass, out int fldStart, out int fldTime, out int fldStatus, out int fldFirstPost, out int fldLeg, out int fldFinish, out int fldTxt1, out int fldTxt2, out int fldTxt3, out int fldTotalTime)
         {
             string[] stoNoFieldNames = { "Stno", "Lnro", "Stnr", "Startnr" };
             string[] legFieldNames = { "Leg", "Osuus", "Lnr", "Sträcka" };
@@ -29,9 +32,12 @@ namespace WOCEmmaClient
             string[] timeFieldNames = { "Time", "Aika", "Zeit", "Tid" };
             string[] statusFieldNames = { "Classifier", "Tila", "Wertung", "Status" };
             string[] no1FieldNames = { "No1", "Nro1", "Nr1" };
+            string[] totalTimeFieldNames = { "Total tid", "Kokonaisaika", "Overall time" };
             string[] txt1Fields = { "Text1" };
             string[] txt2Fields = { "Text2" };
             string[] txt3Fields = { "Text3" };
+
+            fldTotalTime = -1;
 
             fldID = GetFieldFromHeader(fields, stoNoFieldNames);
             fldLeg = GetFieldFromHeader(fields, legFieldNames);
@@ -50,6 +56,7 @@ namespace WOCEmmaClient
             fldTxt1 = GetFieldFromHeader(fields, txt1Fields);
             fldTxt2 = GetFieldFromHeader(fields, txt2Fields);
             fldTxt3 = GetFieldFromHeader(fields, txt3Fields);
+            fldTotalTime = GetFieldFromHeader(fields, totalTimeFieldNames);
 
             if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
                 || fldStart == -1 || fldTime == -1
@@ -59,17 +66,18 @@ namespace WOCEmmaClient
                 if (fields[0] == "OS0016")
                 {
                     fldID = 1;
-                    fldLeg = 3;
-                    fldSI = 13;
-                    fldFName = 6;
-                    fldEName = 5;
-                    fldClub = 17;
-                    fldClass = 19;
-                    fldStart = 9;
-                    fldFinish = 10;
-                    fldTime = 11;
-                    fldStatus = 12;
-                    fldFirstPost = 27;
+                    fldLeg = 4;
+                    fldSI = 14;
+                    fldFName = 7;
+                    fldEName = 6;
+                    fldClub = 18;
+                    fldClass = 20;
+                    fldStart = 10;
+                    fldFinish = 11;
+                    fldTime = 12;
+                    fldStatus = 13;
+                    fldFirstPost = 32;
+                    fldTotalTime = 30;
                 }
                 else if (fields[0] == "OS0012")
                 {

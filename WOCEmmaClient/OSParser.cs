@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     
     public class OSParser
@@ -34,11 +34,12 @@ namespace WOCEmmaClient
 
         }
 
-        private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
+        private void FireOnResult(Result newResult)
         {
             if (OnResult != null)
             {
-                OnResult(id, SI, name, club, Class, start,time,status, results);
+                OnResult(newResult);
             }
         }
         private void FireLogMsg(string msg)
@@ -94,7 +95,8 @@ namespace WOCEmmaClient
                 int fldLeg;
                 int fldFinish;
                 int fldTxt1, fldTxt2, fldTxt3;
-                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3);
+                int fldTotalTime;
+                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3, out fldTotalTime);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
            || fldStart == -1 || fldTime == -1
@@ -182,7 +184,6 @@ namespace WOCEmmaClient
                         ResultStruct s = new ResultStruct();
                         try
                         {
-                            //s.ControlNo = Convert.ToInt32(parts[i]);
                             i++;
                             s.ControlCode = Convert.ToInt32(parts[i]);
 
@@ -221,7 +222,17 @@ namespace WOCEmmaClient
                         }
                         
                     }
-                    FireOnResult(id,si,name,club,Class,start,time,status,splittimes);
+                    FireOnResult(new Result()
+                    {
+                        ID = id,
+                        RunnerName = name,
+                        RunnerClub = club,
+                        Class = Class,
+                        StartTime = start,
+                        Time = time,
+                        Status = status,
+                        SplitTimes = splittimes
+                    });
                 }
             }
             catch (Exception ee)
@@ -361,7 +372,16 @@ namespace WOCEmmaClient
                         }
 
                         int id = leg * 1000000 + Convert.ToInt32(parts[fldID]);
-                        FireOnResult(id, si, name, club, Class + "-" + leg, 0, time, status, null);
+                        FireOnResult(new Result()
+                        {
+                            ID = id,
+                            RunnerName = name,
+                            RunnerClub = club,
+                            Class = Class + "-" + leg,
+                            StartTime = 0,
+                            Time = time,
+                            Status = status
+                        });
 
                         fldNextRunner += 11;
                         if (fldNextRunner + 8 > parts.Length || parts[fldNextRunner].Trim('\"').Trim().Length == 0)
@@ -372,49 +392,6 @@ namespace WOCEmmaClient
                         leg++;
 
                     }
-
-                    /*List<ResultStruct> splittimes = new List<ResultStruct>();*/
-                    /*parse splittimes*/
-                    /*List<int> codes = new List<int>();
-                    for (int i = fldFirstPost; i < parts.Length - 4; i++)
-                    {
-                        if (parts[i + 1].Length == 0
-                            || parts[i + 2].Length == 0)
-                        {
-                            i += 3;
-                            continue;
-                        }
-                        ResultStruct s = new ResultStruct();
-                        try
-                        {
-                            //s.ControlNo = Convert.ToInt32(parts[i]);
-                            i++;
-                            s.ControlCode = Convert.ToInt32(parts[i]);
-                            s.ControlCode += 1000;
-                            while (codes.Contains(s.ControlCode))
-                            {
-                                s.ControlCode += 1000;
-                            }
-                            codes.Add(s.ControlCode);
-                            i++;
-                            s.Time = strTimeToInt(parts[i]);
-                            i++;
-                            s.Place = 0;
-                            try
-                            {
-                                s.Place = Convert.ToInt32(parts[i]);
-                            }
-                            catch
-                            { }
-
-                            splittimes.Add(s);
-                        }
-                        catch
-                        {
-                        }
-
-                    }
-                    FireOnResult(id, si, name, club, Class, start, time, status, splittimes);*/
                 }
             }
             catch (Exception ee)
