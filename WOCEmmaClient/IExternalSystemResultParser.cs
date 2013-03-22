@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace WOCEmmaClient
+namespace LiveResults.Client
 {
     public interface IExternalSystemResultParser
     {

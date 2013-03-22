@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WOCEmmaClient", "WOCEmmaClient\WOCEmmaClient.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client", "WOCEmmaClient\LiveResults.Client.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Sharp", "H2Sharp\H2Sharp.csproj", "{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}"
 EndProject
