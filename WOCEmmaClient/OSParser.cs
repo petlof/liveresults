@@ -96,7 +96,7 @@ namespace LiveResults.Client
                 int fldFinish;
                 int fldTxt1, fldTxt2, fldTxt3;
                 int fldTotalTime;
-                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3, out fldTotalTime);
+                OXTools.DetectOXCSVFormat(OXTools.SourceProgram.OS, fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3, out fldTotalTime);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
            || fldStart == -1 || fldTime == -1

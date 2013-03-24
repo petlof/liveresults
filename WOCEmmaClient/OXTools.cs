@@ -9,7 +9,10 @@ namespace LiveResults.Client
     /// </summary>
     public class OXTools
     {
-        internal static void DetectOXCSVFormat(string[] fields, out int fldID, out int fldSI, out int fldFName, out int fldEName, out int fldClub, out int fldClass, out int fldStart, out int fldTime, out int fldStatus, out int fldFirstPost, out int fldLeg, out int fldFinish, out int fldTxt1, out int fldTxt2, out int fldTxt3, out int fldTotalTime)
+        public enum SourceProgram { OE, OS };
+        internal static void DetectOXCSVFormat(SourceProgram source, string[] fields, out int fldID, out int fldSI, out int fldFName, out int fldEName, out int fldClub, 
+            out int fldClass, out int fldStart, out int fldTime, out int fldStatus, out int fldFirstPost, out int fldLeg, out int fldFinish, 
+            out int fldTxt1, out int fldTxt2, out int fldTxt3, out int fldTotalTime)
         {
             string[] stoNoFieldNames = { "Stno", "Lnro", "Stnr", "Startnr" };
             string[] legFieldNames = { "Leg", "Osuus", "Lnr", "Sträcka" };
@@ -25,7 +28,11 @@ namespace LiveResults.Client
                                         };
             string[] firstNameFieldNames = { "Vorname", "First name", "Etunimi", "Förnamn" };
             string[] lastNameFieldNames = { "Nachname", "Surname", "Sukunimi", "Efternamn" };
-            string[] clubFieldNames = { "Club", "Team", "Joukkue", "Staffel", "Lag", "Klubb", "Ort", "City" };
+            string[] clubFieldNames = { "Klubb", "Ort", "City" };
+            if (source == SourceProgram.OS)
+            {
+                clubFieldNames = new string[] { "Club", "Team", "Joukkue", "Staffel", "Lag", "Klubb", "Ort", "City" };
+            }
             string[] classFieldNames = { "Short", "Lyhyt", "Kurz", "Kort" };
             string[] startFieldNames = { "Start", "Lähtö" };
             string[] finishFieldNames = { "Finish", "Maali", "Ziel", "Mål" };
@@ -60,7 +67,7 @@ namespace LiveResults.Client
 
             if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
                 || fldStart == -1 || fldTime == -1
-                || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
+                || fldStart == -1 || fldFirstPost == -1 || ( source == SourceProgram.OS || fldLeg == -1))
             {
                 /*Try detect fixedFormat*/
                 if (fields[0] == "OS0016")
@@ -107,7 +114,7 @@ namespace LiveResults.Client
                     fldFinish = 12;
                     fldTime = 13;
                     fldStatus = 14;
-                    fldFirstPost = 58;
+                    fldFirstPost = 59;
                 }
             }
         }

@@ -76,7 +76,7 @@ namespace LiveResults.Client
                 /*Detect OE format*/
                 int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldText1, fldText2, fldText3, fldFinish, fldLeg;
                 int fldTotalTime;
-                OXTools.DetectOXCSVFormat(fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldText1, out fldText2, out fldText3, out fldTotalTime);
+                OXTools.DetectOXCSVFormat(OXTools.SourceProgram.OE, fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldText1, out fldText2, out fldText3, out fldTotalTime);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
            || fldStart == -1 || fldTime == -1
@@ -176,15 +176,19 @@ namespace LiveResults.Client
                                     i++;
                                     s.Time = strTimeToInt(parts[i]);
                                     i++;
-                                    s.Place = 0;
-                                    try
-                                    {
-                                        s.Place = Convert.ToInt32(parts[i]);
-                                    }
-                                    catch
-                                    { }
 
-                                    splittimes.Add(s);
+                                    if (s.Time > 0)
+                                    {
+                                        s.Place = 0;
+                                        try
+                                        {
+                                            s.Place = Convert.ToInt32(parts[i]);
+                                        }
+                                        catch
+                                        { }
+
+                                        splittimes.Add(s);
+                                    }
                                 }
                             }
                             catch
