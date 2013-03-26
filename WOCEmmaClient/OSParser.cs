@@ -124,6 +124,7 @@ namespace LiveResults.Client
                     string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
                     string club = parts[fldClub].Trim('\"');
                     string Class = parts[fldClass].Trim('\"') + "-" + parts[fldLeg].Trim('\"');
+                    int leg = Convert.ToInt32(parts[fldLeg].Trim('\"'));
                     int start = strTimeToInt(parts[fldStart]);
                     int time = strTimeToInt(parts[fldTime]);
 
@@ -139,32 +140,50 @@ namespace LiveResults.Client
                     {
                     }
 
+                    int totalTime = -1;
+                    int totalStatus = status;
+
                     if (isOs2010Files)
                     {
-                        string key = parts[fldClass].Trim('\"') + ";" + club;
-                        if (!teamStartTimes.ContainsKey(key))
+                        if (fldTotalTime != -1)
                         {
-                            teamStartTimes.Add(key, start);
+                            if (string.IsNullOrEmpty(parts[fldTotalTime]))
+                            {
+                                totalStatus = 3;
+                                totalTime = -3;
+                            }
+                            else
+                            {
+                                totalTime = strTimeToInt(parts[fldTotalTime]);
+                            }
                         }
-                        else if (teamStartTimes[key] > start)
+                        else
                         {
-                            teamStartTimes[key] = start;
-                        }
+                            string key = parts[fldClass].Trim('\"') + ";" + club;
+                            if (!teamStartTimes.ContainsKey(key))
+                            {
+                                teamStartTimes.Add(key, start);
+                            }
+                            else if (teamStartTimes[key] > start)
+                            {
+                                teamStartTimes[key] = start;
+                            }
 
-                        if (teamStatuses.ContainsKey(key))
-                        {
-                            int earlierStatus = teamStatuses[key];
-                            if (status == 0 && earlierStatus != 0)
-                                status = earlierStatus;
-                        }
-                        else if (status != 0)
-                        {
-                            teamStatuses.Add(key, status);
-                        }
+                            if (teamStatuses.ContainsKey(key))
+                            {
+                                int earlierStatus = teamStatuses[key];
+                                if (status == 0 && earlierStatus != 0)
+                                    totalStatus = earlierStatus;
+                            }
+                            else if (status != 0)
+                            {
+                                teamStatuses.Add(key, status);
+                            }
 
-                        if (time >= 0)
-                        {
-                            time = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                            if (time >= 0)
+                            {
+                                totalTime = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                            }
                         }
                     }
 
@@ -222,16 +241,19 @@ namespace LiveResults.Client
                         }
                         
                     }
-                    FireOnResult(new Result()
+                    FireOnResult(new RelayResult()
                     {
                         ID = id,
+                        LegNumber = leg,
                         RunnerName = name,
                         RunnerClub = club,
                         Class = Class,
                         StartTime = start,
                         Time = time,
                         Status = status,
-                        SplitTimes = splittimes
+                        SplitTimes = splittimes,
+                        OverallTime = totalTime,
+                        OverallStatus = totalStatus
                     });
                 }
             }
