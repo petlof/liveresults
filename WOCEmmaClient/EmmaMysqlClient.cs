@@ -320,6 +320,11 @@ namespace LiveResults.Client
                 {
                     m_Connection = new MySqlConnection(m_ConnStr);
                     m_Connection.Open();
+                    using (MySqlCommand cmd = m_Connection.CreateCommand())
+                    {
+                        cmd.CommandText = "set names 'utf8'";
+                        cmd.ExecuteNonQuery();
+                    }
                     while (m_Continue)
                     {
                         if (m_RunnersToUpdate.Count > 0)
