@@ -179,7 +179,6 @@ elseif ($_GET['method'] == 'getclubresults')
 }
 elseif ($_GET['method'] == 'getclassresults')
 {
-		die(utf8_decode(rawurldecode(urlencode($_GET['class']))));
 		$class = $_GET['class'];
 		$currentComp = new Emma($_GET['comp']);
 		$results = $currentComp->getAllSplitsForClass($class);

@@ -103,13 +103,6 @@ namespace LiveResults.Client
 
                     /* check so that the line is not incomplete*/
                     int id = Convert.ToInt32(parts[fldID]);                    
-                    int si = 0;
-                    try
-                    {
-                        si = Convert.ToInt32(parts[fldSI]);
-                    }
-                    catch (Exception ee)
-                    { }
                     string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
                     string club = parts[fldClub].Trim('\"');
                     string Class = parts[fldClass].Trim('\"');

@@ -131,6 +131,10 @@ checkForClassUpdate = function ()
 					  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);},
 					  dataType: "json"
 				});
+				if (typeof(_gaq) == "object")
+				{
+					_gaq.push(['_trackPageview', '/' + _compId + '/' + curClassName]);
+				}
 			}
 		}
 	
@@ -149,6 +153,10 @@ checkForClubUpdate = function ()
 					  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClubUpdate,updateInterval);},
 					  dataType: "json"
 				});
+				if (typeof(_gaq) == "object")
+				{
+					_gaq.push(['_trackPageview', '/' + _compId + '/' + curClubName]);
+				}
 			}
 		}
 	
@@ -578,6 +586,11 @@ this.viewClubResults = function(clubName)
 			  dataType: "json"
 	});
 	
+	if (typeof(_gaq) == "object")
+	{
+		_gaq.push(['_trackPageview', '/' + compId + '/' + clubName]);
+	}
+	
 	if (!_isSingleClass) {
 		window.location.hash = "club::" + clubName;
 	}
@@ -602,6 +615,11 @@ this.chooseClass = function(className)
 		  success: this.updateClassResults,
 		  dataType: "json"
 	});
+	
+	if (typeof(_gaq) == "object")
+	{
+		_gaq.push(['_trackPageview', '/' + compId + '/' + className]);
+	}
 
 	if (!_isSingleClass) {
 		window.location.hash = className;
