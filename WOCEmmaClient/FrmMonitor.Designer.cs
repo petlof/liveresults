@@ -82,7 +82,7 @@
             this.listBox1.FormattingEnabled = true;
             this.listBox1.Location = new System.Drawing.Point(0, 0);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(497, 251);
+            this.listBox1.Size = new System.Drawing.Size(497, 262);
             this.listBox1.TabIndex = 0;
             // 
             // FrmMonitor
@@ -92,7 +92,7 @@
             this.ClientSize = new System.Drawing.Size(497, 300);
             this.Controls.Add(this.panel2);
             this.Controls.Add(this.panel1);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedToolWindow;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.SizableToolWindow;
             this.Name = "FrmMonitor";
             this.Text = "Monitor upload";
             this.panel1.ResumeLayout(false);

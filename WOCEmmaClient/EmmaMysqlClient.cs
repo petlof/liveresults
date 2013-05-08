@@ -122,6 +122,8 @@ namespace LiveResults.Client
                 m_CurrentlyBuffering = true;
                 m_Connection.Open();
 
+                SetCodePage(m_Connection);
+
                 MySqlCommand cmd = m_Connection.CreateCommand();
                 cmd.CommandText = "select Runners.dbid,control,time,name,club,class,status from Runners, Results where Results.dbid = Runners.dbid and Results.tavid = " + m_CompID + " and Runners.tavid = " + m_CompID;
                 MySqlDataReader reader = cmd.ExecuteReader();
@@ -320,11 +322,7 @@ namespace LiveResults.Client
                 {
                     m_Connection = new MySqlConnection(m_ConnStr);
                     m_Connection.Open();
-                    using (MySqlCommand cmd = m_Connection.CreateCommand())
-                    {
-                        cmd.CommandText = "set names 'utf8'";
-                        cmd.ExecuteNonQuery();
-                    }
+                    SetCodePage(m_Connection);
                     while (m_Continue)
                     {
                         if (m_RunnersToUpdate.Count > 0)
@@ -336,13 +334,24 @@ namespace LiveResults.Client
                                 {
                                     cmd.Parameters.Clear();
                                     cmd.Parameters.AddWithValue("?compid", m_CompID);
-                                    cmd.Parameters.AddWithValue("?name", r.Name);
-                                    cmd.Parameters.AddWithValue("?club", r.Club);
-                                    cmd.Parameters.AddWithValue("?class", r.Class);
+                                    cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(r.Name))));
+                                    cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(r.Club))));
+                                    cmd.Parameters.AddWithValue("?class", Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(r.Class))));
                                     cmd.Parameters.AddWithValue("?id", r.ID);
                                     //cmd.CommandText = "REPLACE INTO Runners VALUES (" + m_CompID + ",'" + r.Name.Replace('\'','`') + "','" + r.Club + "','" + r.Class + "',0," + r.ID + ")";
                                     cmd.CommandText = "REPLACE INTO Runners VALUES (?compid,?name,?club,?class,0,?id)";
-                                    cmd.ExecuteNonQuery();
+
+                                    try
+                                    {
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        //Move failing runner last
+                                        m_RunnersToUpdate.Add(r);
+                                        m_RunnersToUpdate.RemoveAt(0);
+                                        throw new ApplicationException("Could not add runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
+                                    }
                                     cmd.Parameters.Clear();
                                     FireLogMsg("Runner " + r.Name + " updated in DB");
                                     r.RunnerUpdated = false;
@@ -418,6 +427,15 @@ namespace LiveResults.Client
                     m_Connection.Dispose();
                     m_Connection = null;
                 }
+            }
+        }
+
+        private void SetCodePage(MySqlConnection conn)
+        {
+            using (MySqlCommand cmd = conn.CreateCommand())
+            {
+                cmd.CommandText = "set names 'utf8'";
+                cmd.ExecuteNonQuery();
             }
         }
 

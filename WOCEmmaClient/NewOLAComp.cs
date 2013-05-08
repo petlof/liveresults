@@ -16,6 +16,7 @@ namespace LiveResults.Client
         {
             InitializeComponent();
             comboBox1.DataSource = new string[] { "OLA 5.0 Internal", "OLA4 Internal Mysql", "Mysql-Server", "SQL-Server" };
+            comboBox1.SelectedIndex = 2;
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)

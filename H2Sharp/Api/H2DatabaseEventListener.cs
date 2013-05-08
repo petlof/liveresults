@@ -70,10 +70,11 @@ namespace System.Data.H2.Api
         /// </summary>
         protected abstract void OnClosingDatabase();
 
-        void org.h2.api.DatabaseEventListener.diskSpaceIsLow()
+        /*void org.h2.api.DatabaseEventListener.diskSpaceIsLow()
         {
             OnDiskSpaceIsLow();
-        }
+        }*/
+
         /// <summary>
         /// This method is called if the disk space is very low.
         /// One strategy is to inform the user and wait for it to clean up disk space.
