@@ -262,6 +262,17 @@ function changeFontSize(val)
 			<?php }?>
 
 		</td>
+<?php if ($currentComp->HasVideo()) {?>
+<td valign="top" style="padding: 5px">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 10px">
+				<tr>
+					<td valign=top><b>Live Video/Audio</b><br/>
+					<?=$currentComp->GetVideoEmbedCode()?>
+					</td>
+				</tr>
+			</table>
+</td>
+<?php }?>
 
 	     </tr>
 
@@ -277,7 +288,7 @@ function changeFontSize(val)
 
 </table>
 
-<p align=center>&copy;2012, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
+<p align="left">&copy;2012-, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
 
 
 

@@ -2,8 +2,8 @@
 $CHARSET = 'iso-8859-1';
 class Emma
 {
-	public static $db_server = "ec2-54-247-138-223.eu-west-1.compute.amazonaws.com";
-	/*public static $db_server = "127.0.0.1";*/
+	/*public static $db_server = "obasen.orientering.se";*/
+	public static $db_server = "127.0.0.1";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
@@ -14,6 +14,9 @@ class Emma
    var $m_TimeDiff = 0;   var $m_IsMultiDayEvent = false;
    var $m_MultiDayStage = -1;
    var $m_MultiDayParent = -1;
+
+   var $m_VideoFormat = "";
+   var $m_VideoUrl = "";
 
 	var $m_Conn;
         public static function GetCompetitions()
@@ -143,7 +146,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff from Login where tavid=$compid",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, videourl, videotype from Login where tavid=$compid",$conn);
          $ret = null;
          while ($tmp = mysql_fetch_array($result))
 	 {
@@ -172,6 +175,12 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		    $this->m_CompDate = date("Y-m-d",strtotime($tmp["compDate"]));
 
 		    $this->m_TimeDiff = $tmp["timediff"]*3600;
+		    if (isset($tmp["videourl"]))
+		    	$this->m_VideoUrl = $tmp["videourl"];
+
+		    if (isset($tmp["videotype"]))
+				$this->m_VideoFormat= $tmp["videotype"];
+
 		    if (isset($tmp['multidaystage']))
 		    {
 		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null)
@@ -187,6 +196,20 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	function IsMultiDayEvent()
 	{
 		return $this->m_IsMultiDayEvent;
+	}
+
+	function HasVideo()
+	{
+		return $this->m_VideoFormat != "";
+	}
+
+	function GetVideoEmbedCode()
+	{
+		if ($this->m_VideoFormat == "bambuser")
+		{
+			return '<iframe src="http://embed.bambuser.com/channel/' . $this->m_VideoUrl . '" width="460" height="403" frameborder="0">Your browser does not support iframes.</iframe>';
+		}
+		return "";
 	}
 
 	function CompName()
