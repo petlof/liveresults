@@ -121,7 +121,7 @@ namespace LiveResults.Client
                     return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","") + ";AUTO_SERVER=TRUE", "root", "");
                 case 1:
                 case 2:
-                    return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
+                    return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : "") + ";charset=utf8");
                 case 3:
                     return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
             }

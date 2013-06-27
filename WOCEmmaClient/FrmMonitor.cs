@@ -15,6 +15,7 @@ namespace LiveResults.Client
         public FrmMonitor()
         {
             InitializeComponent();
+            Text = Text += ", " + Encoding.Default.EncodingName + "," + Encoding.Default.CodePage;
         }
 
         private int m_CompetitionID;

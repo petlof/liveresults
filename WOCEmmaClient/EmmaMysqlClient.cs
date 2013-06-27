@@ -334,11 +334,11 @@ namespace LiveResults.Client
                                 {
                                     cmd.Parameters.Clear();
                                     cmd.Parameters.AddWithValue("?compid", m_CompID);
-                                    cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(r.Name))));
-                                    cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(r.Club))));
-                                    cmd.Parameters.AddWithValue("?class", Encoding.UTF8.GetString(Encoding.Convert(Encoding.Default, Encoding.UTF8, Encoding.Default.GetBytes(r.Class))));
+                                    cmd.Parameters.AddWithValue("?name", r.Name);
+                                    cmd.Parameters.AddWithValue("?club", r.Club);
+                                    cmd.Parameters.AddWithValue("?class", r.Class);
+
                                     cmd.Parameters.AddWithValue("?id", r.ID);
-                                    //cmd.CommandText = "REPLACE INTO Runners VALUES (" + m_CompID + ",'" + r.Name.Replace('\'','`') + "','" + r.Club + "','" + r.Class + "',0," + r.ID + ")";
                                     cmd.CommandText = "REPLACE INTO Runners VALUES (?compid,?name,?club,?class,0,?id)";
 
                                     try
@@ -435,6 +435,7 @@ namespace LiveResults.Client
             using (MySqlCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = "set names 'utf8'";
+                //cmd.CommandText = "set names 'latin1'";
                 cmd.ExecuteNonQuery();
             }
         }

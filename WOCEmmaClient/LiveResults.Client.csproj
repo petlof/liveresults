@@ -299,7 +299,9 @@
     <None Include="Resources\OSImg.bmp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="App.config" />
+    <None Include="App.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="Resources\OLAImg.bmp" />
   </ItemGroup>
   <ItemGroup>

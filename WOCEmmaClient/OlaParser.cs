@@ -191,12 +191,13 @@ namespace LiveResults.Client
                                     if (reader["totaltime"] != null && reader["totaltime"] != DBNull.Value)
                                         time = Convert.ToInt32(reader["totalTime"].ToString());
 
-                                    famName = reader["lastname"] as string;
-                                    fName = reader["firstname"] as string;
-                                    lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
+                                    famName = (reader["lastname"] as string);
+                                    fName = (reader["firstname"] as string);
 
-                                    club = reader["clubname"] as string; //.GetString(5);
-                                    classN = reader["shortname"] as string; // reader.GetString(6);
+                                    //lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
+
+                                    club = (reader["clubname"] as string);
+                                    classN = (reader["shortname"] as string);
                                     status = reader["runnerStatus"] as string; // reader.GetString(7);
 
 
@@ -423,6 +424,7 @@ namespace LiveResults.Client
                 }
             }
         }
+
         private static DateTime ParseDateTime(string tTime)
         {
             DateTime startTime;

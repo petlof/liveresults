@@ -43,6 +43,7 @@ namespace LiveResults.Client
         public OEForm()
         {
             InitializeComponent();
+            Text = Text += ", " + Encoding.Default.EncodingName + "," + Encoding.Default.CodePage;
             fileSystemWatcher1.Changed += new FileSystemEventHandler(fileSystemWatcher1_Changed);
             m_Clients = new List<EmmaMysqlClient>();
 
@@ -227,7 +228,8 @@ namespace LiveResults.Client
                     }
                     else
                     {
-                        sr = new StreamReader(fullFilename, Encoding.Default);
+                        //sr = new StreamReader(fullFilename, Encoding.Default);
+                        sr = new StreamReader(fullFilename, Encoding.GetEncoding("ISO-8859-1"));
                     }
                     string tmp = sr.ReadToEnd();
                     sr.Close();
