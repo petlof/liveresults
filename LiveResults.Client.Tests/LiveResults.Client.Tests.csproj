@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EncodingTests.cs" />
+    <Compile Include="IofXmlParserTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="OEParserTests.cs" />
     <Compile Include="TestHelpers.cs" />

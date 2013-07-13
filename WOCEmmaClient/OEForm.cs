@@ -221,161 +221,11 @@ namespace LiveResults.Client
             {
                 try
                 {
-                    StreamReader sr = null;
-                    if (!File.Exists(fullFilename))
-                    {
-                        return;
-                    }
-                    else
-                    {
-                        //sr = new StreamReader(fullFilename, Encoding.Default);
-                        sr = new StreamReader(fullFilename, Encoding.GetEncoding("ISO-8859-1"));
-                    }
-                    string tmp = sr.ReadToEnd();
-                    sr.Close();
-                    File.Delete(fullFilename);
-                    tmp = tmp.Replace("<!DOCTYPE ResultList SYSTEM \"IOFdata.dtd\">", "");
+                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, new LogMessageDelegate(delegate(string msg) { logit(msg); }));
                     processed = true;
-                    XmlDocument xmlDoc = new XmlDocument();
-                    xmlDoc.LoadXml(tmp);
-                    //logit("File loaded in xml!");
-
-                    foreach (XmlNode classNode in xmlDoc.GetElementsByTagName("ClassResult"))
+                    foreach (EmmaMysqlClient c in m_Clients)
                     {
-                        XmlNode classNameNode = classNode.SelectSingleNode("ClassShortName");
-                        string className = classNameNode.InnerText;
-                        //logit(className);
-
-                        foreach (XmlNode personNode in classNode.SelectNodes("PersonResult"))
-                        {
-                            XmlNode personNameNode = personNode.SelectSingleNode("Person/PersonName");
-                            string familyname = personNameNode.SelectSingleNode("Family").InnerText;
-                            string givenname = personNameNode.SelectSingleNode("Given").InnerText;
-                            string id = personNode.SelectSingleNode("Person/PersonId").InnerText;
-                            long pid = 0;
-                            if (id.Trim().Length > 0)
-                            {
-                                pid = Convert.ToInt64(id);
-                            }
-                            var clubNode = personNode.SelectSingleNode("Club/ShortName");
-                            string club = "";
-                            if (clubNode != null)
-                                club = clubNode.InnerText;
-                            string status = personNode.SelectSingleNode("Result/CompetitorStatus").Attributes["value"].Value;
-                            string time = personNode.SelectSingleNode("Result/Time").InnerText;
-                            string starttime = personNode.SelectSingleNode("Result/StartTime/Clock").InnerText;
-                            string si = personNode.SelectSingleNode("Result/CCard/CCardId").InnerText;
-                            int iSi;
-                            if (!Int32.TryParse(si, out iSi))
-                            {
-                                //NO SICARD!
-                                logit("No SICard for Runner: " + familyname + " " + givenname);
-                            }
-                            int dbid = 0;
-                            if (pid < Int32.MaxValue && pid > 0)
-                            {
-                                dbid = (int)pid;
-                            }
-                            else if (iSi > 0)
-                            {
-                                dbid = -1 * iSi;
-                            }
-                            else
-                            {
-                                logit("Cant generate DBID for runner: " + givenname + " " + familyname);
-                            }
-                            int istarttime = -1;
-                            if (!string.IsNullOrEmpty(starttime) && chkUploadStarttimes.Checked)
-                                istarttime = ParseTime(starttime);
-
-                            int itime = -9;
-                            itime = ParseTime(time);
-
-                            int istatus = 10;
-
-                            switch (status)
-                            {
-                                case "MisPunch":
-                                    istatus = 3;
-                                    break;
-
-                                case "Disqualified":
-                                    istatus = 4;
-                                    break;
-                                case "DidNotFinish":
-                                    istatus = 3;
-                                    itime = -3;
-                                    break;
-                                case "DidNotStart":
-                                    istatus = 1;
-                                    itime = -3;
-                                    break;
-                                case "Overtime":
-                                    istatus = 5;
-                                    break;
-                                case "OK":
-                                    istatus = 0;
-                                    break;
-                            }
-
-
-                            List<int> lsplitCodes = new List<int>();
-                            List<int> lsplitTimes = new List<int>();
-
-                            XmlNodeList splittimes = personNode.SelectNodes("Result/SplitTime");
-                            if (splittimes != null)
-                            {
-                                foreach (XmlNode splitNode in splittimes)
-                                {
-                                    XmlNode splitcode = splitNode.SelectSingleNode("ControlCode");
-                                    XmlNode splittime = splitNode.SelectSingleNode("Time");
-                                    int i_splitcode;
-                                    string s_splittime = splittime.InnerText;
-                                    if (int.TryParse(splitcode.InnerText, out i_splitcode) && s_splittime.Length > 0)
-                                    {
-                                        if (i_splitcode == 999)
-                                        {
-                                            if (istatus == 0 && itime == -1)
-                                            {
-                                                //Målstämpling
-                                                itime = ParseTime(s_splittime);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            i_splitcode += 1000;
-                                            while (lsplitCodes.Contains(i_splitcode))
-                                            {
-                                                i_splitcode += 1000;
-                                            }
-
-                                            int i_splittime = ParseTime(s_splittime);
-                                            lsplitCodes.Add(i_splitcode);
-                                            lsplitTimes.Add(i_splittime);
-                                        }
-                                    }
-                                }
-                            }
-
-                            foreach (EmmaMysqlClient c in m_Clients)
-                            {
-                                if (!c.IsRunnerAdded(dbid))
-                                {
-                                    c.AddRunner(new Runner(dbid, givenname + " " + familyname, club, className));
-                                }
-
-                                if (istarttime > -1)
-                                    c.SetRunnerStartTime(dbid, istarttime);
-
-                                c.SetRunnerResult(dbid, itime, istatus);
-                                for (int split = 0; split < lsplitCodes.Count; split++)
-                                {
-                                    c.SetRunnerSplit(dbid, lsplitCodes[split], lsplitTimes[split]);
-                                }
-                            }
-
-
-                        }
+                        c.MergeRunners(runners);
                     }
                 }
                 catch (Exception ee)
@@ -396,7 +246,6 @@ namespace LiveResults.Client
             {
                 logit("Could not open " + filename + " for processing");
             }
-
         }
 
         private static int ParseTime(string time)

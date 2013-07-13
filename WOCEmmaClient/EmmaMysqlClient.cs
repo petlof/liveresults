@@ -309,6 +309,34 @@ namespace LiveResults.Client
 
         }
 
+        public void MergeRunners(Runner[] runners)
+        {
+            if (runners == null)
+                return;
+
+            foreach (var r in runners)
+            {
+                if (!IsRunnerAdded(r.ID))
+                {
+                    AddRunner(new Runner(r.ID, r.Name, r.Club, r.Class));
+                }
+                if (r.StartTime >= 0)
+                    SetRunnerStartTime(r.ID, r.StartTime);
+
+                SetRunnerResult(r.ID, r.Time, r.Status);
+
+                var spl = r.SplitTimes;
+                if (spl != null)
+                {
+                    foreach (var s in spl)
+                    {
+                        SetRunnerSplit(r.ID, s.Control, s.Time);
+                    }
+                }
+            }
+        }
+
+
         public void Stop()
         {
             m_Continue = false;

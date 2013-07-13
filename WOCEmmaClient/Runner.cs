@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
 using System.Text;
@@ -19,14 +20,14 @@ namespace LiveResults.Client
         public bool ResultUpdated;
         public bool StartTimeUpdated;
 
-        private Hashtable m_SplitTimes;
+        private Dictionary<int,SplitTime> m_SplitTimes;
         public Runner(int dbID, string name, string club, string Class)
         {
             RunnerUpdated = true;
             ResultUpdated = false;
             StartTimeUpdated = false;
 
-            m_SplitTimes = new Hashtable();
+            m_SplitTimes = new Dictionary<int, SplitTime>();
             m_id = dbID;
             m_name = name;
             m_club = club;
@@ -104,6 +105,14 @@ namespace LiveResults.Client
             {
                 m_club = value;
                 RunnerUpdated = true;
+            }
+        }
+
+        public SplitTime[] SplitTimes
+        {
+            get
+            {
+                return m_SplitTimes.Values.ToArray();
             }
         }
 
