@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Reflection;
+using System.IO;
 
 namespace LiveResults.Client
 {
@@ -14,35 +16,36 @@ namespace LiveResults.Client
             out int fldClass, out int fldStart, out int fldTime, out int fldStatus, out int fldFirstPost, out int fldLeg, out int fldFinish, 
             out int fldTxt1, out int fldTxt2, out int fldTxt3, out int fldTotalTime)
         {
-            string[] stoNoFieldNames = { "Stno", "Lnro", "Stnr", "Startnr" };
-            string[] legFieldNames = { "Leg", "Osuus", "Lnr", "Sträcka" };
-            string[] chipNoFieldNames = {
-                                            "SI card",
-                                            "SI bricka",
-                                            "Bricka",
-                                            "Chipno", //OS2010 - ENG
-                                            "Korttinro", //OS2010 - FIN
-                                            "Chipnr", //OS2010 - GER
-                                            "Bricknr", //OS2010 - SWE
-                                            "Chip"
-                                        };
-            string[] firstNameFieldNames = { "Vorname", "First name", "Etunimi", "Förnamn" };
-            string[] lastNameFieldNames = { "Nachname", "Surname", "Sukunimi", "Efternamn" };
-            string[] clubFieldNames = { "Klubb", "Ort", "City" };
-            if (source == SourceProgram.OS)
+
+            string[] stoNoFieldNames = GetOEStringsForKey("Stnr", source);
+            string[] legFieldNames = GetOEStringsForKey("Lnr", source); 
+            string[] chipNoFieldNames = GetOEStringsForKey(source == SourceProgram.OE ? "Chipnr" : "ChipNr", source);
+            string[] firstNameFieldNames = GetOEStringsForKey("Vorname", source);
+            string[] lastNameFieldNames = GetOEStringsForKey("Nachname", source);
+            string[] clubFieldNames = GetOEStringsForKey(source == SourceProgram.OE ? "Ort" : "Staffel", source); 
+            string[] classFieldNames = GetOEStringsForKey("Kurz", source);
+            string[] startFieldNames = GetOEStringsForKey("Start", source); 
+            string[] finishFieldNames = GetOEStringsForKey("Ziel", source); 
+            string[] timeFieldNames =  GetOEStringsForKey("Zeit", source); 
+            string[] statusFieldNames = GetOEStringsForKey("Wertung", source);
+
+            string[] noFieldNames = GetOEStringsForKey("Nr", source);
+            string[] no1FieldNames = new string[noFieldNames.Length];
+            for (int i = 0; i < no1FieldNames.Length; i++)
+                no1FieldNames[i] = noFieldNames[i] + "1";
+            string[] totalTimeFieldNames = GetOEStringsForKey("Gesamtzeit", source); 
+
+            string[] txtFields = GetOEStringsForKey("Text", source);
+
+            string[] txt1Fields = new string[txtFields.Length];
+            string[] txt2Fields = new string[txtFields.Length];
+            string[] txt3Fields = new string[txtFields.Length];
+            for (int i = 0; i < txtFields.Length; i++)
             {
-                clubFieldNames = new string[] { "Club", "Team", "Joukkue", "Staffel", "Lag", "Klubb", "Ort", "City" };
+                txt1Fields[i] = txtFields[i] + "1";
+                txt2Fields[i] = txtFields[i] + "2";
+                txt3Fields[i] = txtFields[i] + "3";
             }
-            string[] classFieldNames = { "Short", "Lyhyt", "Kurz", "Kort" };
-            string[] startFieldNames = { "Start", "Lähtö" };
-            string[] finishFieldNames = { "Finish", "Maali", "Ziel", "Mål" };
-            string[] timeFieldNames = { "Time", "Aika", "Zeit", "Tid" };
-            string[] statusFieldNames = { "Classifier", "Tila", "Wertung", "Status" };
-            string[] no1FieldNames = { "No1", "Nro1", "Nr1" };
-            string[] totalTimeFieldNames = { "Total tid", "Kokonaisaika", "Overall time" };
-            string[] txt1Fields = { "Text1" };
-            string[] txt2Fields = { "Text2" };
-            string[] txt3Fields = { "Text3" };
 
             fldTotalTime = -1;
 
@@ -130,6 +133,40 @@ namespace LiveResults.Client
                     break;
             }
             return fld;
+        }
+
+        static Dictionary<string, string[]> _lookupCacheOE = new Dictionary<string, string[]>();
+        static Dictionary<string, string[]> _lookupCacheOS = new Dictionary<string, string[]>();
+        public static string[] GetOEStringsForKey(string key, SourceProgram source)
+        {
+            var cache = source == SourceProgram.OE ? _lookupCacheOE : _lookupCacheOS;
+            if (cache.ContainsKey(key))
+                return cache[key];
+
+
+            List<string> texts = new List<string>();
+
+            string file = source == SourceProgram.OE ? "LiveResults.Client.OLEinzel.mlf" : "LiveResults.Client.OLStaffel.mlf";
+
+            using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream(file))
+            {
+                using (var sr = new StreamReader(s,Encoding.GetEncoding("iso-8859-1")))
+                {
+                    string temp;
+                    while ((temp = sr.ReadLine()) != null)
+                    {
+                        string[] parts = temp.Split(new string[] { "¦" }, StringSplitOptions.RemoveEmptyEntries);
+                        if (parts[0] == key)
+                        {
+                            texts.AddRange(parts);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            cache.Add(key, texts.ToArray());
+            return texts.ToArray();
         }
 
     }
