@@ -296,7 +296,7 @@ namespace LiveResults.Client
                 string[] fields = header.Split(SplitChars);
 
                 /*Detect OS format*/
-                int fldID, fldSI, fldFName, fldEName, fldClub, fldClass, fldStart, fldTime, fldStatus, fldFirstPost, fldName;
+                int fldID, fldClub, fldClass, fldStart, fldName;
                 int fldFirstRunner = -1;
                 fldID = Array.IndexOf(fields, "Stno");
                 fldName = Array.IndexOf(fields, "Name");
@@ -374,11 +374,6 @@ namespace LiveResults.Client
 
                             if (status == 0 && time < 0)
                                 status = 9;
-
-                            if (status != 0)
-                            {
-                                bool test = true;
-                            }
                         }
                         catch
                         {

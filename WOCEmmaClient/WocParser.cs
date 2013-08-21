@@ -153,7 +153,6 @@ namespace LiveResults.Client
                         notParticipating
                      */
                     //EMMAClient.RunnerStatus rstatus = EMMAClient.RunnerStatus.Passed;
-                    int rstatus = 0;
                     /*switch (status)
                     {
                         case "started":

@@ -99,7 +99,7 @@ namespace LiveResults.Client
                             while (reader.Read())
                             {
                                 DateTime modDate = DateTime.MinValue;
-                                int time = 0, position = 0, runnerID = 0;
+                                int time = 0, runnerID = 0;
                                 string famName = "", fName = "", club = "", classN = "";
                                 int status = -1;
                                 try

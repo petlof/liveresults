@@ -71,9 +71,6 @@ namespace LiveResults.Client
         private void button1_Click_1(object sender, EventArgs e)
         {
             FrmMonitor monForm = new FrmMonitor();
-            //OlaParser pars = new OlaParser(GetDBConnection(lstDB.SelectedItem as string), (cmbOLAComp.SelectedItem as OlaComp).Id, (cmbOLAEtapp.SelectedItem as OlaComp).Id);
-            string comp = "middle-quali";
-
             string[] lines = File.ReadAllLines("wocinfo.txt");
             int compId = int.Parse(lines[0]);
             List<string> urls = new List<string>();

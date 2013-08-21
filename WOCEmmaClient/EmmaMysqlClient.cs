@@ -28,7 +28,7 @@ namespace LiveResults.Client
             int sNum = 1;
             while (true)
             {
-                string server = ConfigurationSettings.AppSettings.Get("emmaServer" + sNum.ToString());
+                string server = ConfigurationManager.AppSettings["emmaServer" + sNum.ToString()];
                 if (server == null)
                     break;
 
