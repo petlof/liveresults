@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.20617.1 PREVIEW
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client", "WOCEmmaClient\LiveResults.Client.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Sharp", "H2Sharp\H2Sharp.csproj", "{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}"
@@ -11,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client.Tests", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{B1684EB9-729C-472B-ABD9-712E397A715C}"
 	ProjectSection(SolutionItems) = preProject
+		web\dbupgrade\20130606.txt = web\dbupgrade\20130606.txt
+		Doc\createOnlineDatabase.sql.txt = Doc\createOnlineDatabase.sql.txt
 		LiveResults.Client.vsmdi = LiveResults.Client.vsmdi
 		Local.testsettings = Local.testsettings
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings

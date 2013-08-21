@@ -1,2 +1,2 @@
-alter table login add column videourl varchar(255);
-alter table login add column videotype varchar(255);
+alter table LOGIN add column videourl varchar(255);
+alter table LOGIN add column videotype varchar(255);

@@ -1,4 +1,4 @@
- CREATE TABLE `login` (
+ CREATE TABLE `LOGIN` (
   `user` varchar(50) NOT NULL DEFAULT '',
   `pass` varchar(50) DEFAULT NULL,
   `tavid` int(11) DEFAULT NULL,
@@ -14,7 +14,7 @@
   PRIMARY KEY (`user`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
- CREATE TABLE `results` (
+ CREATE TABLE `RESULTS` (
   `tavid` int(11) NOT NULL DEFAULT '0',
   `dbid` int(11) NOT NULL DEFAULT '0',
   `control` int(11) NOT NULL DEFAULT '0',
@@ -26,7 +26,7 @@
   KEY `resIndex2` (`tavid`,`dbid`,`control`,`status`,`time`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
- CREATE TABLE `runners` (
+ CREATE TABLE `RUNNERS` (
   `tavid` int(11) NOT NULL DEFAULT '0',
   `name` varchar(50) character set 'utf8' NOT NULL DEFAULT '',
   `club` varchar(50) character set 'utf8' DEFAULT NULL,
@@ -39,10 +39,10 @@
   KEY `runnersComp_club` (`tavid`,`club`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
-create index idx_runner_club on runners(tavid,club);
-create index idx_runner_class on runners(tavid,class);
+create index idx_runner_club on RUNNERS(tavid,club);
+create index idx_runner_class on RUNNERS(tavid,class);
 
-CREATE TABLE `splitcontrols` (
+CREATE TABLE `SPLITCONTROLS` (
   `tavid` int(11) NOT NULL DEFAULT '0',
   `classname` varchar(50) character set 'utf8' NOT NULL DEFAULT '',
   `corder` int(11) NOT NULL DEFAULT '0',
