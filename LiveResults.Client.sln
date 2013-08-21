@@ -20,6 +20,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		TraceAndTestImpact.testsettings = TraceAndTestImpact.testsettings
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adm", "adm", "{E2B2F09B-077F-4AFC-AC1C-01CBD96C26BF}"
+	ProjectSection(SolutionItems) = preProject
+		web\adm\admincompetitions.php = web\adm\admincompetitions.php
+		web\adm\createComp.php = web\adm\createComp.php
+		web\adm\editComp.php = web\adm\editComp.php
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = LiveResults.Client.vsmdi
@@ -102,5 +111,9 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A0323DA7-D3AF-4CB1-B37B-AFCAF9278516} = {B1684EB9-729C-472B-ABD9-712E397A715C}
+		{E2B2F09B-077F-4AFC-AC1C-01CBD96C26BF} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 	EndGlobalSection
 EndGlobal
