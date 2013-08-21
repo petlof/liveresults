@@ -67,13 +67,14 @@ resp_updateClassList = function (data)
 		{
 			if (data.classes != null)
 			{
-				str = ""
+				str = "<nowrap>"
 				$.each(data.classes,
 					function(key, value)
 					{
 						str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + value.className + "')\">" + value.className + "</a><br/>";
 					}
 				);
+				str += "</nowrap>";
 				$("#" + _classesDiv).html(str);
 				lastClassListHash = data.hash;
 			}

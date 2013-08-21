@@ -21,12 +21,24 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}"
+	ProjectSection(SolutionItems) = preProject
+		web\api.php = web\api.php
+		web\followfull.php = web\followfull.php
+		web\gprspunch.php = web\gprspunch.php
+		web\index.php = web\index.php
+		web\sipunch.php = web\sipunch.php
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "adm", "adm", "{E2B2F09B-077F-4AFC-AC1C-01CBD96C26BF}"
 	ProjectSection(SolutionItems) = preProject
 		web\adm\admincompetitions.php = web\adm\admincompetitions.php
 		web\adm\createComp.php = web\adm\createComp.php
 		web\adm\editComp.php = web\adm\editComp.php
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "js", "js", "{3D301984-98EF-45C8-A0A0-781E18D3B3AD}"
+	ProjectSection(SolutionItems) = preProject
+		web\js\liveresults.js = web\js\liveresults.js
 	EndProjectSection
 EndProject
 Global
@@ -115,5 +127,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{A0323DA7-D3AF-4CB1-B37B-AFCAF9278516} = {B1684EB9-729C-472B-ABD9-712E397A715C}
 		{E2B2F09B-077F-4AFC-AC1C-01CBD96C26BF} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
+		{3D301984-98EF-45C8-A0A0-781E18D3B3AD} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 	EndGlobalSection
 EndGlobal
