@@ -7,6 +7,7 @@ using System.Text;
 using System.Windows.Forms;
 using System.Data.OleDb;
 using System.Data.H2;
+using System.IO;
 
 namespace LiveResults.Client
 {
@@ -15,8 +16,9 @@ namespace LiveResults.Client
         public NewOLAComp()
         {
             InitializeComponent();
-            comboBox1.DataSource = new string[] { "OLA 5.0 Internal", "OLA4 Internal Mysql", "Mysql-Server", "SQL-Server" };
-            comboBox1.SelectedIndex = 2;
+            comboBox1.DataSource = new string[] { "OLA Intern Databas", "Mysql-Server", "SQL-Server" };
+            comboBox1.SelectedIndex = 1;
+            txtOlaDb.Text = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -25,21 +27,16 @@ namespace LiveResults.Client
             {
                 case 0:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = false;
+                    panel1.Visible = true;
                     break;
                 case 1:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
-                    txtHost.Text = "localhost";
-                    txtPort.Text = "3307";
                     txtUser.Text = "live";
                     txtPw.Text = "live";
-                    panel1.Visible = false;
-                    break;
-                case 2:
-                    txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtPort.Text = "3306";
                     panel1.Visible = false;
                     break;
-                case 3:
+                case 2:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
                     txtPort.Text = "1433";
                     panel1.Visible = false;
@@ -120,9 +117,8 @@ namespace LiveResults.Client
                 case 0:
                     return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","") + ";AUTO_SERVER=TRUE", "root", "");
                 case 1:
-                case 2:
                     return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : "") + ";charset=utf8");
-                case 3:
+                case 2:
                     return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
             }
             return null;
@@ -283,6 +279,8 @@ GRANT SELECT ON Controls to live;";
             OpenFileDialog ofd = new OpenFileDialog();
             ofd.Filter = "OLA5 databases (*.db)|*.db";
             ofd.FileName = txtOlaDb.Text;
+            ofd.CustomPlaces.Add(new FileDialogCustomPlace(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData)));
+            ofd.InitialDirectory = Directory.Exists(txtOlaDb.Text) ? txtOlaDb.Text : Path.GetDirectoryName(txtOlaDb.Text); 
             if (ofd.ShowDialog(this) == DialogResult.OK)
             {
                 txtOlaDb.Text = ofd.FileName;
