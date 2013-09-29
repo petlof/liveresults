@@ -195,7 +195,16 @@ namespace LiveResults.Client
                 if (newResult.StartTime >= 0)
                     c.SetRunnerStartTime(newResult.ID, newResult.StartTime);
 
-                c.SetRunnerResult(newResult.ID, newResult.Time, newResult.Status);
+                if (newResult is RelayResult)
+                {
+                    var rr = newResult as RelayResult;
+                    c.SetRunnerResult(newResult.ID, rr.OverallTime, rr.OverallStatus);
+                }
+                else
+                {
+                    c.SetRunnerResult(newResult.ID, newResult.Time, newResult.Status);
+                }
+
                 if (newResult.SplitTimes != null)
                 {
                     foreach (ResultStruct r in newResult.SplitTimes)
