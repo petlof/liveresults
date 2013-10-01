@@ -147,14 +147,23 @@ namespace LiveResults.Client
                     {
                         if (fldTotalTime != -1)
                         {
-                            if (string.IsNullOrEmpty(parts[fldTotalTime]))
+                            //OK We have a totaltimefield..
+                            //If totaltime set, use it as time (and status is status)
+                            //Else, check if runner on course (status == 0 and FinishTime is empty => Status = 9)
+                            //Else, something is not right, set status if <> 0, else set mp
+
+                            if (!string.IsNullOrEmpty(parts[fldTotalTime]))
                             {
-                                totalStatus = 3;
-                                totalTime = -3;
+                                totalTime = strTimeToInt(parts[fldTotalTime]);
+                            }
+                            else if (status == 9)
+                            {
+                                //Runner still on course
                             }
                             else
                             {
-                                totalTime = strTimeToInt(parts[fldTotalTime]);
+                                totalStatus = status != 0 ? status : 3;
+                                totalTime = -3;
                             }
                         }
                         else
