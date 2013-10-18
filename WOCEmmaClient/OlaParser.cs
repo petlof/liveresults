@@ -102,8 +102,8 @@ namespace LiveResults.Client
                     string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
                     if (isOla5)
                     {
-                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
-                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
+                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime, entries.allocationControl, entries.allocationEntryId from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
                     }
 
                     if (isRelay)
@@ -152,6 +152,7 @@ namespace LiveResults.Client
 
                     FireLogMsg("OLA Monitor thread started");
                     IDataReader reader = null;
+                    Dictionary<int, RunnerPair> runnerPairs = new Dictionary<int, RunnerPair>();
                     while (m_Continue)
                     {
                         string lastRunner = "";
@@ -179,6 +180,7 @@ namespace LiveResults.Client
                                 DateTime modDate = DateTime.MinValue;
                                 int time = 0, runnerID = 0, iStartTime = 0;
                                 string famName = "", fName = "", club = "", classN = "", status = "";
+                                
                                 try
                                 {
                                     //modDate = Convert.ToDateTime(reader[0]);
@@ -199,7 +201,6 @@ namespace LiveResults.Client
                                     club = (reader["clubname"] as string);
                                     classN = (reader["shortname"] as string);
                                     status = reader["runnerStatus"] as string; // reader.GetString(7);
-
 
                                     DateTime startTime = DateTime.MinValue;
 
@@ -294,8 +295,9 @@ namespace LiveResults.Client
                                         break;
                                 }
                                 if (rstatus != 999)
-                                    FireOnResult(
-                                        new Result()
+                                {
+
+                                    var res = new Result()
                                         {
                                             ID = runnerID,
                                             RunnerName = fName + " " + famName,
@@ -304,7 +306,11 @@ namespace LiveResults.Client
                                             StartTime = iStartTime,
                                             Time = time,
                                             Status = rstatus
-                                        });
+
+                                        };
+                                    
+                                    CheckAndCreatePairRunner(isRelay, reader, runnerPairs, runnerID, res);
+                                }
                             }
                             reader.Close();
 
@@ -368,7 +374,7 @@ namespace LiveResults.Client
                                         classn = classn + "-" + Convert.ToString(reader["relayLeg"]);
                                     }
 
-                                    FireOnResult(new Result()
+                                    var res = new Result()
                                     {
                                         ID = entryid,
                                         RunnerName = name,
@@ -378,7 +384,9 @@ namespace LiveResults.Client
                                         Time = -2,
                                         Status = 0,
                                         SplitTimes = times
-                                    });
+                                    };
+
+                                    CheckAndCreatePairRunner(isRelay, reader, runnerPairs, entryid, res);
                                 }
                                 catch (Exception ee)
                                 {
@@ -422,6 +430,52 @@ namespace LiveResults.Client
                     FireLogMsg("OLA Monitor thread stopped");
 
                 }
+            }
+        }
+
+        private void CheckAndCreatePairRunner(bool isRelay, IDataReader reader, Dictionary<int, RunnerPair> runnerPairs, int runnerID, Result res)
+        {
+            // is this a pair-runner?
+            if (!isRelay && reader["allocationControl"] != null && reader["allocationControl"] as string == "groupedWithRef" && reader["allocationEntryId"] != DBNull.Value)
+            {
+                int otherRunnerId = Convert.ToInt32(reader["allocationEntryId"]);
+                RunnerPair rp;
+
+                if (runnerPairs.ContainsKey(runnerID))
+                {
+                    rp = runnerPairs[runnerID];
+
+                }
+                else if (runnerPairs.ContainsKey(otherRunnerId))
+                {
+                    rp = runnerPairs[otherRunnerId];
+                    rp.Runner2 = res;
+                    runnerPairs.Add(runnerID, rp);
+                }
+                else
+                {
+                    rp = new RunnerPair();
+                    rp.Runner1 = res;
+                    runnerPairs.Add(runnerID, rp);
+                }
+
+                if (rp.Runner1 != null && rp.Runner1.ID == res.ID)
+                {
+                    rp.Runner1 = res;
+                }
+                else if (rp.Runner2 != null && rp.Runner2.ID == res.ID)
+                {
+                    rp.Runner2 = res;
+                }
+
+                var comb = rp.CombinedRunner;
+                if (comb != null && comb.Status != 999)
+                    FireOnResult(comb);
+
+            }
+            else
+            {
+                FireOnResult(res);
             }
         }
 

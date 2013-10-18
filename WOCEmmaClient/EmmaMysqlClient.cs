@@ -463,7 +463,10 @@ namespace LiveResults.Client
             using (MySqlCommand cmd = conn.CreateCommand())
             {
                 cmd.CommandText = "set names 'utf8'";
-                //cmd.CommandText = "set names 'latin1'";
+                if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["server_charset"]))
+                {
+                    cmd.CommandText = "set names '" + ConfigurationManager.AppSettings["server_charset"] + "'";
+                }
                 cmd.ExecuteNonQuery();
             }
         }

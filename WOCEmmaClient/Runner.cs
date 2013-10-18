@@ -6,6 +6,76 @@ using System.Text;
 
 namespace LiveResults.Client
 {
+    public class RunnerPair
+    {
+        public Result Runner1;
+        public Result Runner2;
+
+        public Result CombinedRunner
+        {
+            get
+            {
+                if (Runner1 == null || Runner2 == null)
+                    return null;
+                else if (Runner1.Status == 999 || Runner2.Status == 999)
+                    return null;
+
+                string club = Runner1.RunnerClub;
+                if (club != Runner2.RunnerClub)
+                    club += "/" + Runner2.RunnerClub;
+
+                int totalStatus = Runner1.Status;
+                if (totalStatus == 0 && Runner2.Status != 0)
+                    totalStatus = Runner2.Status;
+
+                int time = Math.Max(Runner1.Time, Runner2.Time);
+                
+
+                List<ResultStruct> combinedSplits = new List<ResultStruct>();
+                if (Runner1.SplitTimes != null)
+                {
+                    if (Runner2.SplitTimes == null)
+                        combinedSplits = Runner1.SplitTimes;
+                    else
+                    {
+                        foreach (var spl in Runner1.SplitTimes)
+                        {
+                            var os = Runner2.SplitTimes.Where(x => x.ControlCode == spl.ControlCode).FirstOrDefault();
+                            if (os.ControlCode == 0)
+                                combinedSplits.Add(spl);
+                            else
+                                combinedSplits.Add(spl.Time > os.Time ? spl : os);
+                        }
+
+                        //Add those in Runner2 that are not in Runner1
+                        foreach (var spl in Runner2.SplitTimes)
+                        {
+                            var os = Runner1.SplitTimes.Where(x => x.ControlCode == spl.ControlCode).FirstOrDefault();
+                            if (os.ControlCode == 0)
+                                combinedSplits.Add(spl);
+                        }
+                    }
+                }
+                else if (Runner2.SplitTimes != null)
+                    combinedSplits = Runner2.SplitTimes;
+
+                var res = new Result()
+                {
+                    ID = Math.Min(Runner1.ID,Runner2.ID),
+                    Class = Runner1.Class,
+                    Time = time,
+                    RunnerClub = club,
+                    StartTime = Runner1.StartTime,
+                    SplitTimes = combinedSplits,
+                    RunnerName = Runner1.RunnerName + "/" + Runner2.RunnerName,
+                    Status = totalStatus
+                };
+
+                return res;
+            }
+        }
+    }
+
     public class Runner
     {
         private int m_id;
