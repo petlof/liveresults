@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Data.OleDb;
 using System.Data;
 using System.Globalization;
 
@@ -9,19 +7,19 @@ namespace LiveResults.Client
 {
     public class OlaParser : IExternalSystemResultParser
     {
-        private IDbConnection m_Connection;
-        private int m_EventID;
-        private int m_EventRaceId;
+        private readonly IDbConnection m_connection;
+        private readonly int m_eventID;
+        private readonly int m_eventRaceId;
 
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
 
-        private bool m_Continue = false;
+        private bool m_continue;
         public OlaParser(IDbConnection conn, int eventID, int eventRaceId)
         {
-            m_Connection = conn;
-            m_EventID = eventID;
-            m_EventRaceId = eventRaceId;
+            m_connection = conn;
+            m_eventID = eventID;
+            m_eventRaceId = eventRaceId;
         }
 
         //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
@@ -38,59 +36,56 @@ namespace LiveResults.Client
                 OnLogMessage(msg);
         }
 
-        System.Threading.Thread th;
+        System.Threading.Thread m_monitorThread;
 
         public void Start()
         {
-            m_Continue = true;
-            th = new System.Threading.Thread(new System.Threading.ThreadStart(run));
-            th.Start();
+            m_continue = true;
+            m_monitorThread = new System.Threading.Thread(Run);
+            m_monitorThread.Start();
         }
 
         public void Stop()
         {
-            m_Continue = false;
+            m_continue = false;
         }
 
-        private void run()
+        private void Run()
         {
-            while (m_Continue)
+            while (m_continue)
             {
                 try
                 {
-                    if (m_Connection.State != System.Data.ConnectionState.Open)
+                    if (m_connection.State != ConnectionState.Open)
                     {
-                        if (m_Connection is System.Data.H2.H2Connection)
+                        if (m_connection is System.Data.H2.H2Connection)
                         {
-                            (m_Connection as System.Data.H2.H2Connection).Open("root", "");
+                            (m_connection as System.Data.H2.H2Connection).Open("root", "");
                         }
                         else
                         {
-                            m_Connection.Open();
+                            m_connection.Open();
                         }
                     }
 
                     string paramOper = "?";
-                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection)
+                    if (m_connection is MySql.Data.MySqlClient.MySqlConnection)
                     {
                         paramOper = "?date";
                     }
 
                     /*Detect eventtype*/
 
-                    string scmd = "select eventForm from events where eventid = " + m_EventID;
-                    IDbCommand cmd = m_Connection.CreateCommand();
+                    string scmd = "select eventForm from events where eventid = " + m_eventID;
+                    IDbCommand cmd = m_connection.CreateCommand();
                     cmd.CommandText = scmd;
 
-                    string form = cmd.ExecuteScalar() as string;
-                    bool isRelay = false;
-
-                    if (form.ToLower().Contains("relay"))
-                        isRelay = true;
+                    var form = cmd.ExecuteScalar() as string;
+                    bool isRelay = form.ToLower().Contains("relay");
 
                     /* detect ola version*/
                     scmd = "select versionNumber from Version";
-                    cmd = m_Connection.CreateCommand();
+                    cmd = m_connection.CreateCommand();
                     cmd.CommandText = scmd;
 
                     int version = Convert.ToInt32(cmd.ExecuteScalar());
@@ -98,26 +93,26 @@ namespace LiveResults.Client
                     bool isOla5 = version >= 500;
 
 
-                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated'  and results.modifyDate > " + paramOper;
-                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
+                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime from results, entries, Persons, Clubs, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and results.runnerStatus != 'notActivated'  and results.modifyDate > " + paramOper;
+                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, clubs.name as clubname, eventclasses.shortName, splittimes.passedCount from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, Clubs, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.clubid = clubs.clubid and splitTimes.modifyDate > " + paramOper;
                     if (isOla5)
                     {
-                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime, entries.allocationControl, entries.allocationEntryId from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
-                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
+                        baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime, entries.allocationControl, entries.allocationEntryId from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.name as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
                     }
 
                     if (isRelay)
                     {
-                        baseCommand = "select results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.resultId as entryId, results.finishTime, results.allocatedStartTime, results.starttime, (select firststarttime from raceclasses rc where rc.eventClassId = eventclasses.EventClassID and rc.relayleg=1 and rc.eventRaceId = " + m_EventRaceId + ") as firststarttime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and  results.modifyDate > " + paramOper;
-                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, (select firststarttime from raceclasses rc where rc.eventClassId = eventclasses.EventClassID and rc.relayleg=1 and rc.eventRaceId = " + m_EventRaceId + ") as firststarttime  from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_EventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_EventRaceId + " and eventclasses.eventid = " + m_EventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
+                        baseCommand = "select results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.resultId as entryId, results.finishTime, results.allocatedStartTime, results.starttime, (select firststarttime from raceclasses rc where rc.eventClassId = eventclasses.EventClassID and rc.relayleg=1 and rc.eventRaceId = " + m_eventRaceId + ") as firststarttime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and  results.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, (select firststarttime from raceclasses rc where rc.eventClassId = eventclasses.EventClassID and rc.relayleg=1 and rc.eventRaceId = " + m_eventRaceId + ") as firststarttime  from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                     }
                     
                     cmd.CommandText = baseCommand; //new OleDbCommand(baseCommand, m_Connection);
-                    IDbCommand cmdSplits = m_Connection.CreateCommand();// new OleDbCommand(splitbaseCommand, m_Connection);
+                    IDbCommand cmdSplits = m_connection.CreateCommand();// new OleDbCommand(splitbaseCommand, m_Connection);
                     cmdSplits.CommandText = splitbaseCommand;
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "date";
-                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection || m_Connection is System.Data.H2.H2Connection)
+                    if (m_connection is MySql.Data.MySqlClient.MySqlConnection || m_connection is System.Data.H2.H2Connection)
                     {
                         param.DbType = DbType.String;
                         param.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -131,7 +126,7 @@ namespace LiveResults.Client
 
                     IDbDataParameter splitparam = cmdSplits.CreateParameter();
                     splitparam.ParameterName = "date";
-                    if (m_Connection is MySql.Data.MySqlClient.MySqlConnection || m_Connection is System.Data.H2.H2Connection)
+                    if (m_connection is MySql.Data.MySqlClient.MySqlConnection || m_connection is System.Data.H2.H2Connection)
                     {
                         splitparam.DbType = DbType.String;
                         splitparam.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -152,40 +147,37 @@ namespace LiveResults.Client
 
                     FireLogMsg("OLA Monitor thread started");
                     IDataReader reader = null;
-                    Dictionary<int, RunnerPair> runnerPairs = new Dictionary<int, RunnerPair>();
-                    while (m_Continue)
+                    var runnerPairs = new Dictionary<int, RunnerPair>();
+                    while (m_continue)
                     {
                         string lastRunner = "";
                         try
                         {
                             /*Kontrollera om nya klasser*/
                             /*Kontrollera om nya resultat*/
-                            if (cmd is MySql.Data.MySqlClient.MySqlCommand || m_Connection is System.Data.H2.H2Connection)
+                            if (cmd is MySql.Data.MySqlClient.MySqlCommand || m_connection is System.Data.H2.H2Connection)
                             {
                                 (cmd.Parameters["date"] as IDbDataParameter).Value = lastDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
-                                (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff"); ;
+                                (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
                             }
                             else
                             {
                                 (cmd.Parameters["date"] as IDbDataParameter).Value = lastDateTime;
                                 (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime;
                             }
-                            
 
-                            string command = cmd.CommandText;
+
                             cmd.Prepare();
                             reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
-                                DateTime modDate = DateTime.MinValue;
                                 int time = 0, runnerID = 0, iStartTime = 0;
                                 string famName = "", fName = "", club = "", classN = "", status = "";
                                 
                                 try
                                 {
-                                    //modDate = Convert.ToDateTime(reader[0]);
                                     string sModDate = Convert.ToString(reader[0]);
-                                    modDate = ParseDateTime(sModDate);
+                                    DateTime modDate = ParseDateTime(sModDate);
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = Convert.ToInt32(reader["entryid"].ToString());
 
@@ -196,7 +188,7 @@ namespace LiveResults.Client
                                     famName = (reader["lastname"] as string);
                                     fName = (reader["firstname"] as string);
 
-                                    //lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
+                                    lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
 
                                     club = (reader["clubname"] as string);
                                     classN = (reader["shortname"] as string);
@@ -232,7 +224,7 @@ namespace LiveResults.Client
                                             if (reader["firststarttime"] != DBNull.Value)
                                             {
                                                 DateTime ast = ParseDateTime(reader["firststarttime"].ToString());
-                                                time = (int)(((TimeSpan)(ft - ast)).TotalSeconds * 100);
+                                                time = (int)((ft - ast).TotalSeconds * 100);
                                             }
                                         }
                                     }
@@ -297,8 +289,8 @@ namespace LiveResults.Client
                                 if (rstatus != 999)
                                 {
 
-                                    var res = new Result()
-                                        {
+                                    var res = new Result
+                                    {
                                             ID = runnerID,
                                             RunnerName = fName + " " + famName,
                                             RunnerClub = club,
@@ -355,26 +347,26 @@ namespace LiveResults.Client
 
                                     TimeSpan rTid = pTime - startTime;
                                     double time = rTid.TotalMilliseconds / 10;
-                                    List<ResultStruct> times = new List<ResultStruct>();
-                                    ResultStruct t = new ResultStruct();
+                                    var times = new List<ResultStruct>();
+                                    var t = new ResultStruct();
                                     t.ControlCode = sCont + 1000 * passedCount;
                                     t.ControlNo = 0;
                                     t.Time = (int)time;
                                     times.Add(t);
 
-                                    string sfamName = reader["lastname"] as string;
-                                    string sfName = reader["firstname"] as string;
+                                    var sfamName = reader["lastname"] as string;
+                                    var sfName = reader["firstname"] as string;
                                     string name = (string.IsNullOrEmpty(sfName) ? "" : (sfName + " ")) + sfamName;
 
-                                    string club = reader["clubname"] as string; //.GetString(5);
-                                    string classn = reader["shortname"] as string; // reader.GetString(6);
+                                    var club = reader["clubname"] as string; 
+                                    var classn = reader["shortname"] as string;
 
                                     if (isRelay)
                                     {
                                         classn = classn + "-" + Convert.ToString(reader["relayLeg"]);
                                     }
 
-                                    var res = new Result()
+                                    var res = new Result
                                     {
                                         ID = entryid,
                                         RunnerName = name,
@@ -405,12 +397,12 @@ namespace LiveResults.Client
 
                             System.Threading.Thread.Sleep(100);
 
-                            switch (m_Connection.State)
+                            switch (m_connection.State)
                             {
                                 case ConnectionState.Broken:
                                 case ConnectionState.Closed:
-                                    m_Connection.Close();
-                                    m_Connection.Open();
+                                    m_connection.Close();
+                                    m_connection.Open();
                                     break;
                             }
                         }
@@ -422,9 +414,9 @@ namespace LiveResults.Client
                 }
                 finally
                 {
-                    if (m_Connection != null)
+                    if (m_connection != null)
                     {
-                        m_Connection.Close();
+                        m_connection.Close();
                     }
                     FireLogMsg("Disconnected");
                     FireLogMsg("OLA Monitor thread stopped");
