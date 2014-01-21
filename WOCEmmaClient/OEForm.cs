@@ -230,7 +230,7 @@ namespace LiveResults.Client
             {
                 try
                 {
-                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, new LogMessageDelegate(delegate(string msg) { logit(msg); }));
+                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, new LogMessageDelegate(logit));
                     processed = true;
                     foreach (EmmaMysqlClient c in m_Clients)
                     {
