@@ -10,26 +10,26 @@ namespace LiveResults.Client
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
         public static char[] SplitChars = new char[] { ';', '\t' };
-        private string m_Directory;
+        private readonly string m_directory;
         
         public OSParser()
         {
         }
         public OSParser(string directory)
         {
-            m_Directory = directory;
-            System.IO.FileSystemWatcher fsWatcher = new System.IO.FileSystemWatcher(directory);
+            m_directory = directory;
+            var fsWatcher = new System.IO.FileSystemWatcher(directory);
             fsWatcher.EnableRaisingEvents = true;
-            fsWatcher.Renamed += new System.IO.RenamedEventHandler(fsWatcher_Renamed);
+            fsWatcher.Renamed += fsWatcher_Renamed;
         }
 
         public void Start()
         {
-            string[] files = System.IO.Directory.GetFiles(m_Directory, "*.csv");
+            string[] files = System.IO.Directory.GetFiles(m_directory, "*.csv");
             foreach (string f in files)
             {
-                AnalyzeFile(System.IO.Path.Combine(m_Directory, f));
-                System.IO.File.Delete(System.IO.Path.Combine(m_Directory, f));
+                AnalyzeFile(System.IO.Path.Combine(m_directory, f));
+                System.IO.File.Delete(System.IO.Path.Combine(m_directory, f));
             }
 
         }
@@ -78,8 +78,13 @@ namespace LiveResults.Client
                     throw new ApplicationException("Could not open input file, copy error?");
                 string header = sr.ReadLine();
 
+                if (header == null)
+                {
+                    return;
+                }
+
                 string[] fields = header.Split(SplitChars);
-                bool isOs2010Files = fields[0].StartsWith("OS");
+                bool isOs2010Files = fields[0].StartsWith("OS", StringComparison.Ordinal);
 
                 /*Detect OS format*/
                 int fldID;
@@ -99,28 +104,22 @@ namespace LiveResults.Client
                 OXTools.DetectOXCSVFormat(OXTools.SourceProgram.OS, fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3, out fldTotalTime);
 
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
-           || fldStart == -1 || fldTime == -1
-           || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
+                    || fldStart == -1 || fldTime == -1
+                    || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
                 {
                     throw new System.IO.IOException("Not OS-formatted file!");
                 }
 
                 string tmp;
-                Dictionary<string, int> teamStartTimes = new Dictionary<string, int>();
-                Dictionary<string, int> teamStatuses = new Dictionary<string, int>();
+                var teamStartTimes = new Dictionary<string, int>();
+                var teamStatuses = new Dictionary<string, int>();
                 while ((tmp = sr.ReadLine()) != null)
                 {
                     string[] parts = tmp.Split(SplitChars);
 
                     /* check so that the line is not incomplete*/
-                    int id = Convert.ToInt32(parts[fldLeg])*1000000 + Convert.ToInt32(parts[fldID]);                    
-                    int si = 0;
-                    try
-                    {
-                        si = Convert.ToInt32(parts[fldSI]);
-                    }
-                    catch (Exception ee)
-                    { }
+                    int id = Convert.ToInt32(parts[fldLeg])*1000000 + Convert.ToInt32(parts[fldID]);
+                   
                     string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
                     string club = parts[fldClub].Trim('\"');
                     string Class = parts[fldClass].Trim('\"') + "-" + parts[fldLeg].Trim('\"');
@@ -198,9 +197,9 @@ namespace LiveResults.Client
 
                     
 
-                    List<ResultStruct> splittimes = new List<ResultStruct>();
+                    var splittimes = new List<ResultStruct>();
                     /*parse splittimes*/
-                    List<int> codes = new List<int>();
+                    var codes = new List<int>();
                     for (int i = fldFirstPost; i < parts.Length - 4; i++)
                     {
                         if (parts[i + 1].Length == 0
@@ -209,7 +208,7 @@ namespace LiveResults.Client
                             i += 3;
                             continue;
                         }
-                        ResultStruct s = new ResultStruct();
+                        var s = new ResultStruct();
                         try
                         {
                             i++;
@@ -250,7 +249,7 @@ namespace LiveResults.Client
                         }
                         
                     }
-                    FireOnResult(new RelayResult()
+                    FireOnResult(new RelayResult
                     {
                         ID = id,
                         LegNumber = leg,
@@ -301,15 +300,16 @@ namespace LiveResults.Client
                 if (sr == null)
                     throw new ApplicationException("Could not open input file, copy error?");
                 string header = sr.ReadLine();
-
+                if (header == null)
+                    return;
                 string[] fields = header.Split(SplitChars);
 
                 /*Detect OS format*/
                 int fldID, fldClub, fldClass, fldStart, fldName;
-                int fldFirstRunner = -1;
+                
                 fldID = Array.IndexOf(fields, "Stno");
                 fldName = Array.IndexOf(fields, "Name");
-                fldFirstRunner = Array.IndexOf(fields, "Nachname");
+                int fldFirstRunner = Array.IndexOf(fields, "Nachname");
                 
                 fldClub = Array.IndexOf(fields, "Club");
                 fldClass = Array.IndexOf(fields, "Short");
@@ -367,14 +367,7 @@ namespace LiveResults.Client
                             time = time - start;
                         }
 
-                        int si = 0;
-                        try
-                        {
-                            si = Convert.ToInt32(parts[fldNextRunner + 8]);
-                        }
-                        catch (Exception ee)
-                        {
-                        }
+                       
 
                         int status = 9;
                         try
@@ -398,7 +391,7 @@ namespace LiveResults.Client
                         }
 
                         int id = leg * 1000000 + Convert.ToInt32(parts[fldID]);
-                        FireOnResult(new Result()
+                        FireOnResult(new Result
                         {
                             ID = id,
                             RunnerName = name,
