@@ -9,10 +9,10 @@ namespace LiveResults.Client
     /// <summary>
     /// Common tools for parsing OS/OE files
     /// </summary>
-    public class OXTools
+    public class OxTools
     {
         public enum SourceProgram { OE, OS };
-        internal static void DetectOXCSVFormat(SourceProgram source, string[] fields, out int fldID, out int fldSI, out int fldFName, out int fldEName, out int fldClub, 
+        internal static void DetectOxCSVFormat(SourceProgram source, string[] fields, out int fldID, out int fldSI, out int fldFName, out int fldEName, out int fldClub, 
             out int fldClass, out int fldStart, out int fldTime, out int fldStatus, out int fldFirstPost, out int fldLeg, out int fldFinish, 
             out int fldTxt1, out int fldTxt2, out int fldTxt3, out int fldTotalTime)
         {
@@ -30,24 +30,22 @@ namespace LiveResults.Client
             string[] statusFieldNames = GetOEStringsForKey("Wertung", source);
 
             string[] noFieldNames = GetOEStringsForKey("Nr", source);
-            string[] no1FieldNames = new string[noFieldNames.Length];
+            var no1FieldNames = new string[noFieldNames.Length];
             for (int i = 0; i < no1FieldNames.Length; i++)
                 no1FieldNames[i] = noFieldNames[i] + "1";
             string[] totalTimeFieldNames = GetOEStringsForKey("Gesamtzeit", source); 
 
             string[] txtFields = GetOEStringsForKey("Text", source);
 
-            string[] txt1Fields = new string[txtFields.Length];
-            string[] txt2Fields = new string[txtFields.Length];
-            string[] txt3Fields = new string[txtFields.Length];
+            var txt1Fields = new string[txtFields.Length];
+            var txt2Fields = new string[txtFields.Length];
+            var txt3Fields = new string[txtFields.Length];
             for (int i = 0; i < txtFields.Length; i++)
             {
                 txt1Fields[i] = txtFields[i] + "1";
                 txt2Fields[i] = txtFields[i] + "2";
                 txt3Fields[i] = txtFields[i] + "3";
             }
-
-            fldTotalTime = -1;
 
             fldID = GetFieldFromHeader(fields, stoNoFieldNames);
             fldLeg = GetFieldFromHeader(fields, legFieldNames);
@@ -122,44 +120,49 @@ namespace LiveResults.Client
             }
         }
 
-        private static int GetFieldFromHeader(string[] fields, string[] fieldNames)
+        private static int GetFieldFromHeader(string[] fields, IEnumerable<string> fieldNames)
         {
             int fld = -1;
-            for (int i = 0; i < fieldNames.Length; i++)
+            foreach (string t in fieldNames)
             {
-
-                fld = Array.IndexOf(fields, fieldNames[i]);
+                fld = Array.IndexOf(fields, t);
                 if (fld >= 0)
                     break;
             }
             return fld;
         }
 
-        static Dictionary<string, string[]> _lookupCacheOE = new Dictionary<string, string[]>();
-        static Dictionary<string, string[]> _lookupCacheOS = new Dictionary<string, string[]>();
+        static readonly Dictionary<string, string[]> m_lookupCacheOE = new Dictionary<string, string[]>();
+        static readonly Dictionary<string, string[]> m_lookupCacheOS = new Dictionary<string, string[]>();
         public static string[] GetOEStringsForKey(string key, SourceProgram source)
         {
-            var cache = source == SourceProgram.OE ? _lookupCacheOE : _lookupCacheOS;
+            var cache = source == SourceProgram.OE ? m_lookupCacheOE : m_lookupCacheOS;
             if (cache.ContainsKey(key))
                 return cache[key];
 
 
-            List<string> texts = new List<string>();
+            var texts = new List<string>();
 
             string file = source == SourceProgram.OE ? "LiveResults.Client.OLEinzel.mlf" : "LiveResults.Client.OLStaffel.mlf";
 
             using (var s = Assembly.GetExecutingAssembly().GetManifestResourceStream(file))
             {
-                using (var sr = new StreamReader(s,Encoding.GetEncoding("iso-8859-1")))
+                if (s != null)
                 {
-                    string temp;
-                    while ((temp = sr.ReadLine()) != null)
+                    using (var sr = new StreamReader(s, Encoding.GetEncoding("iso-8859-1")))
                     {
-                        string[] parts = temp.Split(new string[] { "¦" }, StringSplitOptions.RemoveEmptyEntries);
-                        if (parts[0] == key)
+                        string temp;
+                        while ((temp = sr.ReadLine()) != null)
                         {
-                            texts.AddRange(parts);
-                            break;
+                            string[] parts = temp.Split(new string[]
+                            {
+                                "¦"
+                            }, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts[0] == key)
+                            {
+                                texts.AddRange(parts);
+                                break;
+                            }
                         }
                     }
                 }

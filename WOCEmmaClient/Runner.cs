@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Collections;
-using System.Text;
+using System.Linq;
 
 namespace LiveResults.Client
 {
@@ -31,7 +29,7 @@ namespace LiveResults.Client
                 int time = Math.Max(Runner1.Time, Runner2.Time);
                 
 
-                List<ResultStruct> combinedSplits = new List<ResultStruct>();
+                var combinedSplits = new List<ResultStruct>();
                 if (Runner1.SplitTimes != null)
                 {
                     if (Runner2.SplitTimes == null)
@@ -40,7 +38,7 @@ namespace LiveResults.Client
                     {
                         foreach (var spl in Runner1.SplitTimes)
                         {
-                            var os = Runner2.SplitTimes.Where(x => x.ControlCode == spl.ControlCode).FirstOrDefault();
+                            var os = Runner2.SplitTimes.FirstOrDefault(x => x.ControlCode == spl.ControlCode);
                             if (os.ControlCode == 0)
                                 combinedSplits.Add(spl);
                             else
@@ -50,7 +48,7 @@ namespace LiveResults.Client
                         //Add those in Runner2 that are not in Runner1
                         foreach (var spl in Runner2.SplitTimes)
                         {
-                            var os = Runner1.SplitTimes.Where(x => x.ControlCode == spl.ControlCode).FirstOrDefault();
+                            var os = Runner1.SplitTimes.FirstOrDefault(x => x.ControlCode == spl.ControlCode);
                             if (os.ControlCode == 0)
                                 combinedSplits.Add(spl);
                         }
@@ -59,7 +57,7 @@ namespace LiveResults.Client
                 else if (Runner2.SplitTimes != null)
                     combinedSplits = Runner2.SplitTimes;
 
-                var res = new Result()
+                var res = new Result
                 {
                     ID = Math.Min(Runner1.ID,Runner2.ID),
                     Class = Runner1.Class,
@@ -78,30 +76,30 @@ namespace LiveResults.Client
 
     public class Runner
     {
-        private int m_id;
+        private readonly int m_id;
         private string m_name;
         private string m_club;
-        private string m_Class;
-        private int m_Start;
-        private int m_Time;
-        private int m_Status;
+        private string m_class;
+        private int m_start;
+        private int m_time;
+        private int m_status;
 
         public bool RunnerUpdated;
         public bool ResultUpdated;
         public bool StartTimeUpdated;
 
-        private Dictionary<int,SplitTime> m_SplitTimes;
+        private readonly Dictionary<int,SplitTime> m_splitTimes;
         public Runner(int dbID, string name, string club, string Class)
         {
             RunnerUpdated = true;
             ResultUpdated = false;
             StartTimeUpdated = false;
 
-            m_SplitTimes = new Dictionary<int, SplitTime>();
+            m_splitTimes = new Dictionary<int, SplitTime>();
             m_id = dbID;
             m_name = name;
             m_club = club;
-            m_Class = Class;
+            m_class = Class;
         }
 
 
@@ -115,44 +113,31 @@ namespace LiveResults.Client
 
         public bool HasUpdatedSplitTimes()
         {
-            foreach (SplitTime t in m_SplitTimes.Values)
-            {
-                if (t.Updated)
-                    return true;
-            }
-            return false;
+            return m_splitTimes.Values.Any(t => t.Updated);
         }
 
         public void ResetUpdatedSplits()
         {
-            foreach (SplitTime t in m_SplitTimes.Values)
+            foreach (SplitTime t in m_splitTimes.Values)
             {
                 t.Updated = false;
             }
         }
         public List<SplitTime> GetUpdatedSplitTimes()
         {
-            List<SplitTime> ret = new List<SplitTime>();
-            foreach (SplitTime t in m_SplitTimes.Values)
-            {
-                if (t.Updated)
-                {
-                    ret.Add(t);
-                }
-            }
-            return ret;
+            return m_splitTimes.Values.Where(t => t.Updated).ToList();
         }
 
         public bool HasStartTimeChanged(int starttime)
         {
-            return m_Start != starttime;
+            return m_start != starttime;
         }
 
         public void SetStartTime(int starttime)
         {
-            if (m_Start != starttime)
+            if (m_start != starttime)
             {
-                m_Start = starttime;
+                m_start = starttime;
                 StartTimeUpdated = true;
             }
         }
@@ -161,7 +146,7 @@ namespace LiveResults.Client
         {
             get
             {
-                return m_Time;
+                return m_time;
             }
         }
 
@@ -182,7 +167,7 @@ namespace LiveResults.Client
         {
             get
             {
-                return m_SplitTimes.Values.ToArray();
+                return m_splitTimes.Values.ToArray();
             }
         }
 
@@ -190,11 +175,11 @@ namespace LiveResults.Client
         {
             get
             {
-                return m_Class;
+                return m_class;
             }
             set
             {
-                m_Class = value;
+                m_class = value;
                 RunnerUpdated = true;
             }
         }
@@ -203,7 +188,7 @@ namespace LiveResults.Client
         {
             get
             {
-                return m_Status;
+                return m_status;
             }
         }
 
@@ -211,13 +196,13 @@ namespace LiveResults.Client
         {
             get
             {
-                return m_Start;
+                return m_start;
             }
         }
 
         public bool HasSplitChanged(int controlCode, int time)
         {
-            return !(m_SplitTimes.ContainsKey(controlCode) && ((SplitTime)m_SplitTimes[controlCode]).Time == time);
+            return !(m_splitTimes.ContainsKey(controlCode) && m_splitTimes[controlCode].Time == time);
             
         }
 
@@ -225,19 +210,19 @@ namespace LiveResults.Client
         {
             if (HasSplitChanged(controlCode, time))
             {
-                if (m_SplitTimes.ContainsKey(controlCode))
+                if (m_splitTimes.ContainsKey(controlCode))
                 {
-                    SplitTime t = (SplitTime)m_SplitTimes[controlCode];
+                    SplitTime t = m_splitTimes[controlCode];
                     t.Time = time;
                     t.Updated = true;
                 }
                 else
                 {
-                    SplitTime t = new SplitTime();
+                    var t = new SplitTime();
                     t.Control = controlCode;
                     t.Time = time;
                     t.Updated = true;
-                    m_SplitTimes.Add(controlCode, t);
+                    m_splitTimes.Add(controlCode, t);
                 }
 
             }
@@ -245,15 +230,15 @@ namespace LiveResults.Client
 
         public bool HasResultChanged(int time, int status)
         {
-            return m_Time != time || m_Status != status;
+            return m_time != time || m_status != status;
         }
 
         public void SetResult(int time, int status)
         {
             if (HasResultChanged(time,status))
             {
-                m_Time = time;
-                m_Status = status;
+                m_time = time;
+                m_status = status;
                 ResultUpdated = true;
             }
         }

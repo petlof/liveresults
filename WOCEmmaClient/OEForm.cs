@@ -133,7 +133,7 @@ namespace LiveResults.Client
             Application.DoEvents();
             foreach (EmmaMysqlClient.EmmaServer server in servers)
             {
-                EmmaMysqlClient client = new EmmaMysqlClient(server.host, 3306, server.user, server.pw, server.db, Convert.ToInt32(txtCompID.Text));
+                EmmaMysqlClient client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, Convert.ToInt32(txtCompID.Text));
 
                 client.OnLogMessage += new LogMessageDelegate(client_OnLogMessage);
                 client.Start();

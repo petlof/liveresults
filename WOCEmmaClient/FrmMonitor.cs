@@ -87,7 +87,7 @@ namespace LiveResults.Client
 
                 foreach (EmmaMysqlClient.EmmaServer srv in servers)
                 {
-                    EmmaMysqlClient cli = new EmmaMysqlClient(srv.host, 3309, srv.user, srv.pw, srv.db, m_CompetitionID);
+                    EmmaMysqlClient cli = new EmmaMysqlClient(srv.Host, 3309, srv.User, srv.Pw, srv.DB, m_CompetitionID);
                     m_Clients.Add(cli);
                     cli.OnLogMessage += new LogMessageDelegate(cli_OnLogMessage);
                     cli.Start();
