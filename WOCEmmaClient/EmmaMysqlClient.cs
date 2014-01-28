@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections;
+﻿using MySql.Data.MySqlClient;
+using System;
 using System.Collections.Generic;
-using System.Text;
-using MySql.Data.MySqlClient;
 using System.Configuration;
-using System.Threading;
-using System.Net;
 using System.IO;
+using System.Net;
+using System.Text;
+using System.Threading;
 
 namespace LiveResults.Client
 {
@@ -85,11 +84,11 @@ namespace LiveResults.Client
         private MySqlConnection m_connection;
         private readonly string m_connStr;
         private readonly int m_compID;
-        private readonly Hashtable m_runners;
+        private readonly Dictionary<int,Runner> m_runners;
         private readonly List<Runner> m_runnersToUpdate;
         public EmmaMysqlClient(string server, int port, string user, string pass, string database, int competitionID)
         {
-            m_runners = new Hashtable();
+            m_runners = new Dictionary<int, Runner>();
             m_runnersToUpdate = new List<Runner>();
 
             m_connStr = "Database=" + database + ";Data Source="+server+";User Id="+user+";Password="+pass;
@@ -111,6 +110,14 @@ namespace LiveResults.Client
         {
             if (OnLogMessage != null)
                 OnLogMessage(msg);
+        }
+
+        public Runner GetRunner(int dbId)
+        {
+            if (!IsRunnerAdded(dbId))
+                return null;
+            else
+                return m_runners[dbId];
         }
 
         private bool m_continue;
@@ -142,20 +149,20 @@ namespace LiveResults.Client
                         AddRunner(r);
                         numRunners++;
                     }
-                    if (control == 1000)
+                    switch (control)
                     {
-                        SetRunnerResult(dbid, time, (int)reader["status"]);
-                        numResults++;
-                    }
-                    else if (control == 100)
-                    {
-                        SetRunnerStartTime(dbid, time);
-                        numResults++;
-                    }
-                    else
-                    {
-                        numResults++;
-                        SetRunnerSplit(dbid, control, time);
+                        case 1000:
+                            SetRunnerResult(dbid, time, (int)reader["status"]);
+                            numResults++;
+                            break;
+                        case 100:
+                            SetRunnerStartTime(dbid, time);
+                            numResults++;
+                            break;
+                        default:
+                            numResults++;
+                            SetRunnerSplit(dbid, control, time);
+                            break;
                     }
                     
                 }
@@ -187,7 +194,7 @@ namespace LiveResults.Client
         {
             if (m_runners.ContainsKey(id))
             {
-                var cur = m_runners[id] as Runner;
+                var cur = m_runners[id];
                 if (cur == null)
                     return;
                 bool isUpdated = false;
@@ -265,7 +272,7 @@ namespace LiveResults.Client
             if (!IsRunnerAdded(runnerID))
                 throw new ApplicationException("Runner is not added! {" + runnerID + "} [SetRunnerResult]");
 
-            var r = (Runner)m_runners[runnerID];
+            var r = m_runners[runnerID];
 
             if (r.HasResultChanged(time, status))
             {
@@ -282,7 +289,7 @@ namespace LiveResults.Client
         {
             if (!IsRunnerAdded(runnerID))
                 throw new ApplicationException("Runner is not added! {" + runnerID + "} [SetRunnerResult]");
-            var r = (Runner)m_runners[runnerID];
+            var r = m_runners[runnerID];
 
             if (r.HasSplitChanged(controlcode, time))
             {
@@ -300,7 +307,7 @@ namespace LiveResults.Client
         {
             if (!IsRunnerAdded(runnerID))
                 throw new ApplicationException("Runner is not added! {" + runnerID + "} [SetRunnerStartTime]");
-            var r = (Runner)m_runners[runnerID];
+            var r = m_runners[runnerID];
 
             if (r.HasStartTimeChanged(starttime))
             {
@@ -325,6 +332,12 @@ namespace LiveResults.Client
                 {
                     AddRunner(new Runner(r.ID, r.Name, r.Club, r.Class));
                 }
+                else
+                {
+                    UpdateRunnerInfo(r.ID, r.Name, r.Club, r.Class);
+                }
+
+
                 if (r.StartTime >= 0)
                     SetRunnerStartTime(r.ID, r.StartTime);
 
