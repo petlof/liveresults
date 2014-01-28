@@ -14,24 +14,32 @@ namespace LiveResults.Client.Parsers
         {
             return ParseFile(filename, logit, true);
         }
+
         public static Runner[] ParseFile(string filename, LogMessageDelegate logit, bool deleteFile)
         {
-            var runners = new List<Runner>();
             byte[] fileContents;
             if (!File.Exists(filename))
             {
                 return null;
             }
-            else
-            {
-                fileContents = File.ReadAllBytes(filename);
-            }
+
+            fileContents = File.ReadAllBytes(filename);
 
             if (deleteFile)
                 File.Delete(filename);
 
+            return ParseXmlData(fileContents, logit, deleteFile);
+
+        }
+
+
+        public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile)
+        {
+
+            var runners = new List<Runner>();
+
             var xmlDoc = new XmlDocument();
-            using (var ms = new MemoryStream(fileContents))
+            using (var ms = new MemoryStream(xml))
             {
                 var setts = new XmlReaderSettings();
                 setts.XmlResolver = null;
@@ -82,7 +90,8 @@ namespace LiveResults.Client.Parsers
                         var resultTimeNode = personNode.SelectSingleNode("Result/Time");
                         var startTimeNode = personNode.SelectSingleNode("Result/StartTime/Clock");
                         var ccCardNode = personNode.SelectSingleNode("Result/CCard/CCardId");
-                        if (competitorStatusNode == null || competitorStatusNode.Attributes == null || competitorStatusNode.Attributes["value"] == null || resultTimeNode == null || startTimeNode == null || ccCardNode == null)
+                        if (competitorStatusNode == null || competitorStatusNode.Attributes == null || competitorStatusNode.Attributes["value"] == null ||
+                            resultTimeNode == null || startTimeNode == null || ccCardNode == null)
                             continue;
 
                         string status = competitorStatusNode.Attributes["value"].Value;
@@ -98,11 +107,11 @@ namespace LiveResults.Client.Parsers
                         int dbid = 0;
                         if (pid < Int32.MaxValue && pid > 0)
                         {
-                            dbid = (int)pid;
+                            dbid = (int) pid;
                         }
                         else if (iSi > 0)
                         {
-                            dbid = -1 * iSi;
+                            dbid = -1*iSi;
                         }
                         else
                         {
@@ -144,6 +153,9 @@ namespace LiveResults.Client.Parsers
                             case "OK":
                                 istatus = 0;
                                 break;
+                            case "NotCompeting":
+                                //Does not compete, exclude
+                                continue;
                         }
 
                         runner.SetResult(itime, istatus);

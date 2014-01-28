@@ -25,5 +25,13 @@ namespace LiveResults.Client.Tests
             Assert.AreEqual(1043, runners[0].SplitTimes[0].Control);
             Assert.AreEqual(49100, runners[0].SplitTimes[0].Time);
         }
+
+        [TestMethod]
+        public void VerifyIofV2XmlFileNotCompetingDoesNotExis()
+        {
+            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("iof_xml_notcompeting.xml"), new LogMessageDelegate(delegate(string msg) { }), false);
+
+            Assert.IsNull(runners.FirstOrDefault(x => x.Name == "Stepan Malinovskii"));
+        }
     }
 }
