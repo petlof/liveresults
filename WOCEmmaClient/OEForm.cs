@@ -1,35 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
-using System.Windows.Forms;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Threading;
-using System.Xml;
-using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using System.Xml.Serialization;
 
 namespace LiveResults.Client
 {
     public partial class OEForm : Form
     {
-        List<EmmaMysqlClient> m_Clients;
-        OSParser m_OSParser;
-        OEParser m_OEParser;
+        readonly List<EmmaMysqlClient> m_clients;
+        OSParser m_osParser;
+        OEParser m_oeParser;
 
-        enum Format { IOFXML, OECSV, OSCSV, OECSVTEAM, OECSVPAR }
+        enum Format { Iofxml, Oecsv, Oscsv, Oecsvteam }
         class FormatItem
         {
-            public string Name { get; set; }
-            public string Description { get; set; }
-            public Format Format { get; set; }
-            public FormatItem(string Name, string Description, Format format)
+            public string Name { get; private set; }
+            public string Description { get; private set; }
+            public Format Format { get; private set; }
+            public FormatItem(string name, string description, Format format)
             {
-                this.Name = Name;
-                this.Description = Description;
-                this.Format = format;
+                Name = name;
+                Description = description;
+                Format = format;
             }
 
             public override string ToString()
@@ -38,21 +35,20 @@ namespace LiveResults.Client
             }
         }
 
-        List<FormatItem> supportedFormats = new List<FormatItem>();
+        readonly List<FormatItem> m_supportedFormats = new List<FormatItem>();
 
         public OEForm()
         {
             InitializeComponent();
-            Text = Text += ", " + Encoding.Default.EncodingName + "," + Encoding.Default.CodePage;
+            Text = Text + @", " + Encoding.Default.EncodingName + @"," + Encoding.Default.CodePage;
             fileSystemWatcher1.Changed += new FileSystemEventHandler(fileSystemWatcher1_Changed);
-            m_Clients = new List<EmmaMysqlClient>();
+            m_clients = new List<EmmaMysqlClient>();
 
-            supportedFormats.Add(new FormatItem("IOF-XML", "Export files in IOF-XML (version 2 supported)", Format.IOFXML));
-            supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3 and 11", Format.OECSV));
-            supportedFormats.Add(new FormatItem("OS-csv", "CSV files exported from OLStaffel 10.3 and 11", Format.OSCSV));
-            supportedFormats.Add(new FormatItem("OS-csv (Team)", "Team-CSV files exported from OSStaffel 10.3", Format.OECSVTEAM));
-            supportedFormats.Add(new FormatItem("OE-csv (Par)", "Special format for DalaDubbeln from OLEinzel 10.3", Format.OECSVPAR));
-            cmbFormat.DataSource = supportedFormats;
+            m_supportedFormats.Add(new FormatItem("IOF-XML", "Export files in IOF-XML (version 2 supported)", Format.Iofxml));
+            m_supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3 and 11", Format.Oecsv));
+            m_supportedFormats.Add(new FormatItem("OS-csv", "CSV files exported from OLStaffel 10.3 and 11", Format.Oscsv));
+            m_supportedFormats.Add(new FormatItem("OS-csv (Team)", "Team-CSV files exported from OSStaffel 10.3", Format.Oecsvteam));
+            cmbFormat.DataSource = m_supportedFormats;
             cmbFormat.SelectedIndex = 0;
 
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EmmaClient");
@@ -64,17 +60,17 @@ namespace LiveResults.Client
                 try
                 {
                     var fs = File.OpenRead(file);
-                    XmlSerializer ser = new XmlSerializer(typeof(Settings));
-                    Settings s = ser.Deserialize(fs) as Settings;
+                    var ser = new XmlSerializer(typeof(Settings));
+                    var s = ser.Deserialize(fs) as Settings;
                     fs.Close();
                     if (s != null)
                     {
                         txtOEDirectory.Text = s.Location;
                         txtExtension.Text = s.extension;
-                        txtCompID.Text = s.CompID.ToString();
-                        for (int i = 0; i < supportedFormats.Count; i++)
+                        txtCompID.Text = s.CompID.ToString(CultureInfo.InvariantCulture);
+                        for (int i = 0; i < m_supportedFormats.Count; i++)
                         {
-                            if (supportedFormats[i].Name == s.Format)
+                            if (m_supportedFormats[i].Name == s.Format)
                                 cmbFormat.SelectedIndex = i;
                         }
 
@@ -93,9 +89,9 @@ namespace LiveResults.Client
             timer1.Enabled = false;
             timer1.Dispose();
 
-            if (m_Clients != null)
+            if (m_clients != null)
             {
-                foreach (EmmaMysqlClient c in m_Clients)
+                foreach (EmmaMysqlClient c in m_clients)
                 {
                     c.Stop();
                 }
@@ -114,63 +110,55 @@ namespace LiveResults.Client
         {
             if (!Directory.Exists(txtOEDirectory.Text))
             {
-                MessageBox.Show(this, "Please select an existing OE Export directory", "Start OE Monitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, @"Please select an existing OE Export directory", @"Start OE Monitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             if (string.IsNullOrEmpty(txtCompID.Text))
             {
-                MessageBox.Show(this, "You must enter a competition-ID", "Start OE Monitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show(this, @"You must enter a competition-ID", @"Start OE Monitor", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             listBox1.Items.Clear();
-            m_Clients.Clear();
-            logit("Reading servers from config (eventually resolving online)");
+            m_clients.Clear();
+            Logit("Reading servers from config (eventually resolving online)");
             Application.DoEvents();
             EmmaMysqlClient.EmmaServer[] servers = EmmaMysqlClient.GetServersFromConfig();
-            logit("Got servers from obasen...");
+            Logit("Got servers from obasen...");
             Application.DoEvents();
             foreach (EmmaMysqlClient.EmmaServer server in servers)
             {
-                EmmaMysqlClient client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, Convert.ToInt32(txtCompID.Text));
+                var client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, Convert.ToInt32(txtCompID.Text));
 
-                client.OnLogMessage += new LogMessageDelegate(client_OnLogMessage);
+                client.OnLogMessage += client_OnLogMessage;
                 client.Start();
-                m_Clients.Add(client);
+                m_clients.Add(client);
             }
 
             timer1_Tick(null, null);
 
-            FormatItem format = cmbFormat.SelectedItem as FormatItem;
+            var format = cmbFormat.SelectedItem as FormatItem;
 
 
-            if ( format.Format == Format.OECSV || format.Format == Format.OECSVPAR || format.Format == Format.OECSVTEAM || format.Format == Format.OSCSV)
+            if ( format.Format == Format.Oecsv || format.Format == Format.Oecsvteam || format.Format == Format.Oscsv)
             {
-                m_OSParser = new OSParser();
-                m_OSParser.OnLogMessage +=
-                delegate (string msg)
-                {
-                    logit(msg);
-                };
+                m_osParser = new OSParser();
+                m_osParser.OnLogMessage += Logit;
 
-                m_OSParser.OnResult += new ResultDelegate(m_OSParser_OnResult);
+                m_osParser.OnResult += m_OSParser_OnResult;
 
-                m_OEParser = new OEParser();
-                m_OEParser.OnLogMessage +=
-                delegate(string msg)
-                {
-                    logit(msg);
-                };
+                m_oeParser = new OEParser();
+                m_oeParser.OnLogMessage += Logit;
 
-                m_OEParser.OnResult += new ResultDelegate(m_OSParser_OnResult);
+                m_oeParser.OnResult += m_OSParser_OnResult;
 
                 fsWatcherOS.Path = txtOEDirectory.Text;
                 fsWatcherOS.Filter = txtExtension.Text;
                 fsWatcherOS.EnableRaisingEvents = true;
 
             }
-            else if (format.Format == Format.IOFXML)
+            else if (format.Format == Format.Iofxml)
             {
                 fileSystemWatcher1.Path = txtOEDirectory.Text;
                 fileSystemWatcher1.Filter = txtExtension.Text;
@@ -182,7 +170,7 @@ namespace LiveResults.Client
 
         void m_OSParser_OnResult(Result newResult)
         {
-            foreach (EmmaMysqlClient c in m_Clients)
+            foreach (EmmaMysqlClient c in m_clients)
             {
                 if (!c.IsRunnerAdded(newResult.ID))
                 {
@@ -217,29 +205,29 @@ namespace LiveResults.Client
 
         void client_OnLogMessage(string msg)
         {
-            logit(msg);
+            Logit(msg);
         }
 
         void fileSystemWatcher1_Changed(object sender, FileSystemEventArgs e)
         {
             string filename = e.Name;
             string fullFilename = e.FullPath;
-            logit(filename + " changed..");
+            Logit(filename + " changed..");
             bool processed = false;
             for (int i = 0; i < 10; i++)
             {
                 try
                 {
-                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, new LogMessageDelegate(logit));
+                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, Logit);
                     processed = true;
-                    foreach (EmmaMysqlClient c in m_Clients)
+                    foreach (EmmaMysqlClient c in m_clients)
                     {
                         c.MergeRunners(runners);
                     }
                 }
                 catch (Exception ee)
                 {
-                    logit(ee.Message);
+                    Logit(ee.Message);
                 }
 
                 if (!processed)
@@ -253,35 +241,15 @@ namespace LiveResults.Client
             }
             if (!processed)
             {
-                logit("Could not open " + filename + " for processing");
+                Logit("Could not open " + filename + " for processing");
             }
         }
 
-        private static int ParseTime(string time)
-        {
-            int itime = -9;
-            string[] timeParts = time.Split(':');
-            if (timeParts.Length == 3)
-            {
-                //HH:MM:SS
-                itime = Convert.ToInt32(timeParts[0]) * 360000 + Convert.ToInt32(timeParts[1]) * 6000 + Convert.ToInt32(timeParts[2]) * 100;
-            }
-            else if (timeParts.Length == 2)
-            {
-                //MM:SS
-                itime = Convert.ToInt32(timeParts[0]) * 6000 + Convert.ToInt32(timeParts[1]) * 100;
-            }
-            return itime;
-        }
-
-        void logit(string msg)
+        void Logit(string msg)
         {
             if (!listBox1.IsDisposed)
             {
-                listBox1.Invoke(new MethodInvoker(delegate
-                {
-                    listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + " " + msg);
-                }));
+                listBox1.Invoke(new MethodInvoker(() => listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + " " + msg)));
             }
         }
 
@@ -290,9 +258,9 @@ namespace LiveResults.Client
             listBox2.BeginUpdate();
 
             listBox2.Items.Clear();
-            if (m_Clients != null)
+            if (m_clients != null)
             {
-                foreach (EmmaMysqlClient c in m_Clients)
+                foreach (EmmaMysqlClient c in m_clients)
                 {
                     listBox2.Items.Add(c);
                 }
@@ -302,13 +270,13 @@ namespace LiveResults.Client
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (m_Clients != null)
+            if (m_clients != null)
             {
-                foreach (EmmaMysqlClient c in m_Clients)
+                foreach (EmmaMysqlClient c in m_clients)
                 {
                     c.Stop();
                 }
-                m_Clients.Clear();
+                m_clients.Clear();
                 timer1_Tick(null, null);
             }
             fileSystemWatcher1.EnableRaisingEvents = false;
@@ -319,41 +287,34 @@ namespace LiveResults.Client
         {
             string filename = e.Name;
             string fullFilename = e.FullPath;
-            logit(filename + " changed..");
+            Logit(filename + " changed..");
             bool processed = false;
             for (int i = 0; i < 10; i++)
             {
                 try
                 {
-                    StreamReader sr = null;
+                    StreamReader sr;
                     if (!File.Exists(fullFilename))
                     {
                         return;
                     }
-                    else
-                    {
-                        sr = new StreamReader(fullFilename, Encoding.Default);
-                    }
-                    //string tmp = sr.ReadToEnd();
+                    
+                    sr = new StreamReader(fullFilename, Encoding.Default);
                     sr.Close();
 
-                    FormatItem format = cmbFormat.SelectedItem as FormatItem;
+                    var format = cmbFormat.SelectedItem as FormatItem;
 
-                    if (format.Format == Format.OECSV)
+                    if (format.Format == Format.Oecsv)
                     {
-                        m_OEParser.AnalyzeFile(fullFilename);
+                        m_oeParser.AnalyzeFile(fullFilename);
                     }
-                    else if (format.Format == Format.OSCSV)
+                    else if (format.Format == Format.Oscsv)
                     {
-                        m_OSParser.AnalyzeFile(fullFilename);
+                        m_osParser.AnalyzeFile(fullFilename);
                     }
-                    else if (format.Format == Format.OECSVTEAM)
+                    else if (format.Format == Format.Oecsvteam)
                     {
-                        m_OSParser.AnalyzeTeamFile(fullFilename);
-                    }
-                    else if (format.Format == Format.OECSVPAR)
-                    {
-                        m_OEParser.AnalyzeFile(fullFilename,true);
+                        m_osParser.AnalyzeTeamFile(fullFilename);
                     }
 
                     File.Delete(fullFilename);
@@ -361,7 +322,7 @@ namespace LiveResults.Client
                 }
                 catch (Exception ee)
                 {
-                    logit(ee.Message);
+                    Logit(ee.Message);
                 }
 
                 if (!processed)
@@ -375,7 +336,7 @@ namespace LiveResults.Client
             }
             if (!processed)
             {
-                logit("Could not open " + filename + " for processing");
+                Logit("Could not open " + filename + " for processing");
             }
         }
 
@@ -388,13 +349,13 @@ namespace LiveResults.Client
                 lblFormatInfo.Text = (cmbFormat.SelectedItem as FormatItem).Description;
 
 
-                if ((cmbFormat.SelectedItem as FormatItem).Format == Format.IOFXML)
+                if ((cmbFormat.SelectedItem as FormatItem).Format == Format.Iofxml)
                 {
-                    txtExtension.Text = "*.xml";
+                    txtExtension.Text = @"*.xml";
                 }
                 else
                 {
-                    txtExtension.Text = "*.csv";
+                    txtExtension.Text = @"*.csv";
                 }
             }
         }
@@ -403,7 +364,7 @@ namespace LiveResults.Client
         {
             try
             {
-                Settings s = new Settings()
+                var s = new Settings
                 {
                     Location = txtOEDirectory.Text,
                     CompID = int.Parse(txtCompID.Text),
@@ -418,7 +379,7 @@ namespace LiveResults.Client
 
                 string file = Path.Combine(path, "oesetts.xml");
                 var fs = File.Create(file);
-                XmlSerializer ser = new XmlSerializer(typeof(Settings));
+                var ser = new XmlSerializer(typeof(Settings));
                 ser.Serialize(fs, s);
                 fs.Close();
             }

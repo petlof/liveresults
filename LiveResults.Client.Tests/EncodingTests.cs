@@ -14,7 +14,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestConvertBaltic()
         {
-            string tmp = System.IO.File.ReadAllText(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"), Encoding.GetEncoding("ISO-8859-1"));
+            string tmp = File.ReadAllText(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"), Encoding.GetEncoding("ISO-8859-1"));
             tmp = tmp.Replace("<!DOCTYPE ResultList SYSTEM \"IOFdata.dtd\">", "");
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(tmp);
@@ -29,7 +29,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestConvertBaltic2()
         {
-            string[] tmp = System.IO.File.ReadAllLines(TestHelpers.GetPathToTestFile("madonas.csv"), Encoding.GetEncoding(1257));
+            string[] tmp = File.ReadAllLines(TestHelpers.GetPathToTestFile("madonas.csv"), Encoding.GetEncoding(1257));
             string line = tmp[7];
 
             string[] parts = line.Split(';');

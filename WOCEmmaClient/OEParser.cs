@@ -46,11 +46,8 @@ namespace LiveResults.Client
             System.IO.File.Delete(e.FullPath);
         }
 
+       
         public void AnalyzeFile(string filename)
-        {
-            AnalyzeFile(filename, false);
-        }
-        public void AnalyzeFile(string filename,bool useExtraFields)
         {
             System.IO.StreamReader sr =null;
             try
@@ -109,16 +106,6 @@ namespace LiveResults.Client
                     int start = strTimeToInt(parts[fldStart]);
                     int time = strTimeToInt(parts[fldTime]);
 
-                    if (useExtraFields && fldText1 > 0 && fldText2 > 0 && fldText3 > 0)
-                    {
-                        name += "/" + parts[fldText1].Trim('\"');
-                        club = parts[fldText3].Trim('\"');
-                        if (parts[fldText2].Trim('\"') != club)
-                        {
-                            club += "/" + parts[fldText2].Trim('\"');
-                        }
-
-                    }
 
                     int status = 0;
                     try
