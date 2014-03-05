@@ -2,12 +2,16 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
+using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Windows.Forms;
 using System.Data.OleDb;
 using System.Data.H2;
 using System.IO;
+using System.Xml.Serialization;
 
 namespace LiveResults.Client
 {
@@ -18,8 +22,126 @@ namespace LiveResults.Client
             InitializeComponent();
             comboBox1.DataSource = new string[] { "OLA Intern Databas", "Mysql-Server", "SQL-Server" };
             comboBox1.SelectedIndex = 1;
+            txtUser.Text = "live";
+            txtPw.Text = "live";
+            txtPort.Text = "3306";
             txtOlaDb.Text = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
+
+            RetreiveSettings();
+           
+
         }
+
+        [Serializable]
+        public struct Setting
+        {
+            public string Key { get; set; }
+            public string Value { get; set; }
+        }
+        private void RetreiveSettings()
+        {
+            try
+            {
+
+
+
+                if (File.Exists(GetSettingsFile()))
+                {
+
+                    using (var ms = new MemoryStream(File.ReadAllBytes(GetSettingsFile())))
+                    {
+                        List<Setting> setts = new List<Setting>();
+
+                        var serializer = new XmlSerializer(setts.GetType());
+                        setts = serializer.Deserialize(ms) as List<Setting>;
+                        if (setts != null)
+                        {
+                        }
+
+                        applyControlValues(Controls, setts);
+                    }
+
+                }
+            }
+            catch (Exception ee)
+            {
+
+            }
+        }
+
+        private void applyControlValues(Control.ControlCollection controls, List<Setting> setts)
+        {
+            foreach (Control c in controls)
+            {
+                if (c is TextBox)
+                {
+                    string val = setts.Where(x => x.Key == c.Name).Select(x => x.Value).FirstOrDefault();
+                    (c as TextBox).Text = val;
+                }
+                if (c is ComboBox)
+                {
+                    string val = setts.Where(x => x.Key == c.Name).Select(x => x.Value).FirstOrDefault();
+                    (c as ComboBox).SelectedItem = val;
+                    
+                }
+
+                applyControlValues(c.Controls, setts);
+            }
+        }
+
+        private void StoreSettings()
+        {
+            List<Setting> setts = new List<Setting>();
+            extractControlValues(Controls, setts);
+
+            var serializer = new XmlSerializer(setts.GetType());
+            using (var ms = new MemoryStream())
+            {
+                serializer.Serialize(ms, setts);
+                var data = new byte[ms.Length];
+                ms.Seek(0, SeekOrigin.Begin);
+                ms.Read(data, 0, data.Length);
+
+                if (!Directory.Exists(Path.GetDirectoryName(GetSettingsFile())))
+                    Directory.CreateDirectory(Path.GetDirectoryName(GetSettingsFile()));
+
+                File.WriteAllBytes(GetSettingsFile(), data);
+            }
+
+
+        }
+
+        private static string GetSettingsFile()
+        {
+            return Path.Combine(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LiveResults.Client"),
+                "olafrm.setts");
+        }
+
+        private void extractControlValues(Control.ControlCollection controls, List<Setting> setts)
+        {
+            foreach (Control c in controls)
+            {
+                if (c is TextBox)
+                {
+                    setts.Add(new Setting
+                    {
+                        Key = (c as TextBox).Name,
+                        Value = (c as TextBox).Text
+                    });
+                }
+                if (c is ComboBox)
+                {
+                    setts.Add(new Setting
+                    {
+                        Key = (c as ComboBox).Name,
+                        Value = (c as ComboBox).SelectedValue as string
+                    });
+                }
+
+                extractControlValues(c.Controls, setts);
+            }
+        }
+
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -31,14 +153,10 @@ namespace LiveResults.Client
                     break;
                 case 1:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
-                    txtUser.Text = "live";
-                    txtPw.Text = "live";
-                    txtPort.Text = "3306";
                     panel1.Visible = false;
                     break;
                 case 2:
                     txtHost.Enabled = txtPort.Enabled = txtUser.Enabled = txtPw.Enabled = true;
-                    txtPort.Text = "1433";
                     panel1.Visible = false;
                     break;
             }
@@ -46,6 +164,7 @@ namespace LiveResults.Client
 
         private void wizardPage2_ShowFromBack(object sender, EventArgs e)
         {
+            StoreSettings();
             /*Try Connect*/
             IDbConnection conn = null;
             try
@@ -119,13 +238,17 @@ namespace LiveResults.Client
                 case 1:
                     return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : "") + ";charset=utf8");
                 case 2:
-                    return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
+                    return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + "," + txtPort.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
+                    return
+                        new SqlConnection("Data Source=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Password=" + txtPw.Text +
+                                          (schema != null ? ";Initial Catalog=" + schema : ""));
             }
             return null;
         }
 
         private void wizardPage3_ShowFromNext(object sender, EventArgs e)
         {
+            StoreSettings();
             /*Try Connect*/
             IDbConnection conn = null;
             try
@@ -265,6 +388,7 @@ GRANT SELECT ON Controls to live;";
 
         private void wizardPage5_CloseFromNext(object sender, Gui.Wizard.PageEventArgs e)
         {
+            StoreSettings();
             //start
             FrmMonitor monForm = new FrmMonitor();
             this.Hide();
