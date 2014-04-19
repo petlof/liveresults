@@ -1,4 +1,5 @@
-﻿using MySql.Data.MySqlClient;
+﻿using System.Web.UI.Design;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -85,11 +86,11 @@ namespace LiveResults.Client
         private readonly string m_connStr;
         private readonly int m_compID;
         private readonly Dictionary<int,Runner> m_runners;
-        private readonly List<Runner> m_runnersToUpdate;
+        private readonly List<DbItem> m_itemsToUpdate;
         public EmmaMysqlClient(string server, int port, string user, string pass, string database, int competitionID)
         {
             m_runners = new Dictionary<int, Runner>();
-            m_runnersToUpdate = new List<Runner>();
+            m_itemsToUpdate = new List<DbItem>();
 
             m_connStr = "Database=" + database + ";Data Source="+server+";User Id="+user+";Password="+pass;
             m_connection = new MySqlConnection(m_connStr);
@@ -179,7 +180,7 @@ namespace LiveResults.Client
             finally
             {
                 m_connection.Close();
-                m_runnersToUpdate.Clear();
+                m_itemsToUpdate.Clear();
                 m_currentlyBuffering = false;
                 FireLogMsg("Done - Buffered " + m_runners.Count + " existing runners and " + numResults +" existing results from server");
             }
@@ -216,7 +217,7 @@ namespace LiveResults.Client
                 if (isUpdated)
                 {
                     cur.RunnerUpdated = true;
-                    m_runnersToUpdate.Add(cur);
+                    m_itemsToUpdate.Add(cur);
 
                     if (!m_currentlyBuffering)
                     {
@@ -235,7 +236,7 @@ namespace LiveResults.Client
             if (!m_runners.ContainsKey(r.ID))
             {
                 m_runners.Add(r.ID, r);
-                m_runnersToUpdate.Add(r);
+                m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
                     FireLogMsg("Runner added [" + r.Name + "]");
@@ -243,11 +244,22 @@ namespace LiveResults.Client
             }
         }
 
+        public void SetRadioControl(string className, int code, string controlName, int order)
+        {
+            m_itemsToUpdate.Add(new RadioControl
+            {
+                ClassName = className,
+                Code = code,
+                ControlName = controlName,
+                Order = order
+            });
+        }
+
         public int UpdatesPending
         {
             get
             {
-                return m_runnersToUpdate.Count;
+                return m_itemsToUpdate.Count;
             }
         }
 
@@ -277,7 +289,7 @@ namespace LiveResults.Client
             if (r.HasResultChanged(time, status))
             {
                 r.SetResult(time, status);
-                m_runnersToUpdate.Add(r);
+                m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
                     FireLogMsg("Runner result changed: [" + r.Name + ", " + r.Time + "]");
@@ -294,7 +306,7 @@ namespace LiveResults.Client
             if (r.HasSplitChanged(controlcode, time))
             {
                 r.SetSplitTime(controlcode, time);
-                m_runnersToUpdate.Add(r);
+                m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
                     FireLogMsg("Runner Split Changes: [" + r.Name + ", {cn: " + controlcode + ", t: " + time + "}]");
@@ -312,7 +324,7 @@ namespace LiveResults.Client
             if (r.HasStartTimeChanged(starttime))
             {
                 r.SetStartTime(starttime);
-                m_runnersToUpdate.Add(r);
+                m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
                     FireLogMsg("Runner starttime Changed: [" + r.Name + ", t: " + starttime + "}]");
@@ -371,21 +383,21 @@ namespace LiveResults.Client
                     SetCodePage(m_connection);
                     while (m_continue)
                     {
-                        if (m_runnersToUpdate.Count > 0)
+                        if (m_itemsToUpdate.Count > 0)
                         {
                             using (MySqlCommand cmd = m_connection.CreateCommand())
                             {
-                                Runner r = m_runnersToUpdate[0];
-                                if (r.RunnerUpdated)
+                                var item = m_itemsToUpdate[0];
+                                if (item is RadioControl)
                                 {
+                                    var r = item as RadioControl;
                                     cmd.Parameters.Clear();
                                     cmd.Parameters.AddWithValue("?compid", m_compID);
-                                    cmd.Parameters.AddWithValue("?name", r.Name);
-                                    cmd.Parameters.AddWithValue("?club", r.Club);
-                                    cmd.Parameters.AddWithValue("?class", r.Class);
-
-                                    cmd.Parameters.AddWithValue("?id", r.ID);
-                                    cmd.CommandText = "REPLACE INTO Runners VALUES (?compid,?name,?club,?class,0,?id)";
+                                    cmd.Parameters.AddWithValue("?name", r.ClassName);
+                                    cmd.Parameters.AddWithValue("?corder", r.Order);
+                                    cmd.Parameters.AddWithValue("?code", r.Code);
+                                    cmd.Parameters.AddWithValue("?cname", r.ControlName);
+                                    cmd.CommandText = "REPLACE INTO SplitControls VALUES (?compid,?name,?corder,?code,?cname)";
 
                                     try
                                     {
@@ -394,64 +406,94 @@ namespace LiveResults.Client
                                     catch (Exception ee)
                                     {
                                         //Move failing runner last
-                                        m_runnersToUpdate.Add(r);
-                                        m_runnersToUpdate.RemoveAt(0);
-                                        throw new ApplicationException("Could not add runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
+                                        m_itemsToUpdate.Add(r);
+                                        m_itemsToUpdate.RemoveAt(0);
+                                        throw new ApplicationException("Could not add radiocontrol " + r.ControlName + ", " + r.ClassName + ", " + r.Code + " to server due to: " + ee.Message, ee);
                                     }
                                     cmd.Parameters.Clear();
-                                    FireLogMsg("Runner " + r.Name + " updated in DB");
-                                    r.RunnerUpdated = false;
                                 }
-                                if (r.ResultUpdated)
+                                else if (item is Runner)
                                 {
-                                    cmd.Parameters.Clear();
-                                    cmd.Parameters.AddWithValue("?compid", m_compID);
-                                    cmd.Parameters.AddWithValue("?id", r.ID);
-                                    cmd.Parameters.AddWithValue("?time", r.Time);
-                                    cmd.Parameters.AddWithValue("?status", r.Status);
-                                    cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,1000,?time,?status,Now())";
-                                    cmd.ExecuteNonQuery();
-                                    cmd.Parameters.Clear();
-
-                                    FireLogMsg("Runner " + r.Name + "s result updated in DB");
-                                    r.ResultUpdated = false;
-                                }
-                                if (r.StartTimeUpdated)
-                                {
-                                    cmd.Parameters.Clear();
-                                    cmd.Parameters.AddWithValue("?compid", m_compID);
-                                    cmd.Parameters.AddWithValue("?id", r.ID);
-                                    cmd.Parameters.AddWithValue("?starttime", r.StartTime);
-                                    cmd.Parameters.AddWithValue("?status", r.Status);
-                                    //cmd.CommandText = "REPLACE INTO Results VALUES(" + m_CompID + "," + r.ID + ",0," + r.StartTime + "," + r.Status + ",Now())";
-                                    cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,100,?starttime,?status,Now())";
-                                    cmd.ExecuteNonQuery();
-                                    cmd.Parameters.Clear();
-                                    FireLogMsg("Runner " + r.Name + "s starttime updated in DB");
-                                    r.StartTimeUpdated = false;
-                                }
-                                if (r.HasUpdatedSplitTimes())
-                                {
-                                    List<SplitTime> splitTimes = r.GetUpdatedSplitTimes();
-
-                                    cmd.Parameters.Clear();
-                                    cmd.Parameters.AddWithValue("?compid", m_compID);
-                                    cmd.Parameters.AddWithValue("?id", r.ID);
-                                    cmd.Parameters.AddWithValue("?control", -1);
-                                    cmd.Parameters.AddWithValue("?time", -1);
-                                    foreach (SplitTime t in splitTimes)
+                                    var r = item as Runner;
+                                    if (r.RunnerUpdated)
                                     {
-                                        cmd.Parameters["?control"].Value = t.Control;
-                                        cmd.Parameters["?time"].Value = t.Time;
-                                        cmd.CommandText = "REPLACE INTO Results VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time + ",0,Now())";
-                                        cmd.ExecuteNonQuery();
-                                        t.Updated = false;
-                                        FireLogMsg("Runner " + r.Name + " splittime{" + t.Control + "} updated in DB");
+                                        cmd.Parameters.Clear();
+                                        cmd.Parameters.AddWithValue("?compid", m_compID);
+                                        cmd.Parameters.AddWithValue("?name", r.Name);
+                                        cmd.Parameters.AddWithValue("?club", r.Club);
+                                        cmd.Parameters.AddWithValue("?class", r.Class);
+
+                                        cmd.Parameters.AddWithValue("?id", r.ID);
+                                        cmd.CommandText = "REPLACE INTO Runners VALUES (?compid,?name,?club,?class,0,?id)";
+
+                                        try
+                                        {
+                                            cmd.ExecuteNonQuery();
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            //Move failing runner last
+                                            m_itemsToUpdate.Add(r);
+                                            m_itemsToUpdate.RemoveAt(0);
+                                            throw new ApplicationException(
+                                                "Could not add runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
+                                        }
+                                        cmd.Parameters.Clear();
+                                        FireLogMsg("Runner " + r.Name + " updated in DB");
+                                        r.RunnerUpdated = false;
                                     }
-                                    cmd.Parameters.Clear();
+                                    if (r.ResultUpdated)
+                                    {
+                                        cmd.Parameters.Clear();
+                                        cmd.Parameters.AddWithValue("?compid", m_compID);
+                                        cmd.Parameters.AddWithValue("?id", r.ID);
+                                        cmd.Parameters.AddWithValue("?time", r.Time);
+                                        cmd.Parameters.AddWithValue("?status", r.Status);
+                                        cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,1000,?time,?status,Now())";
+                                        cmd.ExecuteNonQuery();
+                                        cmd.Parameters.Clear();
+
+                                        FireLogMsg("Runner " + r.Name + "s result updated in DB");
+                                        r.ResultUpdated = false;
+                                    }
+                                    if (r.StartTimeUpdated)
+                                    {
+                                        cmd.Parameters.Clear();
+                                        cmd.Parameters.AddWithValue("?compid", m_compID);
+                                        cmd.Parameters.AddWithValue("?id", r.ID);
+                                        cmd.Parameters.AddWithValue("?starttime", r.StartTime);
+                                        cmd.Parameters.AddWithValue("?status", r.Status);
+                                        //cmd.CommandText = "REPLACE INTO Results VALUES(" + m_CompID + "," + r.ID + ",0," + r.StartTime + "," + r.Status + ",Now())";
+                                        cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,100,?starttime,?status,Now())";
+                                        cmd.ExecuteNonQuery();
+                                        cmd.Parameters.Clear();
+                                        FireLogMsg("Runner " + r.Name + "s starttime updated in DB");
+                                        r.StartTimeUpdated = false;
+                                    }
+                                    if (r.HasUpdatedSplitTimes())
+                                    {
+                                        List<SplitTime> splitTimes = r.GetUpdatedSplitTimes();
+
+                                        cmd.Parameters.Clear();
+                                        cmd.Parameters.AddWithValue("?compid", m_compID);
+                                        cmd.Parameters.AddWithValue("?id", r.ID);
+                                        cmd.Parameters.AddWithValue("?control", -1);
+                                        cmd.Parameters.AddWithValue("?time", -1);
+                                        foreach (SplitTime t in splitTimes)
+                                        {
+                                            cmd.Parameters["?control"].Value = t.Control;
+                                            cmd.Parameters["?time"].Value = t.Time;
+                                            cmd.CommandText = "REPLACE INTO Results VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
+                                                              ",0,Now())";
+                                            cmd.ExecuteNonQuery();
+                                            t.Updated = false;
+                                            FireLogMsg("Runner " + r.Name + " splittime{" + t.Control + "} updated in DB");
+                                        }
+                                        cmd.Parameters.Clear();
+                                    }
                                 }
 
-                                m_runnersToUpdate.RemoveAt(0);
+                                m_itemsToUpdate.RemoveAt(0);
                             }
                         }
                         else

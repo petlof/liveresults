@@ -32,6 +32,13 @@ namespace LiveResults.Client
             m_Parser = parser;
             m_Parser.OnLogMessage += new LogMessageDelegate(m_Parser_OnLogMessage);
             m_Parser.OnResult += new ResultDelegate(m_Parser_OnResult);
+            m_Parser.OnRadioControl += (name, code, className, order) =>
+            {
+                foreach (EmmaMysqlClient client in m_Clients)
+                {
+                    client.SetRadioControl(className, code, name, order);
+                }
+            };
         }
 
         void m_Parser_OnResult(Result newResult)

@@ -74,7 +74,38 @@ namespace LiveResults.Client
         }
     }
 
-    public class Runner
+    public class RadioControl : DbItem
+    {
+        public string ClassName
+        {
+            get;
+            set;
+        }
+
+        public int Code
+        {
+            get;
+            set;
+        }
+
+        public string ControlName
+        {
+            get;
+            set;
+        }
+
+        public int Order
+        {
+            get;
+            set;
+        }
+    }
+
+    public class DbItem
+    {
+    }
+
+    public class Runner : DbItem
     {
         private readonly int m_id;
         private string m_name;

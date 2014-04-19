@@ -88,5 +88,23 @@ namespace LiveResults.Client
             monForm.CompetitionID = compId;
             monForm.ShowDialog(this);
         }
+
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            FrmMonitor monForm = new FrmMonitor();
+            //string[] lines = File.ReadAllLines("wocinfo.txt");
+            //int compId = int.Parse(lines[0]);
+            int compId = -127;
+            List<string> urls = new List<string>();
+            /*for (int i = 1; i < lines.Length; i++)
+                urls.Add(lines[i]);*/
+            urls.Add("http://www.ori-live.com/special/go-live-eoc2014-6/EOC2014-6-Men%20A.html");
+            urls.Add("http://www.ori-live.com/special/go-live-eoc2014-6/EOC2014-6-Woman%20A.html");
+
+            OriLiveParser wp = new OriLiveParser(urls.ToArray());
+            monForm.SetParser(wp as IExternalSystemResultParser);
+            monForm.CompetitionID = compId;
+            monForm.ShowDialog(this);
+        }
     }
 }

@@ -143,6 +143,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="WocParser.cs" />

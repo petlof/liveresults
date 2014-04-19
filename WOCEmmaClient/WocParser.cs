@@ -212,5 +212,8 @@ namespace LiveResults.Client
             }
             return startTime;
         }
+
+
+        public event RadioControlDelegate OnRadioControl;
     }
 }

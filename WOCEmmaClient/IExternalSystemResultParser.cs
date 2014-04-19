@@ -7,5 +7,6 @@ namespace LiveResults.Client
         void Stop();
         event ResultDelegate OnResult;
         event LogMessageDelegate OnLogMessage;
+        event RadioControlDelegate OnRadioControl;
     }
 }

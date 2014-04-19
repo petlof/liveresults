@@ -40,8 +40,8 @@
             // 
             // flowLayoutPanel1
             // 
-            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.Controls.Add(this.btnOLA);
             this.flowLayoutPanel1.Controls.Add(this.button2);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(16, 29);
@@ -61,9 +61,9 @@
             this.btnOLA.Text = "OLA";
             this.btnOLA.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnOLA.UseVisualStyleBackColor = true;
-            this.btnOLA.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             this.btnOLA.Click += new System.EventHandler(this.btnOLA_Click);
             this.btnOLA.MouseEnter += new System.EventHandler(this.btnOLA_MouseHover);
+            this.btnOLA.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             // 
             // button2
             // 
@@ -76,9 +76,9 @@
             this.button2.Text = "XML and OE/OS";
             this.button2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.button2.UseVisualStyleBackColor = true;
-            this.button2.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             this.button2.Click += new System.EventHandler(this.button2_Click);
             this.button2.MouseEnter += new System.EventHandler(this.button2_MouseEnter);
+            this.button2.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             // 
             // label1
             // 
@@ -108,9 +108,9 @@
             // 
             // flowLayoutPanel2
             // 
-            this.flowLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.flowLayoutPanel2.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
             this.flowLayoutPanel2.Location = new System.Drawing.Point(16, 171);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
