@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{A0323DA7-D3A
 	ProjectSection(SolutionItems) = preProject
 		web\api.php = web\api.php
 		web\followfull.php = web\followfull.php
+		web\gprsping.php = web\gprsping.php
 		web\gprspunch.php = web\gprspunch.php
 		web\index.php = web\index.php
 		web\sipunch.php = web\sipunch.php
