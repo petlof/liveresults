@@ -50,6 +50,65 @@ namespace LiveResults.Client.Parsers
                 }
             }
 
+            foreach (XmlNode classNode in xmlDoc.GetElementsByTagName("ClassStart"))
+            {
+                XmlNode classNameNode = classNode.SelectSingleNode("ClassShortName");
+                if (classNameNode == null)
+                    continue;
+
+                string className = classNameNode.InnerText;
+                var personNodes = classNode.SelectNodes("PersonStart");
+                if (personNodes != null)
+                {
+                    foreach (XmlNode personNode in personNodes)
+                    {
+                        string familyname;
+                        string givenname;
+                        long pid;
+                        string club;
+                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out pid, out club)) continue;
+
+                        var startTimeNode = personNode.SelectSingleNode("Start/StartTime/Clock");
+                        var ccCardNode = personNode.SelectSingleNode("Start/CCard/CCardId");
+
+                        if (startTimeNode == null || ccCardNode == null)
+                            continue;
+                        string starttime = startTimeNode.InnerText;
+                        string si = ccCardNode.InnerText;
+                        int iSi;
+                        if (!Int32.TryParse(si, out iSi))
+                        {
+                            //NO SICARD!
+                            logit("No SICard for Runner: " + familyname + " " + givenname);
+                        }
+                        int dbid = 0;
+                        if (pid < Int32.MaxValue && pid > 0)
+                        {
+                            dbid = (int)pid;
+                        }
+                        else if (iSi > 0)
+                        {
+                            dbid = -1 * iSi;
+                        }
+                        else
+                        {
+                            logit("Cant generate DBID for runner: " + givenname + " " + familyname);
+                        }
+
+
+                        var runner = new Runner(dbid, givenname + " " + familyname, club, className);
+
+                        if (!string.IsNullOrEmpty(starttime))
+                        {
+                            int istarttime = ParseTime(starttime);
+                            runner.SetStartTime(istarttime);
+                        }
+
+                        runners.Add(runner);
+                    }
+                }
+            }
+
             foreach (XmlNode classNode in xmlDoc.GetElementsByTagName("ClassResult"))
             {
                 XmlNode classNameNode = classNode.SelectSingleNode("ClassShortName");
@@ -63,28 +122,11 @@ namespace LiveResults.Client.Parsers
                 {
                     foreach (XmlNode personNode in personNodes)
                     {
-                        XmlNode personNameNode = personNode.SelectSingleNode("Person/PersonName");
-                        if (personNameNode == null)
-                            continue;
-
-                        var familyNameNode = personNameNode.SelectSingleNode("Family");
-                        var giveNameNode = personNameNode.SelectSingleNode("Given");
-                        var personIdNode = personNode.SelectSingleNode("Person/PersonId");
-                        if (familyNameNode == null || giveNameNode == null || personIdNode == null)
-                            continue;
-
-                        string familyname = familyNameNode.InnerText;
-                        string givenname = giveNameNode.InnerText;
-                        string id = personIdNode.InnerText;
-                        long pid = 0;
-                        if (id.Trim().Length > 0)
-                        {
-                            pid = Convert.ToInt64(id);
-                        }
-                        var clubNode = personNode.SelectSingleNode("Club/ShortName");
-                        string club = "";
-                        if (clubNode != null)
-                            club = clubNode.InnerText;
+                        string familyname;
+                        string givenname;
+                        long pid;
+                        string club;
+                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out pid, out club)) continue;
 
                         var competitorStatusNode = personNode.SelectSingleNode("Result/CompetitorStatus");
                         var resultTimeNode = personNode.SelectSingleNode("Result/Time");
@@ -210,6 +252,44 @@ namespace LiveResults.Client.Parsers
             }
 
             return runners.ToArray();
+        }
+
+        private static bool ParseNameClubAndId(XmlNode personNode, out string familyname, out string givenname, out long pid, out string club)
+        {
+            familyname = null;
+            givenname = null;
+            club = null;
+            pid = 0;
+
+            XmlNode personNameNode = personNode.SelectSingleNode("Person/PersonName");
+            if (personNameNode == null)
+            {
+                return false;
+            }
+
+            var familyNameNode = personNameNode.SelectSingleNode("Family");
+            var giveNameNode = personNameNode.SelectSingleNode("Given");
+            var personIdNode = personNode.SelectSingleNode("Person/PersonId");
+            if (familyNameNode == null || giveNameNode == null || personIdNode == null)
+            {
+                return false;
+            }
+
+            familyname = familyNameNode.InnerText;
+            givenname = giveNameNode.InnerText;
+            string id = personIdNode.InnerText;
+            pid = 0;
+            if (id.Trim().Length > 0)
+            {
+                pid = Convert.ToInt64(id);
+            }
+            var clubNode = personNode.SelectSingleNode("Club/ShortName");
+            club = "";
+            if (clubNode != null)
+            {
+                club = clubNode.InnerText;
+            }
+            return true;
         }
 
         private static int ParseTime(string time)
