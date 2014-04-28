@@ -75,26 +75,7 @@ namespace LiveResults.Client.Parsers
                             continue;
                         string starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
-                        int iSi;
-                        if (!Int32.TryParse(si, out iSi))
-                        {
-                            //NO SICARD!
-                            logit("No SICard for Runner: " + familyname + " " + givenname);
-                        }
-                        int dbid = 0;
-                        if (pid < Int32.MaxValue && pid > 0)
-                        {
-                            dbid = (int)pid;
-                        }
-                        else if (iSi > 0)
-                        {
-                            dbid = -1 * iSi;
-                        }
-                        else
-                        {
-                            logit("Cant generate DBID for runner: " + givenname + " " + familyname);
-                        }
-
+                        var dbid = CalculateIDFromSiCard(logit, si, familyname, givenname, pid);
 
                         var runner = new Runner(dbid, givenname + " " + familyname, club, className);
 
@@ -140,25 +121,7 @@ namespace LiveResults.Client.Parsers
                         string time = resultTimeNode.InnerText;
                         string starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
-                        int iSi;
-                        if (!Int32.TryParse(si, out iSi))
-                        {
-                            //NO SICARD!
-                            logit("No SICard for Runner: " + familyname + " " + givenname);
-                        }
-                        int dbid = 0;
-                        if (pid < Int32.MaxValue && pid > 0)
-                        {
-                            dbid = (int) pid;
-                        }
-                        else if (iSi > 0)
-                        {
-                            dbid = -1*iSi;
-                        }
-                        else
-                        {
-                            logit("Cant generate DBID for runner: " + givenname + " " + familyname);
-                        }
+                        var dbid = CalculateIDFromSiCard(logit, si, familyname, givenname, pid);
 
 
                         var runner = new Runner(dbid, givenname + " " + familyname, club, className);
@@ -252,6 +215,30 @@ namespace LiveResults.Client.Parsers
             }
 
             return runners.ToArray();
+        }
+
+        private static int CalculateIDFromSiCard(LogMessageDelegate logit, string si, string familyname, string givenname, long pid)
+        {
+            int iSi;
+            if (!Int32.TryParse(si, out iSi))
+            {
+                //NO SICARD!
+                logit("No SICard for Runner: " + familyname + " " + givenname);
+            }
+            int dbid = 0;
+            if (pid < Int32.MaxValue && pid > 0)
+            {
+                dbid = (int) pid;
+            }
+            else if (iSi > 0)
+            {
+                dbid = -1*iSi;
+            }
+            else
+            {
+                logit("Cant generate DBID for runner: " + givenname + " " + familyname);
+            }
+            return dbid;
         }
 
         private static bool ParseNameClubAndId(XmlNode personNode, out string familyname, out string givenname, out long pid, out string club)
