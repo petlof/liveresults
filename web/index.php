@@ -84,7 +84,7 @@ el.style.backgroundColor = "";
                       | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
 			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?>
-			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutch</a>")?> |
+			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> |
 
 
 						<h1 class="categoriesheader"><?=$_CHOOSECMP?></h1>
