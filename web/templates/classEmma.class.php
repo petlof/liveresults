@@ -2,7 +2,6 @@
 $CHARSET = 'iso-8859-1';
 class Emma
 {
-	/*public static $db_server = "obasen.orientering.se";*/
 	public static $db_server = "127.0.0.1";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
@@ -27,7 +26,7 @@ class Emma
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $result = mysql_query("select compName, compDate,tavid,organizer from Login where public = 1 order by compDate desc",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer from login where public = 1 order by compDate desc",$conn);
          $ret = Array();
          while ($tmp = mysql_fetch_array($result))
 	 {
@@ -46,7 +45,7 @@ public static function GetRadioControls($compid)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $result = mysql_query("select * from splitcontrols where tavid=$compid order by corder",$conn);
+	 $result = mysql_query("select * from SplitControls where tavid=$compid order by corder",$conn);
          $ret = Array();
          while ($tmp = mysql_fetch_array($result))
 	 {
@@ -63,7 +62,7 @@ public static function DelRadioControl($compid,$code,$classname)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 mysql_query("delete from splitcontrols where tavid=$compid and code=$code and classname='$classname'",$conn);
+	 mysql_query("delete from SplitControls where tavid=$compid and code=$code and classname='$classname'",$conn);
         }
 
 
@@ -77,12 +76,12 @@ public static function DelRadioControl($compid,$code,$classname)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $res = mysql_query("select max(tavid)+1 from Login",$conn);
+	 $res = mysql_query("select max(tavid)+1 from login",$conn);
 	 $id = mysql_result($res,0,0);
 	if ($id < 10000)
 		$id = 10000;
 
-	 mysql_query("insert into Login(tavid,user,pass,compName,organizer,compDate,public) values(".$id.",'".md5($name.$org.$date)."','".md5("liveresultat")."','".$name."','".$org."','".$date."',0)" ,$conn) or die(mysql_error());
+	 mysql_query("insert into login(tavid,user,pass,compName,organizer,compDate,public) values(".$id.",'".md5($name.$org.$date)."','".md5("liveresultat")."','".$name."','".$org."','".$date."',0)" ,$conn) or die(mysql_error());
 
 	}
 	public static function AddRadioControl($compid,$classname,$name,$code)
@@ -95,9 +94,9 @@ public static function DelRadioControl($compid,$code,$classname)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $res = mysql_query("select count(*)+1 from splitcontrols where classname='$classname' and tavid=$compid",$conn);
+	 $res = mysql_query("select count(*)+1 from SplitControls where classname='$classname' and tavid=$compid",$conn);
 	 $id = mysql_result($res,0,0);
-	 mysql_query("insert into splitcontrols(tavid,classname,name,code,corder) values($compid,'$classname','$name',$code,$id)" ,$conn) or die(mysql_error());
+	 mysql_query("insert into SplitControls(tavid,classname,name,code,corder) values($compid,'$classname','$name',$code,$id)" ,$conn) or die(mysql_error());
 
 	}
 
@@ -111,7 +110,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $sql = "update Login set compName = '$name', organizer='$org', compDate ='$date',timediff=$timediff, public=". (!isset($public) ? "0":"1") ." where tavid=$id";
+	 $sql = "update login set compName = '$name', organizer='$org', compDate ='$date',timediff=$timediff, public=". (!isset($public) ? "0":"1") ." where tavid=$id";
 	 mysql_query($sql ,$conn) or die(mysql_error());
 
 	}
@@ -126,7 +125,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $result = mysql_query("select compName, compDate,tavid,timediff,organizer,public from Login order by compDate desc",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,timediff,organizer,public from login order by compDate desc",$conn);
          $ret = Array();
          while ($tmp = mysql_fetch_array($result))
 	 {
@@ -146,7 +145,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	   		printf("Connect failed: %s\n", mysql_error());
 	   		exit();
 		}
-	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, videourl, videotype from Login where tavid=$compid",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, videourl, videotype from login where tavid=$compid",$conn);
          $ret = null;
          while ($tmp = mysql_fetch_array($result))
 	 {
@@ -168,7 +167,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	   		exit();
 		}
 
-		$result = mysql_query("select * from Login where tavid = $compID",$this->m_Conn);
+		$result = mysql_query("select * from login where tavid = $compID",$this->m_Conn);
 		if ($tmp = mysql_fetch_array($result))
 		  {
 		    $this->m_CompName = $tmp["compName"];
@@ -240,7 +239,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
   {
     $ret = Array();
     $q = "SELECT Control from Results, Runners where Results.TavID = ". $this->m_CompId . " and Runners.TavID = " . $this->m_CompId . " and Results.dbid = Runners.dbid and Runners.class = '" . $className ."' and Results.Control != 1000 Group by Control";
-    $q = "SELECT code, name from splitcontrols where tavid = " .$this->m_CompId. " and classname = '" . $className ."' order by corder";
+    $q = "SELECT code, name from SplitControls where tavid = " .$this->m_CompId. " and classname = '" . $className ."' order by corder";
     if ($result = mysql_query($q))
       {
 	while($tmp = mysql_fetch_array($result))
@@ -262,7 +261,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
   function getLastPassings($num)
   {
     $ret = Array();
-	$q = "SELECT Runners.Name, Runners.class, Runners.Club, Results.Time,Results.Status, Results.Changed, Results.Control, splitcontrols.name as pname From Results inner join Runners on Results.DbId = Runners.DbId left join splitcontrols on (splitcontrols.code = Results.Control and splitcontrols.tavid=".$this->m_CompId." and Runners.class = splitcontrols.classname) where Results.TavId =".$this->m_CompId." AND Runners.TavId = Results.TavId and Results.Status <> -1 AND Results.Time <> -1 AND Results.Status <> 9 and Results.Status <> 10 and Results.control <> 100 ORDER BY Results.changed desc limit 3";
+	$q = "SELECT Runners.Name, Runners.class, Runners.Club, Results.Time,Results.Status, Results.Changed, Results.Control, SplitControls.name as pname From Results inner join Runners on Results.DbId = Runners.DbId left join SplitControls on (SplitControls.code = Results.Control and SplitControls.tavid=".$this->m_CompId." and Runners.class = SplitControls.classname) where Results.TavId =".$this->m_CompId." AND Runners.TavId = Results.TavId and Results.Status <> -1 AND Results.Time <> -1 AND Results.Status <> 9 and Results.Status <> 10 and Results.control <> 100 ORDER BY Results.changed desc limit 3";
 		if ($result = mysql_query($q,$this->m_Conn))
 		{
 			while ($row = mysql_fetch_array($result))
@@ -438,7 +437,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	{
 				$ret = Array();
 
-				$q = "Select TavId,multidaystage from Login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
+				$q = "Select TavId,multidaystage from login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
 
 				$ar = Array();
 				$comps = "(";
@@ -458,7 +457,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 				$comps .= ")";
 
 
-				$q = "SELECT Results.Time, Results.Status, Results.TavId, Results.DbID From Runners,Results where results.Control = 1000 and Results.DbID = Runners.DbId AND Results.TavId in $comps AND Runners.TavId = Results.TavId AND Runners.Class = '".$className."'  ORDER BY Results.Dbid";
+				$q = "SELECT Results.Time, Results.Status, Results.TavId, Results.DbID From Runners,Results where Results.Control = 1000 and Results.DbID = Runners.DbId AND Results.TavId in $comps AND Runners.TavId = Results.TavId AND Runners.Class = '".$className."'  ORDER BY Results.Dbid";
 
 				if ($result = mysql_query($q,$this->m_Conn))
 
