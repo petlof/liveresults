@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 date_default_timezone_set("Europe/Stockholm");
 $lang = "sv";
 
@@ -8,6 +8,8 @@ if (isset($_GET['lang']))
 include_once("templates/emmalang_en.php");
 include_once("templates/emmalang_$lang.php");
 include_once("templates/classEmma.class.php");
+
+header('Content-Type: text/html; charset='.$CHARSET);
 
 $currentComp = new Emma($_GET['comp']);
 
@@ -29,7 +31,7 @@ $showLastPassings = !($isSingleClass || $isSingleClub) || (isset($_GET['showLast
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
 
-echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
+echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 ?>
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
         "http://www.w3.org/TR/html4/loose.dtd">
@@ -170,7 +172,7 @@ function changeFontSize(val)
     <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
              <tr>
-               <td><a href="index.php"><a href="index.php?lang=<?=$lang?>&"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</a></td>
+               <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
                <td>|</td>
 				<td><a href="http://emmaclient.codeplex.com/documentation" target="_blank"><?=$_FORORGANIZERS?></a></td>
                <td>|</td>
@@ -213,23 +215,24 @@ function changeFontSize(val)
 <h1 class="categoriesheader" style="margin-bottom: 4px; color: black"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
 <?php }?>
 <?php if (!$isSingleClass && !$isSingleClub) {?>
-			| <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
-			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
-			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?>
-			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> | <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0'/> Русский" : "<a href=\"?lang=ru&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' border='0'/> Русский</a>")?> |
+			| <?php echo($lang == "sv" ? "<img src='images/se.png' border='0' alt='Svenska'> Svenska" : "<a href=\"?lang=sv&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' border='0' alt='Svenska'> Svenska</a>")?>
+			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0' alt='English'> English" : "<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' border='0' alt='English'> English</a>")?>
+			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi" : "<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi</a>")?>
+			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0' alt='Deutsch'> Deutsch" : "<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' border='0' alt='Deutsch'> Deutsch</a>")?> | 
+			<?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Russian'> Russian" : "<a href=\"?lang=ru&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Russian'> Russian</a>")?> |
 <?php }?>
 <?php if($showLastPassings){?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 3px">
 			<tr>
 			<!--Customized logo --><!--<td width="161">
 			<img src="images/fin5.png"/></td>-->
-			<td valign=top><b><?=$_LASTPASSINGS?></b><br>
+			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings">
 </div>
 </td>
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
-<span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br/>
-<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br/><br/>
+<span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br>
+<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br><br>
 <a href="dok/help.php?lang=<?=$lang?>" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
 </td>
 </tr></table><br>
@@ -247,10 +250,13 @@ function changeFontSize(val)
 
 
 
-			<td valign=top>
-		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span align="right" style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" id=":2q" role="button" tabindex="2" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"/> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
+			<td valign="top">
+		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
 <table id="divResults" width="100%">
-</table><br/><br/>
+<tbody>
+<tr><td></td></tr>
+</tbody>
+</table><br><br>
 
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
 
@@ -267,7 +273,7 @@ function changeFontSize(val)
 <td valign="top" style="padding: 5px">
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 10px">
 				<tr>
-					<td valign=top><b>Live Video/Audio</b><br/>
+					<td valign="top"><b>Live Video/Audio</b><br>
 					<?=$currentComp->GetVideoEmbedCode()?>
 					</td>
 				</tr>
