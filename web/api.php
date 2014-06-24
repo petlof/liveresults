@@ -99,7 +99,7 @@ elseif ($_GET['method'] == 'getclasses')
 elseif ($_GET['method'] == 'getclubresults')
 {
 		$currentComp = new Emma($_GET['comp']);
-		$club = utf8_decode(rawurldecode($_GET['club']));
+		$club = $_GET['club'];
 		$results = $currentComp->getClubResults($_GET['comp'], $club);
 		$ret = "";
 		$unformattedTimes = false;

@@ -127,7 +127,7 @@ checkForClassUpdate = function ()
 			{
 				$.ajax({
 					  url: "api.php",
-					  data: "comp="+_compId+"&method=getclassresults&unformattedTimes=true&class="+curClassName + "&last_hash=" +lastClassHash + (_isMultiDay ? "&includetotal=true" : ""),
+					  data: "comp="+_compId+"&method=getclassresults&unformattedTimes=true&class="+encodeURIComponent(curClassName) + "&last_hash=" +lastClassHash + (_isMultiDay ? "&includetotal=true" : ""),
 					  success: resp_updateClassResults,
 					  error: function(xhr, ajaxOptions, thrownError) { resUpdateTimeout = setTimeout(checkForClassUpdate,updateInterval);},
 					  dataType: "json"
@@ -608,11 +608,11 @@ this.chooseClass = function(className)
 
 	$('#divResults').html('');
 	curClassName = className;
-	curClubName = null
+    curClubName = null;
 	$('#resultsHeader').html(Resources["_LOADINGRESULTS"]);
 	$.ajax({
 		  url: "api.php",
-		  data: "comp=" + compId + "&method=getclassresults&unformattedTimes=true&class="+className + (_isMultiDay ? "&includetotal=true" : ""),
+		  data: "comp=" + compId + "&method=getclassresults&unformattedTimes=true&class="+encodeURIComponent(className) + (_isMultiDay ? "&includetotal=true" : ""),
 		  success: this.updateClassResults,
 		  dataType: "json"
 	});

@@ -31,9 +31,11 @@ include_once("../templates/emmalang_$lang.php");
 
 
 
-
+header('Content-Type: text/html; charset='.$CHARSET);
 
 ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
 
 <html>
 
@@ -41,7 +43,7 @@ include_once("../templates/emmalang_$lang.php");
 
 <link rel="stylesheet" type="text/css" href="../css/style.css">
 <meta name="robots" content="noindex">
-
+<meta http-equiv="Content-Type" content="text/html;charset=<?=$CHARSET?>">
 <script language="javascript">
 
 function colorRow(row)
@@ -104,7 +106,7 @@ function confirmDelete(msg,url)
 
 			<TD>
 
-		<a href="/liveresultat/"><img src="/pics/header.jpg" alt="Svenska Orienteringsförbundet" align="left" width="759" height="91" border="0"></a>
+		<a href="/liveresultat/"><img src="/pics/header.jpg" alt="Svenska OrienteringsfÃ¶rbundet" align="left" width="759" height="91" border="0"></a>
 
 			</TD>
 
