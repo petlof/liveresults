@@ -143,8 +143,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmNewRacomComp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmNewRacomComp.Designer.cs">
+      <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="LiveResultater_no_Parser.cs" />
     <Compile Include="OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
+    <Compile Include="Parsers\RacomFileSetParser.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="WocParser.cs" />
     <Compile Include="FrmMonitor.cs">
@@ -187,6 +195,9 @@
     <EmbeddedResource Include="FrmNewCompetition.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FrmNewCompetition.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmNewRacomComp.resx">
+      <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewOLAComp.resx">
       <SubType>Designer</SubType>

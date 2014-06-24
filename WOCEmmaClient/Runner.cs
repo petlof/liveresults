@@ -264,6 +264,15 @@ namespace LiveResults.Client
             return m_time != time || m_status != status;
         }
 
+        public void SetResultStatus(int status)
+        {
+            if (m_status != status)
+            {
+                m_status = status;
+                ResultUpdated = true;
+            }
+        }
+
         public void SetResult(int time, int status)
         {
             if (HasResultChanged(time,status))

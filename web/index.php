@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 date_default_timezone_set("Europe/Stockholm");
 
@@ -84,12 +84,12 @@ el.style.backgroundColor = "";
                       | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
 			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?>
-			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> |
+			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> | <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0'/> Русский" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0'/> Русский</a>")?> |
 
 
 						<h1 class="categoriesheader"><?=$_CHOOSECMP?></h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" id="tblComps">
-			<tr><th align="left">Datum</th><th align="left">Namn</th><th align="left">Arrang�r</th></tr>
+			<tr><th align="left">Datum</th><th align="left">Namn</th><th align="left">Arrangör</th></tr>
 <?php
 	$comps = Emma::GetCompetitions();
 	foreach ($comps as $comp)

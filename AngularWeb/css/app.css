@@ -2,12 +2,27 @@
     font-family: 'Cabin','Segoe UI', sans-serif;
 }
 
+a {
+     color: #008080;
+}
+
 h3 {
     margin: 5px;
 }
 
-span {
-    font-style: italic;
+
+.languagebar {
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.languagebar  a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.languagebar  img {
+    margin-right: 5px;
 }
 
 .competitionTable {
@@ -49,3 +64,28 @@ span {
 .competitionTable tbody TR:hover {
     background-color: #87cefa;
 }
+
+
+
+.resultGridStyle {
+    border-collapse: collapse;
+}
+.resultGridStyle TH {
+    text-align: left;
+}
+
+.oddresult {
+    background-color: #DFDFDF;
+}
+
+.classList {
+    min-width: 100px;
+    
+}
+    .classList a {
+        cursor: pointer;
+    }
+.classList th {
+    text-align: left;
+}
+

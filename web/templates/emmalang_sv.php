@@ -1,6 +1,6 @@
 <?php
-$_TITLE = "Liveresultat på nätet";
-$_CHOOSECMP = "Välj tävling";
+$_TITLE = "Liveresultat pÃ¥ nÃ¤tet";
+$_CHOOSECMP = "VÃ¤lj tÃ¤vling";
 $_AUTOUPDATE = "Automatisk Uppdatering";
 $_UP15SEK = "Var 15:e sekund";
 $_UP30SEK = "Var 30:e sekund";
@@ -9,45 +9,45 @@ $_UP120SEK = "Varannan minut";
 $_UPNEVER = "Aldrig";
 
 $_LASTPASSINGS="Senaste passeringarna";
-$_LASTPASSFINISHED="gick imål";
+$_LASTPASSFINISHED="gick imÃ¥l";
 $_LASTPASSPASSED="passerade";
 $_LASTPASSWITHTIME="med tiden";
-$_CHOOSECLASS="Välj klass";
-$_NOCLASSESYET="Inga klasser än";
-$_CONTROLFINISH="Mål";
+$_CHOOSECLASS="VÃ¤lj klass";
+$_NOCLASSESYET="Inga klasser Ã¤n";
+$_CONTROLFINISH="MÃ¥l";
 $_NAME="Namn";
 $_CLUB="Klubb";
 $_TIME="Tid";
 $_NOCLASSCHOSEN="Ingen klass vald!";
-$_HELPREDRESULTS="Rödmarkerade resultat är nya sedan 2 minuter";
-$_NOTICE="Obeservera att resultat på denna sida ej är officiella. För officiella resultat hänvisas till arrangörens egna hemsida";
+$_HELPREDRESULTS="RÃ¶dmarkerade resultat Ã¤r nya sedan 2 minuter";
+$_NOTICE="Obeservera att resultat pÃ¥ denna sida ej Ã¤r officiella. FÃ¶r officiella resultat hÃ¤nvisas till arrangÃ¶rens egna hemsida";
 
 $_STATUSDNS = "ej start";
-$_STATUSDNF = "utgått";
-$_STATUSWO = "återbud";
+$_STATUSDNF = "utgÃ¥tt";
+$_STATUSWO = "Ã¥terbud";
 $_STATUSMOVEDUP = "uppflyttad";
 $_STATUSNOTSTARTED="ej startat";
-$_STATUSOK = "godkänd";
+$_STATUSOK = "godkÃ¤nd";
 $_STATUSMP = "felst.";
 $_STATUSDSQ= "diskv.";
-$_STATUSOT="ö. maxtid";
+$_STATUSOT="Ã¶. maxtid";
 
-$_FIRSTPAGECHOOSE = "Välj tävling att följa";
+$_FIRSTPAGECHOOSE = "VÃ¤lj tÃ¤vling att fÃ¶lja";
 $_FIRSTPAGEARCHIVE = "Arkiv";
 
 //new 2.0
 $_LOADINGRESULTS = "Laddar resultat...";
-$_ON = "På";
+$_ON = "PÃ¥";
 $_OFF = "Av";
 $_TEXTSIZE = "Textstorlek";
-$_LARGER = "Större";
+$_LARGER = "StÃ¶rre";
 $_SMALLER = "Mindre";
-$_OPENINNEW = "Öppna i nytt fönster";
-$_FORORGANIZERS = "Information för arrangörer";
+$_OPENINNEW = "Ã–ppna i nytt fÃ¶nster";
+$_FORORGANIZERS = "Information fÃ¶r arrangÃ¶rer";
 $_FORDEVELOPERS = "Information for utvecklare (api)";
-$_RESETTODEFAULT = "Återställ sortering";
-$_OPENINNEWWINDOW = "Öppna i nytt fönster";
-$_INSTRUCTIONSHELP = "Instruktioner / Hjälp";
+$_RESETTODEFAULT = "Ã…terstÃ¤ll sortering";
+$_OPENINNEWWINDOW = "Ã–ppna i nytt fÃ¶nster";
+$_INSTRUCTIONSHELP = "Instruktioner / HjÃ¤lp";
 $_LOADINGCLASSES = "Laddar klasser";
 $_START = "Start";
 $_TOTAL = "Total";

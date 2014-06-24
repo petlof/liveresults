@@ -1,0 +1,39 @@
+﻿<span class="languagebar">
+    <img src='images/se.png' border='0' />Svenska |
+    <a href="?lang=en&comp=10640"><img src='images/en.png' border='0' />English</a> |
+    <a href="?lang=fi&comp=10640"><img src='images/fi.png' border='0' />Suomeksi</a> |
+    <a href="?lang=de&comp=10640"><img src='images/de.png' border='0' />Deutsch</a> |
+</span>
+<table>
+    <tr>
+        <td style="vertical-align: top">
+            <div class="classList">
+                <table>
+                    <tr><th>Klass</th></tr>
+                    <tr data-ng-repeat="class in classes">
+                        <td><a ng-click="selectClass(class)">{{class}}</a></td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+        <td>
+            <!--<div class="resultGridStyle" ng-grid="gridOptions" style="height: {{tableHeight}}"></div>---->
+            <table class="resultGridStyle">
+                <tr>
+                    <th style="min-width: 50px">#</th>
+                    <th style="min-width: 150px">Name</th>
+                    <th style="min-width: 150px">Club</th>
+                    <th>Time</th>
+                    <th>Time+</th>
+                </tr>
+                <tr data-ng-repeat="result in results" ng-class-odd="'oddresult'">
+                    <td>{{result.place}}</td>
+                    <td>{{result.name}}</td>
+                    <td>{{result.club}}</td>
+                    <td>{{result.result}}</td>
+
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

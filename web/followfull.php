@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 date_default_timezone_set("Europe/Stockholm");
 $lang = "sv";
 
@@ -197,7 +197,7 @@ function changeFontSize(val)
 
 			?>
 
-				<h1 class="categoriesheader">Ett fel uppstod? Har du valt t�vling?</h1>
+				<h1 class="categoriesheader">Ett fel uppstod? Har du valt tävling?</h1>
 
 			<?php
 
@@ -216,7 +216,7 @@ function changeFontSize(val)
 			| <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
 			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?>
-			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> |
+			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> | <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0'/> Русский" : "<a href=\"?lang=ru&comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' border='0'/> Русский</a>")?> |
 <?php }?>
 <?php if($showLastPassings){?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 3px">
