@@ -219,7 +219,7 @@ function changeFontSize(val)
 			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0' alt='English'> English" : "<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' border='0' alt='English'> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi" : "<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi</a>")?>
 			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0' alt='Deutsch'> Deutsch" : "<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' border='0' alt='Deutsch'> Deutsch</a>")?> | 
-			<?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Russian'> Russian" : "<a href=\"?lang=ru&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Russian'> Russian</a>")?> |
+			<?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Русский'> Русский" : "<a href=\"?lang=ru&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Русский'> Русский</a>")?> |
 <?php }?>
 <?php if($showLastPassings){?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 3px">

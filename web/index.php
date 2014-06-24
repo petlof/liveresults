@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 date_default_timezone_set("Europe/Stockholm");
 
@@ -11,10 +11,12 @@ include_once("./templates/emmalang_sv.php");
    }
 include_once("./templates/emmalang_$lang.php");
 
+header('Content-Type: text/html; charset='.$CHARSET);
 
-echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
+echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 ?>
-
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head><title><?=$_TITLE?></title>
 <meta http-equiv="Content-Type" content="text/html;charset=<?=$CHARSET?>">
@@ -24,7 +26,7 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>");
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 
-<script language="javascript">
+<script language="javascript" type="text/javascript">
 function colorRow(row)
 {
 	var el = document.getElementById(row);
@@ -42,10 +44,10 @@ el.style.backgroundColor = "";
 
 </script>
 </head>
-<body topmargin="0" leftmargin="0">
+<body>
 <!-- MAIN DIV -->
 <div class="maindiv">
-<table border="0" cellpadding="0" cellspacing="0" width="759">
+<table border="0" cellpadding="0" cellspacing="0" width="800">
   <tr>
      <td valign="bottom">
 
@@ -78,13 +80,14 @@ el.style.backgroundColor = "";
 <!-- End SUB MENU -->
   <tr>
     <td class="searchmenu" colspan="2" style="padding: 5px;">
-       <table border="0" cellpadding="0" cellspacing="0" width="600">
+       <table border="0" cellpadding="0" cellspacing="0" width="800">
              <tr>
                <td>
-                      | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0'/> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0'/> Svenska</a>")?>
-			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0'/> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0'/> English</a>")?>
-			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0'/> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0'/> Suomeksi</a>")?>
-			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0'/> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0'/> Deutsch</a>")?> | <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0'/> Русский" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0'/> Русский</a>")?> |
+                      | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0' alt='Svenska'> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0' alt='Svenska'> Svenska</a>")?>
+			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0' alt='English'> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0' alt='English'> English</a>")?>
+			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi</a>")?>
+			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0' alt='Deutsch'> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0' alt='Deutsch'> Deutsch</a>")?> | 
+			<?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Русский'> Русский" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Русский'> Русский</a>")?> |
 
 
 						<h1 class="categoriesheader"><?=$_CHOOSECMP?></h1>
@@ -96,7 +99,7 @@ el.style.backgroundColor = "";
 	{
 	?>
 		<tr id="row<?=$comp["tavid"]?>"><td><?=date("Y-m-d",strtotime($comp['compDate']))?></td>
-		<td><a onmouseover="colorRow('row<?=$comp["tavid"]?>')" onmouseout="resetRow('row<?=$comp["tavid"]?>')" href="followfull.php?comp=<?=$comp["tavid"]?>&lang=<?=$lang?>"><?=$comp["compName"]?></a></td>
+		<td><a onmouseover="colorRow('row<?=$comp["tavid"]?>')" onmouseout="resetRow('row<?=$comp["tavid"]?>')" href="followfull.php?comp=<?=$comp["tavid"]?>&amp;lang=<?=$lang?>"><?=$comp["compName"]?></a></td>
 		<td><?=$comp["organizer"]?></td>
 		</tr>
 	<?php
@@ -111,6 +114,6 @@ el.style.backgroundColor = "";
 
 </table>
 </div>
-<br/><br/>
+<br><br>
 </body>
 </html>
