@@ -137,7 +137,7 @@ namespace LiveResults.Client
                 SetCodePage(m_connection);
 
                 MySqlCommand cmd = m_connection.CreateCommand();
-                cmd.CommandText = "select Runners.dbid,control,time,name,club,class,status from Runners, Results where Results.dbid = Runners.dbid and Results.tavid = " + m_compID + " and Runners.tavid = " + m_compID;
+                cmd.CommandText = "select runners.dbid,control,time,name,club,class,status from runners, results where results.dbid = runners.dbid and results.tavid = " + m_compID + " and runners.tavid = " + m_compID;
                 MySqlDataReader reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
@@ -397,7 +397,7 @@ namespace LiveResults.Client
                                     cmd.Parameters.AddWithValue("?corder", r.Order);
                                     cmd.Parameters.AddWithValue("?code", r.Code);
                                     cmd.Parameters.AddWithValue("?cname", r.ControlName);
-                                    cmd.CommandText = "REPLACE INTO SplitControls VALUES (?compid,?name,?corder,?code,?cname)";
+                                    cmd.CommandText = "REPLACE INTO splitcontrols VALUES (?compid,?name,?corder,?code,?cname)";
 
                                     try
                                     {
@@ -424,7 +424,7 @@ namespace LiveResults.Client
                                         cmd.Parameters.AddWithValue("?class", r.Class);
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
-                                        cmd.CommandText = "REPLACE INTO Runners VALUES (?compid,?name,?club,?class,0,?id)";
+                                        cmd.CommandText = "REPLACE INTO runners VALUES (?compid,?name,?club,?class,0,?id)";
 
                                         try
                                         {
@@ -449,7 +449,7 @@ namespace LiveResults.Client
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.Parameters.AddWithValue("?time", r.Time);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
-                                        cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,1000,?time,?status,Now())";
+                                        cmd.CommandText = "REPLACE INTO results VALUES(?compid,?id,1000,?time,?status,Now())";
                                         cmd.ExecuteNonQuery();
                                         cmd.Parameters.Clear();
 
@@ -464,7 +464,7 @@ namespace LiveResults.Client
                                         cmd.Parameters.AddWithValue("?starttime", r.StartTime);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
                                         //cmd.CommandText = "REPLACE INTO Results VALUES(" + m_CompID + "," + r.ID + ",0," + r.StartTime + "," + r.Status + ",Now())";
-                                        cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,100,?starttime,?status,Now())";
+                                        cmd.CommandText = "REPLACE INTO results VALUES(?compid,?id,100,?starttime,?status,Now())";
                                         cmd.ExecuteNonQuery();
                                         cmd.Parameters.Clear();
                                         FireLogMsg("Runner " + r.Name + "s starttime updated in DB");
@@ -483,7 +483,7 @@ namespace LiveResults.Client
                                         {
                                             cmd.Parameters["?control"].Value = t.Control;
                                             cmd.Parameters["?time"].Value = t.Time;
-                                            cmd.CommandText = "REPLACE INTO Results VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
+                                            cmd.CommandText = "REPLACE INTO results VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
                                                               ",0,Now())";
                                             cmd.ExecuteNonQuery();
                                             t.Updated = false;
