@@ -105,7 +105,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
 		}
 
-	 mysql_query("delete from SplitControls where tavid=$compid and code=$code and classname='$classname'",$conn);
+	 mysql_query("delete from splitcontrols where tavid=$compid and code=$code and classname='$classname'",$conn);
 
         }
 
@@ -151,10 +151,10 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	   		exit();
 
 		}
-	 $res = mysql_query("select count(*)+1 from SplitControls where classname='$classname' and tavid=$compid",$conn);
+	 $res = mysql_query("select count(*)+1 from splitcontrols where classname='$classname' and tavid=$compid",$conn);
 	 $id = mysql_result($res,0,0);
 
-	 mysql_query("insert into SplitControls(tavid,classname,name,code,corder) values($compid,'$classname','$name',$code,$id)" ,$conn) or die(mysql_error());
+	 mysql_query("insert into splitcontrols(tavid,classname,name,code,corder) values($compid,'$classname','$name',$code,$id)" ,$conn) or die(mysql_error());
 
 	}
 
@@ -345,7 +345,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		$ret = Array();
 
-		$q = "SELECT Class From Runners where TavId = ". $this->m_CompId ." Group By Class";
+		$q = "SELECT Class From runners where TavId = ". $this->m_CompId ." Group By Class";
 
 		if ($result = mysql_query($q,$this->m_Conn))
 
@@ -381,9 +381,9 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
     $ret = Array();
 
-    $q = "SELECT Control from Results, Runners where Results.TavID = ". $this->m_CompId . " and Runners.TavID = " . $this->m_CompId . " and Results.dbid = Runners.dbid and Runners.class = '" . $className ."' and Results.Control != 1000 Group by Control";
+    $q = "SELECT Control from results, runners where results.TavID = ". $this->m_CompId . " and runners.TavID = " . $this->m_CompId . " and results.dbid = runners.dbid and runners.class = '" . $className ."' and results.Control != 1000 Group by Control";
 
-    $q = "SELECT code, name from SplitControls where tavid = " .$this->m_CompId. " and classname = '" . $className ."' order by corder";
+    $q = "SELECT code, name from splitcontrols where tavid = " .$this->m_CompId. " and classname = '" . $className ."' order by corder";
 
     if ($result = mysql_query($q))
 
@@ -427,7 +427,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
     $ret = Array();
 
-	$q = "SELECT Runners.Name, Runners.class, Runners.Club, Results.Time,Results.Status, Results.Changed, Results.Control, SplitControls.name as pname From Results inner join Runners on Results.DbId = Runners.DbId left join SplitControls on (SplitControls.code = Results.Control and SplitControls.tavid=".$this->m_CompId." and Runners.class = SplitControls.classname) where Results.TavId =".$this->m_CompId." AND Runners.TavId = Results.TavId and Results.Status <> -1 AND Results.Time <> -1 AND Results.Status <> 9 and Results.Status <> 10 and Results.control <> 100 ORDER BY Results.changed desc limit 3";
+	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time,results.Status, results.Changed, results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." and runners.class = splitcontrols.classname) where results.TavId =".$this->m_CompId." AND runners.TavId = results.TavId and results.Status <> -1 AND results.Time <> -1 AND results.Status <> 9 and results.Status <> 10 and results.control <> 100 ORDER BY results.changed desc limit 3";
 
 		if ($result = mysql_query($q,$this->m_Conn))
 
@@ -463,7 +463,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		$ret = Array();
 
-		$q = "SELECT Runners.Name, Runners.Club, Results.Time,Results.Status, Results.Changed From Runners,Results where Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = ".$this->m_CompId ." AND Runners.Class = '".$className."' and Results.Status <> -1 AND (Results.Time <> -1 or (Results.Time = -1 and (Results.Status = 2 or Results.Status=3))) AND Results.Control = $split ORDER BY Results.Status, Results.Time";
+		$q = "SELECT runners.Name, runners.Club, results.Time,results.Status, results.Changed From runners,results where results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." AND runners.Class = '".$className."' and results.Status <> -1 AND (results.Time <> -1 or (results.Time = -1 and (results.Status = 2 or results.Status=3))) AND results.Control = $split ORDER BY results.Status, results.Time";
 
 		if ($result = mysql_query($q,$this->m_Conn))
 
@@ -495,11 +495,11 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 			$ret = Array();
 
 
-			$q = "SELECT Runners.Name, Runners.Club, Results.Time, Runners.Class ,Results.Status, Results.Changed, Results.DbID, Results.Control ";
-			$q .= ", (select count(*)+1 from Results sr, Runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=Results.TavId and sru.class = Runners.class and sr.status = 0 and sr.time < Results.time and sr.Control=1000) as place ";
-			$q .= ", Results.Time - (select min(time) from Results sr, Runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=Results.TavId and sru.class = Runners.class and sr.status = 0 and sr.Control=1000) as timeplus ";
-			$q .= "From Runners,Results where ";
-			$q .= "Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = ".$this->m_CompId ." and Runners.Club = '$club' and (Results.Control=1000 or Results.Control=100) ORDER BY Runners.Class, Runners.Name";
+			$q = "SELECT runners.Name, runners.Club, results.Time, runners.Class ,results.Status, results.Changed, results.DbID, results.Control ";
+			$q .= ", (select count(*)+1 from results sr, runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=results.TavId and sru.class = runners.class and sr.status = 0 and sr.time < results.time and sr.Control=1000) as place ";
+			$q .= ", results.Time - (select min(time) from results sr, runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=results.TavId and sru.class = runners.class and sr.status = 0 and sr.Control=1000) as timeplus ";
+			$q .= "From runners,results where ";
+			$q .= "results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." and runners.Club = '$club' and (results.Control=1000 or results.Control=100) ORDER BY runners.Class, runners.Name";
 
 			if ($result = mysql_query($q,$this->m_Conn))
 
@@ -559,7 +559,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 			$ret = Array();
 
 
-			$q = "SELECT Runners.Name, Runners.Club, Results.Time ,Results.Status, Results.Changed, Results.DbID, Results.Control From Runners,Results where Results.DbID = Runners.DbId AND Results.TavId = ". $this->m_CompId ." AND Runners.TavId = ".$this->m_CompId ." AND Runners.Class = '".$className."'  ORDER BY Results.Dbid";
+			$q = "SELECT runners.Name, runners.Club, results.Time ,results.Status, results.Changed, results.DbID, results.Control From runners,results where results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." AND runners.Class = '".$className."'  ORDER BY results.Dbid";
 
 			if ($result = mysql_query($q,$this->m_Conn))
 
@@ -651,7 +651,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 				$comps .= ")";
 
 
-				$q = "SELECT Results.Time, Results.Status, Results.TavId, Results.DbID From Runners,Results where results.Control = 1000 and Results.DbID = Runners.DbId AND Results.TavId in $comps AND Runners.TavId = Results.TavId AND Runners.Class = '".$className."'  ORDER BY Results.Dbid";
+				$q = "SELECT results.Time, results.Status, results.TavId, results.DbID From runners,results where results.Control = 1000 and results.DbID = runners.DbId AND results.TavId in $comps AND runners.TavId = results.TavId AND runners.Class = '".$className."'  ORDER BY results.Dbid";
 
 				if ($result = mysql_query($q,$this->m_Conn))
 
