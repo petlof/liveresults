@@ -4,12 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Data.OleDb;
-using System.Data;
 using System.Globalization;
 using System.Net;
 using System.Text.RegularExpressions;
-using System.Web.Script.Serialization;
 using System.Xml;
 
 namespace LiveResults.Client
