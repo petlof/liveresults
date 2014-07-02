@@ -1,4 +1,4 @@
-<?
+<?php
 include_once("../templates/classEmma.class.php");
 
 if (isset($_POST['btnSubmit']))

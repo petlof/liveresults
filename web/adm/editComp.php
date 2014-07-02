@@ -1,4 +1,4 @@
-<? 
+<?php
 include_once("../templates/classEmma.class.php");
 
 if (isset($_POST['btnSave']))
@@ -183,7 +183,7 @@ function confirmDelete(msg,url)
              <tr>
 
                <td>
-<?
+<?php
 	$comp = Emma::GetCompetition($_GET['compid']);
 ?>
 <form name="form1" action="editComp.php?what=comp&compid=<?=$comp['tavid']?>" method="post">
@@ -208,7 +208,7 @@ function confirmDelete(msg,url)
 <form name="formrdo1" action="editComp.php?what=radio&compid=<?=$comp['tavid']?>" method="post">
 <table border="0">
 <tr><td><b>Code</td><td><b>Name</td><td><b>Class</td><td><b>Order</td></tr>
-<?
+<?php
 	$rcontrols = Emma::GetRadioControls($_GET['compid']);
 for ($i = 0; $i < sizeof($rcontrols); $i++)
 {
