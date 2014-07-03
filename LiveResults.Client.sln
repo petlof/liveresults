@@ -27,6 +27,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "web", "web", "{A0323DA7-D3A
 		web\gprsping.php = web\gprsping.php
 		web\gprspunch.php = web\gprspunch.php
 		web\index.php = web\index.php
+		index_woc.html = index_woc.html
 		web\sipunch.php = web\sipunch.php
 	EndProjectSection
 EndProject
@@ -50,6 +51,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{
 		web\templates\emmalang_fi.php = web\templates\emmalang_fi.php
 		web\templates\emmalang_ru.php = web\templates\emmalang_ru.php
 		web\templates\emmalang_sv.php = web\templates\emmalang_sv.php
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{505B00D3-748C-4B8E-9356-6C0D5FD861BA}"
+	ProjectSection(SolutionItems) = preProject
+		web\css\style-eoc.css = web\css\style-eoc.css
 	EndProjectSection
 EndProject
 Global
@@ -155,6 +161,7 @@ Global
 		{E2B2F09B-077F-4AFC-AC1C-01CBD96C26BF} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 		{3D301984-98EF-45C8-A0A0-781E18D3B3AD} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 		{74A7CDE3-9723-46AC-9778-371B12392E46} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
+		{505B00D3-748C-4B8E-9356-6C0D5FD861BA} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = LiveResults.Client.vsmdi

@@ -30,9 +30,13 @@ td.submenu table tr td a:link, td.submenu table tr td a:visited {color: #000000;
 td.submenu table tr td a:hover {text-decoration: underline; color:#0000FF;}
 
 
-tr.new_result { background-color: #FF8B68 !important; }
-tr.new_result td.sorting_2 { background-color: #FF8B68 !important; }
-tr.new_result td.sorting_1 { background-color: #FF8B68 !important; }
+tr.new_result { background-color: #F9B7A4 !important;font-weight: bold;  border-bottom: 1px solid white; }
+tr.new_result a {color: black;}
+tr.new_result td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
+tr.new_result td.sorting_1 { background-color: #F9B7A4 !important;  border-bottom: 1px solid white;}
+
+#langchooser { vertical-align: middle; line-height:21px;}
+#langchooser img {  border: 1px solid #AAAAAA; vertical-align: middle}
 
 
 .eI {
