@@ -32,6 +32,7 @@ namespace LiveResults.Client
                         txtDSQFile.Text = s.DSQFile;
                         txtCompID.Text = s.CompetitionID;
                         dtZeroTime.Value = s.zeroTime;
+                        checkBox1.Checked = s.IsRelay;
 
                     }
                 }
@@ -58,7 +59,8 @@ namespace LiveResults.Client
                     RaceFile = txtRaceFile.Text,
                     RadioControlFile = txtRadioControls.Text,
                     RawSplitsFile = txtRawSplits.Text
-                    , zeroTime =  dtZeroTime.Value
+                    , zeroTime =  dtZeroTime.Value,
+                    IsRelay = checkBox1.Checked
                     
                     
                 };
@@ -87,6 +89,7 @@ namespace LiveResults.Client
             public string RawSplitsFile { get; set; }
             public string RadioControlFile { get; set; }
             public string CompetitionID { get; set; }
+            public bool IsRelay { get; set; }
         }
     }
 }

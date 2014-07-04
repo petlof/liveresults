@@ -44,6 +44,7 @@
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
             this.dtZeroTime = new System.Windows.Forms.DateTimePicker();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // label1
@@ -194,11 +195,22 @@
             this.dtZeroTime.Size = new System.Drawing.Size(236, 20);
             this.dtZeroTime.TabIndex = 15;
             // 
+            // checkBox1
+            // 
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.Location = new System.Drawing.Point(15, 286);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(61, 17);
+            this.checkBox1.TabIndex = 16;
+            this.checkBox1.Text = "IsRelay";
+            this.checkBox1.UseVisualStyleBackColor = true;
+            // 
             // FrmNewRacomComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 339);
+            this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.dtZeroTime);
             this.Controls.Add(this.label6);
             this.Controls.Add(this.txtCompID);
@@ -240,5 +252,6 @@
         internal System.Windows.Forms.TextBox txtCompID;
         private System.Windows.Forms.Label label6;
         public System.Windows.Forms.DateTimePicker dtZeroTime;
+        public System.Windows.Forms.CheckBox checkBox1;
     }
 }

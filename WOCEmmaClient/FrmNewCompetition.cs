@@ -117,7 +117,7 @@ namespace LiveResults.Client
                 if (frm.ShowDialog(this) == DialogResult.OK)
                 {
                     var rsP = new RacomFileSetParser(frm.txtStartlist.Text, frm.txtRawSplits.Text, frm.txtRaceFile.Text, frm.txtDSQFile.Text,
-                        frm.txtRadioControls.Text, frm.dtZeroTime.Value);
+                        frm.txtRadioControls.Text, frm.dtZeroTime.Value,frm.checkBox1.Checked);
 
                     monForm.SetParser(rsP);
                     monForm.CompetitionID = int.Parse(frm.txtCompID.Text);

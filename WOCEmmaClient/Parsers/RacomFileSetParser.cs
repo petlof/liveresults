@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -16,12 +17,12 @@ namespace LiveResults.Client.Parsers
         private readonly string m_dsqFile;
         private readonly string m_radioDefinitionFile;
         private readonly DateTime m_zeroTime;
-
+        private readonly bool m_isRelay = false;
         public RacomFileSetParser()
         {
         }
 
-        public RacomFileSetParser(string startlistFile, string splitsFile, string finishFile, string dsqFile, string radioDefinitionFile, DateTime zeroTime)
+        public RacomFileSetParser(string startlistFile, string splitsFile, string finishFile, string dsqFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay)
         {
             m_startListFile = startlistFile;
             m_splitsFile = splitsFile;
@@ -29,7 +30,23 @@ namespace LiveResults.Client.Parsers
             m_dsqFile = dsqFile;
             m_radioDefinitionFile = radioDefinitionFile;
             m_zeroTime = zeroTime;
+            m_isRelay = isRelay;
         }
+
+        public class RacomRunner : Runner
+        {
+            public int BibNo { get; set; }
+            public int? LegNo { get; set; }
+            public string ClassWithoutLeg { get; set; }
+            public RacomRunner(int bibNo, int dbID, string name, string club, string Class, int? legNo = null ) : base(dbID, name, club, Class)
+            {
+                BibNo = bibNo;
+                LegNo = legNo;
+            }
+
+        }
+
+
 
         public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile, string dsqFile)
         {
@@ -41,6 +58,28 @@ namespace LiveResults.Client.Parsers
             ReadAndApplyFINFile(finFile, siToRunner, enc);
             ApplyDsqFile(dsqFile, siToRunner,enc);
             ReadAndApplySplitsFile(splitsFile, siToRunner,enc);
+
+            if (m_isRelay)
+            {
+                foreach (var classCategory in ret.GroupBy(x => (x as RacomRunner).ClassWithoutLeg))
+                {
+                    /*Update runners for teams accoring to status on earlier legs*/
+                    foreach (var team in classCategory.GroupBy(x => (x as RacomRunner).BibNo))
+                    {
+                        var runners = new List<Runner>(team).OrderBy(x => (x as RacomRunner).LegNo).ToList();
+
+                        for (int i = 1; i < runners.Count(); i++)
+                        {
+                            if (runners[i-1].Status != 0 && runners[i-1].Status < 9)
+                            {
+                                runners[i].SetResultStatus(runners[i - 1].Status);
+                            }
+                            if (runners[i - 1].Time > 0)
+                                runners[i].SetStartTime(runners[i - 1].StartTime + runners[i - 1].Time);
+                        }
+                    }
+                }
+            }
             
 
             return ret.ToArray();
@@ -53,6 +92,7 @@ namespace LiveResults.Client.Parsers
                 string tmp;
                 while ((tmp = sr.ReadLine()) != null)
                 {
+                    Dictionary<int,int> teamstatus = new Dictionary<int, int>();
                     if (!string.IsNullOrEmpty(tmp) && !string.IsNullOrEmpty(tmp.Trim()))
                     {
                         int idxColon = tmp.IndexOf(":", StringComparison.Ordinal);
@@ -65,15 +105,18 @@ namespace LiveResults.Client.Parsers
                             continue;
 
                         string time = tmp.Substring(idxSlash + 1, idxSlash2 - idxSlash - 1).Trim();
-                        string status = tmp.Substring(idxSlash2 + 1);
+                        string status = tmp.Substring(idxSlash2 + 1).Trim();
+
+                        
 
                         if (!siToRunner.ContainsKey(si))
                         {
                             continue;
                         }
 
-                        var runner = siToRunner[si];
 
+
+                        var runner = siToRunner[si];
 
                         int rstatus = 0;
                         if (status == "DISQ" || status == "OVRT")
@@ -221,6 +264,8 @@ namespace LiveResults.Client.Parsers
         private static
              void ReadAndApplySplitsFile(string splitsFile, Dictionary<int, Runner> siToRunner, Encoding enc)
         {
+            if (!File.Exists(splitsFile))
+                return;
             using (var sr = new StreamReader(splitsFile, enc))
             {
                 var siSplitPunches = new Dictionary<int, List<CodeTimeHolder>>();
@@ -337,8 +382,18 @@ namespace LiveResults.Client.Parsers
                     //        OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
                     //    continue;
                     //}
+                    int leg = 0;
+                    if (m_isRelay)
+                        leg = int.Parse(className.Split(' ').Last());
+                    int dbId = m_isRelay ? leg*100000+int.Parse(stnr) : int.Parse(stnr);
 
-                    var r = new Runner(string.IsNullOrEmpty(stnr) ? -1*int.Parse(sinr) : int.Parse(stnr), name, club, className);
+                    var r = new RacomRunner(int.Parse(stnr), dbId, name, club, className, m_isRelay ? (int?)leg : null);
+
+                    if (m_isRelay)
+                    {
+                        r.ClassWithoutLeg = className.Substring(0, className.LastIndexOf(' '));
+                    }
+                    
 
                     var startTime = zeroTime.AddSeconds(parseTime(start));
                     r.SetStartTime(startTime.Hour*360000 + startTime.Minute*6000 + startTime.Second*100 + startTime.Millisecond/10);
