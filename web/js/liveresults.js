@@ -2,7 +2,7 @@ var LiveResults = LiveResults || {};
 LiveResults.Resources = LiveResults.Resources || {};
 LiveResults.Instance = null;
 
-LiveResults.AjaxViewer = function(compId, lang, classesDiv,lastPassingsDiv, resultsHeaderDiv,resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDay, isSingleClass,setAutomaticUpdateText, runnerStatus)
+LiveResults.AjaxViewer = function(compId, lang, classesDiv,lastPassingsDiv, resultsHeaderDiv,resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDay, isSingleClass,setAutomaticUpdateText, runnerStatus,showTenthOfSecond)
 {
 	
 	var updateAutomatically = true;
@@ -39,6 +39,7 @@ LiveResults.AjaxViewer = function(compId, lang, classesDiv,lastPassingsDiv, resu
 	var _lang = lang;
 	var _isMultiDay = isMultiDay;
 	var _isSingleClass = isSingleClass;
+    var _showThenthOfSecond = showTenthOfSecond; 
 	
 	var Resources = resources;
 	
@@ -89,7 +90,11 @@ resp_updateClassList = function (data)
 		classUpdateTimer = setTimeout(LiveResults.Instance.updateClassList,classUpdateInterval);
 };
 
-this.updateLastPassings = function ()
+this.setShowTenth = function (val) {
+    _showThenthOfSecond = val;
+}
+
+    this.updateLastPassings = function ()
 {
 		if (updateAutomatically)
 		{
@@ -267,11 +272,11 @@ this.updateClassResults = function (data)
 							{
 								if (o.aData.place == "-" || o.aData.place == "")
 								{
-									return formatTime(o.aData.result,o.aData.status);
+									return formatTime(o.aData.result,o.aData.status,false,true, _showThenthOfSecond);
 								}
 								else
 								{
-									return formatTime(o.aData.result,o.aData.status) +" (" + o.aData.place +")";
+									return formatTime(o.aData.result,o.aData.status,false,true,_showThenthOfSecond) +" (" + o.aData.place +")";
 								}
 							}
 						});
@@ -284,7 +289,7 @@ this.updateClassResults = function (data)
 													if (o.aData.status != 0)
 														return "";
 													else
-														return "+" + formatTime(o.aData.timeplus,o.aData.status);
+														return "+" + formatTime(o.aData.timeplus,o.aData.status,false,true,_showThenthOfSecond);
 							}
 						});
 
@@ -483,7 +488,7 @@ this.resetSorting = function ()
 
 };
 
-formatTime = function(time,status, showHours, padZeros)
+formatTime = function(time,status, showHours, padZeros, showTenthOS)
 {
 
 	if (arguments.length==2)
@@ -515,7 +520,9 @@ formatTime = function(time,status, showHours, padZeros)
   		{
   				hours= Math.floor(time/360000);
 		  		minutes = Math.floor((time-hours*360000)/6000);
-				seconds = Math.floor((time-minutes*6000-hours*360000)/100);
+		  		seconds = Math.floor((time - minutes * 6000 - hours * 360000) / 100);
+
+		      var tenth = Math.floor((time - minutes * 6000 - hours * 360000 - seconds * 100) / 10);
 
 
 			if (hours > 0)
@@ -523,30 +530,30 @@ formatTime = function(time,status, showHours, padZeros)
 				if (padZeros)
 					hours = str_pad(hours,2);
 
-  	 			return hours +":" + str_pad(minutes,2) +":" +str_pad(seconds,2);
-  	 		}
+				return hours + ":" + str_pad(minutes, 2) + ":" + str_pad(seconds, 2) + (showTenthOS ? "." + tenth : "");
+			}
   	 		else
   	 		{
   	 			if (padZeros)
 					minutes = str_pad(minutes,2);
-  	 			return minutes +":" +str_pad(seconds,2);
-  	 		}
+
+  	 			return minutes + ":" + str_pad(seconds, 2) + (showTenthOS ? "." + tenth : "");
+			   }
 
 		}
 		else
 		{
 
   	 		minutes = Math.floor(time/6000);
-	 		seconds = Math.floor((time-minutes*6000)/100);
+  	 		seconds = Math.floor((time - minutes * 6000) / 100);
+  	 		var tenth = Math.floor((time - minutes * 6000 - seconds * 100) / 10);
 
-			if (padZeros)
-			{
-  	 			return str_pad(minutes,2) +":" +str_pad(seconds,2);
-  	 		}
-  	 		else
-  	 		{
-  	 			return minutes +":" +str_pad(seconds,2);
-  	 		}
+			if (padZeros) {
+			    return str_pad(minutes, 2) + ":" + str_pad(seconds, 2) + (showTenthOS ? "." + tenth : "");
+			}
+  	 		else {
+			    return minutes + ":" + str_pad(seconds, 2) + (showTenthOS ? "." + tenth : "");
+			}
   	 	}
   	}
 };

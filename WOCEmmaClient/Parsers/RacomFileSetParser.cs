@@ -376,12 +376,12 @@ namespace LiveResults.Client.Parsers
                     string start = tmp.Substring(54).Trim();
                     string club = tmp.Substring(23, 3);
 
-                    //if (string.IsNullOrEmpty(stnr))
-                    //{
-                    //    if (OnLogMessage != null)
-                    //        OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
-                    //    continue;
-                    //}
+                    if (string.IsNullOrEmpty(stnr))
+                    {
+                        if (OnLogMessage != null)
+                            OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
+                        continue;
+                    }
                     int leg = 0;
                     if (m_isRelay)
                         leg = int.Parse(className.Split(' ').Last());
