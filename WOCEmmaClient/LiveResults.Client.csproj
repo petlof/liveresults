@@ -140,6 +140,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CtrlCompAdmin.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="CtrlCompAdmin.Designer.cs">
+      <DependentUpon>CtrlCompAdmin.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmNewRacomComp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -151,6 +157,7 @@
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
     <Compile Include="Parsers\RacomFileSetParser.cs" />
     <Compile Include="Result.cs" />
+    <Compile Include="Interfaces\TcpIpInterface.cs" />
     <Compile Include="WocParser.cs" />
     <Compile Include="FrmMonitor.cs">
       <SubType>Form</SubType>
@@ -185,6 +192,9 @@
     <Compile Include="OlaParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="CtrlCompAdmin.resx">
+      <DependentUpon>CtrlCompAdmin.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmMonitor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FrmMonitor.cs</DependentUpon>

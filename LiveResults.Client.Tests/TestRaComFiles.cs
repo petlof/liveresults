@@ -13,6 +13,22 @@ namespace LiveResults.Client.Tests
     public class TestRaComFiles
     {
         [TestMethod]
+        public void TestTimeCalculation()
+        {
+            var racomParser = new RacomFileSetParser();
+            string curDIr = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            var runners = racomParser.ParseFiles(new DateTime(2014, 07,05, 15, 20, 0),
+                curDIr + @"\TestFiles\Racom\woc_sprint_final\startlst.txt",
+                "",
+                curDIr + @"\TestFiles\Racom\woc_sprint_final\FIN_LIVE.CSV",
+                "");
+
+            Assert.AreEqual(15*6000 + 37*100 + 2*10, Math.Floor((double)runners.Where(x => x.Name == "Bobach Soren").First().Time/10)*10);
+            Assert.AreEqual(17 * 6000 + 15 * 100 + 2 * 10, Math.Floor((double)runners.Where(x => x.Name == "Adamski Philippe").First().Time / 10) * 10);
+            
+        }
+
+        [TestMethod]
         public void TestReadRaComFiles()
         {
             var racomParser = new RacomFileSetParser();

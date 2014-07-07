@@ -276,6 +276,8 @@ namespace LiveResults.Client.Parsers
                     {
                         int idxColon = tmp.IndexOf(":", StringComparison.Ordinal);
                         int idxSlash = tmp.IndexOf("/", StringComparison.Ordinal);
+                        if (idxColon == -1 || idxSlash == -1)
+                            continue;
                         var si = int.Parse(tmp.Substring(0, idxColon).Trim());
 
                         var code = int.Parse(tmp.Substring(idxColon + 1, idxSlash - idxColon-1));

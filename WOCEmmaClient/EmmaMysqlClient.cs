@@ -1,5 +1,4 @@
-﻿using System.Web.UI.Design;
-using MySql.Data.MySqlClient;
+﻿using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -33,11 +32,12 @@ namespace LiveResults.Client
                     break;
 
                 string[] parts = server.Split(';');
-                var s = new EmmaServer();
-                s.Host = parts[0];
-                s.User = parts[1];
-                s.Pw = parts[2];
-                s.DB = parts[3];
+                var s = new EmmaServer{
+                    Host = parts[0],
+                    User = parts[1],
+                    Pw = parts[2],
+                    DB = parts[3]
+                };
 
                 servers.Add(s);
                 sNum++;
@@ -66,11 +66,12 @@ namespace LiveResults.Client
                         foreach (string line in lines)
                         {
                             string[] parts = line.Split(';');
-                            var s = new EmmaServer();
-                            s.Host = parts[0];
-                            s.User = parts[1];
-                            s.Pw = parts[2];
-                            s.DB = parts[3];
+                            var s = new EmmaServer{
+                                Host = parts[0],
+                                User = parts[1],
+                                Pw = parts[2],
+                                DB = parts[3]
+                            };
 
                             servers.Add(s);
                         }
@@ -117,8 +118,8 @@ namespace LiveResults.Client
         {
             if (!IsRunnerAdded(dbId))
                 return null;
-            else
-                return m_runners[dbId];
+
+            return m_runners[dbId];
         }
 
         private bool m_continue;
@@ -127,7 +128,6 @@ namespace LiveResults.Client
         public void Start()
         {
             FireLogMsg("Buffering existing results..");
-            int numRunners = 0;
             int numResults = 0;
             try
             {
@@ -148,7 +148,6 @@ namespace LiveResults.Client
                     {
                         var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string);
                         AddRunner(r);
-                        numRunners++;
                     }
                     switch (control)
                     {

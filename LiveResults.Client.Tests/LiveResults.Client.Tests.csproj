@@ -114,6 +114,9 @@
     <None Include="TestFiles\Racom\Relay\w_test1\w_test1.crt" />
     <None Include="TestFiles\Racom\Relay\w_test1\w_test1.sil" />
     <None Include="TestFiles\Racom\Relay\w_test1\w_test1.spl" />
+    <None Include="TestFiles\Racom\woc_sprint_final\FIN_LIVE.CSV">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="..\testfiles\20130508_200904_emma.xml">
@@ -143,6 +146,9 @@
     <Content Include="TestFiles\Racom\Relay\race.txt" />
     <Content Include="TestFiles\Racom\Relay\w_test1\w_test1.rawsplits.txt" />
     <Content Include="TestFiles\Racom\Relay\w_test1\w_test1.splitcodes.txt" />
+    <Content Include="TestFiles\Racom\woc_sprint_final\STARTLST.TXT">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="TestFiles\Racom\Middle\w_test2\w_test2_sisplits\" />
