@@ -75,7 +75,7 @@ namespace LiveResults.Client.Parsers
                                 runners[i].SetResultStatus(runners[i - 1].Status);
                             }
                             if (runners[i - 1].Time > 0)
-                                runners[i].SetStartTime(runners[i - 1].StartTime + runners[i - 1].Time);
+                                runners[i].SetStartTime(runners[0].StartTime + runners[i - 1].Time);
                         }
                     }
                 }
@@ -141,126 +141,7 @@ namespace LiveResults.Client.Parsers
             }
         }
 
-        private static void ReadAndApplyRaceFile(string raceFile, List<Runner> runners, Encoding enc)
-        {
-            var stNoToRunners = runners.ToDictionary(x => x.ID);
-           
-            using (var sr = new StreamReader(raceFile, enc))
-            {
-                var runnerTimes = new Dictionary<int, string>();
-                var runnerStatuses = new Dictionary<int, int>();
-
-                string tmp;
-                while ((tmp = sr.ReadLine()) != null)
-                {
-                    int col = 0;
-                    if (tmp[0] != 0x10) //DLE 10h
-                        continue;
-                    col++;
-                    if (tmp[1] != 'R') //Stopwatch identifier
-                        continue;
-                    col++;
-                    col++; //Device Address
-                    col++; //Dummy char
-                    col++; //Program in use
-                    col++; //Mode
-
-                    int counter = int.Parse(tmp.Substring(col, 6));
-                    col += 6;
-                    int competitorNo = int.Parse(tmp.Substring(col, 5));
-                    col += 5;
-                    int group = int.Parse(tmp.Substring(col, 3));
-                    col += 3;
-                    int run = int.Parse(tmp.Substring(col, 3));
-                    col += 3;
-                    string physicalchannel = tmp.Substring(col, 3);
-                    col += 3;
-                    string logicalchannel = tmp.Substring(col, 3); //000 = start, 255 = Stop
-                    col += 3;
-
-                    byte information = (byte) tmp[col];
-                    col++;
-
-                    string time = tmp.Substring(col, 10);
-                    col += 10;
-                    string date = tmp.Substring(col, 8);
-
-                    if (information == 0x61) //Anulled
-                    {
-                        if (runnerTimes.ContainsKey(competitorNo))
-                            runnerTimes.Remove(competitorNo);
-                        if (runnerStatuses.ContainsKey(competitorNo))
-                            runnerStatuses.Remove(competitorNo);
-                    }
-                    else if (information == 0x41) // Non Finisher
-                    {
-
-                        if (!runnerStatuses.ContainsKey(competitorNo))
-                            runnerStatuses.Add(competitorNo, 4);
-                        else
-                            runnerStatuses[competitorNo] = 4;
-                    }
-                    else if (information == 0x50) // Non starter
-                    {
-                        if (!runnerStatuses.ContainsKey(competitorNo))
-                            runnerStatuses.Add(competitorNo, 1);
-                        else
-                            runnerStatuses[competitorNo] = 1;
-
-                    }
-                    else if (information == 0x51) // DSQ
-                    {
-                        if (!runnerStatuses.ContainsKey(competitorNo))
-                            runnerStatuses.Add(competitorNo, 4);
-                        else
-                            runnerStatuses[competitorNo] = 4;
-
-                    }
-                    else if (logicalchannel == "255" && information == 0x4B) //Manually modidied finishtime
-                    {
-                        if (runnerTimes.ContainsKey(competitorNo))
-                            runnerTimes.Remove(competitorNo);
-                        if (runnerStatuses.ContainsKey(competitorNo))
-                            runnerStatuses.Remove(competitorNo);
-                    }
-                    else if (logicalchannel == "255" && information == 0x32) //Finish och total net time
-                    {
-                        if (!runnerTimes.ContainsKey(competitorNo))
-                            runnerTimes.Add(competitorNo, time);
-                        else
-                            throw new ApplicationException("competitor " + competitorNo + " already have a time?");
-
-                        if (!runnerStatuses.ContainsKey(competitorNo))
-                            runnerStatuses.Add(competitorNo, 0);
-                        else
-                            throw new ApplicationException("competitor " + competitorNo + " already have a status?");
-
-                    }
-                }
-
-                foreach (var kvp in runnerTimes)
-                {
-                    if (stNoToRunners.ContainsKey(kvp.Key))
-                    {
-                        //hhmmssffff
-                        int time = 0;
-                        var t = kvp.Value.ToCharArray().ToList();
-
-
-                        time += 360000*int.Parse(t[0] + "" + t[1]);
-                        
-                        time += 6000*int.Parse(t[2] + "" + t[3]);
-                        time += 100*int.Parse(t[4] + "" + t[5]);
-
-                        time += 10*int.Parse(t[6] + "");
-
-
-                        stNoToRunners[kvp.Key].SetResult(time, runnerStatuses[kvp.Key]);
-                    }
-                }
-            }
-        }
-
+        
         private static
              void ReadAndApplySplitsFile(string splitsFile, Dictionary<int, Runner> siToRunner, Encoding enc)
         {
@@ -296,8 +177,7 @@ namespace LiveResults.Client.Parsers
                         }
 
                         var passTime = DateTime.ParseExact(time, "HH:mm:ss.f", CultureInfo.InvariantCulture);
-                        var asTime = passTime.Hour*360000 + passTime.Minute*6000 + passTime.Second*100;
-
+                        var asTime = passTime.Hour*360000 + passTime.Minute*6000 + passTime.Second*100 + passTime.Millisecond/10;
 
                         siSplitPunches[si].Add(new CodeTimeHolder
                         {
