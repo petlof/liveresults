@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Text;
-using System.Globalization;
-using System.Net;
 using System.Text.RegularExpressions;
 using System.Xml;
 
-namespace LiveResults.Client
+namespace LiveResults.Client.Parsers
 {
     public class LiveResultaterNoParser : IExternalSystemResultParser
     {

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using LiveResults.Client.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiveResults.Client.Tests
@@ -12,13 +13,13 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsStNo()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OE);
             Assert.IsTrue(res.Contains("Stno"));
             Assert.IsTrue(res.Contains("Lnro"));
             Assert.IsTrue(res.Contains("Stnr"));
             Assert.IsTrue(res.Contains("Startnr"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OS);
             Assert.IsTrue(res.Contains("Stno"));
             Assert.IsTrue(res.Contains("Lnro"));
             Assert.IsTrue(res.Contains("Stnr"));
@@ -29,7 +30,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsLeg()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Lnr", OxTools.SourceProgram.OS);
+            var res = OxTools.GetOEStringsForKey("Lnr", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Lnr"));
             Assert.IsTrue(res.Contains("Leg"));
@@ -40,7 +41,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsChipNo()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Chipnr", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Chipnr", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Chipnr"));
             Assert.IsTrue(res.Contains("Chipno"));
@@ -48,7 +49,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Bricknr"));
             Assert.IsTrue(res.Contains("Chip"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("ChipNr", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("ChipNr", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("ChipNr"));
             Assert.IsTrue(res.Contains("Chipno"));
@@ -60,11 +61,11 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsClub()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Ort", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Ort", OxTools.SourceProgram.OE);
             Assert.IsTrue(res.Contains("Ort"));
             Assert.IsTrue(res.Contains("City"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Staffel", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Staffel", OxTools.SourceProgram.OS);
             Assert.IsTrue(res.Contains("Staffel"));
             Assert.IsTrue(res.Contains("Team"));
             Assert.IsTrue(res.Contains("Lag"));
@@ -74,14 +75,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsFirstName()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Vorname"));
             Assert.IsTrue(res.Contains("First name"));
             Assert.IsTrue(res.Contains("Etunimi"));
             Assert.IsTrue(res.Contains("Förnamn"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Vorname"));
             Assert.IsTrue(res.Contains("First name"));
@@ -91,14 +92,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsLastName()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Nachname"));
             Assert.IsTrue(res.Contains("Surname"));
             Assert.IsTrue(res.Contains("Sukunimi"));
             Assert.IsTrue(res.Contains("Efternamn"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Nachname"));
             Assert.IsTrue(res.Contains("Surname"));
@@ -108,14 +109,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsCLass()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Kurz"));
             Assert.IsTrue(res.Contains("Short"));
             Assert.IsTrue(res.Contains("Lyhyt"));
             Assert.IsTrue(res.Contains("Kort"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Kurz"));
             Assert.IsTrue(res.Contains("Short"));
@@ -125,12 +126,12 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsStart()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Start"));
             Assert.IsTrue(res.Contains("Lähtö"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Start"));
             Assert.IsTrue(res.Contains("Lähtö"));
@@ -138,14 +139,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsFinish()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Ziel", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Ziel", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Ziel"));
             Assert.IsTrue(res.Contains("Finish"));
             Assert.IsTrue(res.Contains("Maali"));
             Assert.IsTrue(res.Contains("Mål"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Ziel", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Ziel", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Ziel"));
             Assert.IsTrue(res.Contains("Finish"));
@@ -155,14 +156,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsTime()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Zeit", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Zeit", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Zeit"));
             Assert.IsTrue(res.Contains("Time"));
             Assert.IsTrue(res.Contains("Aika"));
             Assert.IsTrue(res.Contains("Tid"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Zeit", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Zeit", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Zeit"));
             Assert.IsTrue(res.Contains("Time"));
@@ -172,14 +173,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsStatus()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Wertung", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Wertung", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Wertung"));
             Assert.IsTrue(res.Contains("Classifier"));
             Assert.IsTrue(res.Contains("Tila"));
             Assert.IsTrue(res.Contains("Status"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Wertung", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Wertung", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Wertung"));
             Assert.IsTrue(res.Contains("Classifier"));
@@ -189,13 +190,13 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsNr()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Nr", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Nr", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Nr"));
             Assert.IsTrue(res.Contains("No"));
             Assert.IsTrue(res.Contains("Nro"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Nr", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Nr", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Nr"));
             Assert.IsTrue(res.Contains("No"));
@@ -204,14 +205,14 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsTotalTime()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Gesamtzeit", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Gesamtzeit", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Gesamtzeit"));
             Assert.IsTrue(res.Contains("Total tid"));
             Assert.IsTrue(res.Contains("Kokonaisaika"));
             Assert.IsTrue(res.Contains("Overall time"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Gesamtzeit", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Gesamtzeit", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Gesamtzeit"));
             Assert.IsTrue(res.Contains("Total tid"));
@@ -221,11 +222,11 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestLookupOEStringsText()
         {
-            var res = LiveResults.Client.OxTools.GetOEStringsForKey("Text", OxTools.SourceProgram.OE);
+            var res = OxTools.GetOEStringsForKey("Text", OxTools.SourceProgram.OE);
 
             Assert.IsTrue(res.Contains("Text"));
 
-            res = LiveResults.Client.OxTools.GetOEStringsForKey("Text", OxTools.SourceProgram.OS);
+            res = OxTools.GetOEStringsForKey("Text", OxTools.SourceProgram.OS);
 
             Assert.IsTrue(res.Contains("Text"));
         }
@@ -233,7 +234,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestParseOE2010NewFile()
         {
-            LiveResults.Client.OEParser pars = new OEParser();
+            OEParser pars = new OEParser();
 
             List<Result> results = new List<Result>();
 
@@ -275,7 +276,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestParseOS2010EngFile()
         {
-            LiveResults.Client.OSParser pars = new OSParser();
+            OSParser pars = new OSParser();
 
             List<Result> results = new List<Result>();
 
@@ -291,7 +292,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestParseOS2010FinFile()
         {
-            LiveResults.Client.OSParser pars = new OSParser();
+            OSParser pars = new OSParser();
 
             List<Result> results = new List<Result>();
 
@@ -306,7 +307,7 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void TestParseOS2010SweFile()
         {
-            LiveResults.Client.OSParser pars = new OSParser();
+            OSParser pars = new OSParser();
 
             List<Result> results = new List<Result>();
 

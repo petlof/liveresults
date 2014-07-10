@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace LiveResults.Client
+namespace LiveResults.Client.Parsers
 {
     //public delegate void ResultDelegate(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> splits);
     
@@ -11,17 +11,16 @@ namespace LiveResults.Client
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
         public static char[] SplitChars = new char[] { ';', '\t' };
-        private string m_Directory;
+
         public OEParser()
         {
         }
 
         public OEParser(string directory)
         {
-            m_Directory = directory;
-            System.IO.FileSystemWatcher fsWatcher = new System.IO.FileSystemWatcher(directory);
+            var fsWatcher = new System.IO.FileSystemWatcher(directory);
             fsWatcher.EnableRaisingEvents = true;
-            fsWatcher.Renamed += new System.IO.RenamedEventHandler(fsWatcher_Renamed);
+            fsWatcher.Renamed += fsWatcher_Renamed;
         }
 
         //private void FireOnResult(int id, int SI, string name, string club, string Class, int start, int time, int status, List<ResultStruct> results)
@@ -82,13 +81,7 @@ namespace LiveResults.Client
                     throw new System.IO.IOException("Not OE-formatted file!");
                 }
 
-                fldText1 = Array.IndexOf(fields, "Text1");
-                fldText2 = Array.IndexOf(fields, "Text2");
-                fldText3 = Array.IndexOf(fields, "Text3");
-
-
-
-
+             
                 if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
                     || fldStart == -1 || fldTime == -1)
                     throw new System.IO.IOException("Not OE-formatted file!");
@@ -116,9 +109,9 @@ namespace LiveResults.Client
                     {
                     }
 
-                    List<ResultStruct> splittimes = new List<ResultStruct>();
+                    var splittimes = new List<ResultStruct>();
                     /*parse splittimes*/
-                    List<int> codes = new List<int>();
+                    var codes = new List<int>();
                     if (fldFirstPost >= 0)
                     {
                         for (int i = fldFirstPost; i < parts.Length - 4; i++)
@@ -129,7 +122,7 @@ namespace LiveResults.Client
                                 i += 3;
                                 continue;
                             }
-                            ResultStruct s = new ResultStruct();
+                            var s = new ResultStruct();
                             try
                             {
                                 //s.ControlNo = Convert.ToInt32(parts[i]);
@@ -177,8 +170,7 @@ namespace LiveResults.Client
 
                         }
                     }
-                    FireOnResult(new Result()
-                    {
+                    FireOnResult(new Result{
                         ID = id,
                         RunnerName = name,
                         RunnerClub = club,

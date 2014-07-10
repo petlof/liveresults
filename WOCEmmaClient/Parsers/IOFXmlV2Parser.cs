@@ -27,16 +27,18 @@ namespace LiveResults.Client.Parsers
 
             if (deleteFile)
                 File.Delete(filename);
-
-            return ParseXmlData(fileContents, logit, deleteFile);
+            RadioControl[] ctrls;
+            return ParseXmlData(fileContents, logit, deleteFile, out ctrls);
 
         }
 
 
-        public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile)
+        public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile, out RadioControl[] definedRadioControls)
         {
 
             var runners = new List<Runner>();
+            definedRadioControls = null;
+            var defRadios = new List<RadioControl>();
 
             var xmlDoc = new XmlDocument();
             using (var ms = new MemoryStream(xml))
@@ -116,6 +118,17 @@ namespace LiveResults.Client.Parsers
                         if (competitorStatusNode == null || competitorStatusNode.Attributes == null || competitorStatusNode.Attributes["value"] == null ||
                             resultTimeNode == null || startTimeNode == null || ccCardNode == null)
                             continue;
+                        if (familyname == "* Radio controls definition *")
+                        {
+                            //Special handling of SportSoftware way of telling what RadioControls will appear for this class
+                            XmlNodeList pSplittimes = personNode.SelectNodes("Result/SplitTime");
+                            if (pSplittimes != null)
+                            {
+                                
+                            }
+
+                            continue;
+                        }
 
                         string status = competitorStatusNode.Attributes["value"].Value;
                         string time = resultTimeNode.InnerText;

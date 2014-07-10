@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Globalization;
-using System.Threading;
 
-namespace LiveResults.Client
+namespace LiveResults.Client.Parsers
 {
     
     public class OlaParser : IExternalSystemResultParser

@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using System.Reflection;
 using System.IO;
+using System.Reflection;
+using System.Text;
 
-namespace LiveResults.Client
+namespace LiveResults.Client.Parsers
 {
     /// <summary>
     /// Common tools for parsing OS/OE files

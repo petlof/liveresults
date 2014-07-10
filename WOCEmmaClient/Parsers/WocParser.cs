@@ -4,7 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Web.Script.Serialization;
 
-namespace LiveResults.Client
+namespace LiveResults.Client.Parsers
 {
     public class WocParser : IExternalSystemResultParser
     {
