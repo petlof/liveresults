@@ -1,0 +1,1 @@
+{include_php file='/home/lofasse/www/emma/templates/follow.php'}

@@ -1,0 +1,12 @@
+<configuration>
+  <appSettings>
+    <!-- URL for server that supplies servers to puch data to -->
+    <add key="serverpollurl" value="..."/>
+    <!-- Key to get server connection data -->
+    <add key="serverpollkey" value="..."/>
+
+    <!-- OR, add server(s) manually. Format: host;user;pw;db -->
+    <!--<add key="emmaServer1" value="obasen.nu;liveresultat;web;liveresultat"/>-->
+    
+  </appSettings>
+</configuration>

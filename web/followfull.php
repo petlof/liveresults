@@ -1,0 +1,315 @@
+<?php
+date_default_timezone_set("Europe/Stockholm");
+$lang = "sv";
+
+if (isset($_GET['lang']))
+ $lang = $_GET['lang'];
+
+include_once("templates/emmalang_en.php");
+include_once("templates/emmalang_$lang.php");
+include_once("templates/classEmma.class.php");
+
+header('Content-Type: text/html; charset='.$CHARSET);
+
+$currentComp = new Emma($_GET['comp']);
+
+$isSingleClass = isset($_GET['class']);
+$isSingleClub = isset($_GET['club']);
+$showPath = true;
+
+if (isset($_GET['showpath']) && $_GET['showpath'] == "false")
+  $showPath = false;
+
+$singleClass = "";
+$singleClub = "";
+if ($isSingleClass)
+	$singleClass = $_GET['class'];
+if ($isSingleClub)
+	$singleClub = utf8_decode(rawurldecode($_GET['club']));
+
+$showLastPassings = !($isSingleClass || $isSingleClub) || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
+$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
+
+
+echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
+?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head><title><?=$_TITLE?> :: <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</title>
+
+<META HTTP-EQUIV="expires" CONTENT="-1">
+<meta http-equiv="Content-Type" content="text/html;charset=<?=$CHARSET?>">
+<link rel="stylesheet" type="text/css" href="css/style-eoc.css">
+<link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
+<link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
+
+<?php
+$debug = false;
+if ($debug)
+{
+?>
+<!-- DEBUG -->
+<script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
+<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>
+<?php }
+else
+{?>
+<!-- RELEASE-->
+<script language="javascript" type="text/javascript" src="js/liveresults.min.js"></script>
+<?php }?>
+
+<script language="javascript" type="text/javascript">
+
+
+var res = null;
+
+var Resources = {
+	_TITLE: "<?= $_TITLE?>",
+	_CHOOSECMP: "<?=$_CHOOSECMP?>",
+	_AUTOUPDATE: "<?=$_AUTOUPDATE?>",
+	_LASTPASSINGS: "<?=$_LASTPASSINGS?>",
+	_LASTPASSFINISHED: "<?=$_LASTPASSFINISHED?>",
+	_LASTPASSPASSED: "<?=$_LASTPASSPASSED?>",
+	_LASTPASSWITHTIME: "<?=$_LASTPASSWITHTIME?>",
+	_CHOOSECLASS: "<?=$_CHOOSECLASS?>",
+	_NOCLASSESYET: "<?=$_NOCLASSESYET?>",
+	_CONTROLFINISH: "<?=$_CONTROLFINISH?>",
+	_NAME: "<?=$_NAME?>",
+	_CLUB: "<?=$_CLUB?>",
+	_TIME: "<?=$_TIME?>",
+	_NOCLASSCHOSEN: "<?=$_NOCLASSCHOSEN?>",
+	_HELPREDRESULTS: "<?=$_HELPREDRESULTS?>",
+	_NOTICE: "<?=$_NOTICE?>",
+	_STATUSDNS: "<?=$_STATUSDNS ?>",
+	_STATUSDNF: "<?=$_STATUSDNF?>",
+	_STATUSWO: "<?=$_STATUSWO?>",
+	_STATUSMOVEDUP: "<?=$_STATUSMOVEDUP?>",
+	_STATUSNOTSTARTED: "<?=$_STATUSNOTSTARTED?>",
+	_STATUSOK: "<?=$_STATUSOK ?>",
+	_STATUSMP: "<?=$_STATUSMP ?>",
+	_STATUSDSQ: "<?=$_STATUSDSQ?>",
+	_STATUSOT: "<?=$_STATUSOT?>",
+	_FIRSTPAGECHOOSE: "<?=$_FIRSTPAGECHOOSE ?>",
+	_FIRSTPAGEARCHIVE: "<?=$_FIRSTPAGEARCHIVE?>",
+	_LOADINGRESULTS: "<?=$_LOADINGRESULTS ?>",
+	_ON: "<?=$_ON ?>",
+	_OFF: "<?=$_OFF?>",
+	_TEXTSIZE: "<?=$_TEXTSIZE ?>",
+	_LARGER: "<?=$_LARGER?>",
+	_SMALLER: "<?=$_SMALLER?>",
+	_OPENINNEW: "<?=$_OPENINNEW?>",
+	_FORORGANIZERS: "<?=$_FORORGANIZERS ?>",
+	_FORDEVELOPERS: "<?=$_FORDEVELOPERS ?>",
+	_RESETTODEFAULT: "<?=$_RESETTODEFAULT?>",
+	_OPENINNEWWINDOW: "<?=$_OPENINNEWWINDOW?>",
+	_INSTRUCTIONSHELP: "<?=$_INSTRUCTIONSHELP?>",
+	_LOADINGCLASSES: "<?=$_LOADINGCLASSES ?>",
+	_START: "<?=$_START?>",
+	_TOTAL: "<?=$_TOTAL?>",
+	_CLASS: "<?=$_CLASS?>"
+};
+
+var runnerStatus = Array();
+runnerStatus[0]= "<?=$_STATUSOK?>";
+runnerStatus[1]= "<?=$_STATUSDNS?>";
+runnerStatus[2]= "<?=$_STATUSDNF?>";
+runnerStatus[11] =  "<?=$_STATUSWO?>";
+runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
+runnerStatus[9] = "";
+runnerStatus[3] = "<?=$_STATUSMP?>";
+runnerStatus[4] = "<?=$_STATUSDSQ?>";
+runnerStatus[5] = "<?=$_STATUSOT?>";
+runnerStatus[9] = "";
+runnerStatus[10] = "";
+
+
+$(document).ready(function()
+{
+	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText", runnerStatus);
+	<?php if ($isSingleClass)
+	{?>
+		res.chooseClass('<?=$singleClass?>');
+	<?php }
+	else if ($isSingleClub)
+	{?>
+		res.viewClubResults('<?=$singleClub?>');
+	<?php }
+		else
+	{?>
+		$("#divClasses").html("<?=$_LOADINGCLASSES?>...");
+		res.updateClassList();
+	<?php }?>
+
+<?php if ($showLastPassings){?>
+	res.updateLastPassings();
+	<?php }?>
+});
+
+
+
+function changeFontSize(val)
+{
+	var size = $("td").css("font-size");
+	var newSize = parseInt(size.replace(/px/, "")) + val;
+	$("td").css("font-size",newSize + "px");
+}
+
+</script>
+</head>
+<body>
+
+<!-- MAIN DIV -->
+
+<div class="maindiv">
+
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+<?php if (!$isSingleClass && !$isSingleClub && $showPath) {?>
+<tr>
+    <td class="submenu" colspan="2">
+       <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
+             <tr>
+               <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
+               <td>|</td>
+				<td><a href="http://emmaclient.codeplex.com/documentation" target="_blank"><?=$_FORORGANIZERS?></a></td>
+               <td>|</td>
+               <td><a href="http://emmaclient.codeplex.com/wikipage?title=For%20Developers%20%28API%29" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
+       </table>
+     </td>
+  </tr>
+<?php }?>
+<!-- End SUB MENU -->
+
+  <tr>
+
+    <td class="searchmenu" colspan="2" style="" valign=top>
+
+       <table border="0" cellpadding="0" cellspacing="0">
+
+             <tr>
+
+               <td valign=top>
+
+			<?php if (!isset($_GET['comp']))
+
+			{
+
+			?>
+
+				<h1 class="categoriesheader">Ett fel uppstod? Har du valt tävling?</h1>
+
+			<?php
+
+			}
+
+			else
+
+			{
+
+			?>
+
+<?php if (!$showPath) {?>
+<h1 class="categoriesheader" style="margin-bottom: 4px; color: black"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
+<?php }?>
+<?php if (!$isSingleClass && !$isSingleClub) {?>
+			<div id="langchooser">
+                        | <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
+"<a href=\"?lang=sv&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' alt='Svenska'> Svenska</a>")?>
+                                                        | <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
+"<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' alt='English'> English</a>")?>
+                        | <?php echo($lang == "fi" ? "<img src='images/fi.png' alt='Suomeksi'> Suomeksi" :
+"<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png'  alt='Suomeksi'> Suomeksi</a>")?>
+                        | <?php echo($lang == "de" ? "<img src='images/de.png' alt='Deutsch'> Deutsch" :
+"<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?> |
+                        <?php echo($lang == "ru" ? "<img src='images/ru.png' alt='Русский'> Русский" :
+"<a href=\"?lang=ru&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' alt='Русский'> Русский</a>")?> |
+</div>
+<?php }?>
+<?php if($showLastPassings){?>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px">
+			<tr>
+			<!--Customized logo --><!--<td width="161">
+			<img src="images/fin5.png"/></td>-->
+			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
+<div id="divLastPassings">
+</div>
+</td>
+<td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
+<span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br>
+<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br><br>
+<a href="dok/help.php?lang=<?=$lang?>" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
+</td>
+</tr></table><br>
+<?php }?>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%">
+
+			<tr>
+<?php if (!$isSingleClass && !$isSingleClub){?>
+			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
+
+<div id="divClasses">
+</div>
+</td>
+<?php }?>
+
+
+
+			<td valign="top">
+		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
+<table id="divResults" width="100%">
+<tbody>
+<tr><td></td></tr>
+</tbody>
+</table><br><br>
+
+<font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
+
+</td>
+
+			</tr>
+
+			</table>
+
+			<?php }?>
+
+		</td>
+<?php if ($currentComp->HasVideo()) {?>
+<td valign="top" style="padding: 5px">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#000000; color:#FFF; padding: 10px; margin-top: 10px">
+				<tr>
+					<td valign="top"><b>Live Video/Audio</b><br>
+					<?=$currentComp->GetVideoEmbedCode()?>
+					</td>
+				</tr>
+			</table>
+</td>
+<?php }?>
+
+	     </tr>
+
+	</table>
+
+
+
+     </td>
+
+  </tr>
+
+
+
+</table>
+
+<p align="left">&copy;2012-, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
+
+
+
+</div>
+
+<br><br>
+
+</body>
+
+</html>

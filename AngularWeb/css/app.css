@@ -1,0 +1,91 @@
+﻿body {
+    font-family: 'Cabin','Segoe UI', sans-serif;
+}
+
+a {
+     color: #008080;
+}
+
+h3 {
+    margin: 5px;
+}
+
+
+.languagebar {
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.languagebar  a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.languagebar  img {
+    margin-right: 5px;
+}
+
+.competitionTable {
+    border: 0;
+    font-size: 14px;
+    border-collapse: collapse;
+    margin-left: 5px;
+}
+
+    .competitionTable thead TH:nth-child(1) {
+        width: 125px;
+    }
+    .competitionTable thead TH:nth-child(2) {
+        width: 350px;
+    }
+
+    .competitionTable thead TH:nth-child(3) {
+        width: 350px;
+    }
+
+.competitionTable TH {
+    text-align: left;
+    font-size: 16px;
+    border-bottom: 1px solid #CCCCCC;
+}
+
+.competitionTable TD {
+    text-align: left;
+    padding: 4px 0 4px;
+    padding-right: 10px;
+    cursor: pointer;
+}
+
+    .competitionTable tbody TR:nth-child(even) {
+        background-color: #f5f5f5;
+    }
+
+
+.competitionTable tbody TR:hover {
+    background-color: #87cefa;
+}
+
+
+
+.resultGridStyle {
+    border-collapse: collapse;
+}
+.resultGridStyle TH {
+    text-align: left;
+}
+
+.oddresult {
+    background-color: #DFDFDF;
+}
+
+.classList {
+    min-width: 100px;
+    
+}
+    .classList a {
+        cursor: pointer;
+    }
+.classList th {
+    text-align: left;
+}
+
