@@ -282,16 +282,19 @@ namespace LiveResults.Client.Parsers
         private static int ParseTime(string time)
         {
             int itime = -9;
-            string[] timeParts = time.Split(':');
-            if (timeParts.Length == 3)
+            if (time != "--:--:--") //MeOS Hack
             {
-                //HH:MM:SS
-                itime = Convert.ToInt32(timeParts[0]) * 360000 + Convert.ToInt32(timeParts[1]) * 6000 + Convert.ToInt32(timeParts[2]) * 100;
-            }
-            else if (timeParts.Length == 2)
-            {
-                //MM:SS
-                itime = Convert.ToInt32(timeParts[0]) * 6000 + Convert.ToInt32(timeParts[1]) * 100;
+                string[] timeParts = time.Split(':');
+                if (timeParts.Length == 3)
+                {
+                    //HH:MM:SS
+                    itime = Convert.ToInt32(timeParts[0])*360000 + Convert.ToInt32(timeParts[1])*6000 + Convert.ToInt32(timeParts[2])*100;
+                }
+                else if (timeParts.Length == 2)
+                {
+                    //MM:SS
+                    itime = Convert.ToInt32(timeParts[0])*6000 + Convert.ToInt32(timeParts[1])*100;
+                }
             }
             return itime;
         }
