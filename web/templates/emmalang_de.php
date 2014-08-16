@@ -10,11 +10,6 @@
 $_TITLE = "Live-Ergebnisse";
 $_CHOOSECMP = "Wettkämpf auswählen";
 $_AUTOUPDATE = "Automatisch aktualisieren";
-$_UP15SEK = "alle 15 Sekunden";
-$_UP30SEK = "alle 30 Sekunden";
-$_UP60SEK = "alle 60 Sekunden";
-$_UP120SEK = "alle 120 Sekunden";
-$_UPNEVER = "Nie";
 
 $_LASTPASSINGS = "Neuste Updates";
 $_LASTPASSFINISHED = "ist im Ziel";
@@ -62,5 +57,10 @@ $_LOADINGCLASSES = "Kategorien werden geladen...";
 $_START = "Start";
 $_TOTAL = "Gesamt";
 $_CLASS = "Kategorie";
+
+// 2.1
+$_ORGANIZER = "Veranstalter";
+$_DATE = "Datum";
+
 
 ?>

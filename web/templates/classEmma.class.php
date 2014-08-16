@@ -3,7 +3,7 @@ $CHARSET = 'utf-8';
 class Emma
 {
 
-	public static $db_server = "127.0.0.1";
+	public static $db_server = "liveresultat.orientering.se";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
@@ -39,7 +39,7 @@ class Emma
 
 		}
 
-	 $result = mysql_query("select compName, compDate,tavid,organizer from login where public = 1 order by compDate desc",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,timediff,multidaystage,multidayparent from login where public = 1 order by compDate desc",$conn);
 
          $ret = Array();
 
@@ -427,7 +427,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
     $ret = Array();
 
-	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time,results.Status, results.Changed, results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." and runners.class = splitcontrols.classname) where results.TavId =".$this->m_CompId." AND runners.TavId = results.TavId and results.Status <> -1 AND results.Time <> -1 AND results.Status <> 9 and results.Status <> 10 and results.control <> 100 ORDER BY results.changed desc limit 3";
+	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time,results.Status, results.Changed, results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." and runners.class = splitcontrols.classname) where results.TavId =".$this->m_CompId." AND runners.TavId = results.TavId and results.Status <> -1 AND results.Time <> -1 AND results.Status <> 9 and results.Status <> 10 and results.control <> 100 and (results.control = 1000 or splitcontrols.tavid is not null) ORDER BY results.changed desc limit 3";
 
 		if ($result = mysql_query($q,$this->m_Conn))
 

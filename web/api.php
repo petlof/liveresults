@@ -21,20 +21,45 @@ if (!isset($_GET['method']))
     $_GET['method'] = null;
 }
 
+$pretty = isset($_GET['pretty']);
+$br = $pretty ? "\n" : "";
 ///Method returns all competitions available
 if ($_GET['method'] == 'getcompetitions')
 {
 		$comps = Emma::GetCompetitions();
-		echo("{ \"competitions\": [");
+		echo("{ \"competitions\": [$br");
 		$first = true;
 		foreach ($comps as $comp)
 			{
 				if (!$first)
 					echo(",");
-				echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"}");
+				echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
+                                
+                                echo (" \"timediff\"=".$comp["timediff"]);
+                                if ($comp["multidaystage"] != "")
+                                {
+                                    echo(" \"multidaystage\"=".$comp["multidaystage"]." \"multidayfirstday\"=".$comp["multidayparent"]);
+                                }
+                                
+                                
+                                echo("}$br");
 				$first = false;
 			}
 		echo("]}");
+}
+else if ($_GET['method'] == 'getcompetitioninfo')
+{
+                $compid = $_GET['comp'];
+		$comp = Emma::GetCompetition($compid);
+                echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
+                                
+                echo (" \"timediff\"=".$comp["timediff"]);
+                if ($comp["multidaystage"] != "")
+                {
+                    echo(" \"multidaystage\"=".$comp["multidaystage"]." \"multidayfirstday\"=".$comp["multidayparent"]);
+                }
+                                                
+                echo("}");
 }
 elseif ($_GET['method'] == 'getlastpassings')
 {
@@ -47,7 +72,7 @@ elseif ($_GET['method'] == 'getlastpassings')
 		foreach ($lastPassings as $pass)
 		{
 			if (!$first)
-				$ret .=",";
+				$ret .=",$br";
 			$ret .= "{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
 					\"runnerName\": \"".$pass['Name']."\",
 					\"class\": \"".$pass['class']."\",
@@ -64,7 +89,7 @@ elseif ($_GET['method'] == 'getlastpassings')
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", \"passings\" : [$ret], \"hash\": \"$hash\"}");
+			echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$hash\"}");
 		}
 }
 elseif ($_GET['method'] == 'getclasses')
@@ -78,7 +103,7 @@ elseif ($_GET['method'] == 'getclasses')
 		foreach ($classes as $class)
 		{
 			if (!$first)
-				$ret.=",";
+				$ret.=",$br";
 			$ret .="{\"className\": \"".$class['Class']."\"}";
 			$first = false;
 		}
@@ -91,8 +116,8 @@ elseif ($_GET['method'] == 'getclasses')
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", \"classes\" : [$ret]");
-			echo(", \"hash\": \"". $hash."\"}");
+			echo("{ \"status\": \"OK\", \"classes\" : [$br$ret$br]");
+			echo(",$br \"hash\": \"". $hash."\"}");
 		}
 
 }
@@ -142,26 +167,26 @@ elseif ($_GET['method'] == 'getclubresults')
 			}
 
 			if (!$first)
-				$ret .= ",";
+				$ret .= ",$br";
 
 			$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\",\"class\": \"".$res['Class']."\", \"result\": \"".$time."\",\"status\" : ".$status.", \"timeplus\": \"$timeplus\"";
 
 
 			if (isset($res["start"]))
 			{
-				$ret .= ", \"start\": ".$res["start"];
+				$ret .= ",$br \"start\": ".$res["start"];
 			}
 			else
 			{
-				$ret .= ", \"start\": \"\"";
+				$ret .= ",$br \"start\": \"\"";
 			}
 
 			if ($modified)
 			{
-				$ret .= ", \"DT_RowClass\": \"new_result\"";
+				$ret .= ",$br \"DT_RowClass\": \"new_result\"";
 			}
 
-			$ret .= "}";
+			$ret .= "$br}";
 
 			$first = false;
 		}
@@ -173,8 +198,8 @@ elseif ($_GET['method'] == 'getclubresults')
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", \"clubName\": \"".$club."\", \"results\": [$ret]");
-			echo(", \"hash\": \"". $hash."\"}");
+			echo("{ \"status\": \"OK\",$br \"clubName\": \"".$club."\", $br\"results\": [$br$ret$br]");
+			echo(", $br \"hash\": \"". $hash."\"}");
 		}
 }
 elseif ($_GET['method'] == 'getclassresults')
@@ -218,15 +243,15 @@ elseif ($_GET['method'] == 'getclassresults')
 			$unformattedTimes = true;
 		}
 
-		$splitJSON = "[";
+		$splitJSON = "[$br";
 		foreach ($splits as $split)
 		{
 			if (!$first)
-				$splitJSON .=",";
+				$splitJSON .=",$br";
 			$splitJSON .= "{ \"code\": ".$split['code'] .", \"name\": \"".$split['name']."\"}";
 			$first = false;
 		}
-		$splitJSON .= "]";
+		$splitJSON .= "$br]";
 
 		$first = true;
 		foreach ($results as $res)
@@ -284,20 +309,20 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			if($resultsAsArray)
 			{
-				$ret .= "[\"$cp\", \"".$res['Name']."\", \"".$res['Club']."\", ".$res['Time'].", ".$status.", ".($time-$winnerTime).",$modified]";
+				$ret .= "[\"$cp\", \"".$res['Name']."\",$br \"".$res['Club']."\",$br ".$res['Time'].",$br ".$status.",$br ".($time-$winnerTime).",$modified]";
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\", \"name\": \"".$res['Name']."\", \"club\": \"".$res['Club']."\", \"result\": \"".$time."\",\"status\" : ".$status.", \"timeplus\": \"$timeplus\" $tot";
+				$ret .= "{\"place\": \"$cp\",$br \"name\": \"".$res['Name']."\",$br \"club\": \"".$res['Club']."\",$br \"result\": \"".$time."\",$br \"status\" : ".$status.",$br \"timeplus\": \"$timeplus\" $tot";
 
 				if (count($splits) > 0)
 				{
-					$ret .= ", \"splits\": {";
+					$ret .= ",$br \"splits\": {";
 					$firstspl = true;
 					foreach ($splits as $split)
 					{
 						if (!$firstspl)
-								$ret .=",";
+								$ret .=",$br";
 						if (isset($res[$split['code']."_time"]))
 						{
 							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": 0";
@@ -318,19 +343,19 @@ elseif ($_GET['method'] == 'getclassresults')
 
 				if (isset($res["start"]))
 				{
-					$ret .= ", \"start\": ".$res["start"];
+					$ret .= ",$br \"start\": ".$res["start"];
 				}
 				else
 				{
-					$ret .= ", \"start\": \"\"";
+					$ret .= ",$br \"start\": \"\"";
 				}
 
 				if ($modified)
 				{
-					$ret .= ", \"DT_RowClass\": \"new_result\"";
+					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
 				}
 
-				$ret .= "}";
+				$ret .= "$br}";
 			}
 			$first = false;
 			$place++;
@@ -344,8 +369,8 @@ elseif ($_GET['method'] == 'getclassresults')
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", \"className\": \"".$class."\", \"splitcontrols\": $splitJSON, \"results\": [$ret]");
-			echo(", \"hash\": \"". $hash."\"}");
+			echo("{ \"status\": \"OK\",$br \"className\": \"".$class."\",$br \"splitcontrols\": $splitJSON,$br \"results\": [$br$ret$br]");
+			echo(",$br \"hash\": \"". $hash."\"}");
 		}
 }
 else
