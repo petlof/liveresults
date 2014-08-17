@@ -9,9 +9,9 @@ module LiveResults.Index {
 
     export class HomeController {
         constructor(
-            private $scope: IHomeScope, $http: ng.IHttpService, private $location: ng.ILocationService, private $filter: ng.IFilterService) {
+            private $scope: IHomeScope, $http: ng.IHttpService, private $location: ng.ILocationService, private $filter: ng.IFilterService, API_URL : string) {
 
-            $http.get('api.php?method=getcompetitions').success((data : any) => {
+            $http.get(API_URL +'?method=getcompetitions').success((data : any) => {
                 this.$scope.competitions = data.competitions;
                 this.$scope.today = this.$filter('date')(Date.now(), 'yyyy-MM-dd');
             });

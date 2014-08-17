@@ -17,21 +17,20 @@ module LiveResults.Competition {
         competitionId : number;
         lastGetClassesHash : string;
         constructor(private $routeParams: any,
-            private $scope: ICompetitionScope, private $http: ng.IHttpService) {
+            private $scope: ICompetitionScope, private $http: ng.IHttpService, private API_URL : string) {
             this.competitionId = $routeParams["competition"];
             this.updateClasses();
-            $http.get('api.php?comp=10640&method=getclassresults&unformattedTimes=true&class=W21&last_hash=06d8bafbe4e8edf6ef825d944828d93e').success((data : any) => {
+            $http.get(this.API_URL + '?comp=10640&method=getclassresults&unformattedTimes=true&class=W21&last_hash=06d8bafbe4e8edf6ef825d944828d93e').success((data : any) => {
                 $scope.results = data.results; 
             });
-
 
             $scope.selectClass = (className) => { alert(className); };
 
         }
 
         updateClasses = function() {
-            this.$http.get('api.php?comp=' + this.competitionId + '&method=getclasses&last_hash=' + this.lastGetClassesHash).success(data => {
-                if (data.status == "OK") {
+            this.$http.get(this.API_URL + '?comp=' + this.competitionId + '&method=getclasses&last_hash=' + this.lastGetClassesHash).success(data => {
+                if (data.status == "OK") {  
                     this.$scope.classes = data.classes.map(x => x.className);
                     this.lastGetClassesHash = data.hash;
                 }
