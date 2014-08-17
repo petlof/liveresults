@@ -35,10 +35,10 @@ if ($_GET['method'] == 'getcompetitions')
 					echo(",");
 				echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
                                 
-                                echo (" \"timediff\"=".$comp["timediff"]);
+                                echo (", \"timediff\": ".$comp["timediff"]);
                                 if ($comp["multidaystage"] != "")
                                 {
-                                    echo(" \"multidaystage\"=".$comp["multidaystage"]." \"multidayfirstday\"=".$comp["multidayparent"]);
+                                    echo(", \"multidaystage\": ".$comp["multidaystage"].", \"multidayfirstday\": ".$comp["multidayparent"]);
                                 }
                                 
                                 
@@ -53,10 +53,10 @@ else if ($_GET['method'] == 'getcompetitioninfo')
 		$comp = Emma::GetCompetition($compid);
                 echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
                                 
-                echo (" \"timediff\"=".$comp["timediff"]);
+                echo (", \"timediff\": ".$comp["timediff"]);
                 if ($comp["multidaystage"] != "")
                 {
-                    echo(" \"multidaystage\"=".$comp["multidaystage"]." \"multidayfirstday\"=".$comp["multidayparent"]);
+                    echo(", \"multidaystage\": ".$comp["multidaystage"].", \"multidayfirstday\": ".$comp["multidayparent"]);
                 }
                                                 
                 echo("}");

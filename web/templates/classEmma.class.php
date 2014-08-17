@@ -232,7 +232,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		}
 
-	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, videourl, videotype from login where tavid=$compid",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, videourl, videotype,multidaystage,multidayparent from login where tavid=$compid",$conn);
 
          $ret = null;
 
