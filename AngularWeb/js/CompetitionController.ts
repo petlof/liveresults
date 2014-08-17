@@ -1,4 +1,6 @@
-﻿module LiveResults.Competition {
+///<reference path="../Scripts/typings/angularjs/angular.d.ts/>
+
+module LiveResults.Competition {
     export class ResultItem {
     }
 
@@ -18,7 +20,7 @@
             private $scope: ICompetitionScope, private $http: ng.IHttpService) {
             this.competitionId = $routeParams["competition"];
             this.updateClasses();
-            $http.get('api.php?comp=10640&method=getclassresults&unformattedTimes=true&class=W21&last_hash=06d8bafbe4e8edf6ef825d944828d93e').success(data => {
+            $http.get('api.php?comp=10640&method=getclassresults&unformattedTimes=true&class=W21&last_hash=06d8bafbe4e8edf6ef825d944828d93e').success((data : any) => {
                 $scope.results = data.results; 
             });
 
@@ -38,5 +40,3 @@
 }
 }
 
-angular.module('liveresControllers', [])
-        .controller("CompetitionController", ["$routeParams", "$scope", "$http", LiveResults.Competition.CompetitionController]);
