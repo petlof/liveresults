@@ -1,14 +1,16 @@
 /// <reference path="../Scripts/typings/angularjs/angular.d.ts"/>
+/// <reference path="../Scripts/typings/angular-translate/angular-translate.d.ts"/>
 
 module LiveResults.App
 {
     export class AppServices {
     
-        static $inject = ["$scope", "$location","$routeParams"];
-        constructor(private $scope : any, private $location : ng.ILocationService, private $routeParams : any)
+        static $inject = ["$scope", "$location","$routeParams","$translate"];
+        constructor(private $scope : any, private $location : ng.ILocationService, private $routeParams : any, private $translateProvider : ng.translate.ITranslateProvider)
         {
             $scope.$on('$routeChangeSuccess', function() {
                 $scope.curlang = $routeParams["lang"];
+                $translateProvider.use($scope.curlang);
             });
             
             $scope.GoHome = () => this.$location.path("/" + this.$routeParams["lang"]);
@@ -19,6 +21,7 @@ module LiveResults.App
                 {
                     path = path.substr(curLang.length+1);
                 }
+                this.$translateProvider.use(lang);
                 this.$location.path(lang + "" + path);
             };
             $scope.languages = [["se","Svenska"],["en","English"],["de","Deutsch"],["fi","Suomeksi"],["it","Italiano"],["ru","Русский"]];

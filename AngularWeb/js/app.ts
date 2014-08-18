@@ -12,7 +12,8 @@ var liveresApp = angular.module("liveresApp", ['ngRoute', 'ngGrid', 'liveresCont
     $routeprovider.otherwise({ redirectTo: '/se' });
 }]);
 
-angular.module('liveresControllers', ['LiveResults.Config'])
+
+angular.module('liveresControllers', ['LiveResults.Config','pascalprecht.translate'])
         .controller("CompetitionController", <any>LiveResults.Competition.CompetitionController)
         .controller("HomeController", <any>LiveResults.Index.HomeController)
         .controller("AppServices", <any>LiveResults.App.AppServices);

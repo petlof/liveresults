@@ -3,7 +3,7 @@
 
 
 // Configuring $translateProvider
-liveresApp.config(['$translateProvider', function ($translateProvider) {
+liveresApp.config(['$translateProvider', function ($translateProvider : ng.translate.ITranslateProvider) {
     
     $translateProvider.translations("se", {
         //Startpage
@@ -12,7 +12,11 @@ liveresApp.config(['$translateProvider', function ($translateProvider) {
         'DATE' : "Datum",
         'NOCOMPETITIONSTODAY': "Inga tävlingar idag",
         'LIVETODAY' : "Live idag!",
-        'COMPETITIONARCHIVE' : "Tävlingsarkiv"
+        'COMPETITIONARCHIVE' : "Tävlingsarkiv",
+        'CHOOSECOMPETITION' : 'Välj tävling',
+        
+        //Competition
+        'CHOOSECLASSHEADER' : 'Klass'
     });   
     
      $translateProvider.translations("en", {
@@ -22,9 +26,13 @@ liveresApp.config(['$translateProvider', function ($translateProvider) {
         'DATE' : "Date",
         'NOCOMPETITIONSTODAY': "No competitions today",
         'LIVETODAY' : "Live today!",
-        'COMPETITIONARCHIVE' : "Archive"
+        'COMPETITIONARCHIVE' : "Archive",
+        'CHOOSECOMPETITION' : 'Choose Competition',
+        
+        //Competition
+        'CHOOSECLASSHEADER' : 'Class'
     });   
     
-    $translateProvider.uses('se');
+    $translateProvider.preferredLanguage('se');
 }]);
 
