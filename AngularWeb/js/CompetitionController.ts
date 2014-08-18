@@ -16,6 +16,8 @@ module LiveResults.Competition {
     export class CompetitionController {
         competitionId : number;
         lastGetClassesHash : string;
+        
+        static $inject = ["$routeParams", "$scope", "$http", "API_URL"];
         constructor(private $routeParams: any,
             private $scope: ICompetitionScope, private $http: ng.IHttpService, private API_URL : string) {
             this.competitionId = $routeParams["competition"];

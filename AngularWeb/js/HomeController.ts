@@ -8,8 +8,9 @@ module LiveResults.Index {
     }
 
     export class HomeController {
+        static $inject = ["$scope", "$http", "$location","$filter", "API_URL","$routeParams"];
         constructor(
-            private $scope: IHomeScope, $http: ng.IHttpService, private $location: ng.ILocationService, private $filter: ng.IFilterService, API_URL : string) {
+            private $scope: IHomeScope, $http: ng.IHttpService, private $location: ng.ILocationService, private $filter: ng.IFilterService, API_URL : string, private $routeParams : any) {
 
             $http.get(API_URL +'?method=getcompetitions').success((data : any) => {
                 this.$scope.competitions = data.competitions;
@@ -17,7 +18,7 @@ module LiveResults.Index {
             });
 
             $scope.selectComp = (compId: number) => {
-                this.$location.path('/comp/' + compId);
+                this.$location.path("/" + this.$routeParams["lang"] +'/comp/' + compId);
             };
         }
     }
