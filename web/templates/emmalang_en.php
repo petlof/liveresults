@@ -108,4 +108,9 @@ $_TOTAL = "Total";
 
 $_CLASS = "Class";
 
+
+// 2.1
+$_ORGANIZER = "Organizer";
+$_DATE = "Date";
+
 ?>
