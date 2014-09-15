@@ -39,12 +39,12 @@ namespace LiveResults.Client
                 OnLogMessage(msg);
         }
 
-        System.Threading.Thread m_monitorThread;
+        Thread m_monitorThread;
 
         public void Start()
         {
             m_continue = true;
-            m_monitorThread = new System.Threading.Thread(Run);
+            m_monitorThread = new Thread(Run);
             m_monitorThread.Start();
         }
 
@@ -353,10 +353,11 @@ namespace LiveResults.Client
                                     TimeSpan rTid = pTime - startTime;
                                     double time = rTid.TotalMilliseconds / 10;
                                     var times = new List<ResultStruct>();
-                                    var t = new ResultStruct();
-                                    t.ControlCode = sCont + 1000 * passedCount;
-                                    t.ControlNo = 0;
-                                    t.Time = (int)time;
+                                    var t = new ResultStruct{
+                                        ControlCode = sCont + 1000*passedCount,
+                                        ControlNo = 0,
+                                        Time = (int) time
+                                    };
                                     times.Add(t);
 
                                     var sfamName = reader["lastname"] as string;
@@ -392,7 +393,7 @@ namespace LiveResults.Client
                             }
                             reader.Close();
 
-                            System.Threading.Thread.Sleep(1000);
+                            Thread.Sleep(1000);
                         }
                         catch (Exception ee)
                         {
@@ -400,7 +401,7 @@ namespace LiveResults.Client
                                 reader.Close();
                             FireLogMsg("OLA Parser: " + ee.Message + " {parsing: " + lastRunner);
 
-                            System.Threading.Thread.Sleep(100);
+                            Thread.Sleep(100);
 
                             switch (m_connection.State)
                             {
@@ -454,9 +455,10 @@ namespace LiveResults.Client
                     while (reader.Read())
                     {
                         var name = reader["name"] as string;
-                        int code = Convert.ToInt32(reader["ID"]);
+                        
+                        int code = Convert.ToInt32(reader["ID"].ToString());
                         var className = reader["className"] as string;
-                        int order = Convert.ToInt32(reader["ordered"]);
+                        int order = Convert.ToInt32(reader["ordered"].ToString());
 
                         string key = className + "-" + code;
                         if (!passCount.ContainsKey(key))
@@ -487,7 +489,7 @@ namespace LiveResults.Client
             // is this a pair-runner?
             if (!isRelay && reader["allocationControl"] != null && reader["allocationControl"] as string == "groupedWithRef" && reader["allocationEntryId"] != DBNull.Value)
             {
-                int otherRunnerId = Convert.ToInt32(reader["allocationEntryId"]);
+                int otherRunnerId = Convert.ToInt32(reader["allocationEntryId"].ToString());
                 RunnerPair rp;
 
                 if (runnerPairs.ContainsKey(runnerID))
@@ -503,8 +505,9 @@ namespace LiveResults.Client
                 }
                 else
                 {
-                    rp = new RunnerPair();
-                    rp.Runner1 = res;
+                    rp = new RunnerPair{
+                        Runner1 = res
+                    };
                     runnerPairs.Add(runnerID, rp);
                 }
 
