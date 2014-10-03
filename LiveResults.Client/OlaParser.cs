@@ -110,7 +110,7 @@ namespace LiveResults.Client
                         splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, (select firststarttime from raceclasses rc where rc.eventClassId = eventclasses.EventClassID and rc.relayleg=1 and rc.eventRaceId = " + m_eventRaceId + ") as firststarttime  from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                     }
 
-                    ReadRadioControls();
+                   ReadRadioControls();
                     
                     cmd.CommandText = baseCommand;
                     IDbCommand cmdSplits = m_connection.CreateCommand();
