@@ -135,30 +135,30 @@ namespace LiveResults.Client.Parsers
                         int itime = ParseTime(time);
                         int istatus = 10;
 
-                        switch (status)
+                        switch (status.ToLower())
                         {
-                            case "MisPunch":
+                            case "mispunch":
                                 istatus = 3;
                                 break;
 
-                            case "Disqualified":
+                            case "disqualified":
                                 istatus = 4;
                                 break;
-                            case "DidNotFinish":
+                            case "didnotfinish":
                                 istatus = 3;
                                 itime = -3;
                                 break;
-                            case "DidNotStart":
+                            case "didnotstart":
                                 istatus = 1;
                                 itime = -3;
                                 break;
-                            case "Overtime":
+                            case "overtime":
                                 istatus = 5;
                                 break;
-                            case "OK":
+                            case "ok":
                                 istatus = 0;
                                 break;
-                            case "NotCompeting":
+                            case "notcompeting":
                                 //Does not compete, exclude
                                 continue;
                         }
