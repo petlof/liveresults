@@ -800,7 +800,7 @@ insertIntoResults = function(result, data)
 		}
 	}
 
-	data.push(tmp[i]);
+	data.push(result);
 };
 
 resultSorter = function(a,b)

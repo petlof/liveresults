@@ -143,8 +143,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Model\TeamHolder.cs" />
     <Compile Include="OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
+    <Compile Include="Parsers\Jwoc2014Parser.cs" />
     <Compile Include="Result.cs" />
     <Compile Include="WocParser.cs" />
     <Compile Include="FrmMonitor.cs">
