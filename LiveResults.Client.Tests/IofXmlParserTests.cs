@@ -12,7 +12,16 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void ParseIofV2XmlFile()
         {
-            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"), new LogMessageDelegate(delegate(string msg) { }), false);
+            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"),
+                new LogMessageDelegate(delegate(string msg)
+                {
+                }), false,
+                (string sourceId, string si, out string storeAlias) =>
+                {
+                    storeAlias = null;
+                    return int.Parse(sourceId);
+                });
+                                                                           
 
             Assert.AreEqual(377, runners.Length);
 
@@ -29,7 +38,15 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void VerifyIofV2XmlFileNotCompetingDoesNotExis()
         {
-            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("iof_xml_notcompeting.xml"), new LogMessageDelegate(delegate(string msg) { }), false);
+            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("iof_xml_notcompeting.xml"),
+                new LogMessageDelegate(delegate(string msg)
+                {
+                }), false,
+                (string sourceId, string si, out string storeAlias) =>
+                {
+                    storeAlias = null;
+                    return int.Parse(sourceId);
+                });
 
             Assert.IsNull(runners.FirstOrDefault(x => x.Name == "Stepan Malinovskii"));
         }

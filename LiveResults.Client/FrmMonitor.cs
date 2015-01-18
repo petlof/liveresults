@@ -48,7 +48,7 @@ namespace LiveResults.Client
                 if (!client.IsRunnerAdded(newResult.ID))
                     client.AddRunner(new Runner(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class));
                 else
-                    client.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class);
+                    client.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class, null);
 
                 if (newResult.StartTime > 0)
                     client.SetRunnerStartTime(newResult.ID, newResult.StartTime);

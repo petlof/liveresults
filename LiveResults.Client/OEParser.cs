@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text;
 
 namespace LiveResults.Client
@@ -99,7 +100,14 @@ namespace LiveResults.Client
                     string[] parts = tmp.Split(SplitChars);
 
                     /* check so that the line is not incomplete*/
-                    int id = Convert.ToInt32(parts[fldID]);                    
+
+                    int id;
+                    if (!int.TryParse(parts[fldID], NumberStyles.Any, CultureInfo.InvariantCulture,out id))
+                    {
+                        FireLogMsg("Error: Could not use \"" + parts[fldID] + "\" as ID for runner " + parts[fldFName] + " " + parts[fldEName] +
+                                           " - Skipping!, value taken from field: " + fields[fldID]);
+                        continue;
+                    }
                     string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
                     string club = parts[fldClub].Trim('\"');
                     string Class = parts[fldClass].Trim('\"');
@@ -112,8 +120,9 @@ namespace LiveResults.Client
                     {
                         status = Convert.ToInt32(parts[fldStatus]);
                     }
-                    catch
+                    catch (Exception ee)
                     {
+                        FireLogMsg("Could not use status " + parts[fldStatus] + " for runner " + name + ", assuming status 0");
                     }
 
                     List<ResultStruct> splittimes = new List<ResultStruct>();

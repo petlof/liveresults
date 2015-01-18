@@ -1,4 +1,5 @@
-﻿using System.Web.UI.Design;
+﻿using System.Globalization;
+using System.Web.UI.Design;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,30 @@ namespace LiveResults.Client
    
     public class EmmaMysqlClient : IDisposable
     {
+
+        private static readonly Dictionary<int,Dictionary<string,int>> m_compsSourceToIdMapping = 
+            new Dictionary<int, Dictionary<string, int>>(); 
+        private static readonly Dictionary<int,int> m_compsNextGeneratedId = new Dictionary<int, int>(); 
+        public static int GetIdForSourceIdInCompetition(int compId, string sourceId)
+        {
+            if (!m_compsSourceToIdMapping.ContainsKey(compId))
+            {
+                m_compsSourceToIdMapping.Add(compId, new Dictionary<string, int>());
+                m_compsNextGeneratedId.Add(compId, -1);
+            }
+            if (!m_compsSourceToIdMapping[compId].ContainsKey(sourceId))
+            {
+                int id = m_compsNextGeneratedId[compId]--;
+                m_compsSourceToIdMapping[compId][sourceId] = id;
+                return id;
+            }
+            else
+            {
+                return m_compsSourceToIdMapping[compId][sourceId];
+            }
+        }
+
+
         public struct EmmaServer
         {
             public string Host;
@@ -107,6 +132,8 @@ namespace LiveResults.Client
             }
         }
 
+       
+
         private void FireLogMsg(string msg)
         {
             if (OnLogMessage != null)
@@ -117,8 +144,7 @@ namespace LiveResults.Client
         {
             if (!IsRunnerAdded(dbId))
                 return null;
-            else
-                return m_runners[dbId];
+            return m_runners[dbId];
         }
 
         private bool m_continue;
@@ -137,23 +163,58 @@ namespace LiveResults.Client
                 SetCodePage(m_connection);
 
                 MySqlCommand cmd = m_connection.CreateCommand();
-                cmd.CommandText = "select Runners.dbid,control,time,name,club,class,status from Runners, Results where Results.dbid = Runners.dbid and Results.tavid = " + m_compID + " and Runners.tavid = " + m_compID;
+
+                if (!m_compsSourceToIdMapping.ContainsKey(m_compID))
+                {
+                    m_compsSourceToIdMapping.Add(m_compID, new Dictionary<string, int>());
+                    m_compsNextGeneratedId.Add(m_compID, -1);
+                }
+
+                cmd.CommandText = "select sourceid,id from runneraliases where compid = " + m_compID;
                 MySqlDataReader reader = cmd.ExecuteReader();
+
+                Dictionary<int,string> idToAliasDictionary = new Dictionary<int, string>();
+
                 while (reader.Read())
                 {
-                    var dbid = (int)reader["dbid"];
-                    var control = (int)reader["control"];
-                    var time = (int)reader["time"];
+                    var sourceId = reader["sourceid"] as string;
+                    if (sourceId == null)
+                        continue;
+                    int id = Convert.ToInt32(reader["id"]);
+                    if (!m_compsSourceToIdMapping[m_compID].ContainsKey(sourceId))
+                    {
+                        m_compsSourceToIdMapping[m_compID].Add(sourceId, id);
+                        if (id <= m_compsNextGeneratedId[m_compID])
+                            m_compsNextGeneratedId[m_compID] = id - 1;
+                    }
+                }
+                reader.Close();
+
+                foreach (var kvp in m_compsSourceToIdMapping[m_compID])
+                {
+                    if (!idToAliasDictionary.ContainsKey(kvp.Value))
+                        idToAliasDictionary.Add(kvp.Value, kvp.Key);
+                }
+
+
+                cmd.CommandText = "select runners.dbid,control,time,name,club,class,status from runners, results where results.dbid = runners.dbid and results.tavid = " + m_compID + " and runners.tavid = " + m_compID;
+                reader = cmd.ExecuteReader();
+                while (reader.Read())
+                {
+                    var dbid = Convert.ToInt32(reader["dbid"]);
+                    var control = Convert.ToInt32(reader["control"]);
+                    var time = Convert.ToInt32(reader["time"]);
+                    var sourceId = idToAliasDictionary.ContainsKey(dbid) ? idToAliasDictionary[dbid] : null;
                     if (!IsRunnerAdded(dbid))
                     {
-                        var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string);
+                        var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string, sourceId);
                         AddRunner(r);
                         numRunners++;
                     }
-                    switch (control)
+                switch (control)
                     {
                         case 1000:
-                            SetRunnerResult(dbid, time, (int)reader["status"]);
+                            SetRunnerResult(dbid, time, Convert.ToInt32(reader["status"]));
                             numResults++;
                             break;
                         case 100:
@@ -168,6 +229,9 @@ namespace LiveResults.Client
                     
                 }
                 reader.Close();
+
+               
+
                 cmd.Dispose();
 
                 ResetUpdated();
@@ -191,7 +255,7 @@ namespace LiveResults.Client
             m_mainTh.Start();
         }
 
-        public void UpdateRunnerInfo(int id, string name, string club, string Class)
+        public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId)
         {
             if (m_runners.ContainsKey(id))
             {
@@ -212,6 +276,15 @@ namespace LiveResults.Client
                 if (cur.Club != club)
                 {
                     cur.Club = club;
+                    isUpdated = true;
+                }
+                if (string.IsNullOrEmpty(sourceId))
+                    sourceId = null;
+                if (string.IsNullOrEmpty(cur.SourceId))
+                    cur.SourceId = null;
+                if (cur.SourceId != sourceId && sourceId != id.ToString(CultureInfo.InvariantCulture))
+                {
+                    cur.SourceId = sourceId;
                     isUpdated = true;
                 }
                 if (isUpdated)
@@ -342,11 +415,11 @@ namespace LiveResults.Client
             {
                 if (!IsRunnerAdded(r.ID))
                 {
-                    AddRunner(new Runner(r.ID, r.Name, r.Club, r.Class));
+                    AddRunner(new Runner(r.ID, r.Name, r.Club, r.Class, r.SourceId));
                 }
                 else
                 {
-                    UpdateRunnerInfo(r.ID, r.Name, r.Club, r.Class);
+                    UpdateRunnerInfo(r.ID, r.Name, r.Club, r.Class, r.SourceId);
                 }
 
 
@@ -397,7 +470,7 @@ namespace LiveResults.Client
                                     cmd.Parameters.AddWithValue("?corder", r.Order);
                                     cmd.Parameters.AddWithValue("?code", r.Code);
                                     cmd.Parameters.AddWithValue("?cname", r.ControlName);
-                                    cmd.CommandText = "REPLACE INTO SplitControls VALUES (?compid,?name,?corder,?code,?cname)";
+                                    cmd.CommandText = "REPLACE INTO splitcontrols(tavid,classname,corder,code,name) VALUES (?compid,?name,?corder,?code,?cname)";
 
                                     try
                                     {
@@ -424,7 +497,8 @@ namespace LiveResults.Client
                                         cmd.Parameters.AddWithValue("?class", r.Class);
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
-                                        cmd.CommandText = "REPLACE INTO Runners VALUES (?compid,?name,?club,?class,0,?id)";
+                                        cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid) VALUES (?compid,?name,?club,?class,0,?id)";
+                                       
 
                                         try
                                         {
@@ -439,6 +513,23 @@ namespace LiveResults.Client
                                                 "Could not add runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
                                         }
                                         cmd.Parameters.Clear();
+
+                                        if (!string.IsNullOrEmpty(r.SourceId) && r.SourceId != r.ID.ToString(CultureInfo.InvariantCulture))
+                                        {
+                                            cmd.CommandText = "REPLACE INTO runneraliases (compid,sourceid,id) VALUES (?compid,?sourceId,?id)";
+                                            cmd.Parameters.AddWithValue("?compid", m_compID);
+                                            cmd.Parameters.AddWithValue("?sourceId", r.SourceId);
+                                            cmd.Parameters.AddWithValue("?id", r.ID);
+                                            try
+                                            {
+                                                cmd.ExecuteNonQuery();
+                                            }
+                                            catch (Exception ee)
+                                            {
+                                                FireLogMsg("Could not add alias for runner " + r.Name + " in DB [" + ee.Message + "]");
+                                            }
+                                        }
+
                                         FireLogMsg("Runner " + r.Name + " updated in DB");
                                         r.RunnerUpdated = false;
                                     }
@@ -449,7 +540,7 @@ namespace LiveResults.Client
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.Parameters.AddWithValue("?time", r.Time);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
-                                        cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,1000,?time,?status,Now())";
+                                        cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(?compid,?id,1000,?time,?status,Now())";
                                         cmd.ExecuteNonQuery();
                                         cmd.Parameters.Clear();
 
@@ -463,8 +554,7 @@ namespace LiveResults.Client
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.Parameters.AddWithValue("?starttime", r.StartTime);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
-                                        //cmd.CommandText = "REPLACE INTO Results VALUES(" + m_CompID + "," + r.ID + ",0," + r.StartTime + "," + r.Status + ",Now())";
-                                        cmd.CommandText = "REPLACE INTO Results VALUES(?compid,?id,100,?starttime,?status,Now())";
+                                        cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(?compid,?id,100,?starttime,?status,Now())";
                                         cmd.ExecuteNonQuery();
                                         cmd.Parameters.Clear();
                                         FireLogMsg("Runner " + r.Name + "s starttime updated in DB");
@@ -483,7 +573,7 @@ namespace LiveResults.Client
                                         {
                                             cmd.Parameters["?control"].Value = t.Control;
                                             cmd.Parameters["?time"].Value = t.Time;
-                                            cmd.CommandText = "REPLACE INTO Results VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
+                                            cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
                                                               ",0,Now())";
                                             cmd.ExecuteNonQuery();
                                             t.Updated = false;

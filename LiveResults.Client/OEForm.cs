@@ -36,7 +36,7 @@ namespace LiveResults.Client
         }
 
         readonly List<FormatItem> m_supportedFormats = new List<FormatItem>();
-
+        private int m_compid = -1;
         public OEForm()
         {
             InitializeComponent();
@@ -120,6 +120,8 @@ namespace LiveResults.Client
                 return;
             }
 
+            m_compid = Convert.ToInt32(txtCompID.Text);
+
             listBox1.Items.Clear();
             m_clients.Clear();
             Logit("Reading servers from config (eventually resolving online)");
@@ -129,7 +131,7 @@ namespace LiveResults.Client
             Application.DoEvents();
             foreach (EmmaMysqlClient.EmmaServer server in servers)
             {
-                var client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, Convert.ToInt32(txtCompID.Text));
+                var client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, m_compid);
 
                 client.OnLogMessage += client_OnLogMessage;
                 client.Start();
@@ -177,7 +179,7 @@ namespace LiveResults.Client
                     c.AddRunner(new Runner(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class));
                 }
                 else
-                    c.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class);
+                    c.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class, null);
 
 
                 if (newResult.StartTime >= 0)
@@ -218,7 +220,29 @@ namespace LiveResults.Client
             {
                 try
                 {
-                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, Logit);
+                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, Logit, (string sourceId, string si, out string storeAlias) =>
+                    {
+                        long id;
+                        storeAlias = null;
+                        if (long.TryParse(sourceId, NumberStyles.Any, CultureInfo.InvariantCulture, out id))
+                        {
+                            if (id < Int32.MaxValue && id > 0)
+                            {
+                                return (int) id;
+                            }
+                        }
+                        if (!string.IsNullOrEmpty(sourceId))
+                        {
+                            storeAlias = sourceId;
+                            return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, sourceId);
+                        }
+                        if (!string.IsNullOrEmpty(si))
+                        {
+                            storeAlias = "SI:" + si;
+                            return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, storeAlias);
+                        }
+                        throw new FormatException("Could not calculate ID");
+                    });
                     processed = true;
                     foreach (EmmaMysqlClient c in m_clients)
                     {

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web.UI.Design.WebControls;
 
 namespace LiveResults.Client
 {
@@ -114,13 +115,14 @@ namespace LiveResults.Client
         private int m_start;
         private int m_time;
         private int m_status;
+        private string m_sourceId;
 
         public bool RunnerUpdated;
         public bool ResultUpdated;
         public bool StartTimeUpdated;
 
         private readonly Dictionary<int,SplitTime> m_splitTimes;
-        public Runner(int dbID, string name, string club, string Class)
+        public Runner(int dbID, string name, string club, string Class, string sourceId = null)
         {
             RunnerUpdated = true;
             ResultUpdated = false;
@@ -131,15 +133,28 @@ namespace LiveResults.Client
             m_name = name;
             m_club = club;
             m_class = Class;
+            m_sourceId = sourceId;
         }
 
-
+        public string SourceId
+        {
+            get
+            {
+                return m_sourceId;
+            }
+            set
+            {
+                m_sourceId = value;
+            }
+        
+        }
         public int ID
         {
             get
             {
                 return m_id;
             }
+
         }
 
         public bool HasUpdatedSplitTimes()

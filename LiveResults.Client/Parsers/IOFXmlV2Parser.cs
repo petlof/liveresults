@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Xml;
 
@@ -10,12 +12,12 @@ namespace LiveResults.Client.Parsers
     /// </summary>
     public class IOFXmlV2Parser
     {
-        public static Runner[] ParseFile(string filename, LogMessageDelegate logit)
+        public static Runner[] ParseFile(string filename, LogMessageDelegate logit, GetIdDelegate getIdFunc)
         {
-            return ParseFile(filename, logit, true);
+            return ParseFile(filename, logit, true, getIdFunc);
         }
 
-        public static Runner[] ParseFile(string filename, LogMessageDelegate logit, bool deleteFile)
+        public static Runner[] ParseFile(string filename, LogMessageDelegate logit, bool deleteFile, GetIdDelegate getIdFunc)
         {
             byte[] fileContents;
             if (!File.Exists(filename))
@@ -28,12 +30,13 @@ namespace LiveResults.Client.Parsers
             if (deleteFile)
                 File.Delete(filename);
 
-            return ParseXmlData(fileContents, logit, deleteFile);
+            return ParseXmlData(fileContents, logit, deleteFile, getIdFunc);
 
         }
 
+        public delegate int GetIdDelegate(string sourceid, string sicard, out string storeAlias);
 
-        public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile)
+        public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile, GetIdDelegate getIdFunc)
         {
 
             var runners = new List<Runner>();
@@ -64,9 +67,9 @@ namespace LiveResults.Client.Parsers
                     {
                         string familyname;
                         string givenname;
-                        long pid;
                         string club;
-                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out pid, out club)) continue;
+                        string sourceId;
+                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out club, out sourceId)) continue;
 
                         var startTimeNode = personNode.SelectSingleNode("Start/StartTime/Clock");
                         var ccCardNode = personNode.SelectSingleNode("Start/CCard/CCardId");
@@ -75,9 +78,10 @@ namespace LiveResults.Client.Parsers
                             continue;
                         string starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
-                        var dbid = CalculateIDFromSiCard(logit, si, familyname, givenname, pid);
+                        string storeAlias;
+                        int dbId = getIdFunc(sourceId, si, out storeAlias);
 
-                        var runner = new Runner(dbid, givenname + " " + familyname, club, className);
+                        var runner = new Runner(dbId, givenname + " " + familyname, club, className, storeAlias);
 
                         if (!string.IsNullOrEmpty(starttime))
                         {
@@ -105,9 +109,9 @@ namespace LiveResults.Client.Parsers
                     {
                         string familyname;
                         string givenname;
-                        long pid;
                         string club;
-                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out pid, out club)) continue;
+                        string sourceId;
+                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out club, out sourceId)) continue;
 
                         var competitorStatusNode = personNode.SelectSingleNode("Result/CompetitorStatus");
                         var resultTimeNode = personNode.SelectSingleNode("Result/Time");
@@ -121,10 +125,10 @@ namespace LiveResults.Client.Parsers
                         string time = resultTimeNode.InnerText;
                         string starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
-                        var dbid = CalculateIDFromSiCard(logit, si, familyname, givenname, pid);
-
-
-                        var runner = new Runner(dbid, givenname + " " + familyname, club, className);
+                        string storeAlias;
+                        int dbId = getIdFunc(sourceId, si, out storeAlias);
+                        
+                        var runner = new Runner(dbId, givenname + " " + familyname, club, className, storeAlias);
 
                         if (!string.IsNullOrEmpty(starttime))
                         {
@@ -241,12 +245,13 @@ namespace LiveResults.Client.Parsers
             return dbid;
         }
 
-        private static bool ParseNameClubAndId(XmlNode personNode, out string familyname, out string givenname, out long pid, out string club)
+        private static bool ParseNameClubAndId(XmlNode personNode, out string familyname, out string givenname, 
+           out string club, out string sourceId)
         {
             familyname = null;
             givenname = null;
             club = null;
-            pid = 0;
+            sourceId = null;
 
             XmlNode personNameNode = personNode.SelectSingleNode("Person/PersonName");
             if (personNameNode == null)
@@ -264,12 +269,19 @@ namespace LiveResults.Client.Parsers
 
             familyname = familyNameNode.InnerText;
             givenname = giveNameNode.InnerText;
-            string id = personIdNode.InnerText;
-            pid = 0;
-            if (id.Trim().Length > 0)
-            {
-                pid = Convert.ToInt64(id);
-            }
+            sourceId = personIdNode.InnerText;
+            //if (sourceId.Trim().Length > 0)
+            //{
+            //    long tPid;
+            //    if (!long.TryParse(sourceId, NumberStyles.Any, CultureInfo.InvariantCulture, out tPid))
+            //    {
+            //        //Could be textual, try combining charcodes to number
+            //    }
+            //    else
+            //    {
+            //        pid = tPid;
+            //    }
+            //}
             var clubNode = personNode.SelectSingleNode("Club/ShortName");
             club = "";
             if (clubNode != null)
