@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
+using LiveResults.Client.Parsers;
 
 namespace LiveResults.Client
 {
@@ -220,29 +221,7 @@ namespace LiveResults.Client
             {
                 try
                 {
-                    var runners = Parsers.IOFXmlV2Parser.ParseFile(fullFilename, Logit, (string sourceId, string si, out string storeAlias) =>
-                    {
-                        long id;
-                        storeAlias = null;
-                        if (long.TryParse(sourceId, NumberStyles.Any, CultureInfo.InvariantCulture, out id))
-                        {
-                            if (id < Int32.MaxValue && id > 0)
-                            {
-                                return (int) id;
-                            }
-                        }
-                        if (!string.IsNullOrEmpty(sourceId))
-                        {
-                            storeAlias = sourceId;
-                            return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, sourceId);
-                        }
-                        if (!string.IsNullOrEmpty(si))
-                        {
-                            storeAlias = "SI:" + si;
-                            return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, storeAlias);
-                        }
-                        throw new FormatException("Could not calculate ID");
-                    });
+                    var runners = IOFXmlV2Parser.ParseFile(fullFilename, Logit,new IOFXmlV2Parser.IDCalculator(m_compid).CalculateID);
                     processed = true;
                     foreach (EmmaMysqlClient c in m_clients)
                     {

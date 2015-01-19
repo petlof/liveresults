@@ -17,6 +17,8 @@ namespace LiveResults.Client.Parsers
             return ParseFile(filename, logit, true, getIdFunc);
         }
 
+        static readonly Dictionary<string,string> m_suppressedIDCalculationErrors = new Dictionary<string, string>(); 
+
         public static Runner[] ParseFile(string filename, LogMessageDelegate logit, bool deleteFile, GetIdDelegate getIdFunc)
         {
             byte[] fileContents;
@@ -35,6 +37,39 @@ namespace LiveResults.Client.Parsers
         }
 
         public delegate int GetIdDelegate(string sourceid, string sicard, out string storeAlias);
+
+        public class IDCalculator
+        {
+            private readonly int m_compid;
+            public IDCalculator(int compId)
+            {
+                m_compid = compId;
+            }
+
+            public int CalculateID(string sourceId, string si, out string storeAlias)
+            {
+                long id;
+                storeAlias = null;
+                if (long.TryParse(sourceId, NumberStyles.Any, CultureInfo.InvariantCulture, out id))
+                {
+                    if (id < Int32.MaxValue && id > 0)
+                    {
+                        return (int) id;
+                    }
+                }
+                if (!string.IsNullOrEmpty(sourceId))
+                {
+                    storeAlias = sourceId;
+                    return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, sourceId);
+                }
+                if (!string.IsNullOrEmpty(si))
+                {
+                    storeAlias = "SI:" + si;
+                    return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, storeAlias);
+                }
+                throw new FormatException("Could not calculate ID");
+            }
+        }
 
         public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile, GetIdDelegate getIdFunc)
         {
@@ -79,6 +114,19 @@ namespace LiveResults.Client.Parsers
                         string starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
                         string storeAlias;
+
+                        if (string.IsNullOrEmpty(sourceId) && string.IsNullOrEmpty(si))
+                        {
+                            string name = givenname + " " + familyname + ", " + club;
+                            if (!m_suppressedIDCalculationErrors.ContainsKey(name))
+                            {
+                                logit("Cannot calculculate ID for runner: " + name + ", skipping [supressing further output for this name]");
+                                m_suppressedIDCalculationErrors.Add(name, name);
+                            }
+                            continue;
+                        }
+                    
+
                         int dbId = getIdFunc(sourceId, si, out storeAlias);
 
                         var runner = new Runner(dbId, givenname + " " + familyname, club, className, storeAlias);
@@ -126,6 +174,18 @@ namespace LiveResults.Client.Parsers
                         string starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
                         string storeAlias;
+
+                        if (string.IsNullOrEmpty(sourceId) && string.IsNullOrEmpty(si))
+                        {
+                            string name = givenname + " " + familyname + ", " + club;
+                            if (!m_suppressedIDCalculationErrors.ContainsKey(name))
+                            {
+                                logit("Cannot calculculate ID for runner: " + name + ", skipping [supressing further output for this name]");
+                                m_suppressedIDCalculationErrors.Add(name, name);
+                            }
+                            continue;
+                        }
+
                         int dbId = getIdFunc(sourceId, si, out storeAlias);
                         
                         var runner = new Runner(dbId, givenname + " " + familyname, club, className, storeAlias);

@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using LiveResults.Client.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiveResults.Client.Tests
@@ -13,14 +14,10 @@ namespace LiveResults.Client.Tests
         public void ParseIofV2XmlFile()
         {
             var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"),
-                new LogMessageDelegate(delegate(string msg)
+                delegate(string msg)
                 {
-                }), false,
-                (string sourceId, string si, out string storeAlias) =>
-                {
-                    storeAlias = null;
-                    return int.Parse(sourceId);
-                });
+                }, false,
+               new IOFXmlV2Parser.IDCalculator(0).CalculateID);
                                                                            
 
             Assert.AreEqual(377, runners.Length);
@@ -42,11 +39,7 @@ namespace LiveResults.Client.Tests
                 new LogMessageDelegate(delegate(string msg)
                 {
                 }), false,
-                (string sourceId, string si, out string storeAlias) =>
-                {
-                    storeAlias = null;
-                    return int.Parse(sourceId);
-                });
+               new IOFXmlV2Parser.IDCalculator(0).CalculateID);
 
             Assert.IsNull(runners.FirstOrDefault(x => x.Name == "Stepan Malinovskii"));
         }
