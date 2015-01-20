@@ -248,7 +248,7 @@ namespace LiveResults.Client.Parsers
                                 {
                                     if (iSplitcode == 999)
                                     {
-                                        if (istatus == 0 && itime == -1)
+                                        if ((istatus == 0 && itime == -1) || (istatus == 10 && itime == -9))
                                         {
                                             //Målstämpling
                                             itime = ParseTime(sSplittime);
