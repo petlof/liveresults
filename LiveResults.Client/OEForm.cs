@@ -350,7 +350,12 @@ namespace LiveResults.Client
             if (cmbFormat.SelectedItem != null)
             {
                 lblFormatInfo.Text = (cmbFormat.SelectedItem as FormatItem).Description;
-
+                if ((cmbFormat.SelectedItem as FormatItem).Format == Format.Oecsv
+                    || (cmbFormat.SelectedItem as FormatItem).Format == Format.Oecsvteam
+                    || (cmbFormat.SelectedItem as FormatItem).Format == Format.Oscsv)
+                    lblZeroTime.Visible = txtZeroTime.Visible = true;
+                else
+                    lblZeroTime.Visible = txtZeroTime.Visible = false;
 
                 if ((cmbFormat.SelectedItem as FormatItem).Format == Format.Iofxml)
                 {
@@ -398,6 +403,24 @@ namespace LiveResults.Client
             public int  CompID { get; set; }
             public string extension { get; set; }
             public string Format { get; set; }
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            var lines = new List<string>();
+            for (int i = 0; i < listBox1.Items.Count; i++)
+                lines.Add(listBox1.Items[i] as string);
+
+            lines.Reverse();
+            if (lines.Count > 0)
+            {
+                Clipboard.SetText(string.Join("\r\n", lines.ToArray()));
+            }
+            else
+            {
+                Clipboard.SetText("--No data--");
+            }
+
         }
     }
 }

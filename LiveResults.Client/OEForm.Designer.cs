@@ -50,6 +50,9 @@
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
             this.label4 = new System.Windows.Forms.Label();
             this.chkUploadStarttimes = new System.Windows.Forms.CheckBox();
+            this.lblZeroTime = new System.Windows.Forms.Label();
+            this.txtZeroTime = new System.Windows.Forms.TextBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fsWatcherOS)).BeginInit();
@@ -57,6 +60,8 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.txtZeroTime);
+            this.groupBox1.Controls.Add(this.lblZeroTime);
             this.groupBox1.Controls.Add(this.lblFormatInfo);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.cmbFormat);
@@ -67,7 +72,7 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Location = new System.Drawing.Point(12, 3);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(311, 176);
+            this.groupBox1.Size = new System.Drawing.Size(311, 187);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "OE Settings";
@@ -76,7 +81,7 @@
             // 
             this.lblFormatInfo.Location = new System.Drawing.Point(7, 135);
             this.lblFormatInfo.Name = "lblFormatInfo";
-            this.lblFormatInfo.Size = new System.Drawing.Size(298, 38);
+            this.lblFormatInfo.Size = new System.Drawing.Size(298, 55);
             this.lblFormatInfo.TabIndex = 11;
             // 
             // label5
@@ -143,18 +148,18 @@
             // 
             // listBox1
             // 
-            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
-                        | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox1.FormattingEnabled = true;
-            this.listBox1.Location = new System.Drawing.Point(12, 222);
+            this.listBox1.Location = new System.Drawing.Point(12, 235);
             this.listBox1.Name = "listBox1";
-            this.listBox1.Size = new System.Drawing.Size(576, 199);
+            this.listBox1.Size = new System.Drawing.Size(576, 186);
             this.listBox1.TabIndex = 1;
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(93, 185);
+            this.button2.Location = new System.Drawing.Point(92, 196);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 31);
             this.button2.TabIndex = 2;
@@ -169,8 +174,8 @@
             // 
             // listBox2
             // 
-            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
-                        | System.Windows.Forms.AnchorStyles.Right)));
+            this.listBox2.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listBox2.FormattingEnabled = true;
             this.listBox2.Location = new System.Drawing.Point(329, 32);
             this.listBox2.Name = "listBox2";
@@ -186,7 +191,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(10, 182);
+            this.label2.Location = new System.Drawing.Point(9, 193);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(73, 13);
             this.label2.TabIndex = 4;
@@ -194,14 +199,14 @@
             // 
             // txtCompID
             // 
-            this.txtCompID.Location = new System.Drawing.Point(13, 198);
+            this.txtCompID.Location = new System.Drawing.Point(12, 209);
             this.txtCompID.Name = "txtCompID";
             this.txtCompID.Size = new System.Drawing.Size(74, 20);
             this.txtCompID.TabIndex = 5;
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(175, 185);
+            this.button3.Location = new System.Drawing.Point(174, 196);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(73, 31);
             this.button3.TabIndex = 6;
@@ -238,11 +243,39 @@
             this.chkUploadStarttimes.Text = "Upload starttimes";
             this.chkUploadStarttimes.UseVisualStyleBackColor = true;
             // 
+            // lblZeroTime
+            // 
+            this.lblZeroTime.AutoSize = true;
+            this.lblZeroTime.Location = new System.Drawing.Point(7, 164);
+            this.lblZeroTime.Name = "lblZeroTime";
+            this.lblZeroTime.Size = new System.Drawing.Size(146, 13);
+            this.lblZeroTime.TabIndex = 13;
+            this.lblZeroTime.Text = "Event ZeroTime (HH:MM:SS)";
+            // 
+            // txtZeroTime
+            // 
+            this.txtZeroTime.Location = new System.Drawing.Point(150, 161);
+            this.txtZeroTime.Name = "txtZeroTime";
+            this.txtZeroTime.Size = new System.Drawing.Size(146, 20);
+            this.txtZeroTime.TabIndex = 12;
+            // 
+            // button4
+            // 
+            this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.button4.Location = new System.Drawing.Point(388, 196);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(192, 33);
+            this.button4.TabIndex = 11;
+            this.button4.Text = "Copy log to clipboard";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // OEForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(592, 444);
+            this.Controls.Add(this.button4);
             this.Controls.Add(this.chkUploadStarttimes);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.button3);
@@ -287,5 +320,8 @@
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.ComboBox cmbFormat;
         private System.Windows.Forms.Label lblFormatInfo;
+        private System.Windows.Forms.TextBox txtZeroTime;
+        private System.Windows.Forms.Label lblZeroTime;
+        private System.Windows.Forms.Button button4;
     }
 }
