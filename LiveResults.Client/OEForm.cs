@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.IO;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
@@ -107,6 +108,8 @@ namespace LiveResults.Client
             }
         }
 
+        private int m_parsedZeroTime = 0;
+
         private void button2_Click(object sender, EventArgs e)
         {
             if (!Directory.Exists(txtOEDirectory.Text))
@@ -122,7 +125,7 @@ namespace LiveResults.Client
             }
 
             m_compid = Convert.ToInt32(txtCompID.Text);
-
+            m_parsedZeroTime = 0;
             listBox1.Items.Clear();
             m_clients.Clear();
             Logit("Reading servers from config (eventually resolving online)");
@@ -146,6 +149,16 @@ namespace LiveResults.Client
 
             if ( format.Format == Format.Oecsv || format.Format == Format.Oecsvteam || format.Format == Format.Oscsv)
             {
+                if (!string.IsNullOrEmpty(txtZeroTime.Text))
+                {
+                    var rex = new Regex(@"(\d\d):(\d\d):(\d\d)");
+                    var m = rex.Match(txtZeroTime.Text);
+                    if (m.Success)
+                    {
+                        m_parsedZeroTime = int.Parse(m.Groups[1].Value)*360000 + int.Parse(m.Groups[2].Value)*6000 + int.Parse(m.Groups[3].Value)*100;
+                    }
+                }
+
                 m_osParser = new OSParser();
                 m_osParser.OnLogMessage += Logit;
 
@@ -184,7 +197,9 @@ namespace LiveResults.Client
 
 
                 if (newResult.StartTime >= 0)
-                    c.SetRunnerStartTime(newResult.ID, newResult.StartTime);
+                {
+                    c.SetRunnerStartTime(newResult.ID, newResult.StartTime + m_parsedZeroTime);
+                }
 
                 if (newResult is RelayResult)
                 {

@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
+using System.Threading;
 
 namespace LiveResults.Client
 {
@@ -85,184 +87,14 @@ namespace LiveResults.Client
 
                 string[] fields = header.Split(SplitChars);
                 bool isOs2010Files = fields[0].StartsWith("OS", StringComparison.Ordinal);
-
-                /*Detect OS format*/
-                int fldID;
-                int fldSI;
-                int fldFName;
-                int fldEName;
-                int fldClub;
-                int fldClass;
-                int fldStart;
-                int fldTime;
-                int fldStatus;
-                int fldFirstPost;
-                int fldLeg;
-                int fldFinish;
-                int fldTxt1, fldTxt2, fldTxt3;
-                int fldTotalTime;
-                OxTools.DetectOxCSVFormat(OxTools.SourceProgram.OS, fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart, out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3, out fldTotalTime);
-
-                if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
-                    || fldStart == -1 || fldTime == -1
-                    || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
+                if (fields[0] == "OS0001")
                 {
-                    throw new System.IO.IOException("Not OS-formatted file!");
+                    //OS Startlist, read..
+                    ParseOSStartList(fields, sr, isOs2010Files);
                 }
-
-                string tmp;
-                var teamStartTimes = new Dictionary<string, int>();
-                var teamStatuses = new Dictionary<string, int>();
-                while ((tmp = sr.ReadLine()) != null)
+                else
                 {
-                    string[] parts = tmp.Split(SplitChars);
-
-                    /* check so that the line is not incomplete*/
-                    int id = Convert.ToInt32(parts[fldLeg])*1000000 + Convert.ToInt32(parts[fldID]);
-                   
-                    string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
-                    string club = parts[fldClub].Trim('\"');
-                    string Class = parts[fldClass].Trim('\"') + "-" + parts[fldLeg].Trim('\"');
-                    int leg = Convert.ToInt32(parts[fldLeg].Trim('\"'));
-                    int start = strTimeToInt(parts[fldStart]);
-                    int time = strTimeToInt(parts[fldTime]);
-
-                    int status = 9;
-                    try
-                    {
-                        status = Convert.ToInt32(parts[fldStatus]);
-                        if (status == 0 && time < 0)
-                            status = 9;
-
-                    }
-                    catch
-                    {
-                    }
-
-                    int totalTime = -1;
-                    int totalStatus = status;
-
-                    if (isOs2010Files)
-                    {
-                        if (fldTotalTime != -1)
-                        {
-                            //OK We have a totaltimefield..
-                            //If totaltime set, use it as time (and status is status)
-                            //Else, check if runner on course (status == 0 and FinishTime is empty => Status = 9)
-                            //Else, something is not right, set status if <> 0, else set mp
-
-                            if (!string.IsNullOrEmpty(parts[fldTotalTime]))
-                            {
-                                totalTime = strTimeToInt(parts[fldTotalTime]);
-                            }
-                            else if (status == 9)
-                            {
-                                //Runner still on course
-                            }
-                            else
-                            {
-                                totalStatus = status != 0 ? status : 3;
-                                totalTime = -3;
-                            }
-                        }
-                        else
-                        {
-                            string key = parts[fldClass].Trim('\"') + ";" + club;
-                            if (!teamStartTimes.ContainsKey(key))
-                            {
-                                teamStartTimes.Add(key, start);
-                            }
-                            else if (teamStartTimes[key] > start)
-                            {
-                                teamStartTimes[key] = start;
-                            }
-
-                            if (teamStatuses.ContainsKey(key))
-                            {
-                                int earlierStatus = teamStatuses[key];
-                                if (status == 0 && earlierStatus != 0)
-                                    totalStatus = earlierStatus;
-                            }
-                            else if (status != 0)
-                            {
-                                teamStatuses.Add(key, status);
-                            }
-
-                            if (time >= 0)
-                            {
-                                totalTime = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
-                            }
-                        }
-                    }
-
-                    
-
-                    var splittimes = new List<ResultStruct>();
-                    /*parse splittimes*/
-                    var codes = new List<int>();
-                    for (int i = fldFirstPost; i < parts.Length - 4; i++)
-                    {
-                        if (parts[i + 1].Length == 0
-                            || parts[i + 2].Length == 0)
-                        {
-                            i += 3;
-                            continue;
-                        }
-                        var s = new ResultStruct();
-                        try
-                        {
-                            i++;
-                            s.ControlCode = Convert.ToInt32(parts[i]);
-
-                            if (s.ControlCode == 999 && status == 0)
-                            {
-                                i++;
-                                if (time == -1)
-                                    time = strTimeToInt(parts[i]);
-                                i++;
-                            }
-                            else
-                            {
-
-                                s.ControlCode += 1000;
-                                while (codes.Contains(s.ControlCode))
-                                {
-                                    s.ControlCode += 1000;
-                                }
-                                codes.Add(s.ControlCode);
-                                i++;
-                                s.Time = strTimeToInt(parts[i]);
-                                i++;
-                                s.Place = 0;
-                                try
-                                {
-                                    s.Place = Convert.ToInt32(parts[i]);
-                                }
-                                catch
-                                { }
-
-                                splittimes.Add(s);
-                            }
-                        }
-                        catch
-                        {
-                        }
-                        
-                    }
-                    FireOnResult(new RelayResult
-                    {
-                        ID = id,
-                        LegNumber = leg,
-                        RunnerName = name,
-                        RunnerClub = club,
-                        Class = Class,
-                        StartTime = start,
-                        Time = time,
-                        Status = status,
-                        SplitTimes = splittimes,
-                        OverallTime = totalTime,
-                        OverallStatus = totalStatus
-                    });
+                    ParseOSResultFilt(fields, sr, isOs2010Files);
                 }
             }
             catch (Exception ee)
@@ -277,8 +109,281 @@ namespace LiveResults.Client
             
         }
 
+        private void ParseOSStartList(string[] fields, StreamReader sr,  bool isOs2010Files)
+        {
+            string[] stoNoFieldNames = OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OS);
+            string[] numLegsField = OxTools.GetOEStringsForKey("OS_Strecken", OxTools.SourceProgram.OS);
+            string[] startFieldNames = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
+            string[] clubFieldNames = OxTools.GetOEStringsForKey("Ort", OxTools.SourceProgram.OS);
+            string[] classFieldNames = OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OS);
+            string[] leg1FieldNames = OxTools.GetOEStringsForKey("Lnr", OxTools.SourceProgram.OS);
+            string[] start1FieldNames = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
+            string[] firstName1FieldNames = OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OS);
+            string[] lastName1FieldNames = OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OS);
+            string[] leg2FieldNames = new string[leg1FieldNames.Length];
+            string[] start2FieldNames = new string[start1FieldNames.Length];
+            string[] firstName2FieldNames = new string[firstName1FieldNames.Length];
+            string[] lastName2FieldNames = new string[lastName1FieldNames.Length];
+            for (int i = 0; i < leg1FieldNames.Length; i++)
+            {
+                leg2FieldNames[i] = leg1FieldNames[i] + "2";
+                leg1FieldNames[i] = leg1FieldNames[i] + "1";
+            }
+            for (int i = 0; i < start1FieldNames.Length; i++)
+            {
+                start2FieldNames[i] = start1FieldNames[i] + "2";
+                start1FieldNames[i] = start1FieldNames[i] + "1";
+            }
+            for (int i = 0; i < firstName2FieldNames.Length; i++)
+            {
+                firstName2FieldNames[i] = firstName1FieldNames[i] + "2";
+                firstName1FieldNames[i] = firstName1FieldNames[i] + "1";
+            }
+            for (int i = 0; i < lastName2FieldNames.Length; i++)
+            {
+                lastName2FieldNames[i] = lastName1FieldNames[i] + "2";
+                lastName1FieldNames[i] = lastName1FieldNames[i] + "1";
+            }
 
-        
+            int fldID = OxTools.GetFieldFromHeader(fields, stoNoFieldNames);
+            int fldNumLegs = OxTools.GetFieldFromHeader(fields, numLegsField);
+            int fldStart = OxTools.GetFieldFromHeader(fields, startFieldNames);
+            int fldClub = OxTools.GetFieldFromHeader(fields, clubFieldNames);
+            int fldClass = OxTools.GetFieldFromHeader(fields, classFieldNames);
+            int fldLeg1 = OxTools.GetFieldFromHeader(fields, leg1FieldNames);
+            int fldLeg2 = OxTools.GetFieldFromHeader(fields, leg2FieldNames);
+            int fldStart1 = OxTools.GetFieldFromHeader(fields, start1FieldNames);
+            int fldFirstName1 = OxTools.GetFieldFromHeader(fields, firstName1FieldNames);
+            int fldLastName1 = OxTools.GetFieldFromHeader(fields, lastName1FieldNames);
+
+            if (fldID == -1 || fldNumLegs == -1 || fldStart == -1 || fldClub == -1 || fldClass == -1 || fldLeg1 == -1 ||
+                fldLeg2 == -1 || fldStart1 == -1 || fldFirstName1 == -1 || fldLastName1 == -1)
+            {
+                    throw new IOException("Cannot detect startlist format!");   
+            }
+
+            int fieldsPerLeg = fldLeg2 - fldLeg1;
+
+            string temp;
+            while ((temp = sr.ReadLine()) != null)
+            {
+                
+                string[] parts = temp.Split(SplitChars);
+                int numLegs = Convert.ToInt32(parts[fldNumLegs]);
+
+                string club = parts[fldClub].Trim('\"');
+                for (int i = 1; i <= numLegs; i++)
+                {
+                    int leg = Convert.ToInt32(parts[fldLeg1 + (i - 1)*fieldsPerLeg].Trim('\"'));
+                    int id =  leg* 1000000 + Convert.ToInt32(parts[fldID]);
+                    string Class = parts[fldClass].Trim('\"') + "-" + leg;
+                    string sstart = parts[fldStart1 + (i - 1)*fieldsPerLeg].Trim('\"');
+                    string firstName = parts[fldFirstName1 + (i - 1)*fieldsPerLeg].Trim('\"');
+                    string lastName = parts[fldLastName1 + (i - 1) * fieldsPerLeg].Trim('\"');
+
+                    FireOnResult(new RelayResult{
+                        ID = id,
+                        LegNumber = leg,
+                        RunnerName = firstName + " " + lastName,
+                        RunnerClub = club,
+                        Class = Class,
+                        StartTime = string.IsNullOrEmpty(sstart) ? -1 : strTimeToInt(sstart),
+                        Time = -1,
+                        Status = 9,
+                        SplitTimes = null,
+                        OverallTime = -1,
+                        OverallStatus = 9
+                    });
+                }
+            }
+        }
+
+        private void ParseOSResultFilt(string[] fields, StreamReader sr, bool isOs2010Files)
+        {
+            /*Detect OS format*/
+            int fldID;
+            int fldSI;
+            int fldFName;
+            int fldEName;
+            int fldClub;
+            int fldClass;
+            int fldStart;
+            int fldTime;
+            int fldStatus;
+            int fldFirstPost;
+            int fldLeg;
+            int fldFinish;
+            int fldTxt1, fldTxt2, fldTxt3;
+            int fldTotalTime;
+            OxTools.DetectOxCSVFormat(OxTools.SourceProgram.OS, fields, out fldID, out fldSI, out fldFName, out fldEName, out fldClub, out fldClass, out fldStart,
+                out fldTime, out fldStatus, out fldFirstPost, out fldLeg, out fldFinish, out fldTxt1, out fldTxt2, out fldTxt3, out fldTotalTime);
+
+            if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
+                || fldStart == -1 || fldTime == -1
+                || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
+            {
+                throw new System.IO.IOException("Not OS-formatted file!");
+            }
+
+            string tmp;
+            var teamStartTimes = new Dictionary<string, int>();
+            var teamStatuses = new Dictionary<string, int>();
+            while ((tmp = sr.ReadLine()) != null)
+            {
+                string[] parts = tmp.Split(SplitChars);
+
+                /* check so that the line is not incomplete*/
+                int id = Convert.ToInt32(parts[fldLeg])*1000000 + Convert.ToInt32(parts[fldID]);
+
+                string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
+                string club = parts[fldClub].Trim('\"');
+                string Class = parts[fldClass].Trim('\"') + "-" + parts[fldLeg].Trim('\"');
+                int leg = Convert.ToInt32(parts[fldLeg].Trim('\"'));
+                int start = strTimeToInt(parts[fldStart]);
+                int time = strTimeToInt(parts[fldTime]);
+
+                int status = 9;
+                try
+                {
+                    status = Convert.ToInt32(parts[fldStatus]);
+                    if (status == 0 && time < 0)
+                    {
+                        status = 9;
+                    }
+                }
+                catch
+                {
+                }
+
+                int totalTime = -1;
+                int totalStatus = status;
+
+                if (isOs2010Files)
+                {
+                    if (fldTotalTime != -1)
+                    {
+                        //OK We have a totaltimefield..
+                        //If totaltime set, use it as time (and status is status)
+                        //Else, check if runner on course (status == 0 and FinishTime is empty => Status = 9)
+                        //Else, something is not right, set status if <> 0, else set mp
+
+                        if (!string.IsNullOrEmpty(parts[fldTotalTime]))
+                        {
+                            totalTime = strTimeToInt(parts[fldTotalTime]);
+                        }
+                        else if (status == 9)
+                        {
+                            //Runner still on course
+                        }
+                        else
+                        {
+                            totalStatus = status != 0 ? status : 3;
+                            totalTime = -3;
+                        }
+                    }
+                    else
+                    {
+                        string key = parts[fldClass].Trim('\"') + ";" + club;
+                        if (!teamStartTimes.ContainsKey(key))
+                        {
+                            teamStartTimes.Add(key, start);
+                        }
+                        else if (teamStartTimes[key] > start)
+                        {
+                            teamStartTimes[key] = start;
+                        }
+
+                        if (teamStatuses.ContainsKey(key))
+                        {
+                            int earlierStatus = teamStatuses[key];
+                            if (status == 0 && earlierStatus != 0)
+                            {
+                                totalStatus = earlierStatus;
+                            }
+                        }
+                        else if (status != 0)
+                        {
+                            teamStatuses.Add(key, status);
+                        }
+
+                        if (time >= 0)
+                        {
+                            totalTime = strTimeToInt(parts[fldFinish]) - teamStartTimes[key];
+                        }
+                    }
+                }
+
+
+                var splittimes = new List<ResultStruct>();
+                /*parse splittimes*/
+                var codes = new List<int>();
+                for (int i = fldFirstPost; i < parts.Length - 4; i++)
+                {
+                    if (parts[i + 1].Length == 0
+                        || parts[i + 2].Length == 0)
+                    {
+                        i += 3;
+                        continue;
+                    }
+                    var s = new ResultStruct();
+                    try
+                    {
+                        i++;
+                        s.ControlCode = Convert.ToInt32(parts[i]);
+
+                        if (s.ControlCode == 999 && status == 0)
+                        {
+                            i++;
+                            if (time == -1)
+                            {
+                                time = strTimeToInt(parts[i]);
+                            }
+                            i++;
+                        }
+                        else
+                        {
+                            s.ControlCode += 1000;
+                            while (codes.Contains(s.ControlCode))
+                            {
+                                s.ControlCode += 1000;
+                            }
+                            codes.Add(s.ControlCode);
+                            i++;
+                            s.Time = strTimeToInt(parts[i]);
+                            i++;
+                            s.Place = 0;
+                            try
+                            {
+                                s.Place = Convert.ToInt32(parts[i]);
+                            }
+                            catch
+                            {
+                            }
+
+                            splittimes.Add(s);
+                        }
+                    }
+                    catch
+                    {
+                    }
+                }
+                FireOnResult(new RelayResult{
+                    ID = id,
+                    LegNumber = leg,
+                    RunnerName = name,
+                    RunnerClub = club,
+                    Class = Class,
+                    StartTime = start,
+                    Time = time,
+                    Status = status,
+                    SplitTimes = splittimes,
+                    OverallTime = totalTime,
+                    OverallStatus = totalStatus
+                });
+            }
+        }
+
+
         public void AnalyzeTeamFile(string filename)
         {
             System.IO.StreamReader sr = null;

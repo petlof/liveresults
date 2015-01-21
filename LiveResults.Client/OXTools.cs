@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.IO;
@@ -120,7 +121,7 @@ namespace LiveResults.Client
             }
         }
 
-        private static int GetFieldFromHeader(string[] fields, IEnumerable<string> fieldNames)
+        public static int GetFieldFromHeader(string[] fields, IEnumerable<string> fieldNames)
         {
             int fld = -1;
             foreach (string t in fieldNames)
@@ -138,7 +139,7 @@ namespace LiveResults.Client
         {
             var cache = source == SourceProgram.OE ? m_lookupCacheOE : m_lookupCacheOS;
             if (cache.ContainsKey(key))
-                return cache[key];
+                return cache[key].Select(x=>x).ToArray();
 
 
             var texts = new List<string>();
