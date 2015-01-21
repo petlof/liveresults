@@ -113,17 +113,15 @@ namespace LiveResults.Client
         {
             string[] stoNoFieldNames = OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OS);
             string[] numLegsField = OxTools.GetOEStringsForKey("OS_Strecken", OxTools.SourceProgram.OS);
-            string[] startFieldNames = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
             string[] clubFieldNames = OxTools.GetOEStringsForKey("Ort", OxTools.SourceProgram.OS);
+            string[] clnameFieldNames = OxTools.GetOEStringsForKey("Abk", OxTools.SourceProgram.OS);
+            string[] descFieldNames = OxTools.GetOEStringsForKey("Bez", OxTools.SourceProgram.OS);
             string[] classFieldNames = OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OS);
             string[] leg1FieldNames = OxTools.GetOEStringsForKey("Lnr", OxTools.SourceProgram.OS);
             string[] start1FieldNames = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
             string[] firstName1FieldNames = OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OS);
             string[] lastName1FieldNames = OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OS);
             string[] leg2FieldNames = new string[leg1FieldNames.Length];
-            string[] start2FieldNames = new string[start1FieldNames.Length];
-            string[] firstName2FieldNames = new string[firstName1FieldNames.Length];
-            string[] lastName2FieldNames = new string[lastName1FieldNames.Length];
             for (int i = 0; i < leg1FieldNames.Length; i++)
             {
                 leg2FieldNames[i] = leg1FieldNames[i] + "2";
@@ -131,23 +129,19 @@ namespace LiveResults.Client
             }
             for (int i = 0; i < start1FieldNames.Length; i++)
             {
-                start2FieldNames[i] = start1FieldNames[i] + "2";
                 start1FieldNames[i] = start1FieldNames[i] + "1";
             }
-            for (int i = 0; i < firstName2FieldNames.Length; i++)
+            for (int i = 0; i < firstName1FieldNames.Length; i++)
             {
-                firstName2FieldNames[i] = firstName1FieldNames[i] + "2";
                 firstName1FieldNames[i] = firstName1FieldNames[i] + "1";
             }
-            for (int i = 0; i < lastName2FieldNames.Length; i++)
+            for (int i = 0; i < lastName1FieldNames.Length; i++)
             {
-                lastName2FieldNames[i] = lastName1FieldNames[i] + "2";
                 lastName1FieldNames[i] = lastName1FieldNames[i] + "1";
             }
 
             int fldID = OxTools.GetFieldFromHeader(fields, stoNoFieldNames);
             int fldNumLegs = OxTools.GetFieldFromHeader(fields, numLegsField);
-            int fldStart = OxTools.GetFieldFromHeader(fields, startFieldNames);
             int fldClub = OxTools.GetFieldFromHeader(fields, clubFieldNames);
             int fldClass = OxTools.GetFieldFromHeader(fields, classFieldNames);
             int fldLeg1 = OxTools.GetFieldFromHeader(fields, leg1FieldNames);
@@ -155,9 +149,11 @@ namespace LiveResults.Client
             int fldStart1 = OxTools.GetFieldFromHeader(fields, start1FieldNames);
             int fldFirstName1 = OxTools.GetFieldFromHeader(fields, firstName1FieldNames);
             int fldLastName1 = OxTools.GetFieldFromHeader(fields, lastName1FieldNames);
+            int fldClName = OxTools.GetFieldFromHeader(fields, clnameFieldNames);
+            int fldDesc = OxTools.GetFieldFromHeader(fields, descFieldNames);
 
-            if (fldID == -1 || fldNumLegs == -1 || fldStart == -1 || fldClub == -1 || fldClass == -1 || fldLeg1 == -1 ||
-                fldLeg2 == -1 || fldStart1 == -1 || fldFirstName1 == -1 || fldLastName1 == -1)
+            if (fldID == -1 || fldNumLegs == -1 || fldClub == -1 || fldClass == -1 || fldLeg1 == -1 ||
+                fldLeg2 == -1 || fldStart1 == -1 || fldFirstName1 == -1 || fldLastName1 == -1 || fldClName == -1 || fldDesc == -1)
             {
                     throw new IOException("Cannot detect startlist format!");   
             }
@@ -171,7 +167,8 @@ namespace LiveResults.Client
                 string[] parts = temp.Split(SplitChars);
                 int numLegs = Convert.ToInt32(parts[fldNumLegs]);
 
-                string club = parts[fldClub].Trim('\"');
+                string club = parts[fldClName].Trim('\"') + " " + parts[fldClub].Trim('\"') + " " + parts[fldDesc].Trim('\"');
+                club = club.Trim();
                 for (int i = 1; i <= numLegs; i++)
                 {
                     int leg = Convert.ToInt32(parts[fldLeg1 + (i - 1)*fieldsPerLeg].Trim('\"'));
