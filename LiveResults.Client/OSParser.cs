@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -11,7 +12,7 @@ namespace LiveResults.Client
     {
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
-        public static char[] SplitChars = new char[] { ';', '\t' };
+        public static char[] SplitChars ={ ';', '\t' };
         private readonly string m_directory;
         
         public OSParser()
@@ -20,18 +21,19 @@ namespace LiveResults.Client
         public OSParser(string directory)
         {
             m_directory = directory;
-            var fsWatcher = new System.IO.FileSystemWatcher(directory);
-            fsWatcher.EnableRaisingEvents = true;
+            var fsWatcher = new FileSystemWatcher(directory){
+                EnableRaisingEvents = true
+            };
             fsWatcher.Renamed += fsWatcher_Renamed;
         }
 
         public void Start()
         {
-            string[] files = System.IO.Directory.GetFiles(m_directory, "*.csv");
+            string[] files = Directory.GetFiles(m_directory, "*.csv");
             foreach (string f in files)
             {
-                AnalyzeFile(System.IO.Path.Combine(m_directory, f));
-                System.IO.File.Delete(System.IO.Path.Combine(m_directory, f));
+                AnalyzeFile(Path.Combine(m_directory, f));
+                File.Delete(Path.Combine(m_directory, f));
             }
 
         }
@@ -50,30 +52,30 @@ namespace LiveResults.Client
                 OnLogMessage(msg);
         }
 
-        void fsWatcher_Renamed(object sender, System.IO.RenamedEventArgs e)
+        void fsWatcher_Renamed(object sender, RenamedEventArgs e)
         {
-            System.Diagnostics.Debug.WriteLine("File Renamed: " + e.OldName + " to " + e.Name);
+            Debug.WriteLine("File Renamed: " + e.OldName + " to " + e.Name);
             AnalyzeFile(e.FullPath);
-            System.Diagnostics.Debug.WriteLine("File analysed");
-            System.IO.File.Delete(e.FullPath);
+            Debug.WriteLine("File analysed");
+            File.Delete(e.FullPath);
         }
 
         public void AnalyzeFile(string filename)
         {
-            System.IO.StreamReader sr =null;
+            StreamReader sr =null;
             try
             {
                 for (int i = 0; i < 30; i++)
                 {
                     try
                     {
-                        sr = new System.IO.StreamReader(filename, Encoding.Default);
+                        sr = new StreamReader(filename, Encoding.Default);
                         break;
                     }
                     catch (Exception ee)
                     {
-                        System.Diagnostics.Debug.WriteLine(ee.Message);
-                        System.Threading.Thread.Sleep(1000);
+                        Debug.WriteLine(ee.Message);
+                        Thread.Sleep(1000);
                     }
                 }
                 if (sr == null)
@@ -121,7 +123,7 @@ namespace LiveResults.Client
             string[] start1FieldNames = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OS);
             string[] firstName1FieldNames = OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OS);
             string[] lastName1FieldNames = OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OS);
-            string[] leg2FieldNames = new string[leg1FieldNames.Length];
+            var leg2FieldNames = new string[leg1FieldNames.Length];
             for (int i = 0; i < leg1FieldNames.Length; i++)
             {
                 leg2FieldNames[i] = leg1FieldNames[i] + "2";
@@ -219,7 +221,7 @@ namespace LiveResults.Client
                 || fldStart == -1 || fldTime == -1
                 || fldStart == -1 || fldFirstPost == -1 || fldLeg == -1)
             {
-                throw new System.IO.IOException("Not OS-formatted file!");
+                throw new IOException("Not OS-formatted file!");
             }
 
             string tmp;
@@ -383,20 +385,20 @@ namespace LiveResults.Client
 
         public void AnalyzeTeamFile(string filename)
         {
-            System.IO.StreamReader sr = null;
+            StreamReader sr = null;
             try
             {
                 for (int i = 0; i < 30; i++)
                 {
                     try
                     {
-                        sr = new System.IO.StreamReader(filename, Encoding.Default);
+                        sr = new StreamReader(filename, Encoding.Default);
                         break;
                     }
                     catch (Exception ee)
                     {
-                        System.Diagnostics.Debug.WriteLine(ee.Message);
-                        System.Threading.Thread.Sleep(1000);
+                        Debug.WriteLine(ee.Message);
+                        Thread.Sleep(1000);
                     }
                 }
                 if (sr == null)
@@ -431,7 +433,7 @@ namespace LiveResults.Client
 
                     if (fldID == -1 || fldClub == -1 || fldClass == -1 || fldName == -1)
                     {
-                        throw new System.IO.IOException("Not OS-formatted file!");
+                        throw new IOException("Not OS-formatted file!");
                     }
                 }
 
