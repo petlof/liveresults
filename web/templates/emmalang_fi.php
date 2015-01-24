@@ -52,4 +52,9 @@ $_LOADINGCLASSES = "Ladataan sarjoja";
 $_START = "Lähtö";
 $_TOTAL = "Kokonaistulos";
 $_CLASS = "Sarja";
+
+// 2.1
+$_ORGANIZER = "Järjestäjä";
+$_DATE = "Päivämäärä";
+
 ?>

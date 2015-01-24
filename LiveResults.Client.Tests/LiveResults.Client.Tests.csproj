@@ -59,7 +59,7 @@
     <Compile Include="UploadCacheTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\WOCEmmaClient\LiveResults.Client.csproj">
+    <ProjectReference Include="..\LiveResults.Client\LiveResults.Client.csproj">
       <Project>{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}</Project>
       <Name>LiveResults.Client</Name>
     </ProjectReference>
@@ -125,6 +125,10 @@
     </Content>
     <Content Include="..\testfiles\iof_xml_notcompeting.xml">
       <Link>TestFiles\iof_xml_notcompeting.xml</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\testfiles\splitsResult_Kugler_Johann_in_Finish.xml">
+      <Link>TestFiles\splitsResult_Kugler_Johann_in_Finish.xml</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="TestFiles\Racom\Middle\race.txt">

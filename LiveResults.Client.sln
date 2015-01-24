@@ -1,13 +1,10 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client", "WOCEmmaClient\LiveResults.Client.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client", "LiveResults.Client\LiveResults.Client.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "H2Sharp", "H2Sharp\H2Sharp.csproj", "{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResSimulator", "LiveResSimulator\LiveResSimulator.csproj", "{7959B35A-48F2-406D-9366-2A82EA10B50A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client.Tests", "LiveResults.Client.Tests\LiveResults.Client.Tests.csproj", "{4B6FA38E-237C-4780-9357-864F07F2A676}"
 EndProject
@@ -59,24 +56,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{505B00D3-748
 	EndProjectSection
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs02
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = WOCEmmaClient\\LiveResults.Client.csproj
-		SccProjectName1 = WOCEmmaClient
-		SccLocalPath1 = WOCEmmaClient
-		SccProjectUniqueName2 = H2Sharp\\H2Sharp.csproj
-		SccProjectName2 = H2Sharp
-		SccLocalPath2 = H2Sharp
-		SccProjectUniqueName3 = LiveResSimulator\\LiveResSimulator.csproj
-		SccProjectName3 = LiveResSimulator
-		SccLocalPath3 = LiveResSimulator
-		SccProjectUniqueName4 = LiveResults.Client.Tests\\LiveResults.Client.Tests.csproj
-		SccProjectName4 = LiveResults.Client.Tests
-		SccLocalPath4 = LiveResults.Client.Tests
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		DebugOE|Any CPU = DebugOE|Any CPU
@@ -120,22 +99,6 @@ Global
 		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
 		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
-		{7959B35A-48F2-406D-9366-2A82EA10B50A}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU

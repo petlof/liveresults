@@ -2,6 +2,7 @@
 using System.Text;
 using System.Collections.Generic;
 using System.Linq;
+using LiveResults.Client.Parsers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace LiveResults.Client.Tests
@@ -12,7 +13,12 @@ namespace LiveResults.Client.Tests
         [TestMethod]
         public void ParseIofV2XmlFile()
         {
-            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"), new LogMessageDelegate(delegate(string msg) { }), false);
+            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"),
+                delegate(string msg)
+                {
+                }, false,
+               new IOFXmlV2Parser.IDCalculator(0).CalculateID);
+                                                                           
 
             Assert.AreEqual(377, runners.Length);
 
@@ -27,9 +33,29 @@ namespace LiveResults.Client.Tests
         }
 
         [TestMethod]
+        public void TestFinishPunchDetected()
+        {
+            var runners = IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("splitsResult_Kugler_Johann_in_Finish.xml"),
+                delegate(string msg)
+                {
+                }, false,
+               new IOFXmlV2Parser.IDCalculator(0).CalculateID);
+
+
+            var runner = runners.First(x => x.ID == 12208);
+            Assert.AreEqual(0, runner.Status);
+            Assert.AreEqual(107600, runner.Time);
+            
+        }
+
+        [TestMethod]
         public void VerifyIofV2XmlFileNotCompetingDoesNotExis()
         {
-            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("iof_xml_notcompeting.xml"), new LogMessageDelegate(delegate(string msg) { }), false);
+            var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("iof_xml_notcompeting.xml"),
+                new LogMessageDelegate(delegate(string msg)
+                {
+                }), false,
+               new IOFXmlV2Parser.IDCalculator(0).CalculateID);
 
             Assert.IsNull(runners.FirstOrDefault(x => x.Name == "Stepan Malinovskii"));
         }

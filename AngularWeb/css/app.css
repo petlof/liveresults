@@ -1,4 +1,4 @@
-﻿body {
+body {
     font-family: 'Cabin','Segoe UI', sans-serif;
 }
 
@@ -8,6 +8,17 @@ a {
 
 h3 {
     margin: 5px;
+}
+
+hr {
+    color: #AFAFAF;
+    background-color: #AFAFAF;
+    height: 2px;
+    border: 0;
+}
+
+p {
+    margin: 4px 0;
 }
 
 
@@ -23,6 +34,7 @@ h3 {
 
 .languagebar  img {
     margin-right: 5px;
+    border: 1px solid #afafaf;
 }
 
 .competitionTable {

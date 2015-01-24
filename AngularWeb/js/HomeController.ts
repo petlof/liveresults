@@ -1,4 +1,6 @@
-﻿module LiveResults.Index {
+///<reference path="../Scripts/typings/angularjs/angular.d.ts/>
+
+module LiveResults.Index {
     export interface IHomeScope extends ng.IScope {
         competitions: LiveResults.Model.Competition[];
         today: string;
@@ -6,20 +8,18 @@
     }
 
     export class HomeController {
+        static $inject = ["$scope", "$http", "$location","$filter", "API_URL","$routeParams"];
         constructor(
-            private $scope: IHomeScope, $http: ng.IHttpService, $location: ng.ILocationService, $filter: ng.IFilterService) {
+            private $scope: IHomeScope, $http: ng.IHttpService, private $location: ng.ILocationService, private $filter: ng.IFilterService, API_URL : string, private $routeParams : any) {
 
-            $http.get('api.php?method=getcompetitions').success(data => {
-                $scope.competitions = data.competitions;
-                $scope.today = $filter('date')(Date.now(), 'yyyy-MM-dd');
+            $http.get(API_URL +'?method=getcompetitions').success((data : any) => {
+                this.$scope.competitions = data.competitions;
+                this.$scope.today = this.$filter('date')(Date.now(), 'yyyy-MM-dd');
             });
 
             $scope.selectComp = (compId: number) => {
-                $location.path('/comp/' + compId);
+                this.$location.path("/" + this.$routeParams["lang"] +'/comp/' + compId);
             };
         }
     }
 }
-
-angular.module('liveresControllers', [])
-    .controller("HomeController", ["$scope", "$http", "$location","$filter", LiveResults.Index.HomeController]);

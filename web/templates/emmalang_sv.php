@@ -52,4 +52,7 @@ $_LOADINGCLASSES = "Laddar klasser";
 $_START = "Start";
 $_TOTAL = "Total";
 $_CLASS = "Klass";
+
+$_ORGANIZER = "Arrangör";
+$_DATE = "Datum";
 ?>

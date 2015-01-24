@@ -240,7 +240,7 @@ this.updateClassResults = function (data)
 											}
 											else
 											{
-												return formatTime(o.aData.start,0,true);
+												return formatTime(o.aData.start,false,0,true);
 											}
 										}
 									});
@@ -271,11 +271,11 @@ this.updateClassResults = function (data)
 							{
 								if (o.aData.place == "-" || o.aData.place == "")
 								{
-									return formatTime(o.aData.result,o.aData.status,false,true, _showThenthOfSecond);
+								    return formatTime(o.aData.result,o.aData.status,_showThenthOfSecond);
 								}
 								else
 								{
-									return formatTime(o.aData.result,o.aData.status,false,true,_showThenthOfSecond) +" (" + o.aData.place +")";
+									return formatTime(o.aData.result,o.aData.status,_showThenthOfSecond) +" (" + o.aData.place +")";
 								}
 							}
 						});
@@ -288,7 +288,7 @@ this.updateClassResults = function (data)
 													if (o.aData.status != 0)
 														return "";
 													else
-														return "+" + formatTime(o.aData.timeplus,o.aData.status,false,true,_showThenthOfSecond);
+														return "+" + formatTime(o.aData.timeplus,o.aData.status,_showThenthOfSecond);
 							}
 						});
 
@@ -381,7 +381,7 @@ this.updateClubResults = function (data)
 											}
 											else
 											{
-												return formatTime(o.aData.start,0,true);
+											    return formatTime(o.aData.start, 0, false, true);
 											}
 										}
 									});
@@ -487,10 +487,10 @@ this.resetSorting = function ()
 
 };
 
-formatTime = function(time,status, showHours, padZeros, showTenthOs)
+formatTime = function (time, status, showTenthOs, showHours, padZeros)
 {
 
-	if (arguments.length==2)
+    if (arguments.length==2 || arguments.length==3)
 	{
 		if (_lang == 'fi'){
 			showHours = true;
@@ -500,7 +500,7 @@ formatTime = function(time,status, showHours, padZeros, showTenthOs)
 			padZeros = true;
 		}
 	}
-	else if (arguments.length==3)
+	else if (arguments.length==4)
 		{
 		if (_lang == 'fi'){
 				padZeros = false;
@@ -800,7 +800,7 @@ insertIntoResults = function(result, data)
 		}
 	}
 
-	data.push(tmp[i]);
+	data.push(result);
 };
 
 resultSorter = function(a,b)
