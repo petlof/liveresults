@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading;
 
@@ -18,6 +19,17 @@ namespace LiveResults.Client
         public OSParser()
         {
         }
+
+        public static int CreateID(int leg, int stNo)
+        {
+            return leg*1000000 + stNo;
+        }
+
+        public static int StNoFromID(int leg, int id)
+        {
+            return id - leg * 1000000;
+        }
+
         public OSParser(string directory)
         {
             m_directory = directory;
@@ -163,6 +175,7 @@ namespace LiveResults.Client
             int fieldsPerLeg = fldLeg2 - fldLeg1;
 
             string temp;
+            int row = 0;
             while ((temp = sr.ReadLine()) != null)
             {
                 
@@ -174,7 +187,8 @@ namespace LiveResults.Client
                 for (int i = 1; i <= numLegs; i++)
                 {
                     int leg = Convert.ToInt32(parts[fldLeg1 + (i - 1)*fieldsPerLeg].Trim('\"'));
-                    int id =  leg* 1000000 + Convert.ToInt32(parts[fldID]);
+                    int stNo = Convert.ToInt32(parts[fldID]);
+                    int id = CreateID(leg, stNo);
                     string Class = parts[fldClass].Trim('\"') + "-" + leg;
                     string sstart = parts[fldStart1 + (i - 1)*fieldsPerLeg].Trim('\"');
                     string firstName = parts[fldFirstName1 + (i - 1)*fieldsPerLeg].Trim('\"');
@@ -194,6 +208,7 @@ namespace LiveResults.Client
                         OverallStatus = 9
                     });
                 }
+                row++;
             }
         }
 
@@ -232,7 +247,7 @@ namespace LiveResults.Client
                 string[] parts = tmp.Split(SplitChars);
 
                 /* check so that the line is not incomplete*/
-                int id = Convert.ToInt32(parts[fldLeg])*1000000 + Convert.ToInt32(parts[fldID]);
+                int id = CreateID(Convert.ToInt32(parts[fldLeg]), Convert.ToInt32(parts[fldID]));
 
                 string name = parts[fldFName].Trim('\"') + " " + parts[fldEName].Trim('\"');
                 string club = parts[fldClub].Trim('\"');
@@ -494,7 +509,7 @@ namespace LiveResults.Client
                             teamPrevStatus = status;
                         }
 
-                        int id = leg * 1000000 + Convert.ToInt32(parts[fldID]);
+                        int id = CreateID(leg, Convert.ToInt32(parts[fldID]));
                         FireOnResult(new Result
                         {
                             ID = id,

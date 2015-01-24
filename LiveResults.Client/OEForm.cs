@@ -68,6 +68,7 @@ namespace LiveResults.Client
                     if (s != null)
                     {
                         txtOEDirectory.Text = s.Location;
+                        txtZeroTime.Text = s.ZeroTime;
                         txtExtension.Text = s.extension;
                         txtCompID.Text = s.CompID.ToString(CultureInfo.InvariantCulture);
                         for (int i = 0; i < m_supportedFormats.Count; i++)
@@ -151,11 +152,15 @@ namespace LiveResults.Client
             {
                 if (!string.IsNullOrEmpty(txtZeroTime.Text))
                 {
-                    var rex = new Regex(@"(\d\d):(\d\d):(\d\d)");
+                    var rex = new Regex(@"(\d\d?):(\d\d):(\d\d)");
                     var m = rex.Match(txtZeroTime.Text);
                     if (m.Success)
                     {
                         m_parsedZeroTime = int.Parse(m.Groups[1].Value)*360000 + int.Parse(m.Groups[2].Value)*6000 + int.Parse(m.Groups[3].Value)*100;
+                    }
+                    else
+                    {
+                        Logit("WARN: Could not parse Zero-Time,skipping (Use format HH:MM:SS)");
                     }
                 }
 
@@ -218,6 +223,20 @@ namespace LiveResults.Client
                         c.SetRunnerSplit(newResult.ID, r.ControlCode, r.Time);
                     }
                 }
+
+                if (newResult is RelayResult && newResult.Time > 0)
+                {
+                    var rs = newResult as RelayResult;
+                    int nextLegId = OSParser.CreateID(rs.LegNumber + 1, OSParser.StNoFromID(rs.LegNumber, rs.ID));
+                    if (c.IsRunnerAdded(nextLegId))
+                    {
+                        if (c.GetRunner(nextLegId).StartTime <= 0)
+                        {
+                            c.SetRunnerStartTime(nextLegId, rs.StartTime + rs.Time + m_parsedZeroTime);
+                        }
+                    }
+                }
+
             }
         }
 
@@ -392,7 +411,8 @@ namespace LiveResults.Client
                     Location = txtOEDirectory.Text,
                     CompID = int.Parse(txtCompID.Text),
                     extension = txtExtension.Text,
-                    Format = (cmbFormat.SelectedItem as FormatItem).Name
+                    Format = (cmbFormat.SelectedItem as FormatItem).Name,
+                    ZeroTime = txtZeroTime.Text
 
                 };
 
@@ -418,6 +438,7 @@ namespace LiveResults.Client
             public int  CompID { get; set; }
             public string extension { get; set; }
             public string Format { get; set; }
+            public string ZeroTime { get; set; }
         }
 
         private void button4_Click(object sender, EventArgs e)
