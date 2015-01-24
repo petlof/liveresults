@@ -466,10 +466,10 @@ namespace LiveResults.Client
                                     var r = item as RadioControl;
                                     cmd.Parameters.Clear();
                                     cmd.Parameters.AddWithValue("?compid", m_compID);
-                                    cmd.Parameters.AddWithValue("?name", r.ClassName);
+                                    cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetBytes(r.ClassName));
                                     cmd.Parameters.AddWithValue("?corder", r.Order);
                                     cmd.Parameters.AddWithValue("?code", r.Code);
-                                    cmd.Parameters.AddWithValue("?cname", r.ControlName);
+                                    cmd.Parameters.AddWithValue("?cname", Encoding.UTF8.GetBytes(r.ControlName));
                                     cmd.CommandText = "REPLACE INTO splitcontrols(tavid,classname,corder,code,name) VALUES (?compid,?name,?corder,?code,?cname)";
 
                                     try
@@ -492,9 +492,9 @@ namespace LiveResults.Client
                                     {
                                         cmd.Parameters.Clear();
                                         cmd.Parameters.AddWithValue("?compid", m_compID);
-                                        cmd.Parameters.AddWithValue("?name", r.Name);
-                                        cmd.Parameters.AddWithValue("?club", r.Club);
-                                        cmd.Parameters.AddWithValue("?class", r.Class);
+                                        cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetBytes(r.Name));
+                                        cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetBytes(r.Club));
+                                        cmd.Parameters.AddWithValue("?class", Encoding.UTF8.GetBytes(r.Class));
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid) VALUES (?compid,?name,?club,?class,0,?id)";
