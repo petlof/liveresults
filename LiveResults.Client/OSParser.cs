@@ -345,12 +345,12 @@ namespace LiveResults.Client
                         i++;
                         s.ControlCode = Convert.ToInt32(parts[i]);
 
-                        if (s.ControlCode == 999 && status == 0)
+                        if (s.ControlCode == 999 && (status == 0 || status == 9))
                         {
                             i++;
-                            if (time == -1)
+                            if (totalTime == -1 || totalTime== -9)
                             {
-                                time = strTimeToInt(parts[i]);
+                                totalTime = strTimeToInt(parts[i]);
                             }
                             i++;
                         }

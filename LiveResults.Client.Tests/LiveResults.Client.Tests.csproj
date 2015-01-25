@@ -65,6 +65,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\testfiles\20150125_100921_emma_preReadout.csv">
+      <Link>TestFiles\20150125_100921_emma_preReadout.csv</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="..\testfiles\madonas.csv">
       <Link>TestFiles\madonas.csv</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

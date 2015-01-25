@@ -434,5 +434,25 @@ namespace LiveResults.Client.Tests
             Assert.AreEqual((26 * 60 + 37) * 100, res.SplitTimes[1].Time);
             Assert.AreEqual((36 * 60 + 26) * 100, res.SplitTimes[2].Time);
         }
+
+        [TestMethod]
+        public void TestOS2010FinishPunch()
+        {
+            var pars = new OSParser();
+
+            var results = new List<Result>();
+
+            pars.OnResult += results.Add;
+
+            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("20150125_100921_emma_preReadout.csv"));
+
+            Assert.AreEqual(15, results.Count);
+            var r = results.First(x => x.RunnerName == "Sandro Truttmann");
+            Assert.IsInstanceOfType(r, typeof (RelayResult));
+            Assert.AreEqual(0, r.StartTime);
+            Assert.AreEqual(9, (r as RelayResult).OverallStatus);
+            Assert.AreEqual(230300, (r as RelayResult).OverallTime);
+
+        }
     }
 }
