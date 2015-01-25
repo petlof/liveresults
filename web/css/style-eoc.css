@@ -38,6 +38,7 @@ tr.new_result td.sorting_1 { background-color: #F9B7A4 !important;  border-botto
 #langchooser { vertical-align: middle; line-height:21px;}
 #langchooser img {  border: 1px solid #AAAAAA; vertical-align: middle}
 
+#divClasses { white-space: nowrap;}
 
 .eI {
 background: url('../images/sprite_black2.png') no-repeat -63px -63px;
