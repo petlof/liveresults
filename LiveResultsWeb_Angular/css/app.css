@@ -86,8 +86,12 @@ p {
     text-align: left;
 }
 
+    .resultGridStyle th,td {
+        padding: 0 5px;
+    }
+
 .oddresult {
-    background-color: #DFDFDF;
+    background-color: #F5F5F5;
 }
 
 .classList {
@@ -99,5 +103,22 @@ p {
     }
 .classList th {
     text-align: left;
+}
+    .classList td {
+        padding: 0 3px;
+    }
+
+.classList .selectedClass {
+    background-color: #d3d3d3;
+    font-weight: bold;
+}
+
+.footer{
+    width: 100%;
+    font-size:10px;
+    color:#afafaf;
+    text-transform: uppercase;
+    text-align: center;
+    padding-top: 50px;
 }
 

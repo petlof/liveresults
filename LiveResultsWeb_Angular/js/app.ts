@@ -1,5 +1,5 @@
 
-var liveresApp = angular.module("liveresApp", ['ngRoute', 'liveresControllers','pascalprecht.translate'])
+var liveresApp = angular.module("liveresApp", ['ngRoute', 'liveresControllers','pascalprecht.translate','ngSanitize'])
     .config(['$routeProvider', ($routeprovider: ng.route.IRouteProvider) => {
     $routeprovider.when('/:lang', { templateUrl: 'Views/home.html', controller: 'HomeController' });
     $routeprovider.when('/:lang/comp/:competition/:className?', { templateUrl: 'Views/competition.html', controller: 'CompetitionController' });
@@ -12,7 +12,19 @@ angular.module('liveresControllers', ['LiveResults.Config','pascalprecht.transla
         .controller("HomeController", <any>LiveResults.Index.HomeController)
         .controller("AppServices", <any>LiveResults.App.AppServices);
 
+liveresApp.filter('resultTime', [
+    () => (time: number, status: number, showHours: boolean, padZeros: boolean) => {
+        return LiveResults.Utils.TimeUtils.formatTime(time, status, showHours, padZeros);
+    }
+]);
+
+liveresApp.filter('toTrustedHtml', [
+    '$sce', $sce => (text) => {
+        return $sce.trustAsHtml(text);
+    }
+]);
+
 var config = angular.module('LiveResults.Config', [])
-    .constant('APP_NAME','EmmaClient LiveResults')
-    .constant('APP_VERSION','0.2')
-    .constant('apiUrl','/api.php');
+    .constant('APP_NAME', 'EmmaClient LiveResults')
+    .constant('APP_VERSION', '0.2')
+    .constant('apiUrl', '/api.php');

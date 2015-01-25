@@ -5,29 +5,34 @@
                 <table>
                     <tr><th>{{'CHOOSECLASSHEADER' | translate}}</th></tr>
                     <tr data-ng-repeat="class in classes">
-                        <td><a ng-click="selectClass(class)">{{class}}</a></td>
+                        <td data-ng-class="{'selectedClass' : class == selectedClass}"><a ng-click="selectClass(class)" data-ng-bind-html="class"></a></td>
                     </tr>
                 </table>
             </div>
         </td>
-        <td>
-            <!--<div class="resultGridStyle" ng-grid="gridOptions" style="height: {{tableHeight}}"></div>---->
-            <table class="resultGridStyle">
+        <td style="vertical-align: top">
+            <span data-ng-if="!selectedClass">{{'NOCLASSCHOSEN' | translate}}</span>
+            <h3 class="classHeader" data-ng-if="selectedClass">{{selectedClass | uppercase}}</h3>
+            <table class="resultGridStyle" data-ng-if="selectedClass">
                 <tr>
-                    <th style="min-width: 50px">#</th>
-                    <th style="min-width: 150px">Name</th>
-                    <th style="min-width: 150px">Club</th>
-                    <th>Time</th>
-                    <th>Time+</th>
+                    <th style="width: 20px">{{'RES_COL_RANK' | translate}}</th>
+                    <th>{{'RES_COL_NAME' | translate}}</th>
+                    <th>{{'RES_COL_CLUB' | translate}}</th>
+                    <th style="width: 75px;">{{'RES_COL_START' | translate}}</th>
+                    <th style="width: 75px; text-align: right">{{'RES_COL_TIME' | translate}}</th>
+                    <th style="width: 75px">{{'RES_COL_TIMEPLUS' | translate}}</th>
                 </tr>
                 <tr data-ng-repeat="result in results" ng-class-odd="'oddresult'">
                     <td>{{result.place}}</td>
-                    <td>{{result.name}}</td>
-                    <td>{{result.club}}</td>
-                    <td>{{result.result}}</td>
+                    <td data-ng-bind-html="result.name"></td>
+                    <td data-ng-bind-html="result.club"></td>
+                    <td>{{result.start ? (result.start | resultTime : 0:true:true) : ""}}</td>
+                    <td style="text-align: right">{{result.result | resultTime : result.status:true:true}}</td>
+                    <td>{{result.status == 0 ? "+" + (result.timeplus | resultTime : 0:true:true) : ""}}</td>
 
                 </tr>
             </table>
         </td>
     </tr>
 </table>
+<div class="footer">Copyright &copy;2015, LiveResults, <a href="http://emmaclient.codeplex.com" target="_blank">http://emmaclient.codeplex.com</a></div>

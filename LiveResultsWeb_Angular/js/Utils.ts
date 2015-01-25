@@ -14,7 +14,7 @@
         };
 
 
-        public static formatTime = (time, status, showHours, padZeros) => {
+        public static formatTime = (time : number, status: number, showHours : boolean, padZeros:boolean) => {
 
             if (status != 0) {
                 return TimeUtils.runnerStatus[status];
