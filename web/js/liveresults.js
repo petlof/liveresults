@@ -659,6 +659,50 @@ this.setAutomaticUpdate = function(val)
 	}
 };
 
+///Calculates rank on each split
+calculateRankOnSplits = function(data)
+{
+    if (curClassSplits != null)
+    {
+        for (var i = 0; i < data.length; i++)
+        {
+            data[i].haveSplits = false;
+        }
+
+        for (var s = 0; s < curClassSplits.length; s++)
+        {
+            var splitCode = curClassSplits[s].code;
+            data.sort(function(a,b) { return a.splits[splitCode] - b.splits[splitCode];});
+            var lastPos = 1;
+            var posCnt = 1;
+            var lastTime = -1;
+            for (i = 0; i < data.length; i++)
+            {
+                if (data[i].splits[splitCode] != "")
+                {
+                    data[i].haveSplits = true;
+
+                    if (lastTime == data[i].splits[splitCode])
+                        data[i].splits[splitCode + "-place"] = lastPos;
+                    else
+                    {
+                        data[i].splits[splitCode + "-place"] = posCnt;
+                        lastPos = posCnt;
+                    }
+                    lastTime = data[i].splits[splitCode];
+                    posCnt++;
+                }
+                else
+                {
+                    data[i].splits[splitCode + "-place"] = "";
+                }
+            }
+
+        }
+    }
+}
+
+
 updateResultVirtualPosition = function(data)
 {
     var i;
