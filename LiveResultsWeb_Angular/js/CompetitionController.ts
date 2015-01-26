@@ -9,6 +9,8 @@ module LiveResults.Competition {
         tableHeight : string;
         selectClass(className : string);
         selectedClass : string;
+        splitControls : Model.SplitControl[];
+        lastUpdated : Date;
     }
 
 
@@ -17,31 +19,54 @@ module LiveResults.Competition {
         lastGetClassesHash: string;
         lastGetResultsHash : string;
         resultsUpdateTimerRef : any;
+        isActive : boolean = false;
 
-        static $inject = ["$routeParams", "$scope", "$http", "apiUrl","$log"];
+        static $inject = ["$routeParams", "$scope", "$http", "apiUrl","$log","$location"];
 
         constructor(private $routeParams: any,
-            private $scope: ICompetitionScope, private $http: ng.IHttpService, private apiUrl: string, private $log : ng.ILogService) {
+            private $scope: ICompetitionScope, private $http: ng.IHttpService, private apiUrl: string, private $log : ng.ILogService, private $location : ng.ILocationService) {
             this.competitionId = $routeParams["competition"];
             this.updateClasses();
 
+            if ($routeParams["className"]) {
+                this.$scope.selectedClass = $routeParams["className"];
+                this.updateResults();
+            }
+
 
             $scope.selectClass = (className: string) => {
-                this.$scope.selectedClass = className;
-                this.updateResults();
+                this.$location.path($routeParams["lang"] + "/comp/" + $routeParams["competition"] + "/" + className);
             };
+
+            $scope.$on('$destroy', () => {
+                this.$log.debug("Result-view Destroyed");
+                this.isActive = false;
+                if (this.resultsUpdateTimerRef) {
+                    {
+                        clearTimeout(this.resultsUpdateTimerRef);
+                        this.resultsUpdateTimerRef = null;
+                    }
+                }
+            });
 
         }
 
         private updateResults() {
             if (this.$scope.selectedClass) {
-                this.$http.get(this.apiUrl + '?comp=' + this.competitionId + '&method=getclassresults&unformattedTimes=true&class=' + this.$scope.selectedClass + '&last_hash=' + this.lastGetResultsHash).success((data: any) => {
+                this.$http.get(this.apiUrl + '?comp=' + this.competitionId + '&method=getclassresults&unformattedTimes=true&class=' + this.$scope.selectedClass + '&last_hash=' + this.lastGetResultsHash).success((data: IResultsResponse) => {
 
-                    if (data.results) {
-                        
+                    this.$scope.lastUpdated = new Date();
+                    if (data && data.status && data.status == "NOT MODIFIED") {
+
+                    } else {
+                        this.lastGetResultsHash = data.hash;
+                        if (data && data.results) {
+                            Utils.TimeUtils.calculateRankOnSplits(data);
+                            data.results.sort(Utils.TimeUtils.resultSorter);
+                        }
+                        this.$scope.splitControls = data.splitcontrols;
+                        this.$scope.results = data.results;
                     }
-
-                    this.$scope.results = data.results;
                     this.scheduleResultUpdate();
                 }).error(() => {
                     

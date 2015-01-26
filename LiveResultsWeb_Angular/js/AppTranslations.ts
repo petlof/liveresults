@@ -19,29 +19,31 @@ liveresApp.config(['$translateProvider', ($translateProvider : ng.translate.ITra
         'RES_COL_CLUB' : 'Klubb',
         'RES_COL_TIME' : 'Mål',
         'RES_COL_TIMEPLUS' : '',
-        'RES_COL_START' : 'Start'
-    });   
-    
+        'RES_COL_START' : 'Start',
+        'RES_LASTUPDATED' : 'Senast uppdaterad'
+    });
+
     $translateProvider.translations("en", {
         //Startpage
-        'NAME': "Name", 
-        'ORGANIZER' : "Organizer",
-        'DATE' : "Date",
+        'NAME': "Name",
+        'ORGANIZER': "Organizer",
+        'DATE': "Date",
         'NOCOMPETITIONSTODAY': "No competitions today",
-        'LIVETODAY' : "Live today!",
-        'COMPETITIONARCHIVE' : "Archive",
-        'CHOOSECOMPETITION' : 'Choose Competition',
-        
+        'LIVETODAY': "Live today!",
+        'COMPETITIONARCHIVE': "Archive",
+        'CHOOSECOMPETITION': 'Choose Competition',
+
         //Competition
-        'CHOOSECLASSHEADER' : 'Class',
+        'CHOOSECLASSHEADER': 'Class',
         'NOCLASSCHOSEN': "Chose class to view",
         'RES_COL_RANK': '#',
         'RES_COL_NAME': 'Name',
         'RES_COL_CLUB': 'Organization',
         'RES_COL_TIME': 'Finish',
         'RES_COL_TIMEPLUS': '',
-        'RES_COL_START': 'Start'
-    });   
+        'RES_COL_START': 'Start',
+        'RES_LASTUPDATED': 'LAST UPDATED:'
+});   
     
     $translateProvider.preferredLanguage('se');
 }]);

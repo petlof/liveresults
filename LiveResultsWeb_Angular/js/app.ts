@@ -2,7 +2,7 @@
 var liveresApp = angular.module("liveresApp", ['ngRoute', 'liveresControllers','pascalprecht.translate','ngSanitize'])
     .config(['$routeProvider', ($routeprovider: ng.route.IRouteProvider) => {
     $routeprovider.when('/:lang', { templateUrl: 'Views/home.html', controller: 'HomeController' });
-    $routeprovider.when('/:lang/comp/:competition/:className?', { templateUrl: 'Views/competition.html', controller: 'CompetitionController' });
+    $routeprovider.when('/:lang/comp/:competition/:className?', { templateUrl: 'Views/competition.html', controller: 'CompetitionController', reloadOnSearch: false });
     $routeprovider.otherwise({ redirectTo: '/se' });
 }]);
 
@@ -18,11 +18,6 @@ liveresApp.filter('resultTime', [
     }
 ]);
 
-liveresApp.filter('toTrustedHtml', [
-    '$sce', $sce => (text) => {
-        return $sce.trustAsHtml(text);
-    }
-]);
 
 var config = angular.module('LiveResults.Config', [])
     .constant('APP_NAME', 'EmmaClient LiveResults')

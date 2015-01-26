@@ -827,6 +827,7 @@
     <TypeScriptCompile Include="js\CompetitionController.ts" />
     <TypeScriptCompile Include="js\HomeController.ts" />
     <TypeScriptCompile Include="js\Utils.ts" />
+    <TypeScriptCompile Include="Model\Contract.ts" />
     <TypeScriptCompile Include="Model\Model.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-translate\angular-translate.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-animate.d.ts" />
