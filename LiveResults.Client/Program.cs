@@ -14,7 +14,14 @@ namespace LiveResults.Client
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new FrmNewCompetition());
+
+            using (var sirapInterface = new SirapInterface())
+            {
+                sirapInterface.Start();
+                Application.Run(new FrmNewCompetition());
+                sirapInterface.Stop();
+            }
+
         }
     }
 }

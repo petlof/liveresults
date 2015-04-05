@@ -57,6 +57,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{505B00D3-748
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResultsWeb_Angular", "LiveResultsWeb_Angular\LiveResultsWeb_Angular.csproj", "{C1463B2E-DF52-41F6-B822-004D334DE612}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpSirapTest", "UdpSirapTest\UdpSirapTest.csproj", "{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -133,6 +135,22 @@ Global
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
+		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

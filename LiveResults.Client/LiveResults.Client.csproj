@@ -148,6 +148,7 @@
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
     <Compile Include="Parsers\Jwoc2014Parser.cs" />
     <Compile Include="Result.cs" />
+    <Compile Include="SirapInterface.cs" />
     <Compile Include="WocParser.cs" />
     <Compile Include="FrmMonitor.cs">
       <SubType>Form</SubType>
