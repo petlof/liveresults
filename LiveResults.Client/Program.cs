@@ -15,11 +15,11 @@ namespace LiveResults.Client
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            using (var sirapInterface = new SirapInterface())
+            //using (var sirapInterface = new SirapInterface())
             {
-                sirapInterface.Start();
+              //  sirapInterface.Start();
                 Application.Run(new FrmNewCompetition());
-                sirapInterface.Stop();
+                //sirapInterface.Stop();
             }
 
         }
