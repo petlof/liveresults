@@ -8,7 +8,7 @@ body {background-color: #ffffff; margin-top:5px; margin-left:5px; font-size:68.7
 body.iframed {margin-left:0px; margin-right:0px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
 
 table {font-size:1em;}
-td{font-family: arial, helvetica, verdana, geneva, sans-serif; font-size:1em; line-height: 1.4em;}
+td{font-family: arial, helvetica, verdana, geneva, sans-serif; font-size:1em; line-height: 1.4em; white-space: nowrap;}
 
 a:link {font-size:1em; color:#F1592A;}
 a:visited {font-size:1em; color:#F1592A;}

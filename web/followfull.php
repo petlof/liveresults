@@ -231,7 +231,7 @@ function changeFontSize(val)
 </div>
 <?php }?>
 <?php if($showLastPassings){?>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
 			<tr>
 			<!--Customized logo --><!--<td width="161">
 			<img src="images/fin5.png"/></td>-->
