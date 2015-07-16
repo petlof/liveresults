@@ -1,0 +1,779 @@
+﻿module LiveResults {
+
+    export var Instance: AjaxViewer = null;
+
+    export class AjaxViewer {
+        private updateAutomatically: boolean = true;
+        private updateInterval: number = 15000;
+        private classUpdateInterval: number = 60000;
+
+        private classUpdateTimer = null;
+        private passingsUpdateTimer = null;
+        private resUpdateTimeout = null;
+
+        private lastClassListHash: string = "";
+        private lastPassingsUpdateHash: string = "";
+
+        private curClassName = "";
+        private lastClassHash = "";
+        private curClassSplits: any[] = null;
+
+        private curClubName = "";
+        private lastClubHash = "";
+
+        private currentTable = null;
+
+        constructor(private competitionId: number, private language: string, private classesDiv: HTMLDivElement, private lastPassingsDiv: HTMLDivElement,
+            private resultsHeaderDiv: HTMLDivElement, private resultsControlsDiv: HTMLDivElement, private resultsDiv: HTMLDivElement,
+            private txtResetSorting: HTMLDivElement,
+            private resources: any, private isMultiDayEvent: boolean, private isSingleClass: boolean, private setAutomaticUpdateText: HTMLDivElement,
+            private runnerStatus: any, private showTenthOfSecond: boolean) {
+            LiveResults.Instance = this;
+
+            (<any>$(window)).hashchange(() => {
+                if (window.location.hash) {
+                    var hash = window.location.hash.substring(1);
+                    var cl;
+                    if (hash.indexOf('club::') >= 0) {
+                        cl = hash.substring(6);
+                        if (cl != this.curClubName) {
+                            LiveResults.Instance.viewClubResults(hash.substring(6));
+                        }
+                    } else {
+                        cl = hash;
+                        if (cl != this.curClassName) {
+                            this.chooseClass(hash);
+                        }
+                    }
+                }
+            });
+
+            (<any>$(window)).hashchange();
+        }
+
+        //Detect if the browser is a mobile phone
+        public mobilecheck() {
+            var check = false;
+            (function(a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) check = true; })(navigator.userAgent || navigator.vendor || (<any>window).opera);
+            return check;
+        }
+
+        ///Update the classlist
+        public updateClassList() {
+            if (this.updateAutomatically) {
+                $.ajax({
+                    url: "api.php",
+                    data: "comp=" + this.competitionId + "&method=getclasses&last_hash=" + this.lastClassListHash,
+                    success: (data) => {
+                        this.handleUpdateClassListResponse(data);
+                    },
+                    error: () => { this.classUpdateTimer = setTimeout(
+                    () => {
+                        this.updateClassList();
+                    }, this.classUpdateInterval); },
+                    dataType: "json"
+                });
+            }
+        }
+
+        public handleUpdateClassListResponse(data) {
+            if (data != null && data.status == "OK") {
+                if (data.classes != null) {
+                    var str = "<nowrap>";
+                    $.each(data.classes,
+                        (key, value) => {
+                            str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + value.className + "')\">" + value.className + "</a><br/>";
+                        }
+                    );
+                    str += "</nowrap>";
+                    $("#" + this.classesDiv).html(str);
+                    this.lastClassListHash = data.hash;
+                }
+            }
+
+            this.classUpdateTimer = setTimeout(() => {
+                this.updateClassList();
+            }, this.classUpdateInterval);
+        }
+
+        //Set wether to display tenthofasecond in results
+        public setShowTenth(val: boolean) {
+            this.showTenthOfSecond = val;
+        }
+
+        //Request data for the last-passings div
+        public updateLastPassings() {
+            if (this.updateAutomatically) {
+                $.ajax({
+                    url: "api.php",
+                    data: "comp=" + this.competitionId + "&method=getlastpassings&lang=" + this.language + "&last_hash=" + this.lastPassingsUpdateHash,
+                    success: (data) => { this.handleUpdateLastPassings(data); },
+                    error: () => { this.passingsUpdateTimer = setTimeout(() => {
+                        this.updateLastPassings();
+                    }, this.updateInterval); },
+                    dataType: "json"
+                });
+            }
+
+        }
+
+        //Handle response for updating the last passings..
+        private handleUpdateLastPassings(data) {
+            if (data != null && data.status == "OK") {
+                if (data.passings != null) {
+                    var str = "";
+                    $.each(data.passings,
+                        (key, value) => {
+                            str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:LiveResults.Instance.chooseClass('" + value["class"] + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? this.resources["_LASTPASSFINISHED"] : this.resources["_LASTPASSPASSED"] + " " + value["controlName"]) + " " + this.resources["_LASTPASSWITHTIME"] + " " + value["time"] + "<br/>";
+                        }
+                    );
+                    $("#" + this.lastPassingsDiv).html(str);
+                    this.lastPassingsUpdateHash = data.hash;
+                }
+            }
+
+            this.passingsUpdateTimer = setTimeout(
+            () => {
+                this.updateLastPassings();
+            }, this.updateInterval);
+        }
+
+        //Check for updateing of class results
+        private checkForClassUpdate() {
+            if (this.updateAutomatically) {
+                if (this.currentTable != null) {
+                    $.ajax({
+                        url: "api.php",
+                        data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(this.curClassName) + "&last_hash=" + this.lastClassHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
+                        success: (data) => {
+                            this.handleUpdateClassResults(data);
+                        },
+                        error: () => { this.resUpdateTimeout = setTimeout(
+                        () => {
+                            this.checkForClassUpdate();
+                        }, this.updateInterval); },
+                        dataType: "json"
+                    });
+                    if (typeof (_gaq) == "object") {
+                        _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + this.curClassName]);
+                    }
+                }
+            }
+
+        }
+
+        //handle response from class-results-update
+        private handleUpdateClassResults(data) {
+            if (data.status == "OK") {
+                if (this.currentTable != null) {
+                    this.updateResultVirtualPosition(data.results);
+                    this.currentTable.fnClearTable();
+                    this.currentTable.fnAddData(data.results, true);
+                    this.lastClassHash = data.hash;
+                }
+            }
+            this.resUpdateTimeout = setTimeout(() => {
+                this.checkForClassUpdate();
+            }, this.updateInterval);
+        }
+
+        //Check for update in clubresults
+        private checkForClubUpdate() {
+            if (this.updateAutomatically) {
+                if (this.currentTable != null) {
+                    $.ajax({
+                        url: "api.php",
+                        data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(this.curClubName) + "&last_hash=" + this.lastClubHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
+                        success: (data) => { this.handleUpdateClubResults(data); },
+                        error: () => { this.resUpdateTimeout = setTimeout(
+                        () => {
+                            this.checkForClubUpdate();
+                        }, this.updateInterval); },
+                        dataType: "json"
+                    });
+                    if (typeof (_gaq) == "object") {
+                        _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + this.curClubName]);
+                    }
+                }
+            }
+
+        }
+
+        //handle the response on club-results update
+        private handleUpdateClubResults(data) {
+            if (data.status == "OK") {
+                if (this.currentTable != null) {
+                    this.currentTable.fnClearTable();
+                    this.currentTable.fnAddData(data.results, true);
+                    this.lastClubHash = data.hash;
+                }
+            }
+            this.resUpdateTimeout = setTimeout(() => {
+                this.checkForClubUpdate();
+            }, this.updateInterval);
+        }
+
+        public chooseClass(className) {
+            if (this.currentTable != null)
+                this.currentTable.fnDestroy();
+
+            clearTimeout(this.resUpdateTimeout);
+
+            $('#divResults').html('');
+            this.curClassName = className;
+            this.curClubName = null;
+            $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
+            $.ajax({
+                url: "api.php",
+                data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(className) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
+                success: (data) => {
+                    this.updateClassResults(data);
+                },
+                dataType: "json"
+            });
+
+            if (typeof (_gaq) == "object") {
+                _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + className]);
+            }
+
+            if (this.isSingleClass) {
+                window.location.hash = className;
+            }
+            this.resUpdateTimeout = setTimeout(() => {
+                this.checkForClassUpdate();
+            }, this.updateInterval);
+        }
+
+        private updateClassResults(data) {
+            if (data != null && data.status == "OK") {
+                if (data.className != null) {
+                    $('#' + this.resultsHeaderDiv).html('<b>' + data.className + '</b>');
+                    $('#' + this.resultsControlsDiv).show();
+                }
+
+                if (data.results != null) {
+                    var columns = Array();
+                    columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [0], "mDataProp": "place" });
+                    columns.push({ "sTitle": this.resources["_NAME"], "bSortable": false, "aTargets": [1], "mDataProp": "name" });
+                    columns.push({
+                        "sTitle": this.resources["_CLUB"],
+                        "bSortable": false,
+                        "aTargets": [2],
+                        "mDataProp": "club",
+                        "fnRender": (o) => {
+                            return "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + o.aData.club + "')\">" + o.aData.club + "</a>";
+                        }
+
+                    });
+
+                    this.curClassSplits = data.splitcontrols;
+
+                    this.updateResultVirtualPosition(data.results);
+
+                    var col = 3;
+                    columns.push({
+                        "sTitle": this.resources["_START"],
+                        "sClass": "left",
+                        "sType": "numeric",
+                        "aDataSort": [col],
+                        "aTargets": [col],
+                        "bUseRendered": false,
+                        "mDataProp": "start",
+                        "fnRender": (o) => {
+                            if (o.aData.start == "") {
+                                return "";
+                            } else {
+                                return this.formatTime(o.aData.start, false, false, true);
+                            }
+                        }
+                    });
+
+                    col++;
+
+                    if (data.splitcontrols != null) {
+                        $.each(data.splitcontrols,
+                        (key, value) => {
+                            columns.push({
+                                "sTitle": value.name,
+                                "sClass": "left",
+                                "sType": "numeric",
+                                "aDataSort": [col + 1, col],
+                                "aTargets": [col],
+                                "bUseRendered": false,
+                                "mDataProp": "splits." + value.code,
+                                "fnRender": (o) => {
+                                    if (o.aData.splits[value.code + "_status"] != 0)
+                                        return "";
+                                    else
+                                        return this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "-place"] + ")";
+                                }
+                            });
+                            col++;
+                            columns.push({ "sTitle": value.name + "_Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "splits." + value.code + "_status" });
+                        });
+                    }
+
+                    var timecol = col;
+                    columns.push({
+                        "sTitle": this.resources["_CONTROLFINISH"],
+                        "sClass": "left",
+                        "sType": "numeric",
+                        "aDataSort": [col + 1, col, 0],
+                        "aTargets": [col],
+                        "bUseRendered": false,
+                        "mDataProp": "result",
+                        "fnRender": (o) => {
+                            if (o.aData.place == "-" || o.aData.place == "") {
+                                return this.formatTime(o.aData.result, o.aData.status, this.showTenthOfSecond);
+                            } else {
+                                return this.formatTime(o.aData.result, o.aData.status, this.showTenthOfSecond) + " (" + o.aData.place + ")";
+                            }
+                        }
+                    });
+
+                    col++;
+                    columns.push({ "sTitle": "Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "status" });
+                    columns.push({
+                        "sTitle": "",
+                        "sClass": "center",
+                        "bSortable": false,
+                        "aTargets": [col++],
+                        "mDataProp": "timeplus",
+                        "fnRender": (o) => {
+                            if (o.aData.status != 0)
+                                return "";
+                            else
+                                return "+" + this.formatTime(o.aData.timeplus, o.aData.status, this.showTenthOfSecond);
+                        }
+                    });
+
+                    if (this.isMultiDayEvent) {
+
+                        columns.push({
+                            "sTitle": this.resources["_TOTAL"],
+                            "sClass": "left",
+                            "sType": "numeric",
+                            "aDataSort": [col + 1, col, 0],
+                            "aTargets": [col],
+                            "bUseRendered": false,
+                            "mDataProp": "totalresult",
+                            "fnRender": (o) => {
+                                if (o.aData.totalplace == "-" || o.aData.totalplace == "") {
+                                    return this.formatTime(o.aData.totalresult, o.aData.totalstatus);
+                                } else {
+                                    return this.formatTime(o.aData.totalresult, o.aData.totalstatus) + " (" + o.aData.totalplace + ")";
+                                }
+                            }
+                        });
+
+                        col++;
+                        columns.push({ "sTitle": "TotalStatus", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "totalstatus" });
+                        columns.push({
+                            "sTitle": "",
+                            "sClass": "center",
+                            "bSortable": false,
+                            "aTargets": [col++],
+                            "mDataProp": "totalplus",
+                            "fnRender": (o) => {
+                                if (o.aData.totalstatus != 0)
+                                    return "";
+                                else
+                                    return "+" + this.formatTime(o.aData.totalplus, o.aData.totalstatus);
+                            }
+                        });
+
+                    }
+
+                    columns.push({ "sTitle": "VP", "bVisible": false, "aTargets": [col++], "mDataProp": "virtual_position" });
+
+                    this.currentTable = (<any>$('#' + this.resultsDiv)).dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false,
+                        "bSort": true,
+                        "bInfo": false,
+                        "bAutoWidth": false,
+                        "aaData": data.results,
+                        "aaSorting": [[col - 1, "asc"]],
+                        "aoColumnDefs": columns,
+                        "fnPreDrawCallback": (oSettings) => {
+                            if (oSettings.aaSorting[0][0] != col - 1) {
+                                $("#" + this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + this.resources["_RESETTODEFAULT"] + "</a>");
+                            }
+                        }
+                    });
+
+                    this.lastClassHash = data.hash;
+                }
+            }
+        }
+
+        public setAutomaticUpdate(val: boolean) {
+            this.updateAutomatically = val;
+            if (this.updateAutomatically) {
+                $("#" + this.setAutomaticUpdateText).html("<b>" + this.resources["_AUTOUPDATE"] + ":</b> " + this.resources["_ON"] + " | <a href=\"javascript:LiveResults.Instance.setAutomaticUpdate(false);\">" + this.resources["_OFF"] + "</a>");
+                this.checkForClassUpdate();
+                this.updateLastPassings();
+                this.checkForClassUpdate();
+
+            } else {
+                clearTimeout(this.resUpdateTimeout);
+                clearTimeout(this.passingsUpdateTimer);
+                clearTimeout(this.classUpdateTimer);
+                $("#" + this.setAutomaticUpdateText).html("<b>" + this.resources["_AUTOUPDATE"] + ":</b> <a href=\"javascript:LiveResults.Instance.setAutomaticUpdate(true);\">" + this.resources["_ON"] + "</a> | " + this.resources["_OFF"] + "");
+            }
+        }
+
+        private formatTime(time, status, showTenthOs?: boolean, showHours?: boolean, padZeros?: boolean) {
+
+            if (arguments.length == 2 || arguments.length == 3) {
+                if (this.language == 'fi') {
+                    showHours = true;
+                    padZeros = false;
+                } else {
+                    showHours = false;
+                    padZeros = true;
+                }
+            } else if (arguments.length == 4) {
+                if (this.language == 'fi') {
+                    padZeros = false;
+                } else {
+                    padZeros = true;
+                }
+            }
+
+            if (status != 0) {
+                return this.runnerStatus[status];
+            } else {
+                var minutes;
+                var seconds;
+                var tenth;
+                if (showHours) {
+                    var hours = Math.floor(time / 360000);
+                    minutes = Math.floor((time - hours * 360000) / 6000);
+                    seconds = Math.floor((time - minutes * 6000 - hours * 360000) / 100);
+                    tenth = Math.floor((time - minutes * 6000 - hours * 360000 - seconds * 100) / 10);
+                    if (hours > 0) {
+                        if (padZeros)
+                            hours = <any>this.strPad(hours, 2);
+
+                        return hours + ":" + this.strPad(minutes, 2) + ":" + this.strPad(seconds, 2) + (showTenthOs ? "." + tenth : "");
+                    } else {
+                        if (padZeros)
+                            minutes = this.strPad(minutes, 2);
+
+                        return minutes + ":" + this.strPad(seconds, 2) + (showTenthOs ? "." + tenth : "");
+                    }
+
+                } else {
+
+                    minutes = Math.floor(time / 6000);
+                    seconds = Math.floor((time - minutes * 6000) / 100);
+                    tenth = Math.floor((time - minutes * 6000 - seconds * 100) / 10);
+                    if (padZeros) {
+                        return this.strPad(minutes, 2) + ":" + this.strPad(seconds, 2) + (showTenthOs ? "." + tenth : "");
+                    } else {
+                        return minutes + ":" + this.strPad(seconds, 2) + (showTenthOs ? "." + tenth : "");
+                    }
+                }
+            }
+        }
+
+        private strPad(num, length) {
+            var str = '' + num;
+            while (str.length < length) {
+                str = '0' + str;
+            }
+            return str;
+        }
+
+        private updateResultVirtualPosition(data) {
+            var i;
+            if (this.curClassSplits != null) {
+                for (i = 0; i < data.length; i++) {
+                    data[i].haveSplits = false;
+                }
+
+                for (var s = 0; s < this.curClassSplits.length; s++) {
+                    var splitCode = this.curClassSplits[s].code;
+                    data.sort((a, b) => a.splits[splitCode] - b.splits[splitCode]);
+                    var lastPos = 1;
+                    var posCnt = 1;
+                    var lastTime = -1;
+                    for (i = 0; i < data.length; i++) {
+                        if (data[i].splits[splitCode] != "") {
+                            data[i].haveSplits = true;
+
+                            if (lastTime == data[i].splits[splitCode])
+                                data[i].splits[splitCode + "-place"] = lastPos;
+                            else {
+                                data[i].splits[splitCode + "-place"] = posCnt;
+                                lastPos = posCnt;
+                            }
+                            lastTime = data[i].splits[splitCode];
+                            posCnt++;
+                        } else {
+                            data[i].splits[splitCode + "-place"] = "";
+                        }
+                    }
+
+                }
+            }
+
+            data.sort(this.resultSorter);
+
+            /* move down runners that have not finished to the correct place*/
+            var firstFinishedIdx = -1;
+            for (i = 0; i < data.length; i++) {
+                if (data[i].place != "") {
+                    firstFinishedIdx = i;
+                    break;
+                }
+            }
+
+            if (firstFinishedIdx == -1)
+                firstFinishedIdx = data.length - 1;
+
+            var tmp = Array();
+            for (i = 0; i < firstFinishedIdx; i++) {
+                tmp.push(data[i]);
+            }
+
+            data.splice(0, firstFinishedIdx);
+
+            tmp.sort(this.sortByDist);
+
+            for (i = 0; i < tmp.length; i++) {
+                if (data.length == 0)
+                    data.push(tmp[i]);
+                else
+                    this.insertIntoResults(tmp[i], data);
+            }
+
+
+            for (i = 0; i < data.length; i++) {
+                data[i].virtual_position = i;
+            }
+        }
+
+        ///Sorts results by the one that have run longest on the course
+        private sortByDist(a, b) {
+            for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
+                var splitCode = this.curClassSplits[s].code;
+                if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
+                    return 1;
+                else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
+                    return -1;
+            }
+            return 0;
+        }
+
+        private insertIntoResults(result, data) {
+            var haveSplit = false;
+            var d;
+            if (this.curClassSplits != null) {
+                for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
+                    var splitCode = this.curClassSplits[s].code;
+                    if (result.splits[splitCode] != "") {
+                        haveSplit = true;
+                        for (d = 0; d < data.length; d++) {
+                            if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode])) {
+                                data.splice(d, 0, result);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+
+
+            if (result.start != "") {
+                for (d = 0; d < data.length; d++) {
+                    if (data[d].place == "-") {
+                        data.splice(d, 0, result);
+                        return;
+                    }
+                    if (result.place == "" && data[d].place != "") {
+                    } else if (data[d].start != "" && data[d].start > result.start && !haveSplit && !data[d].haveSplits) {
+                        data.splice(d, 0, result);
+                        return;
+                    }
+
+                }
+            }
+
+            data.push(result);
+        }
+
+        private resultSorter(a, b) {
+            if (a.place != "" && b.place != "") {
+                if (a.status != b.status)
+                    return a.status - b.status;
+                else {
+                    if (a.result == b.result) {
+                        if (a.place == "=" && b.place != "=") {
+                            return 1;
+                        } else if (b.place == "=" && a.place != "=") {
+                            return -1;
+                        } else {
+                            return 0;
+                        }
+
+                    } else {
+                        return a.result - b.result;
+                    }
+                }
+
+            } else if (a.place == "-" || a.place != "") {
+                return 1;
+            } else if (b.place == "-" || b.place != "") {
+                return -1;
+            } else {
+
+                return 0;
+            }
+        }
+
+        public newWin() {
+            var url = 'followfull.php?comp=' + this.competitionId + '&lang=' + this.language;
+            if (this.curClassName != null)
+                url += '&class=' + encodeURIComponent(this.curClassName);
+            else
+                url += '&club=' + encodeURIComponent(this.curClubName);
+
+            window.open(url, '', 'status=0,toolbar=0,location=0,menubar=0,directories=0,scrollbars=1,resizable=1,width=900,height=600');
+        }
+
+        public viewClubResults(clubName : string) {
+            if (this.currentTable != null)
+                this.currentTable.fnDestroy();
+
+            clearTimeout(this.resUpdateTimeout);
+
+            $('#divResults').html('');
+            this.curClubName = clubName;
+            this.curClassName = null;
+            $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
+
+            $.ajax({
+                url: "api.php",
+                data: "comp=" + this.competitionId+ "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(clubName) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
+                success: (data) => {
+                    this.updateClubResults(data);
+                },
+                dataType: "json"
+            });
+
+            if (typeof (_gaq) == "object") {
+                _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + clubName]);
+            }
+
+            if (!this.isSingleClass) {
+                window.location.hash = "club::" + clubName;
+            }
+
+            this.resUpdateTimeout = setTimeout(() => {
+                this.checkForClubUpdate();
+            }, this.updateInterval);
+        }
+
+        private updateClubResults (data) {
+            if (data != null && data.status == "OK") {
+                if (data.clubName != null) {
+                    $('#' + this.resultsHeaderDiv).html('<b>' + data.clubName + '</b>');
+                    $('#' + this.resultsControlsDiv).show();
+                }
+
+                if (data.results != null) {
+                    var columns = Array();
+                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place" });
+                    columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [1], "mDataProp": "name" });
+                    columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [2], "mDataProp": "club" });
+                    columns.push({
+                        "sTitle": this.resources["_CLASS"], "aTargets": [3], "mDataProp": "class",
+                        "fnRender":  (o) => {
+                            return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + o.aData["class"] + "')\">" + o.aData["class"] + "</a>";
+                        }
+
+                    });
+
+                    var col = 4;
+                    columns.push({
+                        "sTitle": this.resources["_START"], "sClass": "left", "sType": "numeric", "aDataSort": [col], "aTargets": [col], "bUseRendered": false, "mDataProp": "start",
+                        "fnRender":  (o) => {
+                            if (o.aData.start == "") {
+                                return "";
+                            }
+                            else {
+                                return this.formatTime(o.aData.start, 0, false, true);
+                            }
+                        }
+                    });
+
+                    col++;
+
+                    var timecol = col;
+                    columns.push({
+                        "sTitle": this.resources["_CONTROLFINISH"], "sClass": "left", "sType": "numeric", "aDataSort": [col + 1, col, 0], "aTargets": [col], "bUseRendered": false, "mDataProp": "result",
+                        "fnRender":  (o) => {
+                            if (o.aData.place == "-" || o.aData.place == "") {
+                                return this.formatTime(o.aData.result, o.aData.status);
+                            }
+                            else {
+                                return this.formatTime(o.aData.result, o.aData.status) + " (" + o.aData.place + ")";
+                            }
+                        }
+                    });
+
+                    col++;
+                    columns.push({ "sTitle": "Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "status" });
+                    columns.push({
+                        "sTitle": "", "sClass": "center", "bSortable": false, "aTargets": [col++], "mDataProp": "timeplus",
+                        "fnRender":  (o) => {
+                            if (o.aData.status != 0)
+                                return "";
+                            else
+                                return "+" + this.formatTime(o.aData.timeplus, o.aData.status);
+                        }
+                    });
+
+                    
+                    this.currentTable = (<any>$('#' + this.resultsDiv)).dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false,
+                        "bSort": true,
+                        "bInfo": false,
+                        "bAutoWidth": false,
+                        "aaData": data.results,
+                        "aaSorting": [[0, "asc"]],
+                        "aoColumnDefs": columns,
+                        "fnPreDrawCallback":  (oSettings) => {
+                            if (oSettings.aaSorting[0][0] != 0) {
+                                $("#" + this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + this.resources["_RESETTODEFAULT"] + "</a>");
+                            }
+                        }
+                    });
+
+                    this.lastClubHash = data.hash;
+                }
+            }
+
+           
+        }
+        public resetSorting() {
+            var idxCol = 0;
+            $.each(this.currentTable.fnSettings().aoColumns, (idx, val) => {
+                if (val.sTitle == "VP") {
+                    idxCol = idx;
+                }
+            });
+
+            this.currentTable.fnSort([[idxCol, 'asc']]);
+            $("#" + this.txtResetSorting).html("");
+        }
+    }
+}
+
+//GA tracker-object
+var _gaq: any;
