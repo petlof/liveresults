@@ -1,8 +1,11 @@
 ﻿module LiveResults {
 
+// ReSharper disable once InconsistentNaming
     export var Instance: AjaxViewer = null;
 
     export class AjaxViewer {
+        // ReSharper disable once InconsistentNaming
+        public static VERSION : string = "2015-07-16-01";
         private updateAutomatically: boolean = true;
         private updateInterval: number = 15000;
         private classUpdateInterval: number = 60000;
@@ -214,8 +217,14 @@
         }
 
         public chooseClass(className) {
-            if (this.currentTable != null)
-                this.currentTable.fnDestroy();
+            if (this.currentTable != null) {
+                try {
+                    this.currentTable.fnDestroy();
+                } catch (e) {
+
+                }
+            }
+
 
             clearTimeout(this.resUpdateTimeout);
 
@@ -558,12 +567,14 @@
 
         ///Sorts results by the one that have run longest on the course
         private sortByDist(a, b) {
-            for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
-                var splitCode = this.curClassSplits[s].code;
-                if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
-                    return 1;
-                else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
-                    return -1;
+            if (this.curClassSplits != null) {
+                for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
+                    var splitCode = this.curClassSplits[s].code;
+                    if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
+                        return 1;
+                    else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
+                        return -1;
+                }
             }
             return 0;
         }
@@ -645,8 +656,13 @@
         }
 
         public viewClubResults(clubName : string) {
-            if (this.currentTable != null)
-                this.currentTable.fnDestroy();
+            if (this.currentTable != null) {
+
+                try {
+                    this.currentTable.fnDestroy();
+                } catch (e) {
+                }
+            }
 
             clearTimeout(this.resUpdateTimeout);
 
