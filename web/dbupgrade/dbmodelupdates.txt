@@ -1,0 +1,6 @@
+--additions 2013-06-06
+alter table LOGIN add column videourl varchar(255);
+alter table LOGIN add column videotype varchar(255);
+
+--additions 2015-07-18
+ alter table login add column twitter varchar(255);

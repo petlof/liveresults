@@ -11,6 +11,7 @@
   `multidayparent` int(11) DEFAULT NULL,
   videourl varchar(255),
   videotype varchar(255),
+  twitter varchar(255),
   PRIMARY KEY (`user`)
 ) DEFAULT CHARSET=utf8;
 

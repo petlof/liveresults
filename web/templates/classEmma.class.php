@@ -3,7 +3,7 @@ $CHARSET = 'utf-8';
 class Emma
 {
 
-	public static $db_server = "liveresultat.orientering.se";
+	public static $db_server = "127.0.0.1";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
@@ -20,6 +20,7 @@ class Emma
    
    var $m_VideoFormat = "";
    var $m_VideoUrl = "";
+   var $m_TwitterFeed = "";
    
 	var $m_Conn;
 
@@ -292,6 +293,9 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		    if (isset($tmp["videotype"]))
 				$this->m_VideoFormat= $tmp["videotype"];
         
+         if (isset($tmp["twitter"]))
+				$this->m_TwitterFeed= $tmp["twitter"];
+        
 		    if (isset($tmp['multidaystage']))
 		    {
 		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null)
@@ -315,6 +319,11 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	{
 		return $this->m_VideoFormat != "";
 	}
+  
+   function HasTwitter()
+	{
+		return $this->m_TwitterFeed != "";
+	}
 
 	function GetVideoEmbedCode()
 	{
@@ -324,6 +333,11 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		}
 		return "";
 	}
+  
+  function GetTwitterFeed()
+  {
+    return $this->m_TwitterFeed;
+  }
 
 
 	function CompName()
