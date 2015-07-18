@@ -50,7 +50,7 @@ $_STATUSDNS = "dns";
 
 $_STATUSDNF = "dnf";
 
-$_STATUSWO = "wo";
+$_STATUSWO = "dns";
 
 $_STATUSMOVEDUP = "moved up";
 

@@ -35,7 +35,7 @@ $_STATUSDNF = "dnf";
 $_STATUSMP = "mp";
 $_STATUSDSQ = "disq";
 $_STATUSOT = "ot";
-$_STATUSWO = "wo"; // where is this used?
+$_STATUSWO = "dns";
 $_STATUSMOVEDUP = "поднялся"; // where is this used?
 $_STATUSNOTSTARTED = "не стартовал"; // where is this used?
 

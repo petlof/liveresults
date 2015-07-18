@@ -32,7 +32,7 @@ $_STATUSDNF = "Aufg";
 $_STATUSMP = "Fehlst";
 $_STATUSDSQ = "Disqu";
 $_STATUSOT = "ZeitÜb";
-$_STATUSWO = "wo"; // where is this used?
+$_STATUSWO = "N Ang";
 $_STATUSMOVEDUP = "aufgestiegen"; // where is this used?
 $_STATUSNOTSTARTED = "nicht gestartet"; // where is this used?
 
