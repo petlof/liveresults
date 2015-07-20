@@ -69,7 +69,7 @@ namespace LiveResults.Client
 
             if (fldID == -1 || fldSI == -1 || fldFName == -1 || fldEName == -1 || fldClub == -1 || fldClass == -1
                 || fldStart == -1 || fldTime == -1
-                || fldStart == -1 || fldFirstPost == -1 || ( source == SourceProgram.OS || fldLeg == -1))
+                || fldStart == -1 || fldFirstPost == -1 || ( source == SourceProgram.OS && fldLeg == -1))
             {
                 /*Try detect fixedFormat*/
                 if (fields[0] == "OS0016")

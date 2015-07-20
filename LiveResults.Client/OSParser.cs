@@ -126,7 +126,7 @@ namespace LiveResults.Client
         private void ParseOSStartList(string[] fields, StreamReader sr,  bool isOs2010Files)
         {
             string[] stoNoFieldNames = OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OS);
-            string[] numLegsField = OxTools.GetOEStringsForKey("OS_Strecken", OxTools.SourceProgram.OS);
+            string[] numLegsField = OxTools.GetOEStringsForKey("OS_NoLegs", OxTools.SourceProgram.OS);
             string[] clubFieldNames = OxTools.GetOEStringsForKey("Ort", OxTools.SourceProgram.OS);
             string[] clnameFieldNames = OxTools.GetOEStringsForKey("Abk", OxTools.SourceProgram.OS);
             string[] descFieldNames = OxTools.GetOEStringsForKey("Bez", OxTools.SourceProgram.OS);
