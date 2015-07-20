@@ -395,9 +395,9 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
     $ret = Array();
 
-    $q = "SELECT Control from results, runners where results.TavID = ". $this->m_CompId . " and runners.TavID = " . $this->m_CompId . " and results.dbid = runners.dbid and runners.class = '" . $className ."' and results.Control != 1000 Group by Control";
+    $q = "SELECT Control from results, runners where results.TavID = ". $this->m_CompId . " and runners.TavID = " . $this->m_CompId . " and results.dbid = runners.dbid and runners.class = '" . mysql_real_escape_string($className) ."' and results.Control != 1000 Group by Control";
 
-    $q = "SELECT code, name from splitcontrols where tavid = " .$this->m_CompId. " and classname = '" . $className ."' order by corder";
+    $q = "SELECT code, name from splitcontrols where tavid = " .$this->m_CompId. " and classname = '" . mysql_real_escape_string($className) ."' order by corder";
 
     if ($result = mysql_query($q))
 
@@ -573,7 +573,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 			$ret = Array();
 
 
-			$q = "SELECT runners.Name, runners.Club, results.Time ,results.Status, results.Changed, results.DbID, results.Control From runners,results where results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." AND runners.Class = '".$className."'  ORDER BY results.Dbid";
+			$q = "SELECT runners.Name, runners.Club, results.Time ,results.Status, results.Changed, results.DbID, results.Control From runners,results where results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." AND runners.Class = '". mysql_real_escape_string($className)."'  ORDER BY results.Dbid";
 
 			if ($result = mysql_query($q,$this->m_Conn))
 
@@ -665,7 +665,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 				$comps .= ")";
 
 
-				$q = "SELECT results.Time, results.Status, results.TavId, results.DbID From runners,results where results.Control = 1000 and results.DbID = runners.DbId AND results.TavId in $comps AND runners.TavId = results.TavId AND runners.Class = '".$className."'  ORDER BY results.Dbid";
+				$q = "SELECT results.Time, results.Status, results.TavId, results.DbID From runners,results where results.Control = 1000 and results.DbID = runners.DbId AND results.TavId in $comps AND runners.TavId = results.TavId AND runners.Class = '".mysql_real_escape_string($className)."'  ORDER BY results.Dbid";
 
 				if ($result = mysql_query($q,$this->m_Conn))
 

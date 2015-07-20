@@ -86,7 +86,10 @@ var LiveResults;
                 if (data.classes != null) {
                     var str = "<nowrap>";
                     $.each(data.classes, function (key, value) {
-                        str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + value.className + "')\">" + value.className + "</a><br/>";
+                        var param = value.className;
+                        if (param && param.length > 0)
+                            param = param.replace('\'', '\\\'');
+                        str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + value.className + "</a><br/>";
                     });
                     str += "</nowrap>";
                     $("#" + this.classesDiv).html(str);
@@ -125,7 +128,10 @@ var LiveResults;
                 if (data.passings != null) {
                     var str = "";
                     $.each(data.passings, function (key, value) {
-                        str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:LiveResults.Instance.chooseClass('" + value["class"] + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? _this.resources["_LASTPASSFINISHED"] : _this.resources["_LASTPASSPASSED"] + " " + value["controlName"]) + " " + _this.resources["_LASTPASSWITHTIME"] + " " + value["time"] + "<br/>";
+                        var cl = value["class"];
+                        if (cl && cl.length > 0)
+                            cl = cl.replace('\'', '\\\'');
+                        str += value.passtime + ": " + value.runnerName + " (<a href=\"javascript:LiveResults.Instance.chooseClass('" + cl + "')\">" + value["class"] + "</a>) " + (value.control == 1000 ? _this.resources["_LASTPASSFINISHED"] : _this.resources["_LASTPASSPASSED"] + " " + value["controlName"]) + " " + _this.resources["_LASTPASSWITHTIME"] + " " + value["time"] + "<br/>";
                     });
                     $("#" + this.lastPassingsDiv).html(str);
                     this.lastPassingsUpdateHash = data.hash;
@@ -235,7 +241,7 @@ var LiveResults;
             if (typeof (_gaq) == "object") {
                 _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + className]);
             }
-            if (this.isSingleClass) {
+            if (!this.isSingleClass) {
                 window.location.hash = className;
             }
             this.resUpdateTimeout = setTimeout(function () {
@@ -259,7 +265,10 @@ var LiveResults;
                         "aTargets": [2],
                         "mDataProp": "club",
                         "fnRender": function (o) {
-                            return "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + o.aData.club + "')\">" + o.aData.club + "</a>";
+                            var param = o.aData.club;
+                            if (param && param.length > 0)
+                                param = param.replace('\'', '\\\'');
+                            return "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + o.aData.club + "</a>";
                         }
                     });
                     this.curClassSplits = data.splitcontrols;
@@ -658,7 +667,10 @@ var LiveResults;
                     columns.push({
                         "sTitle": this.resources["_CLASS"], "aTargets": [3], "mDataProp": "class",
                         "fnRender": function (o) {
-                            return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + o.aData["class"] + "')\">" + o.aData["class"] + "</a>";
+                            var param = o.aData["class"];
+                            if (param && param.length > 0)
+                                param = param.replace('\'', '\\\'');
+                            return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + o.aData["class"] + "</a>";
                         }
                     });
                     var col = 4;
