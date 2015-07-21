@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -126,14 +127,22 @@ namespace LiveResults.Client
             int fld = -1;
             foreach (string t in fieldNames)
             {
-                fld = Array.IndexOf(fields, t);
+                for (int i = 0; i < fields.Length; i++)
+                {
+                    if (string.Compare(fields[i],t,StringComparison.InvariantCultureIgnoreCase) == 0)
+                    {
+                        fld = i;
+                        break;
+                    }
+                }
+                
                 if (fld >= 0)
                     break;
             }
             return fld;
         }
 
-        static readonly Dictionary<string, string[]> m_lookupCacheOE = new Dictionary<string, string[]>();
+        private static readonly Dictionary<string, string[]> m_lookupCacheOE = new Dictionary<string, string[]>();
         static readonly Dictionary<string, string[]> m_lookupCacheOS = new Dictionary<string, string[]>();
         public static string[] GetOEStringsForKey(string key, SourceProgram source)
         {
