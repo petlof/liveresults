@@ -353,6 +353,12 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	  return $this->m_CompDate;
 
 	}
+  
+  function TimeZoneDiff()
+  {
+    return $this->m_TimeDiff/3600;
+  }
+  
 
 	function Classes()
 	{

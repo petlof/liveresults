@@ -306,7 +306,7 @@ var LiveResults;
                                     if (o.aData.splits[value.code + "_status"] != 0)
                                         return "";
                                     else
-                                        return _this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "-place"] + ")";
+                                        return _this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "_place"] + ")";
                                 }
                             });
                             col++;
@@ -480,35 +480,6 @@ var LiveResults;
         };
         AjaxViewer.prototype.updateResultVirtualPosition = function (data) {
             var i;
-            if (this.curClassSplits != null) {
-                for (i = 0; i < data.length; i++) {
-                    data[i].haveSplits = false;
-                }
-                for (var s = 0; s < this.curClassSplits.length; s++) {
-                    var splitCode = this.curClassSplits[s].code;
-                    data.sort(function (a, b) { return a.splits[splitCode] - b.splits[splitCode]; });
-                    var lastPos = 1;
-                    var posCnt = 1;
-                    var lastTime = -1;
-                    for (i = 0; i < data.length; i++) {
-                        if (data[i].splits[splitCode] != "") {
-                            data[i].haveSplits = true;
-                            if (lastTime == data[i].splits[splitCode])
-                                data[i].splits[splitCode + "-place"] = lastPos;
-                            else {
-                                data[i].splits[splitCode + "-place"] = posCnt;
-                                lastPos = posCnt;
-                            }
-                            lastTime = data[i].splits[splitCode];
-                            posCnt++;
-                        }
-                        else {
-                            data[i].splits[splitCode + "-place"] = "";
-                        }
-                    }
-                }
-            }
-            data.sort(this.resultSorter);
             /* move down runners that have not finished to the correct place*/
             var firstFinishedIdx = -1;
             for (i = 0; i < data.length; i++) {
@@ -537,16 +508,7 @@ var LiveResults;
         };
         ///Sorts results by the one that have run longest on the course
         AjaxViewer.prototype.sortByDist = function (a, b) {
-            if (this.curClassSplits != null) {
-                for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
-                    var splitCode = this.curClassSplits[s].code;
-                    if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
-                        return 1;
-                    else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
-                        return -1;
-                }
-            }
-            return 0;
+            return b.progress - a.progress;
         };
         AjaxViewer.prototype.insertIntoResults = function (result, data) {
             var haveSplit = false;
@@ -557,6 +519,9 @@ var LiveResults;
                     if (result.splits[splitCode] != "") {
                         haveSplit = true;
                         for (d = 0; d < data.length; d++) {
+                            //insert result 
+                            // * before results with - as placemark
+                            // * before the first result with worse time at this split 
                             if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode])) {
                                 data.splice(d, 0, result);
                                 return;
@@ -573,7 +538,7 @@ var LiveResults;
                     }
                     if (result.place == "" && data[d].place != "") {
                     }
-                    else if (data[d].start != "" && data[d].start > result.start && !haveSplit && !data[d].haveSplits) {
+                    else if (data[d].start != "" && data[d].start > result.start && result.progress == 0 && data[d].progress == 0) {
                         data.splice(d, 0, result);
                         return;
                     }

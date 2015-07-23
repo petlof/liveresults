@@ -13,6 +13,7 @@
         private classUpdateTimer = null;
         private passingsUpdateTimer = null;
         private resUpdateTimeout = null;
+        private updatePredictedTimeTimer = null;
 
         private lastClassListHash: string = "";
         private lastPassingsUpdateHash: string = "";
@@ -25,6 +26,9 @@
         private lastClubHash = "";
 
         private currentTable = null;
+        private serverTimeDiff = null;
+
+        public eventTimeZoneDiff = 0;
 
         constructor(private competitionId: number, private language: string, private classesDiv: HTMLDivElement, private lastPassingsDiv: HTMLDivElement,
             private resultsHeaderDiv: HTMLDivElement, private resultsControlsDiv: HTMLDivElement, private resultsDiv: HTMLDivElement,
@@ -52,6 +56,12 @@
             });
 
             (<any>$(window)).hashchange();
+
+         
+        }
+
+        public startPredictionUpdate() {
+            this.updatePredictedTimeTimer = setInterval(() => { this.updatePredictedTimes(); }, 1000);
         }
 
         //Detect if the browser is a mobile phone
@@ -100,6 +110,42 @@
             this.classUpdateTimer = setTimeout(() => {
                 this.updateClassList();
             }, this.classUpdateInterval);
+        }
+
+        private updatePredictedTimes() {
+            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff) {
+                try {
+                    var data = this.currentTable.fnGetData();
+                    var dt = new Date();
+                    var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100 - (this.serverTimeDiff / 10) + (this.eventTimeZoneDiff * 360000);
+                    for (var i = 0; i < data.length; i++) {
+                        if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
+                            if (data[i].start < time) {
+                                if (this.curClassSplits == null || this.curClassSplits.length == 0) {
+                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                } else {
+
+                                    //find next split to reach
+                                    var nextSplit = 0;
+                                    for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
+                                        if (data[i].splits[this.curClassSplits[sp].code] != "") {
+                                            {
+                                                nextSplit = sp + 1;
+                                                break;
+                                            }
+
+                                        }
+                                    }
+
+                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(" + (4+nextSplit)+ ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {
+                }
+            }
         }
 
         //Set wether to display tenthofasecond in results
@@ -154,7 +200,16 @@
                     $.ajax({
                         url: "api.php",
                         data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(this.curClassName) + "&last_hash=" + this.lastClassHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
-                        success: (data) => {
+                        success: (data, status, resp) => {
+
+                            try {
+                                var reqTime = resp.getResponseHeader("date");
+                                if (reqTime) {
+                                    this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
+                                }
+                            } catch (e) {
+                            }
+
                             this.handleUpdateClassResults(data);
                         },
                         error: () => { this.resUpdateTimeout = setTimeout(
@@ -193,7 +248,10 @@
                     $.ajax({
                         url: "api.php",
                         data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(this.curClubName) + "&last_hash=" + this.lastClubHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
-                        success: (data) => { this.handleUpdateClubResults(data); },
+                        success: (data) => {
+                             this.handleUpdateClubResults(data); 
+                        
+                        },
                         error: () => { this.resUpdateTimeout = setTimeout(
                         () => {
                             this.checkForClubUpdate();
@@ -241,7 +299,14 @@
             $.ajax({
                 url: "api.php",
                 data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(className) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
-                success: (data) => {
+                success: (data,status, resp) => {
+                    try {
+                        var reqTime = resp.getResponseHeader("date");
+                        if (reqTime) {
+                            this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
+                        }
+                    } catch (e) {
+                    }
                     this.updateClassResults(data);
                 },
                 dataType: "json"
@@ -323,7 +388,7 @@
                                     if (o.aData.splits[value.code + "_status"] != 0)
                                         return "";
                                     else
-                                        return this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "-place"] + ")";
+                                        return this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "_place"] + ")";
                                 }
                             });
                             col++;
@@ -507,39 +572,9 @@
 
         private updateResultVirtualPosition(data) {
             var i;
-            if (this.curClassSplits != null) {
-                for (i = 0; i < data.length; i++) {
-                    data[i].haveSplits = false;
-                }
-
-                for (var s = 0; s < this.curClassSplits.length; s++) {
-                    var splitCode = this.curClassSplits[s].code;
-                    data.sort((a, b) => a.splits[splitCode] - b.splits[splitCode]);
-                    var lastPos = 1;
-                    var posCnt = 1;
-                    var lastTime = -1;
-                    for (i = 0; i < data.length; i++) {
-                        if (data[i].splits[splitCode] != "") {
-                            data[i].haveSplits = true;
-
-                            if (lastTime == data[i].splits[splitCode])
-                                data[i].splits[splitCode + "-place"] = lastPos;
-                            else {
-                                data[i].splits[splitCode + "-place"] = posCnt;
-                                lastPos = posCnt;
-                            }
-                            lastTime = data[i].splits[splitCode];
-                            posCnt++;
-                        } else {
-                            data[i].splits[splitCode + "-place"] = "";
-                        }
-                    }
-
-                }
-            }
 
             data.sort(this.resultSorter);
-
+            
             /* move down runners that have not finished to the correct place*/
             var firstFinishedIdx = -1;
             for (i = 0; i < data.length; i++) {
@@ -576,27 +611,19 @@
 
         ///Sorts results by the one that have run longest on the course
         private sortByDist(a, b) {
-            if (this.curClassSplits != null) {
-                for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
-                    var splitCode = this.curClassSplits[s].code;
-                    if (a.splits[splitCode] == "" && b.splits[splitCode] != "")
-                        return 1;
-                    else if (a.splits[splitCode] != "" && b.splits[splitCode] == "")
-                        return -1;
-                }
-            }
-            return 0;
+            return b.progress - a.progress;
         }
 
         private insertIntoResults(result, data) {
-            var haveSplit = false;
             var d;
             if (this.curClassSplits != null) {
                 for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
                     var splitCode = this.curClassSplits[s].code;
                     if (result.splits[splitCode] != "") {
-                        haveSplit = true;
                         for (d = 0; d < data.length; d++) {
+                            //insert result 
+                            // * before results with - as placemark
+                            // * before the first result with worse time at this split 
                             if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode])) {
                                 data.splice(d, 0, result);
                                 return;
@@ -614,7 +641,7 @@
                         return;
                     }
                     if (result.place == "" && data[d].place != "") {
-                    } else if (data[d].start != "" && data[d].start > result.start && !haveSplit && !data[d].haveSplits) {
+                    } else if (data[d].start != "" && data[d].start > result.start && result.progress == 0 && data[d].progress == 0) {
                         data.splice(d, 0, result);
                         return;
                     }

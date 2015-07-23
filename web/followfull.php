@@ -157,6 +157,12 @@ $(document).ready(function()
 <?php if ($showLastPassings){?>
 	res.updateLastPassings();
 	<?php }?>
+
+	<?php if ($showTimePrediction){ ?>
+		res.eventTimeZoneDiff = $currentComp->TimeZoneDiff();
+		res.startPredictionUpdate();
+		
+	<?php }?>
 });
 
 
