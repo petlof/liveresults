@@ -25,6 +25,7 @@ var LiveResults;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
             this.resUpdateTimeout = null;
+            this.updatePredictedTimeTimer = null;
             this.lastClassListHash = "";
             this.lastPassingsUpdateHash = "";
             this.curClassName = "";
@@ -33,6 +34,8 @@ var LiveResults;
             this.curClubName = "";
             this.lastClubHash = "";
             this.currentTable = null;
+            this.serverTimeDiff = null;
+            this.eventTimeZoneDiff = 0;
             LiveResults.Instance = this;
             $(window).hashchange(function () {
                 if (window.location.hash) {
@@ -54,6 +57,10 @@ var LiveResults;
             });
             $(window).hashchange();
         }
+        AjaxViewer.prototype.startPredictionUpdate = function () {
+            var _this = this;
+            this.updatePredictedTimeTimer = setInterval(function () { _this.updatePredictedTimes(); }, 1000);
+        };
         //Detect if the browser is a mobile phone
         AjaxViewer.prototype.mobilecheck = function () {
             var check = false;
@@ -99,6 +106,39 @@ var LiveResults;
             this.classUpdateTimer = setTimeout(function () {
                 _this.updateClassList();
             }, this.classUpdateInterval);
+        };
+        AjaxViewer.prototype.updatePredictedTimes = function () {
+            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff) {
+                try {
+                    var data = this.currentTable.fnGetData();
+                    var dt = new Date();
+                    var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100 - (this.serverTimeDiff / 10) + (this.eventTimeZoneDiff * 360000);
+                    for (var i = 0; i < data.length; i++) {
+                        if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
+                            if (data[i].start < time) {
+                                if (this.curClassSplits == null || this.curClassSplits.length == 0) {
+                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                }
+                                else {
+                                    //find next split to reach
+                                    var nextSplit = 0;
+                                    for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
+                                        if (data[i].splits[this.curClassSplits[sp].code] != "") {
+                                            {
+                                                nextSplit = sp + 1;
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(" + (4 + nextSplit) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (e) {
+                }
+            }
         };
         //Set wether to display tenthofasecond in results
         AjaxViewer.prototype.setShowTenth = function (val) {
@@ -149,7 +189,15 @@ var LiveResults;
                     $.ajax({
                         url: "api.php",
                         data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(this.curClassName) + "&last_hash=" + this.lastClassHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
-                        success: function (data) {
+                        success: function (data, status, resp) {
+                            try {
+                                var reqTime = resp.getResponseHeader("date");
+                                if (reqTime) {
+                                    _this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
+                                }
+                            }
+                            catch (e) {
+                            }
                             _this.handleUpdateClassResults(data);
                         },
                         error: function () {
@@ -188,7 +236,9 @@ var LiveResults;
                     $.ajax({
                         url: "api.php",
                         data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(this.curClubName) + "&last_hash=" + this.lastClubHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
-                        success: function (data) { _this.handleUpdateClubResults(data); },
+                        success: function (data) {
+                            _this.handleUpdateClubResults(data);
+                        },
                         error: function () {
                             _this.resUpdateTimeout = setTimeout(function () {
                                 _this.checkForClubUpdate();
@@ -233,7 +283,15 @@ var LiveResults;
             $.ajax({
                 url: "api.php",
                 data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(className) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
-                success: function (data) {
+                success: function (data, status, resp) {
+                    try {
+                        var reqTime = resp.getResponseHeader("date");
+                        if (reqTime) {
+                            _this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
+                        }
+                    }
+                    catch (e) {
+                    }
                     _this.updateClassResults(data);
                 },
                 dataType: "json"
@@ -480,6 +538,7 @@ var LiveResults;
         };
         AjaxViewer.prototype.updateResultVirtualPosition = function (data) {
             var i;
+            data.sort(this.resultSorter);
             /* move down runners that have not finished to the correct place*/
             var firstFinishedIdx = -1;
             for (i = 0; i < data.length; i++) {
@@ -511,13 +570,11 @@ var LiveResults;
             return b.progress - a.progress;
         };
         AjaxViewer.prototype.insertIntoResults = function (result, data) {
-            var haveSplit = false;
             var d;
             if (this.curClassSplits != null) {
                 for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
                     var splitCode = this.curClassSplits[s].code;
                     if (result.splits[splitCode] != "") {
-                        haveSplit = true;
                         for (d = 0; d < data.length; d++) {
                             //insert result 
                             // * before results with - as placemark
