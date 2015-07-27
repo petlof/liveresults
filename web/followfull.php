@@ -241,6 +241,8 @@ function changeFontSize(val)
 "<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png'  alt='Suomeksi'> Suomeksi</a>")?>
                         | <?php echo($lang == "de" ? "<img src='images/de.png' alt='Deutsch'> Deutsch" :
 "<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>
+						| <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
+"<a href=\"?lang=fr&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fr.png' alt='Français'> Français</a>")?>
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : 
 "<a href=\"?lang=it&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?> | 
                         <?php echo($lang == "ru" ? "<img src='images/ru.png' alt='Русский'> Русский" :
