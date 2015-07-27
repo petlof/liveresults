@@ -113,7 +113,7 @@
         }
 
         private updatePredictedTimes() {
-            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff) {
+            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff && this.updateAutomatically) {
                 try {
                     var data = this.currentTable.fnGetData();
                     var dt = new Date();
@@ -122,7 +122,7 @@
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
                             if (data[i].start < time) {
                                 if (this.curClassSplits == null || this.curClassSplits.length == 0) {
-                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 } else {
 
                                     //find next split to reach
@@ -137,7 +137,7 @@
                                         }
                                     }
 
-                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(" + (4+nextSplit)+ ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4+nextSplit)+ ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
 
                                 }
                             }
@@ -331,6 +331,8 @@
                     $('#' + this.resultsControlsDiv).show();
                 }
 
+                $('#' + this.txtResetSorting).html("");
+
                 if (data.results != null) {
                     var columns = Array();
                     columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [0], "mDataProp": "place" });
@@ -483,6 +485,10 @@
                             if (oSettings.aaSorting[0][0] != col - 1) {
                                 $("#" + this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + this.resources["_RESETTODEFAULT"] + "</a>");
                             }
+                        },
+                        "fnRowCallback": (nRow, aData, iDisplayIndex, iDisplayIndexFull) => {
+                            if (aData)
+                                aData.curDrawIndex = iDisplayIndex;
                         }
                     });
 
@@ -504,6 +510,17 @@
                 clearTimeout(this.passingsUpdateTimer);
                 clearTimeout(this.classUpdateTimer);
                 $("#" + this.setAutomaticUpdateText).html("<b>" + this.resources["_AUTOUPDATE"] + ":</b> <a href=\"javascript:LiveResults.Instance.setAutomaticUpdate(true);\">" + this.resources["_ON"] + "</a> | " + this.resources["_OFF"] + "");
+                this.serverTimeDiff = null;
+                if (this.currentTable) {
+                    $.each(this.currentTable.fnGetNodes(), (idx, obj) => {
+                        for (var i = 4; i < obj.childNodes.length; i++) {
+                            var innerHtml = obj.childNodes[i].innerHTML;
+                            if (innerHtml.indexOf("<i>(") >= 0) {
+                                obj.childNodes[i].innerHTML = "<td class=\"left\"></td>";
+                            }
+                        }
+                    });
+                }
             }
         }
 
@@ -703,6 +720,7 @@
             clearTimeout(this.resUpdateTimeout);
 
             $('#divResults').html('');
+            $('#' + this.txtResetSorting).html('');
             this.curClubName = clubName;
             this.curClassName = null;
             $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
