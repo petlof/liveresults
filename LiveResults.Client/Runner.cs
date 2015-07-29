@@ -301,6 +301,15 @@ namespace LiveResults.Client
                 RunnerUpdated = true;
             }
         }
+
+        public void SetResultStatus(int status)
+        {
+            if (m_status != status)
+            {
+                m_status = status;
+                ResultUpdated = true;
+            }
+        }
     }
 
     public class SplitTime
