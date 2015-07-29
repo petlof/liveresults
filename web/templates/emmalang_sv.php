@@ -20,7 +20,7 @@ $_CLUB="Klubb";
 $_NATION = "Land";
 $_TIME="Tid";
 $_NOCLASSCHOSEN="Ingen klass vald!";
-$_HELPREDRESULTS="Rödmarkerade resultat är nya sedan 2 minuter";
+$_HELPREDRESULTS="Resultat uppdaterade senaste två minuterna är markerade i rött";
 $_NOTICE="Obeservera att resultat på denna sida ej är officiella. För officiella resultat hänvisas till arrangörens egna hemsida";
 
 $_STATUSDNS = "ej start";
@@ -49,7 +49,7 @@ $_FORDEVELOPERS = "Information for utvecklare (api)";
 $_RESETTODEFAULT = "Återställ sortering";
 $_OPENINNEWWINDOW = "Öppna i nytt fönster";
 $_INSTRUCTIONSHELP = "Instruktioner / Hjälp";
-$_LOADINGCLASSES = "Laddar klasser";
+$_LOADINGCLASSES = "Laddar klasser...";
 $_START = "Start";
 $_TOTAL = "Total";
 $_CLASS = "Klass";

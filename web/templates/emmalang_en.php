@@ -2,7 +2,7 @@
 
 $_TITLE = "Liveresults";
 
-$_CHOOSECMP = "Choose Competition";
+$_CHOOSECMP = "Choose competition";
 
 $_AUTOUPDATE = "Automatic update";
 
@@ -26,9 +26,9 @@ $_LASTPASSPASSED="passed";
 
 $_LASTPASSWITHTIME="with time";
 
-$_CHOOSECLASS="Choose Class";
+$_CHOOSECLASS="Choose class";
 
-$_NOCLASSESYET="No classes yet";
+$_NOCLASSESYET="No classes defined yet";
 
 $_CONTROLFINISH="Finish";
 
@@ -41,11 +41,9 @@ $_TIME="Time";
 
 $_NOCLASSCHOSEN="No class chosen!";
 
-$_HELPREDRESULTS="Results in red are updated last two minutes";
+$_HELPREDRESULTS="Results updated in the last two minutes are marked in red";
 
-$_NOTICE="Please note that results on this page are not official. For official results please browse to the organizers official website.";
-
-
+$_NOTICE="Please note that results on this page are not official. For official results please visit the organizers website.";
 
 $_STATUSDNS = "dns";
 
@@ -85,9 +83,9 @@ $_OFF = "Off";
 
 $_TEXTSIZE = "Textsize";
 
-$_LARGER = "Bigger";
+$_LARGER = "bigger";
 
-$_SMALLER = "Smaller";
+$_SMALLER = "smaller";
 
 $_OPENINNEW = "Open in new window";
 
@@ -101,7 +99,7 @@ $_OPENINNEWWINDOW = "Open in new window";
 
 $_INSTRUCTIONSHELP = "Instruction / help";
 
-$_LOADINGCLASSES = "Loading classes";
+$_LOADINGCLASSES = "Loading classes...";
 
 $_START = "Start";
 

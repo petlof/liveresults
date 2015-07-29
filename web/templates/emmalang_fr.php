@@ -5,7 +5,7 @@
 
 $_TITLE = "Liveresults";
 
-$_CHOOSECMP = "Choisir une Compétition";
+$_CHOOSECMP = "Choisir une compétition";
 
 $_AUTOUPDATE = "Mise à jour automatique";
 
@@ -21,7 +21,7 @@ $_UPNEVER = "Jamais";
 
 
 
-$_LASTPASSINGS="Dernière mise à jour";
+$_LASTPASSINGS="Dernières mises à jour";
 
 $_LASTPASSFINISHED="a terminé";
 
@@ -46,7 +46,7 @@ $_NOCLASSCHOSEN="Aucune catégorie sélectionnée";
 
 $_HELPREDRESULTS="Les résultats des deux dernières minutes apparaissent en rouge";
 
-$_NOTICE="Merci de noter que les résultats de cette page ne sont pas officiels. Pour les résultats officiels, consultez le site web officiel de l'organisation.";
+$_NOTICE="Merci de noter que les résultats de cette page ne sont pas officiels. Pour les résultats officiels, consultez le site web de l'organisation.";
 
 
 
@@ -104,7 +104,7 @@ $_OPENINNEWWINDOW = "Ouvrir dans une nouvelle fenêtre";
 
 $_INSTRUCTIONSHELP = "Instruction / Aide";
 
-$_LOADINGCLASSES = "Chargement des catégories";
+$_LOADINGCLASSES = "Chargement des catégories...";
 
 $_START = "Départ";
 
