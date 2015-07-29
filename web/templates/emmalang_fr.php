@@ -1,11 +1,11 @@
-<?php
+﻿<?php
 
 //Language-ressource file: French = Français
 //translated by Robert Marique
 
 $_TITLE = "Liveresults";
 
-$_CHOOSECMP = "Choisir une Competition";
+$_CHOOSECMP = "Choisir une Compétition";
 
 $_AUTOUPDATE = "Mise à jour automatique";
 
@@ -27,11 +27,11 @@ $_LASTPASSFINISHED="a terminé";
 
 $_LASTPASSPASSED="a validé";
 
-$_LASTPASSWITHTIME="avec un chono de";
+$_LASTPASSWITHTIME=", chrono:";
 
 $_CHOOSECLASS="Choisir la catégorie";
 
-$_NOCLASSESYET="Aucune catégorie sélectionnée";
+$_NOCLASSESYET="Aucune catégorie définie";
 
 $_CONTROLFINISH="Arrivée";
 
@@ -49,13 +49,13 @@ $_NOTICE="Merci de noter que les résultats de cette page ne sont pas officiels.
 
 
 
-$_STATUSDNS = "dns";
+$_STATUSDNS = "absent";
 
-$_STATUSDNF = "dnf";
+$_STATUSDNF = "abandon";
 
-$_STATUSWO = "wo";
+$_STATUSWO = "absent";
 
-$_STATUSMOVEDUP = "moved up";
+$_STATUSMOVEDUP = "montant";
 
 $_STATUSNOTSTARTED="non parti";
 
@@ -65,7 +65,7 @@ $_STATUSMP = "pm";
 
 $_STATUSDSQ= "disq";
 
-$_STATUSOT="ot";
+$_STATUSOT="> temps maxi";
 
 
 
@@ -87,9 +87,9 @@ $_OFF = "Off";
 
 $_TEXTSIZE = "Taille du texte";
 
-$_LARGER = "Plus grand";
+$_LARGER = "Plus grande";
 
-$_SMALLER = "Plus petit";
+$_SMALLER = "Plus petite";
 
 $_OPENINNEW = "Ouvrir dans une nouvelle fenêtre";
 
