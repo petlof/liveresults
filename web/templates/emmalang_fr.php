@@ -66,7 +66,7 @@ $_STATUSMP = "pm";
 
 $_STATUSDSQ= "disq";
 
-$_STATUSOT="> temps maxi";
+$_STATUSOT="&gt; temps maxi";
 
 
 
