@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Globalization;
 using System.IO;
 using System.Xml;
@@ -166,12 +165,14 @@ namespace LiveResults.Client.Parsers
                         var startTimeNode = personNode.SelectSingleNode("Result/StartTime/Clock");
                         var ccCardNode = personNode.SelectSingleNode("Result/CCard/CCardId");
                         if (competitorStatusNode == null || competitorStatusNode.Attributes == null || competitorStatusNode.Attributes["value"] == null ||
-                            resultTimeNode == null || startTimeNode == null || ccCardNode == null)
+                            resultTimeNode == null || ccCardNode == null)
                             continue;
 
                         string status = competitorStatusNode.Attributes["value"].Value;
                         string time = resultTimeNode.InnerText;
-                        string starttime = startTimeNode.InnerText;
+                        string starttime = "";
+                        if (startTimeNode != null)
+                            starttime = startTimeNode.InnerText;
                         string si = ccCardNode.InnerText;
                         string storeAlias;
 
@@ -199,32 +200,39 @@ namespace LiveResults.Client.Parsers
                         int itime = ParseTime(time);
                         int istatus = 10;
 
-                        switch (status.ToLower())
+                        if (status.ToLower() == "notcompeting")
                         {
-                            case "mispunch":
-                                istatus = 3;
-                                break;
+                            //Does not compete, exclude
+                            continue;
+                        }
 
-                            case "disqualified":
-                                istatus = 4;
-                                break;
-                            case "didnotfinish":
-                                istatus = 3;
-                                itime = -3;
-                                break;
-                            case "didnotstart":
-                                istatus = 1;
-                                itime = -3;
-                                break;
-                            case "overtime":
-                                istatus = 5;
-                                break;
-                            case "ok":
-                                istatus = 0;
-                                break;
-                            case "notcompeting":
-                                //Does not compete, exclude
-                                continue;
+                        //runners without starttimenode have not started yet
+                        if (startTimeNode != null)
+                        {
+                            switch (status.ToLower())
+                            {
+                                case "mispunch":
+                                    istatus = 3;
+                                    break;
+
+                                case "disqualified":
+                                    istatus = 4;
+                                    break;
+                                case "didnotfinish":
+                                    istatus = 3;
+                                    itime = -3;
+                                    break;
+                                case "didnotstart":
+                                    istatus = 1;
+                                    itime = -3;
+                                    break;
+                                case "overtime":
+                                    istatus = 5;
+                                    break;
+                                case "ok":
+                                    istatus = 0;
+                                    break;
+                            }
                         }
 
                         runner.SetResult(itime, istatus);
@@ -244,9 +252,12 @@ namespace LiveResults.Client.Parsers
 
                                 int iSplitcode;
                                 string sSplittime = splittime.InnerText;
-                                if (int.TryParse(splitcode.InnerText, out iSplitcode) && sSplittime.Length > 0)
+                                
+                                bool parseOK = int.TryParse(splitcode.InnerText, out iSplitcode);
+                                bool isFinishPunch = splitcode.InnerText.StartsWith("F", StringComparison.InvariantCultureIgnoreCase) || iSplitcode == 999;
+                                if ((parseOK || isFinishPunch) && sSplittime.Length > 0)
                                 {
-                                    if (iSplitcode == 999)
+                                    if (isFinishPunch)
                                     {
                                         if ((istatus == 0 && itime == -1) || (istatus == 10 && itime == -9))
                                         {
