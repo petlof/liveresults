@@ -20,6 +20,7 @@ $_NOCLASSESYET = "Es sind bisher keine Kategorien definiert";
 $_CONTROLFINISH = "Ziel";
 $_NAME = "Name";
 $_CLUB = "Verein";
+$_NATION = "Nation";
 $_TIME = "Zeit";
 $_NOCLASSCHOSEN = "Keine Kategorie ausgewählt!";
 $_HELPREDRESULTS = "Neue Ergebnisse der letzen 2 Minuten werden in rot dargestellt";

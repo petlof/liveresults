@@ -17,6 +17,7 @@ $_NOCLASSESYET="Ei vielä sarjoja";
 $_CONTROLFINISH="Maali";
 $_NAME="Nimi";
 $_CLUB="Seura";
+$_NATION = "Maa";
 $_TIME="Aika";
 $_NOCLASSCHOSEN="Ei sarjaa valittuna!";
 $_HELPREDRESULTS="Punaiset tulokset ovat uusia 2 minuutin sisällä";

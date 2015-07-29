@@ -25,6 +25,7 @@ $_NOCLASSESYET = "Не выбранно";
 $_CONTROLFINISH = "Финиш";
 $_NAME = "Имя";
 $_CLUB = "Клуб";
+$_NATION = "Сtpaha";
 $_TIME = "Время";
 $_NOCLASSCHOSEN = "Не выбрана группа!";
 $_HELPREDRESULTS = "Результаты отмеченные красным обновлены за последние две минуты";

@@ -17,6 +17,7 @@ $_NOCLASSESYET="Inga klasser än";
 $_CONTROLFINISH="Mål";
 $_NAME="Namn";
 $_CLUB="Klubb";
+$_NATION = "Land";
 $_TIME="Tid";
 $_NOCLASSCHOSEN="Ingen klass vald!";
 $_HELPREDRESULTS="Rödmarkerade resultat är nya sedan 2 minuter";

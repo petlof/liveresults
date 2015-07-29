@@ -40,6 +40,10 @@ td i {
     color: gray;
 }
 
+tr.new_result td i {
+    color: black;
+}
+
 #langchooser { vertical-align: middle; line-height:21px;}
 #langchooser img {  border: 1px solid #AAAAAA; vertical-align: middle}
 

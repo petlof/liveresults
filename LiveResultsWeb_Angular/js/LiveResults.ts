@@ -5,7 +5,7 @@
 
     export class AjaxViewer {
         // ReSharper disable once InconsistentNaming
-        public static VERSION : string = "2015-07-16-01";
+        public static VERSION : string = "2015-07-29-01";
         private updateAutomatically: boolean = true;
         private updateInterval: number = 15000;
         private classUpdateInterval: number = 60000;
@@ -218,8 +218,10 @@
                         }, this.updateInterval); },
                         dataType: "json"
                     });
-                    if (typeof (_gaq) == "object") {
-                        _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + this.curClassName]);
+                    if (typeof (ga) == "function") {
+                        ga('send', 'pageview', {
+                            page: '/' + this.competitionId + '/' + this.curClassName
+                        });
                     }
                 }
             }
@@ -258,8 +260,11 @@
                         }, this.updateInterval); },
                         dataType: "json"
                     });
-                    if (typeof (_gaq) == "object") {
-                        _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + this.curClubName]);
+
+                    if (typeof (ga) == "function") {
+                        ga('send', 'pageview', {
+                            page: '/' + this.competitionId + '/' + this.curClubName
+                        });
                     }
                 }
             }
@@ -312,8 +317,10 @@
                 dataType: "json"
             });
 
-            if (typeof (_gaq) == "object") {
-                _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + className]);
+            if (typeof (ga) == "function") {
+                ga('send', 'pageview', {
+                    page: '/' + this.competitionId + '/' + this.curClassName
+                });
             }
 
             if (!this.isSingleClass) {
@@ -734,8 +741,10 @@
                 dataType: "json"
             });
 
-            if (typeof (_gaq) == "object") {
-                _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + clubName]);
+            if (typeof (ga) == "function") {
+                ga('send', 'pageview', {
+                    page: '/' + this.competitionId + '/' + this.curClubName
+                });
             }
 
             if (!this.isSingleClass) {
@@ -849,4 +858,4 @@
 }
 
 //GA tracker-object
-var _gaq: any;
+var ga: any;

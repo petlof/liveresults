@@ -108,7 +108,7 @@ var LiveResults;
             }, this.classUpdateInterval);
         };
         AjaxViewer.prototype.updatePredictedTimes = function () {
-            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff) {
+            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff && this.updateAutomatically) {
                 try {
                     var data = this.currentTable.fnGetData();
                     var dt = new Date();
@@ -117,7 +117,7 @@ var LiveResults;
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
                             if (data[i].start < time) {
                                 if (this.curClassSplits == null || this.curClassSplits.length == 0) {
-                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                                 else {
                                     //find next split to reach
@@ -130,7 +130,7 @@ var LiveResults;
                                             }
                                         }
                                     }
-                                    $("#" + this.resultsDiv + " tr:eq(" + (i + 1) + ") td:eq(" + (4 + nextSplit) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4 + nextSplit) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                             }
                         }
@@ -207,8 +207,10 @@ var LiveResults;
                         },
                         dataType: "json"
                     });
-                    if (typeof (_gaq) == "object") {
-                        _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + this.curClassName]);
+                    if (typeof (ga) == "function") {
+                        ga('send', 'pageview', {
+                            page: '/' + this.competitionId + '/' + this.curClassName
+                        });
                     }
                 }
             }
@@ -246,8 +248,10 @@ var LiveResults;
                         },
                         dataType: "json"
                     });
-                    if (typeof (_gaq) == "object") {
-                        _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + this.curClubName]);
+                    if (typeof (ga) == "function") {
+                        ga('send', 'pageview', {
+                            page: '/' + this.competitionId + '/' + this.curClubName
+                        });
                     }
                 }
             }
@@ -296,8 +300,10 @@ var LiveResults;
                 },
                 dataType: "json"
             });
-            if (typeof (_gaq) == "object") {
-                _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + className]);
+            if (typeof (ga) == "function") {
+                ga('send', 'pageview', {
+                    page: '/' + this.competitionId + '/' + this.curClassName
+                });
             }
             if (!this.isSingleClass) {
                 window.location.hash = className;
@@ -313,6 +319,7 @@ var LiveResults;
                     $('#' + this.resultsHeaderDiv).html('<b>' + data.className + '</b>');
                     $('#' + this.resultsControlsDiv).show();
                 }
+                $('#' + this.txtResetSorting).html("");
                 if (data.results != null) {
                     var columns = Array();
                     columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [0], "mDataProp": "place" });
@@ -453,6 +460,10 @@ var LiveResults;
                             if (oSettings.aaSorting[0][0] != col - 1) {
                                 $("#" + _this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + _this.resources["_RESETTODEFAULT"] + "</a>");
                             }
+                        },
+                        "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                            if (aData)
+                                aData.curDrawIndex = iDisplayIndex;
                         }
                     });
                     this.lastClassHash = data.hash;
@@ -472,6 +483,17 @@ var LiveResults;
                 clearTimeout(this.passingsUpdateTimer);
                 clearTimeout(this.classUpdateTimer);
                 $("#" + this.setAutomaticUpdateText).html("<b>" + this.resources["_AUTOUPDATE"] + ":</b> <a href=\"javascript:LiveResults.Instance.setAutomaticUpdate(true);\">" + this.resources["_ON"] + "</a> | " + this.resources["_OFF"] + "");
+                this.serverTimeDiff = null;
+                if (this.currentTable) {
+                    $.each(this.currentTable.fnGetNodes(), function (idx, obj) {
+                        for (var i = 4; i < obj.childNodes.length; i++) {
+                            var innerHtml = obj.childNodes[i].innerHTML;
+                            if (innerHtml.indexOf("<i>(") >= 0) {
+                                obj.childNodes[i].innerHTML = "<td class=\"left\"></td>";
+                            }
+                        }
+                    });
+                }
             }
         };
         AjaxViewer.prototype.formatTime = function (time, status, showTenthOs, showHours, padZeros) {
@@ -653,6 +675,7 @@ var LiveResults;
             }
             clearTimeout(this.resUpdateTimeout);
             $('#divResults').html('');
+            $('#' + this.txtResetSorting).html('');
             this.curClubName = clubName;
             this.curClassName = null;
             $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
@@ -664,8 +687,10 @@ var LiveResults;
                 },
                 dataType: "json"
             });
-            if (typeof (_gaq) == "object") {
-                _gaq.push(['_trackPageview', '/' + this.competitionId + '/' + clubName]);
+            if (typeof (ga) == "function") {
+                ga('send', 'pageview', {
+                    page: '/' + this.competitionId + '/' + this.curClubName
+                });
             }
             if (!this.isSingleClass) {
                 window.location.hash = "club::" + clubName;
@@ -762,11 +787,11 @@ var LiveResults;
             $("#" + this.txtResetSorting).html("");
         };
         // ReSharper disable once InconsistentNaming
-        AjaxViewer.VERSION = "2015-07-16-01";
+        AjaxViewer.VERSION = "2015-07-29-01";
         return AjaxViewer;
     })();
     LiveResults.AjaxViewer = AjaxViewer;
 })(LiveResults || (LiveResults = {}));
 //GA tracker-object
-var _gaq;
+var ga;
 //# sourceMappingURL=LiveResults.js.map

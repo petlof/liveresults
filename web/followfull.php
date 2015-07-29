@@ -30,6 +30,7 @@ if ($isSingleClub)
 $showLastPassings = !($isSingleClass || $isSingleClub) || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
+$showTimePrediction = true;
 
 echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 ?>
@@ -159,7 +160,7 @@ $(document).ready(function()
 	<?php }?>
 
 	<?php if ($showTimePrediction){ ?>
-		res.eventTimeZoneDiff = $currentComp->TimeZoneDiff();
+		res.eventTimeZoneDiff = <?=$currentComp->TimeZoneDiff();?>
 		res.startPredictionUpdate();
 		
 	<?php }?>

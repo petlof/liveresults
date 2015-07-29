@@ -25,6 +25,7 @@ $_NOCLASSESYET = "Ancora nessuna categoria";
 $_CONTROLFINISH = "Arrivo";
 $_NAME = "Nome";
 $_CLUB = "Club";
+$_NATION = "Nazione";
 $_TIME = "Tempo";
 $_NOCLASSCHOSEN = "Nessuna categoria selezionata!";
 $_HELPREDRESULTS = "Le righe in rosso sono state aggiornate negli ultimi due minuti";

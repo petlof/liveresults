@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 //Language-ressource file: French = Français
 //translated by Robert Marique
@@ -38,6 +38,7 @@ $_CONTROLFINISH="Arrivée";
 $_NAME="Nom";
 
 $_CLUB="Club";
+$_NATION = "Pays";
 
 $_TIME="Chrono";
 

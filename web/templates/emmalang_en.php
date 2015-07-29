@@ -35,6 +35,7 @@ $_CONTROLFINISH="Finish";
 $_NAME="Name";
 
 $_CLUB="Club";
+$_NATION = "Nation";
 
 $_TIME="Time";
 
