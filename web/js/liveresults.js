@@ -90,6 +90,9 @@ var LiveResults;
         AjaxViewer.prototype.handleUpdateClassListResponse = function (data) {
             var _this = this;
             if (data != null && data.status == "OK") {
+                if (!data.classes || !$.isArray(data.classes) || data.classes.length == 0) {
+                    $('#resultsHeader').html("<b>" + this.resources["_NOCLASSESYET"] + "</b>");
+                }
                 if (data.classes != null) {
                     var str = "<nowrap>";
                     $.each(data.classes, function (key, value) {
