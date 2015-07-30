@@ -31,7 +31,7 @@ $_LASTPASSWITHTIME=", chrono:";
 
 $_CHOOSECLASS="Choisir la catégorie";
 
-$_NOCLASSESYET="Aucune catégorie définie";
+$_NOCLASSESYET="Aucune catégorie définie!";
 
 $_CONTROLFINISH="Arrivée";
 
@@ -42,7 +42,7 @@ $_NATION = "Pays";
 
 $_TIME="Chrono";
 
-$_NOCLASSCHOSEN="Aucune catégorie sélectionnée";
+$_NOCLASSCHOSEN="Aucune catégorie sélectionnée!";
 
 $_HELPREDRESULTS="Les résultats des deux dernières minutes apparaissent en rouge";
 

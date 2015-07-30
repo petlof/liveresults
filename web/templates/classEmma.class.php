@@ -519,7 +519,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 			$q .= ", (select count(*)+1 from results sr, runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=results.TavId and sru.class = runners.class and sr.status = 0 and sr.time < results.time and sr.Control=1000) as place ";
 			$q .= ", results.Time - (select min(time) from results sr, runners sru where sr.tavid=sru.tavid and sr.dbid=sru.dbid and sr.tavid=results.TavId and sru.class = runners.class and sr.status = 0 and sr.Control=1000) as timeplus ";
 			$q .= "From runners,results where ";
-			$q .= "results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." and runners.Club = '$club' and (results.Control=1000 or results.Control=100) ORDER BY runners.Class, runners.Name";
+			$q .= "results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." and runners.Club = '". mysql_real_escape_string($club) ."' and (results.Control=1000 or results.Control=100) ORDER BY runners.Class, runners.Name";
 
 			if ($result = mysql_query($q,$this->m_Conn))
 
