@@ -30,6 +30,7 @@ var LiveResults;
             this.curClassName = "";
             this.lastClassHash = "";
             this.curClassSplits = null;
+            this.curClassIsMassStart = false;
             this.curClubName = "";
             this.lastClubHash = "";
             this.currentTable = null;
@@ -329,6 +330,9 @@ var LiveResults;
                         }
                     });
                     this.curClassSplits = data.splitcontrols;
+                    this.curClassIsMassStart = false;
+                    if (data.IsMassStartRace)
+                        this.curClassIsMassStart = data.IsMassStartRace;
                     this.updateResultVirtualPosition(data.results);
                     var col = 3;
                     columns.push({
@@ -551,6 +555,7 @@ var LiveResults;
             return str;
         };
         AjaxViewer.prototype.updateResultVirtualPosition = function (data) {
+            var _this = this;
             var i;
             data.sort(this.resultSorter);
             var firstFinishedIdx = -1;
@@ -567,12 +572,20 @@ var LiveResults;
                 tmp.push(data[i]);
             }
             data.splice(0, firstFinishedIdx);
-            tmp.sort(this.sortByDist);
-            for (i = 0; i < tmp.length; i++) {
-                if (data.length == 0)
+            if (this.curClassIsMassStart) {
+                tmp.sort(function (a, b) { return _this.sortByDistAndSplitPlace(a, b); });
+                for (i = 0; i < tmp.length; i++) {
                     data.push(tmp[i]);
-                else
-                    this.insertIntoResults(tmp[i], data);
+                }
+            }
+            else {
+                tmp.sort(this.sortByDist);
+                for (i = 0; i < tmp.length; i++) {
+                    if (data.length == 0)
+                        data.push(tmp[i]);
+                    else
+                        this.insertIntoResults(tmp[i], data);
+                }
             }
             for (i = 0; i < data.length; i++) {
                 data[i].virtual_position = i;
@@ -581,17 +594,38 @@ var LiveResults;
         AjaxViewer.prototype.sortByDist = function (a, b) {
             return b.progress - a.progress;
         };
+        AjaxViewer.prototype.sortByDistAndSplitPlace = function (a, b) {
+            if (a.progress == b.progress && a.progress > 0 && a.progress < 100) {
+                if (this.curClassSplits != null) {
+                    for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
+                        var splitCode = this.curClassSplits[s].code;
+                        if (a.splits[splitCode] != "") {
+                            return a.splits[splitCode + "_place"] - b.splits[splitCode + "_place"];
+                        }
+                    }
+                }
+            }
+            return b.progress - a.progress;
+        };
         AjaxViewer.prototype.insertIntoResults = function (result, data) {
             var d;
             if (this.curClassSplits != null) {
                 for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
                     var splitCode = this.curClassSplits[s].code;
                     if (result.splits[splitCode] != "") {
+                        var numOthersAtSplit = 0;
                         for (d = 0; d < data.length; d++) {
+                            if (data[d].splits[splitCode] != "") {
+                                numOthersAtSplit++;
+                            }
                             if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode])) {
                                 data.splice(d, 0, result);
                                 return;
                             }
+                        }
+                        if (numOthersAtSplit > 0) {
+                            data.push(result);
+                            return;
                         }
                     }
                 }

@@ -21,6 +21,7 @@
         private curClassName = "";
         private lastClassHash = "";
         private curClassSplits: any[] = null;
+        private curClassIsMassStart = false;
 
         private curClubName = "";
         private lastClubHash = "";
@@ -365,6 +366,9 @@
                     });
 
                     this.curClassSplits = data.splitcontrols;
+                    this.curClassIsMassStart = false;
+                    if (data.IsMassStartRace)
+                        this.curClassIsMassStart = data.IsMassStartRace;
 
                     this.updateResultVirtualPosition(data.results);
 
@@ -624,13 +628,21 @@
 
             data.splice(0, firstFinishedIdx);
 
-            tmp.sort(this.sortByDist);
-
-            for (i = 0; i < tmp.length; i++) {
-                if (data.length == 0)
+            if (this.curClassIsMassStart) {
+                /*append results from splits backwards (by place on actual split)*/
+                tmp.sort((a, b) => { return this.sortByDistAndSplitPlace(a, b); });
+                for (i = 0; i < tmp.length; i++) {
                     data.push(tmp[i]);
-                else
-                    this.insertIntoResults(tmp[i], data);
+                }
+            } else {
+                //advanced virtual-sorting for individual races
+                tmp.sort(this.sortByDist);
+                for (i = 0; i < tmp.length; i++) {
+                    if (data.length == 0)
+                        data.push(tmp[i]);
+                    else
+                        this.insertIntoResults(tmp[i], data);
+                }
             }
 
 
@@ -644,13 +656,40 @@
             return b.progress - a.progress;
         }
 
+        //Sorts results by the one that have run longest on the course, and if they are on the same split, place on that split
+        //"MassStart-Sorting"
+        private sortByDistAndSplitPlace(a: any, b: any) {
+            if (a.progress == b.progress && a.progress > 0 && a.progress < 100) {
+                //Both have reached the same split
+                if (this.curClassSplits != null) {
+                    for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
+                        var splitCode = this.curClassSplits[s].code;
+                        if (a.splits[splitCode] != "") {
+                            return a.splits[splitCode + "_place"] - b.splits[splitCode + "_place"];
+                        }
+                    }
+                }
+
+            }
+            
+            return b.progress - a.progress;
+        }
+
+        //Inserts a result in the array of results.
+        //The result to be inserted is assumed to have same or worse progress than all other results already in the array
         private insertIntoResults(result : any, data : any) {
             var d: number;
             if (this.curClassSplits != null) {
                 for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
                     var splitCode = this.curClassSplits[s].code;
                     if (result.splits[splitCode] != "") {
+                        var numOthersAtSplit = 0;
                         for (d = 0; d < data.length; d++) {
+
+                            if (data[d].splits[splitCode] != "") {
+                                numOthersAtSplit++;
+                            }
+
                             //insert result 
                             // * before results with - as placemark
                             // * before the first result with worse time at this split 
@@ -658,6 +697,13 @@
                                 data.splice(d, 0, result);
                                 return;
                             }
+                        }
+
+                        //If numothersatsplit there exists results at this split, but all are better than this one..
+                        //Append last
+                        if (numOthersAtSplit > 0) {
+                            data.push(result);
+                            return;
                         }
                     }
                 }
