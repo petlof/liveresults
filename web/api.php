@@ -285,17 +285,21 @@ elseif ($_GET['method'] == 'getclassresults')
       $cursplittime = "";
       foreach ($results as $key => $res)
       {   
-        if ($cursplittime != $res[$split['code']."_time"])
+        $sp_time = "";
+        if (isset($res[$split['code']."_time"]))
+          $sp_time = $res[$split['code']."_time"];
+        if ($cursplittime != $sp_time)
         {
           $cursplitplace = $splitplace;
         }
         $results[$key][$split['code']."_place"] = $cursplitplace;
         $splitplace++;
-        $cursplittime = $res[$split['code']."_time"];
+        if (isset($res[$split['code']."_time"]))
+          $cursplittime = $res[$split['code']."_time"];
       }
 		}
     
-    usort($results,sortByResult);
+    usort($results,"sortByResult");
 		$splitJSON .= "$br]";
 
 		$first = true;
