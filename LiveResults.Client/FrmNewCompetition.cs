@@ -90,6 +90,8 @@ namespace LiveResults.Client
             monForm.ShowDialog(this);
         }
 
+
+
         private void button1_Click_2(object sender, EventArgs e)
         {
             FrmMonitor monForm = new FrmMonitor();
@@ -106,6 +108,32 @@ namespace LiveResults.Client
             monForm.SetParser(wp as IExternalSystemResultParser);
             monForm.CompetitionID = compId;
             monForm.ShowDialog(this);
+        }
+
+        private void button1_Click_3(object sender, EventArgs e)
+        {
+            FrmNewRacomComp newRacomComp = new FrmNewRacomComp();
+            if (newRacomComp.ShowDialog(this) == DialogResult.OK)
+            {
+                FrmMonitor monForm = new FrmMonitor();
+                monForm.SetParser(new RacomFileSetParser(newRacomComp.txtStartlist.Text, newRacomComp.txtRawSplits.Text, newRacomComp.txtRaceFile.Text,
+                    newRacomComp.txtDSQFile.Text, newRacomComp.txtRadioControls.Text, newRacomComp.dtZeroTime.Value, newRacomComp.checkBox1.Checked));
+                monForm.CompetitionID = int.Parse(newRacomComp.txtCompID.Text);
+                monForm.ShowDialog(this);
+            }
+            //FrmMonitor monForm = new FrmMonitor();
+            ////string[] lines = File.ReadAllLines("wocinfo.txt");
+            ////int compId = int.Parse(lines[0]);
+            //int compId = -50;
+            //List<string> urls = new List<string>();
+            ///*for (int i = 1; i < lines.Length; i++)
+            //    urls.Add(lines[i]);*/
+            //urls.Add("http://www.liveresultater.no/includes/individuell/orientering/lister/allelister.php?q=alle&w=alle&s=DESC&c=radiopost.tid&a=439&acc=sek&lang=en&sid=0.3296072955708951");
+
+            //var wp = new LiveResultaterNoParser(urls.ToArray());
+            //monForm.SetParser(wp as IExternalSystemResultParser);
+            //monForm.CompetitionID = compId;
+            //monForm.ShowDialog(this);
         }
 
        

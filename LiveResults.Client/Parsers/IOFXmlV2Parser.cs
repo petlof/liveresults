@@ -370,13 +370,30 @@ namespace LiveResults.Client.Parsers
                 string[] timeParts = time.Split(':');
                 if (timeParts.Length == 3)
                 {
-                    //HH:MM:SS
-                    itime = Convert.ToInt32(timeParts[0])*360000 + Convert.ToInt32(timeParts[1])*6000 + Convert.ToInt32(timeParts[2])*100;
+                        
+                        if (timeParts[2].IndexOf(".", StringComparison.Ordinal) > 0)
+                        {
+                            //HH:MM:SS[.FFF]
+                            itime = Convert.ToInt32(timeParts[0]) * 360000 + Convert.ToInt32(timeParts[1]) * 6000 + (int)(Convert.ToDouble(timeParts[2]) * 100);
+                        }
+                        else
+                        {
+                            itime = Convert.ToInt32(timeParts[0])*360000 + Convert.ToInt32(timeParts[1])*6000 + Convert.ToInt32(timeParts[2])*100;
+                        }
+                        
                 }
                 else if (timeParts.Length == 2)
                 {
-                    //MM:SS
-                    itime = Convert.ToInt32(timeParts[0])*6000 + Convert.ToInt32(timeParts[1])*100;
+                    if (timeParts[1].IndexOf(".", StringComparison.Ordinal) > 0)
+                    {
+                        //MM:SS[.FFF]
+                        itime = Convert.ToInt32(timeParts[0]) * 6000 + (int)Math.Round(Convert.ToDouble(timeParts[1]) * 100, 3);
+                    }
+                    else
+                    {
+                        //MM:SS
+                        itime = Convert.ToInt32(timeParts[0]) * 6000 + Convert.ToInt32(timeParts[1]) * 100;
+                    }
                 }
             }
             return itime;
