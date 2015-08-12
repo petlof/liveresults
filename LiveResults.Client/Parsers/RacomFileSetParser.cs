@@ -321,6 +321,43 @@ namespace LiveResults.Client.Parsers
 
         private bool m_continue = false;
 
+        void ProcessRadioDefinitionFile()
+        {
+            var dlg = OnRadioControl;
+            if (dlg != null)
+            {
+                using (var sr = new StreamReader(m_radioDefinitionFile, Encoding.Default))
+                {
+                    string tmp;
+                    while ((tmp = sr.ReadLine()) != null)
+                    {
+                        string[] parts = tmp.Split(new string[]{
+                            " "
+                        }, StringSplitOptions.RemoveEmptyEntries);
+                        if (parts.Length > 2)
+                        {
+                            var passingDic = new Dictionary<string, int>();
+                            string className = parts[0];
+                            for (int spl = 1; spl < parts.Length - 1; spl++)
+                            {
+                                int passing = 1;
+                                if (!passingDic.ContainsKey(parts[spl]))
+                                    passingDic.Add(parts[spl], 1);
+                                else
+                                {
+                                    passingDic[parts[spl]]++;
+                                    passing = passingDic[parts[spl]];
+                                }
+                                int rCode = passing*1000 + int.Parse(parts[spl]);
+                                dlg(parts[spl], rCode, className, spl - 1);
+                            }
+                        }
+
+                    }
+                }
+            }
+        }
+
         public void Start()
         {
         //    var bdir = @"C:\Projekt\opensource\liveresultat-tfs\emmaclient\LiveResults.Client.Tests\";
@@ -328,6 +365,11 @@ namespace LiveResults.Client.Parsers
         //        bdir + @"\TestFiles\Racom\Middle\w_test2\w_test2.rawsplits.txt",
         //        bdir + @"\TestFiles\Racom\Middle\FIN00071.CSV",
         //        bdir + @"\TestFiles\Racom\Middle\w_test2\w_test2.disks.txt");
+
+            if (!string.IsNullOrEmpty(m_radioDefinitionFile) && File.Exists(m_radioDefinitionFile))
+            {
+                ProcessRadioDefinitionFile();
+            }
 
             m_continue = true;
             var th = new Thread(() =>

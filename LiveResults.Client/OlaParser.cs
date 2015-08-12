@@ -13,17 +13,18 @@ namespace LiveResults.Client
         private readonly IDbConnection m_connection;
         private readonly int m_eventID;
         private readonly int m_eventRaceId;
-
+        private readonly bool m_recreateRadioControls;
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
 
         private bool m_continue;
         
-        public OlaParser(IDbConnection conn, int eventID, int eventRaceId)
+        public OlaParser(IDbConnection conn, int eventID, int eventRaceId, bool recreateRadioControls = true)
         {
             m_connection = conn;
             m_eventID = eventID;
             m_eventRaceId = eventRaceId;
+            m_recreateRadioControls = recreateRadioControls;
         }
 
 
@@ -132,8 +133,11 @@ namespace LiveResults.Client
                         splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, results.starttime from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                     }
 
-                   ReadRadioControls();
-                    
+                    if (m_recreateRadioControls)
+                    {
+                        ReadRadioControls();
+                    }
+
                     cmd.CommandText = baseCommand;
                     IDbCommand cmdSplits = m_connection.CreateCommand();
                     cmdSplits.CommandText = splitbaseCommand;

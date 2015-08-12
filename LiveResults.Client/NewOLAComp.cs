@@ -84,6 +84,14 @@ namespace LiveResults.Client
                     (c as ComboBox).SelectedItem = val;
                     
                 }
+                if (c is CheckBox)
+                {
+                    string val = setts.Where(x => x.Key == c.Name).Select(x => x.Value).FirstOrDefault();
+                    if (val != null)
+                    {
+                        (c as CheckBox).Checked = val == "True";
+                    }
+                }
 
                 applyControlValues(c.Controls, setts);
             }
@@ -135,6 +143,14 @@ namespace LiveResults.Client
                     {
                         Key = (c as ComboBox).Name,
                         Value = (c as ComboBox).SelectedValue as string
+                    });
+                }
+                if (c is CheckBox)
+                {
+                    setts.Add(new Setting
+                    {
+                        Key = (c as CheckBox).Name,
+                        Value = (c as CheckBox).Checked.ToString()
                     });
                 }
 
@@ -392,7 +408,8 @@ GRANT SELECT ON Controls to live;";
             //start
             FrmMonitor monForm = new FrmMonitor();
             this.Hide();
-            OlaParser pars = new OlaParser(GetDBConnection(lstDB.SelectedItem as string), (cmbOLAComp.SelectedItem as OlaComp).Id, (cmbOLAEtapp.SelectedItem as OlaComp).Id);
+            OlaParser pars = new OlaParser(GetDBConnection(lstDB.SelectedItem as string), (cmbOLAComp.SelectedItem as OlaComp).Id,
+                (cmbOLAEtapp.SelectedItem as OlaComp).Id, chkCreateRadioControls.Checked);
             monForm.SetParser(pars as IExternalSystemResultParser);
             monForm.CompetitionID = Convert.ToInt32(txtCompID.Text);
             monForm.ShowDialog(this);
