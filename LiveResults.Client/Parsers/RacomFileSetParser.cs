@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
@@ -17,7 +16,7 @@ namespace LiveResults.Client.Parsers
         private readonly string m_dsqFile;
         private readonly string m_radioDefinitionFile;
         private readonly DateTime m_zeroTime;
-        private readonly bool m_isRelay = false;
+        private readonly bool m_isRelay;
         public RacomFileSetParser()
         {
         }
@@ -326,6 +325,31 @@ namespace LiveResults.Client.Parsers
             var dlg = OnRadioControl;
             if (dlg != null)
             {
+                Dictionary<string, string> radioNamesDictionary = null;
+                string splitcodeNamesFile = m_radioDefinitionFile.Replace(".splitcodes.txt", ".splitnames.txt");
+                if (File.Exists(splitcodeNamesFile))
+                {
+                    radioNamesDictionary = new Dictionary<string, string>();
+                    using (var sr = new StreamReader(splitcodeNamesFile, Encoding.Default))
+                    {
+                        string tmp;
+                        while ((tmp = sr.ReadLine()) != null)
+                        {
+                            string[] parts = tmp.Split(new string[]{
+                                " "
+                            }, StringSplitOptions.RemoveEmptyEntries);
+                            if (parts.Length > 1)
+                            {
+                                string className = parts[0];
+                                for (int i= 1; i < parts.Length; i++)
+                                {
+                                    radioNamesDictionary.Add(className + "::" + (i - 1), parts[i]);
+                                }
+                            }
+                        }
+                    }
+                }
+
                 using (var sr = new StreamReader(m_radioDefinitionFile, Encoding.Default))
                 {
                     string tmp;
@@ -349,7 +373,12 @@ namespace LiveResults.Client.Parsers
                                     passing = passingDic[parts[spl]];
                                 }
                                 int rCode = passing*1000 + int.Parse(parts[spl]);
-                                dlg(parts[spl], rCode, className, spl - 1);
+                                string name = parts[spl];
+                                if (radioNamesDictionary != null && radioNamesDictionary.ContainsKey(className + "::" + (spl-1)))
+                                {
+                                    name = radioNamesDictionary[className + "::" + (spl - 1)];
+                                }
+                                dlg(name, rCode, className, spl - 1);
                             }
                         }
 
