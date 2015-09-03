@@ -493,7 +493,7 @@ namespace LiveResults.Client
                                         cmd.Parameters.Clear();
                                         cmd.Parameters.AddWithValue("?compid", m_compID);
                                         cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetBytes(r.Name));
-                                        cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetBytes(r.Club));
+                                        cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetBytes(r.Club ?? ""));
                                         cmd.Parameters.AddWithValue("?class", Encoding.UTF8.GetBytes(r.Class));
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
