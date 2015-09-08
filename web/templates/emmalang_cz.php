@@ -1,72 +1,40 @@
-<?php
+﻿<?php
 
-//
+//Language-ressource file: Czech = Česky
+//translated by Richard PÁTEK and Lukas Konig 
 
 $_TITLE = "Online výsledky";
-
 $_CHOOSECMP = "Vyberte závod";
-
 $_AUTOUPDATE = "Automatická aktualizace";
-
 $_UP15SEK = "Každých 15 sekund";
-
 $_UP30SEK = "Dvakrát za minutu";
-
 $_UP60SEK = "Každou minutu";
-
 $_UP120SEK = "Každé dvě minuty";
-
 $_UPNEVER = "Nikdy";
 
-
-
 $_LASTPASSINGS="Nejnovější změny";
-
 $_LASTPASSFINISHED="doběhl";
-
 $_LASTPASSPASSED="proběhl";
-
 $_LASTPASSWITHTIME="v čase";
-
 $_CHOOSECLASS="Vyberte kategorii";
-
 $_NOCLASSESYET="Žádná kategorie";
-
 $_CONTROLFINISH="Cíl";
-
 $_NAME="Jméno";
-
 $_CLUB="Oddíl";
-
 $_NATION="Země";
-
 $_TIME="Čas";
-
 $_NOCLASSCHOSEN="Není vybraná kategorie!";
-
-$_HELPREDRESULTS="Změny za poslední dvě minuty jsou červeně zvýrazněny.";
-
-$_NOTICE="Výsledky na této stránce nejsou oficiální. Pro oficiální výsledky prosím navštivte oficiální stránku závodu.";
-
-
-
+$_HELPREDRESULTS="Změny za poslední dvě minuty jsou zvýrazněny červeně.";
+$_NOTICE="Výsledky na této stránce nejsou oficiální. Pro oficiální výsledky prosím navštivte stránku závodu.";
 
 $_STATUSDNS = "dns";
-
 $_STATUSDNF = "dnf";
-
 $_STATUSWO = "wo";
-
 $_STATUSMOVEDUP = "moved up";
-
 $_STATUSNOTSTARTED="not started";
-
 $_STATUSOK = "Passed";
-
 $_STATUSMP = "mp";
-
 $_STATUSDSQ= "disq";
-
 $_STATUSOT="ot";
 
 

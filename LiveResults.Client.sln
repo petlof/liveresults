@@ -43,6 +43,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "templates", "templates", "{74A7CDE3-9723-46AC-9778-371B12392E46}"
 	ProjectSection(SolutionItems) = preProject
 		web\templates\classEmma.class.php = web\templates\classEmma.class.php
+		web\templates\emmalang_cz.php = web\templates\emmalang_cz.php
 		web\templates\emmalang_de.php = web\templates\emmalang_de.php
 		web\templates\emmalang_en.php = web\templates\emmalang_en.php
 		web\templates\emmalang_fi.php = web\templates\emmalang_fi.php
