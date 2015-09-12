@@ -820,12 +820,23 @@
                 }
 
                 if (data.results != null) {
+
+                    $.each(data.results, (idx: number, res: any) => {
+                        res.placeSortable = res.place;
+                        if (res.place == "-")
+                            res.placeSortable = 999999;
+                        if (res.place == "")
+                            res.placeSortable = 9999;
+
+                    });
+
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place" });
-                    columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [1], "mDataProp": "name" });
-                    columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [2], "mDataProp": "club" });
+                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place",  });
+                    columns.push({"sTitle": "placeSortable", "bVisible": false, "mDataProp": "placeSortable", "aTargets": [1]});
+                    columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [2], "mDataProp": "name" });
+                    columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [3], "mDataProp": "club" });
                     columns.push({
-                        "sTitle": this.resources["_CLASS"], "aTargets": [3], "mDataProp": "class",
+                        "sTitle": this.resources["_CLASS"], "aTargets": [4], "mDataProp": "class",
                         "fnRender":  (o : any) => {
                             var param = o.aData["class"];
                             if (param && param.length > 0)
@@ -835,7 +846,7 @@
 
                     });
 
-                    var col = 4;
+                    var col = 5;
                     columns.push({
                         "sTitle": this.resources["_START"], "sClass": "left", "sType": "numeric", "aDataSort": [col], "aTargets": [col], "bUseRendered": false, "mDataProp": "start",
                         "fnRender":  (o : any) => {
@@ -884,10 +895,10 @@
                         "bInfo": false,
                         "bAutoWidth": false,
                         "aaData": data.results,
-                        "aaSorting": [[0, "asc"]],
+                        "aaSorting": [[1, "asc"]],
                         "aoColumnDefs": columns,
                         "fnPreDrawCallback":  (oSettings : any) => {
-                            if (oSettings.aaSorting[0][0] != 0) {
+                            if (oSettings.aaSorting[0][0] != 1) {
                                 $("#" + this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + this.resources["_RESETTODEFAULT"] + "</a>");
                             }
                         }

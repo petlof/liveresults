@@ -732,12 +732,20 @@ var LiveResults;
                     $('#' + this.resultsControlsDiv).show();
                 }
                 if (data.results != null) {
+                    $.each(data.results, function (idx, res) {
+                        res.placeSortable = res.place;
+                        if (res.place == "-")
+                            res.placeSortable = 999999;
+                        if (res.place == "")
+                            res.placeSortable = 9999;
+                    });
                     var columns = Array();
                     columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place" });
-                    columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [1], "mDataProp": "name" });
-                    columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [2], "mDataProp": "club" });
+                    columns.push({ "sTitle": "placeSortable", "bVisible": false, "mDataProp": "placeSortable", "aTargets": [1] });
+                    columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [2], "mDataProp": "name" });
+                    columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [3], "mDataProp": "club" });
                     columns.push({
-                        "sTitle": this.resources["_CLASS"], "aTargets": [3], "mDataProp": "class",
+                        "sTitle": this.resources["_CLASS"], "aTargets": [4], "mDataProp": "class",
                         "fnRender": function (o) {
                             var param = o.aData["class"];
                             if (param && param.length > 0)
@@ -745,7 +753,7 @@ var LiveResults;
                             return "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + o.aData["class"] + "</a>";
                         }
                     });
-                    var col = 4;
+                    var col = 5;
                     columns.push({
                         "sTitle": this.resources["_START"], "sClass": "left", "sType": "numeric", "aDataSort": [col], "aTargets": [col], "bUseRendered": false, "mDataProp": "start",
                         "fnRender": function (o) {
@@ -789,10 +797,10 @@ var LiveResults;
                         "bInfo": false,
                         "bAutoWidth": false,
                         "aaData": data.results,
-                        "aaSorting": [[0, "asc"]],
+                        "aaSorting": [[1, "asc"]],
                         "aoColumnDefs": columns,
                         "fnPreDrawCallback": function (oSettings) {
-                            if (oSettings.aaSorting[0][0] != 0) {
+                            if (oSettings.aaSorting[0][0] != 1) {
                                 $("#" + _this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + _this.resources["_RESETTODEFAULT"] + "</a>");
                             }
                         }
