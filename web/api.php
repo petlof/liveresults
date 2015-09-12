@@ -286,16 +286,29 @@ elseif ($_GET['method'] == 'getclassresults')
       foreach ($results as $key => $res)
       {   
         $sp_time = "";
-        if (isset($res[$split['code']."_time"]))
-          $sp_time = $res[$split['code']."_time"];
-        if ($cursplittime != $sp_time)
-        {
-          $cursplitplace = $splitplace;
-        }
-        $results[$key][$split['code']."_place"] = $cursplitplace;
-        $splitplace++;
-        if (isset($res[$split['code']."_time"]))
-          $cursplittime = $res[$split['code']."_time"];
+        $raceTime = $res['Time'];
+        $raceStatus = $res['Status'];
+        if ($raceTime == "")
+				  $raceStatus = 9;
+         
+       
+          if (isset($res[$split['code']."_time"]))
+            $sp_time = $res[$split['code']."_time"];
+          if ($cursplittime != $sp_time)
+          {
+            $cursplitplace = $splitplace;
+          }
+          if ($raceStatus == 0 || $raceStatus == 9 || $raceStatus == 10)
+          { 
+            $results[$key][$split['code']."_place"] = $cursplitplace;
+            $splitplace++;
+            if (isset($res[$split['code']."_time"]))
+              $cursplittime = $res[$split['code']."_time"];
+          }
+          else 
+          {
+            $results[$key][$split['code']."_place"] = "\"-\"";
+          }
       }
 		}
     
@@ -394,7 +407,7 @@ elseif ($_GET['method'] == 'getclassresults')
 								$ret .=",$br";
 						if (isset($res[$split['code']."_time"]))
 						{
-							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": 0,\"".$split['code']."_place\": ".$res[$split['code']."_place"];
+							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$status.",\"".$split['code']."_place\": ".$res[$split['code']."_place"];
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
 							if ($spage < 120)
 								$modified = true;

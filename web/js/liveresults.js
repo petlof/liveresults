@@ -368,7 +368,7 @@ var LiveResults;
                                 "bUseRendered": false,
                                 "mDataProp": "splits." + value.code,
                                 "fnRender": function (o) {
-                                    if (o.aData.splits[value.code + "_status"] != 0)
+                                    if (!o.aData.splits[value.code + "_place"])
                                         return "";
                                     else
                                         return _this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "_place"] + ")";
@@ -811,7 +811,7 @@ var LiveResults;
             this.currentTable.fnSort([[idxCol, 'asc']]);
             $("#" + this.txtResetSorting).html("");
         };
-        AjaxViewer.VERSION = "2015-07-31-01";
+        AjaxViewer.VERSION = "2015-09-12-01";
         return AjaxViewer;
     })();
     LiveResults.AjaxViewer = AjaxViewer;

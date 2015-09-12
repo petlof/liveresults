@@ -5,7 +5,7 @@
 
     export class AjaxViewer {
         // ReSharper disable once InconsistentNaming
-        public static VERSION : string = "2015-07-31-01";
+        public static VERSION : string = "2015-09-12-01";
         private updateAutomatically: boolean = true;
         private updateInterval: number = 15000;
         private classUpdateInterval: number = 60000;
@@ -408,7 +408,7 @@
                                 "bUseRendered": false,
                                 "mDataProp": "splits." + value.code,
                                 "fnRender": (o : any) => {
-                                    if (o.aData.splits[value.code + "_status"] != 0)
+                                    if (!o.aData.splits[value.code + "_place"])
                                         return "";
                                     else
                                         return this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "_place"] + ")";
