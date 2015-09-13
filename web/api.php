@@ -407,7 +407,11 @@ elseif ($_GET['method'] == 'getclassresults')
 								$ret .=",$br";
 						if (isset($res[$split['code']."_time"]))
 						{
-							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$status.",\"".$split['code']."_place\": ".$res[$split['code']."_place"];
+              $splitStatus = $status;
+              if ($status == 9 || $status == 10)
+                $splitStatus = 0;
+                
+							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"];
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
 							if ($spage < 120)
 								$modified = true;
