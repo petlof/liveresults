@@ -298,7 +298,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
         
 		    if (isset($tmp['multidaystage']))
 		    {
-		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null)
+		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null && $tmp['multidaystage'] > 1)
 		    	{
 		    		$this->m_IsMultiDayEvent = true;
 		    		$this->m_MultiDayStage = $tmp['multidaystage'];
