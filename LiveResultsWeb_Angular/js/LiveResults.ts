@@ -285,6 +285,18 @@
             if (data.status == "OK") {
                 if (this.currentTable != null) {
                     this.currentTable.fnClearTable();
+
+                    if (data && data.results) {
+                        $.each(data.results, (idx: number, res: any) => {
+                            res.placeSortable = res.place;
+                            if (res.place == "-")
+                                res.placeSortable = 999999;
+                            if (res.place == "")
+                                res.placeSortable = 9999;
+
+                        });
+                    }
+
                     this.currentTable.fnAddData(data.results, true);
                     this.lastClubHash = data.hash;
                 }
@@ -625,20 +637,20 @@
             if (firstFinishedIdx == -1)
                 firstFinishedIdx = data.length;
 
-            var tmp = Array();
-            for (i = 0; i < firstFinishedIdx; i++) {
-                tmp.push(data[i]);
-            }
-
-            data.splice(0, firstFinishedIdx);
-
             if (this.curClassIsMassStart) {
                 /*append results from splits backwards (by place on actual split)*/
-                tmp.sort((a, b) => { return this.sortByDistAndSplitPlace(a, b); });
-                for (i = 0; i < tmp.length; i++) {
+                data.sort((a, b) => { return this.sortByDistAndSplitPlace(a, b); });
+                /*for (i = 0; i < tmp.length; i++) {
                     data.push(tmp[i]);
-                }
+                }*/
             } else {
+                var tmp = Array();
+                for (i = 0; i < firstFinishedIdx; i++) {
+                    tmp.push(data[i]);
+                }
+
+                data.splice(0, firstFinishedIdx);
+            
                 //advanced virtual-sorting for individual races
                 tmp.sort(this.sortByDist);
                 for (i = 0; i < tmp.length; i++) {
@@ -663,6 +675,27 @@
         //Sorts results by the one that have run longest on the course, and if they are on the same split, place on that split
         //"MassStart-Sorting"
         private sortByDistAndSplitPlace(a: any, b: any) {
+            var sortStatusA = a.status;
+            var sortStatusB = b.status;
+            if (sortStatusA == 9 || sortStatusA == 10)
+                sortStatusA = 0;
+            if (sortStatusB == 9 || sortStatusB == 10)
+                sortStatusB = 0;
+            if (sortStatusA != sortStatusB)
+                return sortStatusA - sortStatusB;
+
+            if (a.progress == 100 && b.progress == 100)
+                return a.result - b.result;
+
+            if (a.progress == 0 && b.progress == 0) {
+                if (a.start && !b.start)
+                    return -1;
+                if (!a.start && b.start)
+                    return 1;
+                else
+                    return a.start - b.start;
+            }
+
             if (a.progress == b.progress && a.progress > 0 && a.progress < 100) {
                 //Both have reached the same split
                 if (this.curClassSplits != null) {
