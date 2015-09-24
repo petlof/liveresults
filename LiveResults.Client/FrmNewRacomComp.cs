@@ -14,6 +14,12 @@ namespace LiveResults.Client
 
             string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EmmaClient");
             string file = Path.Combine(path, "racomsetts.xml");
+            this.FrmNewRacomComp_LoadSettingsFromFile(file);
+
+        }
+
+        private void FrmNewRacomComp_LoadSettingsFromFile(string file)
+        {
             if (File.Exists(file))
             {
                 FileStream fs = null;
@@ -22,7 +28,7 @@ namespace LiveResults.Client
                     fs = File.OpenRead(file);
                     var ser = new XmlSerializer(typeof(Settings));
                     var s = ser.Deserialize(fs) as Settings;
-                    
+
                     if (s != null)
                     {
                         txtStartlist.Text = s.StartlistFile;
@@ -42,9 +48,10 @@ namespace LiveResults.Client
                 finally
                 {
                     if (fs != null)
-                        fs.Close(); 
+                        fs.Close();
                 }
             }
+
         }
 
         void FrmNewRacomComp_FormClosing(object sender, FormClosingEventArgs e)
@@ -90,6 +97,16 @@ namespace LiveResults.Client
             public string RadioControlFile { get; set; }
             public string CompetitionID { get; set; }
             public bool IsRelay { get; set; }
+        }
+
+        private void btn_loadsetting_Click(object sender, EventArgs e)
+        {
+            openSettingsDialog.ShowDialog();
+        }
+
+        private void openSettingsDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            this.FrmNewRacomComp_LoadSettingsFromFile(openSettingsDialog.FileName);
         }
     }
 }

@@ -45,6 +45,8 @@
             this.label6 = new System.Windows.Forms.Label();
             this.dtZeroTime = new System.Windows.Forms.DateTimePicker();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.btn_loadsetting = new System.Windows.Forms.Button();
+            this.openSettingsDialog = new System.Windows.Forms.OpenFileDialog();
             this.SuspendLayout();
             // 
             // label1
@@ -205,11 +207,28 @@
             this.checkBox1.Text = "IsRelay";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
+            // btn_loadsetting
+            // 
+            this.btn_loadsetting.Location = new System.Drawing.Point(141, 304);
+            this.btn_loadsetting.Name = "btn_loadsetting";
+            this.btn_loadsetting.Size = new System.Drawing.Size(110, 23);
+            this.btn_loadsetting.TabIndex = 18;
+            this.btn_loadsetting.Text = "Load from file";
+            this.btn_loadsetting.UseVisualStyleBackColor = true;
+            this.btn_loadsetting.Click += new System.EventHandler(this.btn_loadsetting_Click);
+            // 
+            // openSettingsDialog
+            // 
+            this.openSettingsDialog.DefaultExt = "xml";
+            this.openSettingsDialog.InitialDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
+            this.openSettingsDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openSettingsDialog_FileOk);
+            // 
             // FrmNewRacomComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 339);
+            this.Controls.Add(this.btn_loadsetting);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.dtZeroTime);
             this.Controls.Add(this.label6);
@@ -253,5 +272,7 @@
         private System.Windows.Forms.Label label6;
         public System.Windows.Forms.DateTimePicker dtZeroTime;
         public System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.Button btn_loadsetting;
+        private System.Windows.Forms.OpenFileDialog openSettingsDialog;
     }
 }
