@@ -47,6 +47,7 @@
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.btn_loadsetting = new System.Windows.Forms.Button();
             this.openSettingsDialog = new System.Windows.Forms.OpenFileDialog();
+            this.button3 = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -209,25 +210,35 @@
             // 
             // btn_loadsetting
             // 
-            this.btn_loadsetting.Location = new System.Drawing.Point(141, 304);
+            this.btn_loadsetting.Location = new System.Drawing.Point(82, 304);
             this.btn_loadsetting.Name = "btn_loadsetting";
-            this.btn_loadsetting.Size = new System.Drawing.Size(110, 23);
+            this.btn_loadsetting.Size = new System.Drawing.Size(124, 23);
             this.btn_loadsetting.TabIndex = 18;
-            this.btn_loadsetting.Text = "Load from file";
+            this.btn_loadsetting.Text = "Load settings from file";
             this.btn_loadsetting.UseVisualStyleBackColor = true;
             this.btn_loadsetting.Click += new System.EventHandler(this.btn_loadsetting_Click);
             // 
             // openSettingsDialog
             // 
             this.openSettingsDialog.DefaultExt = "xml";
-            this.openSettingsDialog.InitialDirectory = System.AppDomain.CurrentDomain.BaseDirectory;
-            this.openSettingsDialog.FileOk += new System.ComponentModel.CancelEventHandler(this.openSettingsDialog_FileOk);
+            this.openSettingsDialog.Filter = "XML-files|*.xml";
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(212, 304);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(120, 23);
+            this.button3.TabIndex = 19;
+            this.button3.Text = "Save settings to file";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // FrmNewRacomComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(565, 339);
+            this.Controls.Add(this.button3);
             this.Controls.Add(this.btn_loadsetting);
             this.Controls.Add(this.checkBox1);
             this.Controls.Add(this.dtZeroTime);
@@ -274,5 +285,6 @@
         public System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button btn_loadsetting;
         private System.Windows.Forms.OpenFileDialog openSettingsDialog;
+        private System.Windows.Forms.Button button3;
     }
 }

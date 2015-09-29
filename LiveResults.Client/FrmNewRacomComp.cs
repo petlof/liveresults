@@ -56,29 +56,35 @@ namespace LiveResults.Client
 
         void FrmNewRacomComp_FormClosing(object sender, FormClosingEventArgs e)
         {
+            string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EmmaClient");
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            string file = Path.Combine(path, "racomsetts.xml");
+            SaveSettingsToFile(file);
+        }
+
+        private void SaveSettingsToFile(string fileName)
+        {
             try
             {
-                var s = new Settings
-                {
+                var s = new Settings{
                     StartlistFile = txtStartlist.Text,
-                    CompetitionID =  txtCompID.Text,
-                    DSQFile =  txtDSQFile.Text,
+                    CompetitionID = txtCompID.Text,
+                    DSQFile = txtDSQFile.Text,
                     RaceFile = txtRaceFile.Text,
                     RadioControlFile = txtRadioControls.Text,
                     RawSplitsFile = txtRawSplits.Text
-                    , zeroTime =  dtZeroTime.Value,
+                    ,
+                    zeroTime = dtZeroTime.Value,
                     IsRelay = checkBox1.Checked
-                    
-                    
                 };
 
-                string path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "EmmaClient");
-                if (!Directory.Exists(path))
-                    Directory.CreateDirectory(path);
-
-                string file = Path.Combine(path, "racomsetts.xml");
-                var fs = File.Create(file);
-                var ser = new XmlSerializer(typeof(Settings));
+                
+                var fs = File.Create(fileName);
+                var ser = new XmlSerializer(typeof (Settings));
                 ser.Serialize(fs, s);
                 fs.Close();
             }
@@ -101,12 +107,22 @@ namespace LiveResults.Client
 
         private void btn_loadsetting_Click(object sender, EventArgs e)
         {
-            openSettingsDialog.ShowDialog();
+            if (openSettingsDialog.ShowDialog(this) == DialogResult.OK)
+            {
+                FrmNewRacomComp_LoadSettingsFromFile(openSettingsDialog.FileName);
+            }
         }
 
-        private void openSettingsDialog_FileOk(object sender, System.ComponentModel.CancelEventArgs e)
+        private void button3_Click(object sender, EventArgs e)
         {
-            this.FrmNewRacomComp_LoadSettingsFromFile(openSettingsDialog.FileName);
+            var sfd = new SaveFileDialog();
+            sfd.Filter = "XML-files|*.xml";
+            if (sfd.ShowDialog(this) == DialogResult.OK)
+            {
+                SaveSettingsToFile(sfd.FileName);
+                MessageBox.Show(this, "File saved!", "Save settings", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
         }
+       
     }
 }
