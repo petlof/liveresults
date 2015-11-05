@@ -243,7 +243,7 @@ namespace LiveResults.Client.Tests
                     results.Add(newRes);
                 });
 
-            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("oe2010_splits20130311.csv"));
+            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("oe2010_splits20130311.csv"), Encoding.GetEncoding("ISO-8859-1"));
 
             Assert.AreEqual(85, results.Count);
 
@@ -285,7 +285,7 @@ namespace LiveResults.Client.Tests
                 results.Add(newRes);
             });
 
-            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_eng.csv"));
+            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_eng.csv"), Encoding.GetEncoding("ISO-8859-1"));
             VerifyOSFile1(results);
         }
 
@@ -301,7 +301,7 @@ namespace LiveResults.Client.Tests
                 results.Add(newRes);
             });
 
-            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_fin.csv"));
+            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_fin.csv"), Encoding.GetEncoding("ISO-8859-1"));
             VerifyOSFile1(results);
         }
         [Test]
@@ -316,7 +316,7 @@ namespace LiveResults.Client.Tests
                 results.Add(newRes);
             });
 
-            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_sve.csv"));
+            pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_sve.csv"), Encoding.GetEncoding("ISO-8859-1"));
             VerifyOSFile1(results);
         }
         private static void VerifyOSFile1(List<Result> results)

@@ -72,8 +72,11 @@ namespace LiveResults.Client
             File.Delete(e.FullPath);
         }
 
-        public void AnalyzeFile(string filename)
+        public void AnalyzeFile(string filename, Encoding encoding = null)
         {
+            if (encoding == null)
+                encoding = Encoding.Default;
+
             StreamReader sr =null;
             try
             {
@@ -81,7 +84,7 @@ namespace LiveResults.Client
                 {
                     try
                     {
-                        sr = new StreamReader(filename, Encoding.GetEncoding("ISO-8859-1"));
+                        sr = new StreamReader(filename, encoding);
                         break;
                     }
                     catch (Exception ee)
