@@ -81,7 +81,7 @@ namespace LiveResults.Client
                 {
                     try
                     {
-                        sr = new StreamReader(filename, Encoding.Default);
+                        sr = new StreamReader(filename, Encoding.GetEncoding("ISO-8859-1"));
                         break;
                     }
                     catch (Exception ee)
