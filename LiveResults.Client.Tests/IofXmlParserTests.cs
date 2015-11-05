@@ -3,14 +3,14 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using LiveResults.Client.Parsers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace LiveResults.Client.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class IofXmlParserTests
     {
-        [TestMethod]
+        [Test]
         public void ParseIofV2XmlFile()
         {
             var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"),
@@ -32,7 +32,7 @@ namespace LiveResults.Client.Tests
             Assert.AreEqual(49100, runners[0].SplitTimes[0].Time);
         }
 
-        [TestMethod]
+        [Test]
         public void TestFinishPunchDetected()
         {
             var runners = IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("splitsResult_Kugler_Johann_in_Finish.xml"),
@@ -48,7 +48,7 @@ namespace LiveResults.Client.Tests
             
         }
 
-        [TestMethod]
+        [Test]
         public void VerifyIofV2XmlFileNotCompetingDoesNotExis()
         {
             var runners = Parsers.IOFXmlV2Parser.ParseFile(TestHelpers.GetPathToTestFile("iof_xml_notcompeting.xml"),

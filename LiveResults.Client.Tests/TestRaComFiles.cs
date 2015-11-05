@@ -4,12 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using LiveResults.Client.Parsers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Reflection;
+using NUnit.Framework;
 
 namespace LiveResults.Client.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class TestRaComFiles
     {
        

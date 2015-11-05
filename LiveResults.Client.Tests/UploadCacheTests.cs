@@ -1,11 +1,11 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using NUnit.Framework;
 
 namespace LiveResults.Client.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class UploadCacheTests
     {
-        [TestMethod]
+        [Test]
         public void TestMergeRunnerUpdatesChangedNames()
         {
             var cli = new EmmaMysqlClient("", 0, "", "", "", 0);

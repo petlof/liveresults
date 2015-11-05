@@ -1,17 +1,14 @@
-﻿using System;
-using System.Text;
-using System.Collections.Generic;
-using System.Linq;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using System.Text;
 using System.Xml;
-using LiveResults.Client;
 using System.IO;
+using NUnit.Framework;
+
 namespace LiveResults.Client.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class EncodingTests
     {
-        [TestMethod]
+        [Test]
         public void TestConvertBaltic()
         {
             string tmp = File.ReadAllText(TestHelpers.GetPathToTestFile("20130508_200904_emma.xml"), Encoding.GetEncoding("ISO-8859-1"));
@@ -26,7 +23,7 @@ namespace LiveResults.Client.Tests
 
         }
 
-        [TestMethod]
+        [Test]
         public void TestConvertBaltic2()
         {
             string[] tmp = File.ReadAllLines(TestHelpers.GetPathToTestFile("madonas.csv"), Encoding.GetEncoding(1257));

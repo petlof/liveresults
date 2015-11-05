@@ -3,14 +3,14 @@ using System.Text;
 using System.Collections.Generic;
 using System.Linq;
 using LiveResults.Client.Parsers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+using NUnit.Framework;
 
 namespace LiveResults.Client.Tests
 {
-    [TestClass]
+    [TestFixture]
     public class OEParserTests
     {
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsStNo()
         {
             var res = OxTools.GetOEStringsForKey("Stnr", OxTools.SourceProgram.OE);
@@ -27,7 +27,7 @@ namespace LiveResults.Client.Tests
         }
 
 
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsLeg()
         {
             var res = OxTools.GetOEStringsForKey("Lnr", OxTools.SourceProgram.OS);
@@ -38,7 +38,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Sträcka"));
         }
 
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsChipNo()
         {
             var res = OxTools.GetOEStringsForKey("Chipnr", OxTools.SourceProgram.OE);
@@ -58,7 +58,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Chip"));
         }
 
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsClub()
         {
             var res = OxTools.GetOEStringsForKey("Ort", OxTools.SourceProgram.OE);
@@ -72,7 +72,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Joukkue"));
         }
         
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsFirstName()
         {
             var res = OxTools.GetOEStringsForKey("Vorname", OxTools.SourceProgram.OE);
@@ -89,7 +89,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Etunimi"));
             Assert.IsTrue(res.Contains("Förnamn"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsLastName()
         {
             var res = OxTools.GetOEStringsForKey("Nachname", OxTools.SourceProgram.OE);
@@ -106,7 +106,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Sukunimi"));
             Assert.IsTrue(res.Contains("Efternamn"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsCLass()
         {
             var res = OxTools.GetOEStringsForKey("Kurz", OxTools.SourceProgram.OE);
@@ -123,7 +123,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Lyhyt"));
             Assert.IsTrue(res.Contains("Kort"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsStart()
         {
             var res = OxTools.GetOEStringsForKey("Start", OxTools.SourceProgram.OE);
@@ -136,7 +136,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Start"));
             Assert.IsTrue(res.Contains("Lähtö"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsFinish()
         {
             var res = OxTools.GetOEStringsForKey("Ziel", OxTools.SourceProgram.OE);
@@ -153,7 +153,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Maali"));
             Assert.IsTrue(res.Contains("Mål"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsTime()
         {
             var res = OxTools.GetOEStringsForKey("Zeit", OxTools.SourceProgram.OE);
@@ -170,7 +170,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Aika"));
             Assert.IsTrue(res.Contains("Tid"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsStatus()
         {
             var res = OxTools.GetOEStringsForKey("Wertung", OxTools.SourceProgram.OE);
@@ -187,7 +187,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Tila"));
             Assert.IsTrue(res.Contains("Status"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsNr()
         {
             var res = OxTools.GetOEStringsForKey("Nr", OxTools.SourceProgram.OE);
@@ -202,7 +202,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("No"));
             Assert.IsTrue(res.Contains("Nro"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsTotalTime()
         {
             var res = OxTools.GetOEStringsForKey("Gesamtzeit", OxTools.SourceProgram.OE);
@@ -219,7 +219,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Kokonaisaika"));
             Assert.IsTrue(res.Contains("Overall time"));
         }
-        [TestMethod]
+        [Test]
         public void TestLookupOEStringsText()
         {
             var res = OxTools.GetOEStringsForKey("Text", OxTools.SourceProgram.OE);
@@ -231,7 +231,7 @@ namespace LiveResults.Client.Tests
             Assert.IsTrue(res.Contains("Text"));
         }
 
-        [TestMethod]
+        [Test]
         public void TestParseOE2010NewFile()
         {
             OEParser pars = new OEParser();
@@ -273,7 +273,7 @@ namespace LiveResults.Client.Tests
             Assert.AreEqual(1125, res.SplitTimes[1].ControlCode);
         }
 
-        [TestMethod]
+        [Test]
         public void TestParseOS2010EngFile()
         {
             OSParser pars = new OSParser();
@@ -289,7 +289,7 @@ namespace LiveResults.Client.Tests
             VerifyOSFile1(results);
         }
 
-        [TestMethod]
+        [Test]
         public void TestParseOS2010FinFile()
         {
             OSParser pars = new OSParser();
@@ -304,7 +304,7 @@ namespace LiveResults.Client.Tests
             pars.AnalyzeFile(TestHelpers.GetPathToTestFile("os2010_splits_fin.csv"));
             VerifyOSFile1(results);
         }
-        [TestMethod]
+        [Test]
         public void TestParseOS2010SweFile()
         {
             OSParser pars = new OSParser();
@@ -327,7 +327,7 @@ namespace LiveResults.Client.Tests
             var res = results.Where(x => x.RunnerName == "Heini Saarimäki").FirstOrDefault();
             Assert.IsNotNull(res);
 
-            Assert.IsInstanceOfType(res, typeof(RelayResult));
+            Assert.IsInstanceOfType(typeof(RelayResult), res);
             Assert.AreEqual(1, (res as RelayResult).LegNumber);
             Assert.AreEqual("Angelniemen Ankkuri 2", res.RunnerClub);
             Assert.AreEqual("D21-1", res.Class);
@@ -350,7 +350,7 @@ namespace LiveResults.Client.Tests
             res = results.Where(x => x.RunnerName == "Veli Kangas").FirstOrDefault();
             Assert.IsNotNull(res);
 
-            Assert.IsInstanceOfType(res, typeof(RelayResult));
+            Assert.IsInstanceOfType(typeof(RelayResult), res);
             Assert.AreEqual(2, (res as RelayResult).LegNumber);
             Assert.AreEqual("Helsingin Suunnistajat 1", res.RunnerClub);
             Assert.AreEqual("H21-2", res.Class);
@@ -371,7 +371,7 @@ namespace LiveResults.Client.Tests
             res = results.Where(x => x.RunnerName == "Lasse Suonpää").FirstOrDefault();
             Assert.IsNotNull(res);
 
-            Assert.IsInstanceOfType(res, typeof(RelayResult));
+            Assert.IsInstanceOfType(typeof(RelayResult), res);
             Assert.AreEqual(1, (res as RelayResult).LegNumber);
             Assert.AreEqual("MS Parma 1", res.RunnerClub);
             Assert.AreEqual("H21-1", res.Class);
@@ -392,7 +392,7 @@ namespace LiveResults.Client.Tests
             res = results.Where(x => x.RunnerName == "Peeter Pihl").FirstOrDefault();
             Assert.IsNotNull(res);
 
-            Assert.IsInstanceOfType(res, typeof(RelayResult));
+            Assert.IsInstanceOfType(typeof(RelayResult), res);
             Assert.AreEqual(2, (res as RelayResult).LegNumber);
             Assert.AreEqual("MS Parma 1", res.RunnerClub);
             Assert.AreEqual("H21-2", res.Class);
@@ -413,7 +413,7 @@ namespace LiveResults.Client.Tests
             res = results.Where(x => x.ID == 3000402).FirstOrDefault();
             Assert.IsNotNull(res);
 
-            Assert.IsInstanceOfType(res, typeof(RelayResult));
+            Assert.IsInstanceOfType(typeof(RelayResult), res);
             Assert.AreEqual(3, (res as RelayResult).LegNumber);
             Assert.AreEqual("MS Parma 1", res.RunnerClub);
             Assert.AreEqual("H21-3", res.Class);
@@ -435,7 +435,7 @@ namespace LiveResults.Client.Tests
             Assert.AreEqual((36 * 60 + 26) * 100, res.SplitTimes[2].Time);
         }
 
-        [TestMethod]
+        [Test]
         public void TestOS2010FinishPunch()
         {
             var pars = new OSParser();
@@ -448,7 +448,7 @@ namespace LiveResults.Client.Tests
 
             Assert.AreEqual(15, results.Count);
             var r = results.First(x => x.RunnerName == "Sandro Truttmann");
-            Assert.IsInstanceOfType(r, typeof (RelayResult));
+            Assert.IsInstanceOfType(typeof (RelayResult), r);
             Assert.AreEqual(0, r.StartTime);
             Assert.AreEqual(9, (r as RelayResult).OverallStatus);
             Assert.AreEqual(230300, (r as RelayResult).OverallTime);

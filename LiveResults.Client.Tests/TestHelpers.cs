@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+﻿using NUnit.Framework;
 using System.IO;
+using System.Reflection;
 
 namespace LiveResults.Client.Tests
 {
@@ -11,7 +8,7 @@ namespace LiveResults.Client.Tests
     {
         internal static string GetPathToTestFile(string fileName)
         {
-            return Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "TestFiles", fileName);
+            return Path.Combine(TestContext.CurrentContext.TestDirectory, "TestFiles", fileName);
         }
     }
 }
