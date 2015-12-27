@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client", "LiveResults.Client\LiveResults.Client.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
 EndProject
@@ -60,6 +60,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResultsWeb_Angular", "LiveResultsWeb_Angular\LiveResultsWeb_Angular.csproj", "{C1463B2E-DF52-41F6-B822-004D334DE612}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpSirapTest", "UdpSirapTest\UdpSirapTest.csproj", "{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResAdminPage", "LiveResAdminPage\LiveResAdminPage.csproj", "{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,7 +124,6 @@ Global
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
@@ -138,7 +139,6 @@ Global
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
@@ -153,6 +153,22 @@ Global
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
+		{C70E4FAB-E944-45BF-BBCA-6442675A4BD7}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

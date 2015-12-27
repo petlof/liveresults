@@ -1,0 +1,11 @@
+﻿
+<div class="login">
+    <h3>{{'ADMINEXISTING' | translate}}</h3>
+    <select data-ng-model="selectedCompetitionId">
+        <option ng-repeat="competition in competitions" value="{{competition.id}}">{{competition.date}}: {{competition.name}} ({{competition.organizer}})</option>
+    </select><br/>
+    {{'ADMINPASSWORD' | translate}}
+    <input type="password" name="password" data-ng-model="password" /><br/>
+    <span style="font-size: 10px">*{{'ADMINPASSWORDHINT' | translate}}</span><br/>
+    <button class="btn" data-ng-click="login()">{{'ADMINLOGIN' | translate}}</button>
+</div>

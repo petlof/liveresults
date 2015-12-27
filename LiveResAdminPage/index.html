@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+          "http://www.w3.org/TR/html4/loose.dtd">
+<html lang="en">
+<head>
+    <title>Liveresults Admin</title>
+    <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width" />
+    <link rel="stylesheet" href="css/app.css" />
+</head>
+<body data-ng-app="liveresAdminApp" data-ng-cloak>
+    <div data-ng-controller="AppServices">
+        <p><b>LiveResultat - Orientering, Admin</b></p>
+
+        <span class="languagebar">
+            <span data-ng-repeat="lang in languages"><span data-ng-show="curlang == lang[0]"><img data-ng-src='images/{{lang[0]}}.png' border='0' /> {{lang[1]}}</span><span data-ng-show="curlang != lang[0]"><a href data-ng-click="SetLang(lang[0])"><img data-ng-src='images/{{lang[0]}}.png' border='0' /> {{lang[1]}}</a></span> | </span>
+        </span>
+        <hr />
+        <div data-ng-view=""></div>
+    </div>
+    <script src="Scripts/angular.js"></script>
+    <script src="Scripts/angular-route.js"></script>
+    <script src="Scripts/angular-translate.min.js"></script>
+    <script src="Scripts/angular-sanitize.min.js"></script>
+    <script src="Scripts/ngStorage.min.js"></script>
+
+    <script src="App/Home/HomeController.js"></script>
+    <script src="App/EditComp/EditCompController.js"></script>
+    <script src="App/Services/AppServices.js"></script>
+    <script src="App/Services/App.js"></script>
+    <script src="App/Services/AppTranslations.js"></script>
+</body>
+</html>

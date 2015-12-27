@@ -1,0 +1,74 @@
+﻿body {
+    font-family: 'Cabin','Segoe UI', sans-serif;
+}
+
+a {
+     color: #008080;
+}
+
+h3 {
+    margin: 5px;
+}
+
+.btn {
+  color: #000000;
+  background: #ffffff;
+  padding: 5px 10px 5px 10px;
+  margin-top:5px;
+  border: solid #8c8c8c 2px;
+  text-decoration: none;
+}
+
+.btn:hover {
+  background: #CCCCCC;
+  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  text-decoration: none;
+}
+
+div.login {
+    background-color: dimgray;
+    border: 3px solid gray;
+    padding: 10px;
+    color: white;
+}
+
+hr {
+    color: #AFAFAF;
+    background-color: #AFAFAF;
+    height: 2px;
+    border: 0;
+}
+
+p {
+    margin: 4px 0;
+}
+
+
+.languagebar {
+    font-size: 0.8em;
+    font-style: normal;
+}
+
+.languagebar  a {
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.languagebar  img {
+    margin-right: 5px;
+    border: 1px solid #afafaf;
+}
+
+.footer{
+    width: 100%;
+    font-size:10px;
+    color:#afafaf;
+    text-transform: uppercase;
+    text-align: center;
+    padding-top: 50px;
+}
+
