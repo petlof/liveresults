@@ -1,0 +1,4 @@
+App/**/*.js
+App/**/*.js.map
+**/.DS_Store
+.DS_Store
