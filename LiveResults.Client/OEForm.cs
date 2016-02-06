@@ -255,10 +255,18 @@ namespace LiveResults.Client
             {
                 try
                 {
-                    var runners = IOFXmlV2Parser.ParseFile(fullFilename, Logit,new IOFXmlV2Parser.IDCalculator(m_compid).CalculateID);
+                    RadioControl[] radioControls;
+                    var runners = IofXmlParser.ParseFile(fullFilename, Logit,new IofXmlParser.IDCalculator(m_compid).CalculateID,chkAutoCreateRadioControls.Checked, out radioControls);
                     processed = true;
+
                     foreach (EmmaMysqlClient c in m_clients)
                     {
+                        if (radioControls != null)
+                        {
+                            c.MergeRadioControls(radioControls);
+                        }
+
+
                         c.MergeRunners(runners);
                     }
                 }

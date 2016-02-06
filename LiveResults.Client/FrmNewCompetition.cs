@@ -136,6 +136,12 @@ namespace LiveResults.Client
             //monForm.ShowDialog(this);
         }
 
+        private void button3_Click_1(object sender, EventArgs e)
+        {
+            NewSSFTimingComp cmp = new NewSSFTimingComp();
+            cmp.ShowDialog(this);
+        }
+
        
 
        

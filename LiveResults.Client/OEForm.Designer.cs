@@ -30,6 +30,8 @@
         {
             this.components = new System.ComponentModel.Container();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtZeroTime = new System.Windows.Forms.TextBox();
+            this.lblZeroTime = new System.Windows.Forms.Label();
             this.lblFormatInfo = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
             this.cmbFormat = new System.Windows.Forms.ComboBox();
@@ -50,9 +52,8 @@
             this.fsWatcherOS = new System.IO.FileSystemWatcher();
             this.label4 = new System.Windows.Forms.Label();
             this.chkUploadStarttimes = new System.Windows.Forms.CheckBox();
-            this.lblZeroTime = new System.Windows.Forms.Label();
-            this.txtZeroTime = new System.Windows.Forms.TextBox();
             this.button4 = new System.Windows.Forms.Button();
+            this.chkAutoCreateRadioControls = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.fileSystemWatcher1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.fsWatcherOS)).BeginInit();
@@ -76,6 +77,22 @@
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "OE Settings";
+            // 
+            // txtZeroTime
+            // 
+            this.txtZeroTime.Location = new System.Drawing.Point(159, 161);
+            this.txtZeroTime.Name = "txtZeroTime";
+            this.txtZeroTime.Size = new System.Drawing.Size(146, 20);
+            this.txtZeroTime.TabIndex = 12;
+            // 
+            // lblZeroTime
+            // 
+            this.lblZeroTime.AutoSize = true;
+            this.lblZeroTime.Location = new System.Drawing.Point(7, 164);
+            this.lblZeroTime.Name = "lblZeroTime";
+            this.lblZeroTime.Size = new System.Drawing.Size(146, 13);
+            this.lblZeroTime.TabIndex = 13;
+            this.lblZeroTime.Text = "Event ZeroTime (HH:MM:SS)";
             // 
             // lblFormatInfo
             // 
@@ -243,22 +260,6 @@
             this.chkUploadStarttimes.Text = "Upload starttimes";
             this.chkUploadStarttimes.UseVisualStyleBackColor = true;
             // 
-            // lblZeroTime
-            // 
-            this.lblZeroTime.AutoSize = true;
-            this.lblZeroTime.Location = new System.Drawing.Point(7, 164);
-            this.lblZeroTime.Name = "lblZeroTime";
-            this.lblZeroTime.Size = new System.Drawing.Size(146, 13);
-            this.lblZeroTime.TabIndex = 13;
-            this.lblZeroTime.Text = "Event ZeroTime (HH:MM:SS)";
-            // 
-            // txtZeroTime
-            // 
-            this.txtZeroTime.Location = new System.Drawing.Point(150, 161);
-            this.txtZeroTime.Name = "txtZeroTime";
-            this.txtZeroTime.Size = new System.Drawing.Size(146, 20);
-            this.txtZeroTime.TabIndex = 12;
-            // 
             // button4
             // 
             this.button4.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -270,11 +271,24 @@
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
+            // chkAutoCreateRadioControls
+            // 
+            this.chkAutoCreateRadioControls.AutoSize = true;
+            this.chkAutoCreateRadioControls.Checked = true;
+            this.chkAutoCreateRadioControls.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkAutoCreateRadioControls.Location = new System.Drawing.Point(332, 130);
+            this.chkAutoCreateRadioControls.Name = "chkAutoCreateRadioControls";
+            this.chkAutoCreateRadioControls.Size = new System.Drawing.Size(184, 17);
+            this.chkAutoCreateRadioControls.TabIndex = 12;
+            this.chkAutoCreateRadioControls.Text = "Automatically create radiocontrols";
+            this.chkAutoCreateRadioControls.UseVisualStyleBackColor = true;
+            // 
             // OEForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(592, 444);
+            this.Controls.Add(this.chkAutoCreateRadioControls);
             this.Controls.Add(this.button4);
             this.Controls.Add(this.chkUploadStarttimes);
             this.Controls.Add(this.label4);
@@ -323,5 +337,6 @@
         private System.Windows.Forms.TextBox txtZeroTime;
         private System.Windows.Forms.Label lblZeroTime;
         private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.CheckBox chkAutoCreateRadioControls;
     }
 }

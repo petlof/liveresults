@@ -75,6 +75,11 @@ namespace LiveResults.Client
         }
     }
 
+    class DelRadioControl : DbItem
+    {
+        public RadioControl ToDelete;
+    }
+
     public class RadioControl : DbItem
     {
         public string ClassName
