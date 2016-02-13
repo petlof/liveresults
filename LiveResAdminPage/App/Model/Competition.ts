@@ -4,5 +4,9 @@
         name: string;
         organizer: string;
         id: number;
+        timeZoneOffset : number;
+        timezone : string;
+        country : string;
+        isPublic : boolean;
     }
 }

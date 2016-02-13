@@ -1,4 +1,5 @@
-﻿module LiveResults.Admin.App {
+﻿/// <reference path="../../Scripts/typings/angular-translate/angular-translate.d.ts" />
+module LiveResults.Admin.App {
     export class AppServices {
 
         static $inject = ["$scope", "$location", "$routeParams", "$translate"];

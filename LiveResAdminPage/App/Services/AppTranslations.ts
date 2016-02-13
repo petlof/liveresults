@@ -1,11 +1,21 @@
 ﻿// Configuring $translateProvider
+/// <reference path="../../Scripts/typings/angular-translate/angular-translate.d.ts" />
+/// <reference path="App.ts" />
+
 liveresAdminApp.config(['$translateProvider', ($translateProvider: ng.translate.ITranslateProvider) => {
 
     $translateProvider.translations("se", {
         //Startpage
         'ADMINEXISTING': "Administrera existerande tävling",
+        'ADMINCREATENEW': "Skapa ny tävling",
+        'ADMINNEWCOMPNAME' : 'Namn',
+        'ADMINNEWCOMPORGANIZER' : 'Arrangör',
+        'ADMINNEWCOMPDATE' : 'Datum',
+        'ADMINNEWCOMPCOUNTRY' : 'Land',
+        'ADMINNEWCOMPEMAIL' : 'E-mail',
         'ADMINPASSWORD': "Lösenord",
         'ADMINLOGIN': "Logga in",
+        'ADMINCREATECOMPETITION': "Skapa tävling",
         'ADMINPASSWORDHINT': "För tävlingar skapade 2015 eller tidigare, ange blankt lösenord. För tävlingar 2016 eller senare ange lösenordet som angavs då tävlingen skapades",
         'LIVETODAY': "Live idag!",
         'COMPETITIONARCHIVE': "Tävlingsarkiv",

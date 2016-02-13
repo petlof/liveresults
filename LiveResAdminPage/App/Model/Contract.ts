@@ -1,9 +1,24 @@
 ﻿module LiveResults.Contract {
+    export interface ICountry {
+      name : string;
+      code : string;
+    }
+    
     export interface  ICompetition {
-        date: Date;
+        date: string;
         name: string;
         organizer: string;
         id: number;
+        timediff : number;
+        timezone : string;
+        isPublic : number;
+    }
+    
+    export interface  ISplitControl {
+        class: string;
+        name: string;
+        code: number;
+        order: number;
     }
 
     export interface IResultsResponse {

@@ -2,6 +2,8 @@
     font-family: 'Cabin','Segoe UI', sans-serif;
 }
 
+label { display: inline-block; width: 140px; text-align: left; }​
+
 a {
      color: #008080;
 }
@@ -9,32 +11,87 @@ a {
 h3 {
     margin: 5px;
 }
+body {
+    padding: 5px !important;
+}
 
-.btn {
+.form-control {
+   display: inline !important;
+ }
+
+.cbtn {
   color: #000000;
   background: #ffffff;
   padding: 5px 10px 5px 10px;
   margin-top:5px;
-  border: solid #8c8c8c 2px;
+  border: solid #8c8c8c 2px !important;
   text-decoration: none;
 }
 
-.btn:hover {
+.btn {
+  margin: 5px 0;
+}
+
+.fa {
+  cursor: pointer;
+  margin-right: 3px;
+}
+
+.tab-content {
+  padding: 10px;
+}
+
+.cbtn:hover {
   background: #CCCCCC;
-  background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
-  background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+  background-image: -webkit-linear-gradient(top, #DDDDDD, #AAAAAA);
+  background-image: -moz-linear-gradient(top, #DDDDDD, #AAAAAA);
+  background-image: -ms-linear-gradient(top, #DDDDDD, #AAAAAA);
+  background-image: -o-linear-gradient(top, #DDDDDD, #AAAAAA);
+  background-image: linear-gradient(to bottom, #DDDDDD, #AAAAAA);
   text-decoration: none;
 }
 
-div.login {
-    background-color: dimgray;
-    border: 3px solid gray;
-    padding: 10px;
-    color: white;
+.full button span {
+    background-color: limegreen;
+    border-radius: 32px;
+    color: black;
+  }
+  .partially button span {
+    background-color: orange;
+    border-radius: 32px;
+    color: black;
+  }
+
+.login label{
+    display: inline-block;
+    float: left;
+    margin-right: 5px;
+    line-height: 35px;
+    vertical-align: middle;
+    clear: left;
+    width: 130px;
+    
 }
+.login input, .login select {
+  display: inline-block;
+  float: left;
+}
+.login .form-control {
+  min-width: 250px;
+  max-width: 100%;
+}
+.login INPUT.ng-invalid {
+  background-color: lightsalmon;
+}
+.login h3 {
+  margin-top: 0;
+}
+/*div.login SELECT {
+  width: 100%;
+  border-radius: 0;
+  color: #000;
+  text-indent: 5px;
+}*/
 
 hr {
     color: #AFAFAF;
