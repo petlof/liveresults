@@ -8,6 +8,7 @@ using System.IO;
 using System.Net;
 using System.Text;
 using System.Threading;
+using System.Linq;
 
 namespace LiveResults.Client
 {
@@ -111,10 +112,12 @@ namespace LiveResults.Client
         private readonly string m_connStr;
         private readonly int m_compID;
         private readonly Dictionary<int,Runner> m_runners;
+        private readonly Dictionary<string, RadioControl[]> m_classRadioControls;
         private readonly List<DbItem> m_itemsToUpdate;
         public EmmaMysqlClient(string server, int port, string user, string pass, string database, int competitionID)
         {
             m_runners = new Dictionary<int, Runner>();
+            m_classRadioControls = new Dictionary<string, RadioControl[]>();
             m_itemsToUpdate = new List<DbItem>();
 
             m_connStr = "Database=" + database + ";Data Source="+server+";User Id="+user+";Password="+pass;
@@ -170,8 +173,29 @@ namespace LiveResults.Client
                     m_compsNextGeneratedId.Add(m_compID, -1);
                 }
 
-                cmd.CommandText = "select sourceid,id from runneraliases where compid = " + m_compID;
+                cmd.CommandText = "select classname,corder,code,name from splitcontrols where tavid = " + m_compID;
                 MySqlDataReader reader = cmd.ExecuteReader();
+                Dictionary<string, List<RadioControl>> tmpRadios = new Dictionary<string, List<RadioControl>>();
+                while (reader.Read())
+                {
+                    string className = reader["classname"] as string;
+                    int corder = Convert.ToInt32(reader["corder"]);
+                    int code = Convert.ToInt32(reader["code"]);
+                    string name = reader["name"] as string;
+
+                    if (!tmpRadios.ContainsKey(className))
+                        tmpRadios.Add(className, new List<RadioControl>());
+
+                    tmpRadios[className].Add(new RadioControl() { ClassName = className, Code = code, ControlName = name, Order = corder });
+                }
+                reader.Close();
+                foreach (var kvp in tmpRadios)
+                {
+                    m_classRadioControls.Add(kvp.Key, kvp.Value.ToArray());
+                }
+
+                cmd.CommandText = "select sourceid,id from runneraliases where compid = " + m_compID;
+                reader = cmd.ExecuteReader();
 
                 Dictionary<int,string> idToAliasDictionary = new Dictionary<int, string>();
 
@@ -406,6 +430,55 @@ namespace LiveResults.Client
 
         }
 
+        public void MergeRadioControls(RadioControl[] radios)
+        {
+            if (radios == null)
+                return;
+
+            foreach (var kvp in radios.GroupBy(x => x.ClassName))
+            {
+                RadioControl[] controls = kvp.OrderBy(x => x.Order).ToArray();
+                if (m_classRadioControls.ContainsKey(kvp.Key))
+                {
+                    RadioControl[] existingRadios = m_classRadioControls[kvp.Key];
+                    for (int i = 0; i < controls.Length; i++)
+                    {
+                        if (existingRadios.Length > i)
+                        {
+                            if (existingRadios[i].Order != controls[i].Order 
+                                || existingRadios[i].Code != controls[i].Code
+                                || existingRadios[i].ControlName != controls[i].ControlName)
+                            {
+                                m_itemsToUpdate.Add(new DelRadioControl() { ToDelete = existingRadios[i] });
+                                m_itemsToUpdate.Add(controls[i]);
+                            }
+                        }
+                        else
+                        {
+                            m_itemsToUpdate.Add(controls[i]);
+                        }
+                    }
+                    if (existingRadios.Length > controls.Length)
+                    {
+                        for (int i = controls.Length; i < existingRadios.Length; i++)
+                        {
+                            m_itemsToUpdate.Add(new DelRadioControl() { ToDelete = existingRadios[i] });
+                        }
+                    }
+                    m_classRadioControls[kvp.Key] = controls;
+
+                }
+                else
+                {
+                    foreach (var control in controls)
+                    {
+                        m_itemsToUpdate.Add(control);
+                    }
+                    m_classRadioControls.Add(kvp.Key, controls);
+                }
+            }
+        }
+
         public void MergeRunners(Runner[] runners)
         {
             if (runners == null)
@@ -482,6 +555,31 @@ namespace LiveResults.Client
                                         m_itemsToUpdate.Add(r);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not add radiocontrol " + r.ControlName + ", " + r.ClassName + ", " + r.Code + " to server due to: " + ee.Message, ee);
+                                    }
+                                    cmd.Parameters.Clear();
+                                }
+                                else if (item is DelRadioControl)
+                                {
+                                    var dr = item as DelRadioControl;
+                                    var r = dr.ToDelete;
+                                    cmd.Parameters.Clear();
+                                    cmd.Parameters.AddWithValue("?compid", m_compID);
+                                    cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetBytes(r.ClassName));
+                                    cmd.Parameters.AddWithValue("?corder", r.Order);
+                                    cmd.Parameters.AddWithValue("?code", r.Code);
+                                    cmd.Parameters.AddWithValue("?cname", Encoding.UTF8.GetBytes(r.ControlName));
+                                    cmd.CommandText = "delete from splitcontrols where tavid= ?compid and classname = ?name and corder = ?corder and code = ?code and name = ?cname";
+
+                                    try
+                                    {
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        //Move failing runner last
+                                        m_itemsToUpdate.Add(r);
+                                        m_itemsToUpdate.RemoveAt(0);
+                                        throw new ApplicationException("Could not delete radiocontrol " + r.ControlName + ", " + r.ClassName + ", " + r.Code + " to server due to: " + ee.Message, ee);
                                     }
                                     cmd.Parameters.Clear();
                                 }

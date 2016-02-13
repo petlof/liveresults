@@ -9,84 +9,15 @@ namespace LiveResults.Client.Parsers
     /// <summary>
     /// Simple parset for IOFv2XmlFiles
     /// </summary>
-    public class IOFXmlV2Parser
+    internal class IOFXmlV2Parser
     {
-        public static Runner[] ParseFile(string filename, LogMessageDelegate logit, GetIdDelegate getIdFunc)
+        static readonly Dictionary<string, string> m_suppressedIDCalculationErrors = new Dictionary<string, string>();
+
+        public static Runner[] ParseXmlData(XmlDocument xmlDoc, LogMessageDelegate logit, bool deleteFile, LiveResults.Client.Parsers.IofXmlParser.GetIdDelegate getIdFunc)
         {
-            return ParseFile(filename, logit, true, getIdFunc);
-        }
-
-        static readonly Dictionary<string,string> m_suppressedIDCalculationErrors = new Dictionary<string, string>(); 
-
-        public static Runner[] ParseFile(string filename, LogMessageDelegate logit, bool deleteFile, GetIdDelegate getIdFunc)
-        {
-            byte[] fileContents;
-            if (!File.Exists(filename))
-            {
-                return null;
-            }
-
-            fileContents = File.ReadAllBytes(filename);
-
-            if (deleteFile)
-                File.Delete(filename);
-
-            return ParseXmlData(fileContents, logit, deleteFile, getIdFunc);
-
-        }
-
-        public delegate int GetIdDelegate(string sourceid, string sicard, out string storeAlias);
-
-        public class IDCalculator
-        {
-            private readonly int m_compid;
-            public IDCalculator(int compId)
-            {
-                m_compid = compId;
-            }
-
-            public int CalculateID(string sourceId, string si, out string storeAlias)
-            {
-                long id;
-                storeAlias = null;
-                if (long.TryParse(sourceId, NumberStyles.Any, CultureInfo.InvariantCulture, out id))
-                {
-                    if (id < Int32.MaxValue && id > 0)
-                    {
-                        return (int) id;
-                    }
-                }
-                if (!string.IsNullOrEmpty(sourceId))
-                {
-                    storeAlias = sourceId;
-                    return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, sourceId);
-                }
-                if (!string.IsNullOrEmpty(si))
-                {
-                    storeAlias = "SI:" + si;
-                    return EmmaMysqlClient.GetIdForSourceIdInCompetition(m_compid, storeAlias);
-                }
-                throw new FormatException("Could not calculate ID");
-            }
-        }
-
-        public static Runner[] ParseXmlData(byte[] xml, LogMessageDelegate logit, bool deleteFile, GetIdDelegate getIdFunc)
-        {
-
             var runners = new List<Runner>();
 
-            var xmlDoc = new XmlDocument();
-            using (var ms = new MemoryStream(xml))
-            {
-                var setts = new XmlReaderSettings();
-                setts.XmlResolver = null;
-                setts.ProhibitDtd = false;
-                using (XmlReader xr = XmlReader.Create(ms, setts))
-                {
-                    xmlDoc.Load(xr);
-                }
-            }
-
+            #region parseStartlist
             foreach (XmlNode classNode in xmlDoc.GetElementsByTagName("ClassStart"))
             {
                 XmlNode classNameNode = classNode.SelectSingleNode("ClassShortName");
@@ -140,7 +71,7 @@ namespace LiveResults.Client.Parsers
                     }
                 }
             }
-
+            #endregion
             foreach (XmlNode classNode in xmlDoc.GetElementsByTagName("ClassResult"))
             {
                 XmlNode classNameNode = classNode.SelectSingleNode("ClassShortName");
@@ -292,30 +223,6 @@ namespace LiveResults.Client.Parsers
             return runners.ToArray();
         }
 
-        private static int CalculateIDFromSiCard(LogMessageDelegate logit, string si, string familyname, string givenname, long pid)
-        {
-            int iSi;
-            if (!Int32.TryParse(si, out iSi))
-            {
-                //NO SICARD!
-                logit("No SICard for Runner: " + familyname + " " + givenname);
-            }
-            int dbid = 0;
-            if (pid < Int32.MaxValue && pid > 0)
-            {
-                dbid = (int) pid;
-            }
-            else if (iSi > 0)
-            {
-                dbid = -1*iSi;
-            }
-            else
-            {
-                logit("Cant generate DBID for runner: " + givenname + " " + familyname);
-            }
-            return dbid;
-        }
-
         private static bool ParseNameClubAndId(XmlNode personNode, out string familyname, out string givenname, 
            out string club, out string sourceId)
         {
@@ -341,18 +248,7 @@ namespace LiveResults.Client.Parsers
             familyname = familyNameNode.InnerText;
             givenname = giveNameNode.InnerText;
             sourceId = personIdNode.InnerText;
-            //if (sourceId.Trim().Length > 0)
-            //{
-            //    long tPid;
-            //    if (!long.TryParse(sourceId, NumberStyles.Any, CultureInfo.InvariantCulture, out tPid))
-            //    {
-            //        //Could be textual, try combining charcodes to number
-            //    }
-            //    else
-            //    {
-            //        pid = tPid;
-            //    }
-            //}
+           
             var clubNode = personNode.SelectSingleNode("Club/ShortName");
             club = "";
             if (clubNode != null)

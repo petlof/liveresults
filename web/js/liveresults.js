@@ -189,9 +189,7 @@ var LiveResults;
                             try {
                                 var reqTime = resp.getResponseHeader("date");
                                 if (reqTime) {
-                                    var d = new Date(reqTime);
-                                    d.setTime(d.getTime() + (120 + d.getTimezoneOffset()) * 60 * 1000);
-                                    _this.serverTimeDiff = new Date().getTime() - d.getTime();
+                                    _this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
                                 }
                             }
                             catch (e) {
@@ -295,9 +293,7 @@ var LiveResults;
                     try {
                         var reqTime = resp.getResponseHeader("date");
                         if (reqTime) {
-                            var d = new Date(reqTime);
-                            d.setTime(d.getTime() + (120 + d.getTimezoneOffset()) * 60 * 1000);
-                            _this.serverTimeDiff = new Date().getTime() - d.getTime();
+                            _this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
                         }
                     }
                     catch (e) {

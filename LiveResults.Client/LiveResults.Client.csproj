@@ -43,10 +43,14 @@
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -150,9 +154,17 @@
       <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
     </Compile>
     <Compile Include="Model\TeamHolder.cs" />
+    <Compile Include="NewSSFTimingComp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewSSFTimingComp.Designer.cs">
+      <DependentUpon>NewSSFTimingComp.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parsers\IofXmlParser.cs" />
+    <Compile Include="Parsers\IofXmlV3Parser.cs" />
+    <Compile Include="Parsers\SSFTimingParser.cs" />
     <Compile Include="Parsers\OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
-    <Compile Include="Parsers\Jwoc2014Parser.cs" />
     <Compile Include="Parsers\LiveResultater_no_Parser.cs" />
     <Compile Include="Parsers\RacomFileSetParser.cs" />
     <Compile Include="Result.cs" />
@@ -178,17 +190,16 @@
       <DependentUpon>NewOLAComp.cs</DependentUpon>
     </Compile>
     <Compile Include="OXTools.cs" />
-    <Compile Include="Parsers\SiTimecParser.cs" />
     <Compile Include="OEForm.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="OEForm.Designer.cs">
       <DependentUpon>OEForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="OSParser.cs" />
+    <Compile Include="Parsers\OSParser.cs" />
     <Compile Include="EmmaMysqlClient.cs" />
-    <Compile Include="OEParser.cs" />
-    <Compile Include="OlaParser.cs" />
+    <Compile Include="Parsers\OEParser.cs" />
+    <Compile Include="Parsers\OlaParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmMonitor.resx">
@@ -201,6 +212,10 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmNewRacomComp.resx">
       <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewSSFTimingComp.resx">
+      <DependentUpon>NewSSFTimingComp.cs</DependentUpon>
+      <SubType>Designer</SubType>
     </EmbeddedResource>
     <EmbeddedResource Include="NewOLAComp.resx">
       <SubType>Designer</SubType>
