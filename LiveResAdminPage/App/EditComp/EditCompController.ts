@@ -13,8 +13,6 @@ module LiveResults.Admin.EditComp {
         addRadioControlToClass : (className : string, newControlName : string, newControlCode : number, newControlPassing : number) => void;
     }
     
-    
-    
     export interface ITimeZone {
         text : string;
         abbr : string;
@@ -25,14 +23,23 @@ module LiveResults.Admin.EditComp {
     }
 
     export class EditCompController {
-        static $inject = ["$scope", "$http", "$location", "$filter", "apiUrl", "$routeParams","$httpParamSerializerJQLike","$uibModal","COUNTRY_LIST"];
+        static $inject = ["$scope", "$http", "$location", "$filter", "apiUrl", "$routeParams","$httpParamSerializerJQLike",
+        "$uibModal","COUNTRY_LIST","$sessionStorage"];
         constructor(
-            private $scope: IEditCompScope, $http: ng.IHttpService, private $location: ng.ILocationService, 
+            private $scope: IEditCompScope, $http: ng.IHttpService, 
+            private $location: ng.ILocationService, 
             private $filter: ng.IFilterService, apiUrl: string,
             private $routeParams: any,
             private $httpParamSerializerJQLike : any,
             private $uibModal : any,
-            COUNTRY_LIST : LiveResults.Contract.ICountry[]) {
+            COUNTRY_LIST : LiveResults.Contract.ICountry[],
+            private $sessionStorage : any) {
+              
+            if (!this.$sessionStorage.competitionid ||  this.$sessionStorage.competitionid !=  $routeParams["competitionId"])
+            {
+              this.$location.path(this.$routeParams["lang"] + "/");
+              return;
+            }
 
             $scope.competitionId = $routeParams["competitionId"];
             
@@ -41,7 +48,7 @@ module LiveResults.Admin.EditComp {
             $scope.datePickerStatus = { opened : false};
             $scope.openDatePicker = ($event) => {
               $scope.datePickerStatus.opened=true;
-              }
+            }
             $scope.dateOptions = {
               formatYear: 'yy',
               startingDay: 1

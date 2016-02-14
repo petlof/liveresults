@@ -21,12 +21,14 @@
     <label>{{'ADMINNEWCOMPEMAIL' | translate}}:</label>
     <input type="email" class="form-control" data-ng-model="newComp.email" required /><br/>
     <label>{{'ADMINPASSWORD' | translate}}:</label>
-    <input type="password" name="password" class="form-control" data-ng-model="newComp.password" required/><br/>
+    <input type="password" class="form-control" data-ng-model="newComp.password" required/><br/>
+    <label>{{'ADMINPASSWORDREPEAT' | translate}}:</label>
+    <input type="password" class="form-control" data-ng-model="newComp.password2" required ng-pattern="newComp.password"/><br/>
     <p style="clear: both">
     <div
     vc-recaptcha
     key="'6LcsNxgTAAAAAOtfQbimLeH2pryAzRj5aB0ukskX'"></div>
-    <button class="btn" ng-disabled="frmNewComp.$invalid" data-ng-click="login()">{{'ADMINCREATECOMPETITION' | translate}}</button>
+    <button class="btn" ng-disabled="frmNewComp.$invalid" data-ng-click="createCompetition()">{{'ADMINCREATECOMPETITION' | translate}}</button>
     </p>
     </form>
 </div>
