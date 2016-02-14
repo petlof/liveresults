@@ -12,6 +12,7 @@ include_once("templates/classEmma.class.php");
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
 header('content-type: application/json; charset='.$CHARSET);
+header('Access-Control-Allow-Origin: *');
 header('cache-control: max-age=15');
 header('pragma: public');
 header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 15));
@@ -47,6 +48,39 @@ if ($_GET['method'] == 'getcompetitions')
 			}
 		echo("]}");
 }
+else if ($_GET['method'] == 'setcompetitioninfo')
+{
+        $compid = $_POST['comp'];		
+		Emma::UpdateCompetition($compid,$_POST["compName"],$_POST["organizer"],$_POST["date"],$_POST["public"],$_POST["timediff"]);		
+		echo("{\"status\": \"OK\"");
+}
+else if ($_GET['method'] == 'createcompetition')
+{
+		$data = json_decode($HTTP_RAW_POST_DATA);
+		if (!isset($data->name))
+			echo("{\"status\": \"Error\", \"message\": \"name not set\"}");
+		if (!isset($data->organizer))
+			echo("{\"status\": \"Error\", \"message\": \"organizer not set\"}");
+		if (!isset($data->date))
+			echo("{\"status\": \"Error\", \"message\": \"date not set\"}");
+		if (!isset($data->country))
+			echo("{\"status\": \"Error\", \"message\": \"country not set\"}");
+		if (!isset($data->email))
+			echo("{\"status\": \"Error\", \"message\": \"email not set\"}");
+		if (!isset($data->password))
+			echo("{\"status\": \"Error\", \"message\": \"password not set\"}");
+		
+		$id = Emma::CreateCompetitionFull($data->name,$data->organizer,$data->date,$data->email,$data->password,$data->country);
+        
+		if ($id > 0)
+		{
+			echo("{\"status\": \"OK\", \"competitionid\": ".$id." }");
+		}
+		else 
+		{
+			echo("{\"status\": \"Error\", \"message\": \"Error adding competition\" }");
+		}
+}
 else if ($_GET['method'] == 'getcompetitioninfo')
 {
                 $compid = $_GET['comp'];
@@ -56,6 +90,8 @@ else if ($_GET['method'] == 'getcompetitioninfo')
                 echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
                                 
                 echo (", \"timediff\": ".$comp["timediff"]);
+				echo (", \"timezone\": \"".$comp["timezone"]."\"");
+				echo (", \"isPublic\": ".(isset($comp["public"]) ? $comp["public"] : false));
                 if ($comp["multidaystage"] != "")
                 {
                     echo(", \"multidaystage\": ".$comp["multidaystage"].", \"multidayfirstday\": ".$comp["multidayparent"]);
@@ -208,6 +244,31 @@ elseif ($_GET['method'] == 'getclubresults')
 			echo("{ \"status\": \"OK\",$br \"clubName\": \"".$club."\", $br\"results\": [$br$ret$br]");
 			echo(", $br \"hash\": \"". $hash."\"}");
 		}
+}
+elseif ($_GET['method'] == 'getsplitcontrols')
+{
+	$currentComp = new Emma($_GET['comp']);
+	$splits = $currentComp->getAllSplitControls();
+	$splitJSON = "[$br";
+	$first = true;
+	foreach ($splits as $split)
+	{
+		if (!$first)
+			$splitJSON .=",$br";
+		$splitJSON .= "{ \"class\": ".$split['className'].", \"code\": ".$split['code'] .", \"name\": \"".$split['name']."\", \"order\": \"".$split['corder']."\"}";
+		$first = false;
+	}
+	$splitJSON .="$br]";
+	$hash = MD5($splitJSON);
+	if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+	{
+		echo("{ \"status\": \"NOT MODIFIED\"}");
+	}
+	else
+	{
+		echo("{ \"status\": \"OK\",$br \"splitcontrols\": $splitJSON");
+		echo(",$br \"hash\": \"". $hash."\"}");
+	}
 }
 elseif ($_GET['method'] == 'getclassresults')
 {
