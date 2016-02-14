@@ -71,36 +71,43 @@ namespace LiveResults.Client
             }
             if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["serverpollurl"]))
             {
-                WebRequest wq = WebRequest.Create(ConfigurationManager.AppSettings["serverpollurl"]);
-                wq.Method = "POST";
-                byte[] data = Encoding.ASCII.GetBytes("key=" + ConfigurationManager.AppSettings["serverpollkey"]);
-                wq.ContentLength = data.Length;
-                wq.ContentType = "application/x-www-form-urlencoded";
-                Stream st = wq.GetRequestStream();
-                st.Write(data, 0, data.Length);
-                st.Flush();
-                st.Close();
-                WebResponse ws = wq.GetResponse();
-                Stream responseStream = ws.GetResponseStream();
-                if (responseStream != null)
+                try
                 {
-                    var sr = new StreamReader(responseStream);
-                    string resp = sr.ReadToEnd();
-                    if (resp.Trim().Length > 0)
+                    WebRequest wq = WebRequest.Create(ConfigurationManager.AppSettings["serverpollurl"]);
+                    wq.Method = "POST";
+                    byte[] data = Encoding.ASCII.GetBytes("key=" + ConfigurationManager.AppSettings["serverpollkey"]);
+                    wq.ContentLength = data.Length;
+                    wq.ContentType = "application/x-www-form-urlencoded";
+                    Stream st = wq.GetRequestStream();
+                    st.Write(data, 0, data.Length);
+                    st.Flush();
+                    st.Close();
+                    WebResponse ws = wq.GetResponse();
+                    Stream responseStream = ws.GetResponseStream();
+                    if (responseStream != null)
                     {
-                        string[] lines = resp.Trim().Split('\n');
-                        foreach (string line in lines)
+                        var sr = new StreamReader(responseStream);
+                        string resp = sr.ReadToEnd();
+                        if (resp.Trim().Length > 0)
                         {
-                            string[] parts = line.Split(';');
-                            var s = new EmmaServer();
-                            s.Host = parts[0];
-                            s.User = parts[1];
-                            s.Pw = parts[2];
-                            s.DB = parts[3];
+                            string[] lines = resp.Trim().Split('\n');
+                            foreach (string line in lines)
+                            {
+                                string[] parts = line.Split(';');
+                                var s = new EmmaServer();
+                                s.Host = parts[0];
+                                s.User = parts[1];
+                                s.Pw = parts[2];
+                                s.DB = parts[3];
 
-                            servers.Add(s);
+                                servers.Add(s);
+                            }
                         }
                     }
+                }
+                catch (Exception ee)
+                {
+                    System.Windows.Forms.MessageBox.Show("Could not connect to " + new Uri(ConfigurationManager.AppSettings["serverpollurl"]).Host + " to query connection, error was: " + ee.Message + "\r\n\r\nStacktrace: " + ee.StackTrace);
                 }
             }
 
@@ -114,11 +121,14 @@ namespace LiveResults.Client
         private readonly Dictionary<int,Runner> m_runners;
         private readonly Dictionary<string, RadioControl[]> m_classRadioControls;
         private readonly List<DbItem> m_itemsToUpdate;
-        public EmmaMysqlClient(string server, int port, string user, string pass, string database, int competitionID)
+        private readonly bool m_assignIDsInternally;
+        private int m_nextInternalId = 1;
+        public EmmaMysqlClient(string server, int port, string user, string pass, string database, int competitionID, bool assignIDsInternally = false)
         {
             m_runners = new Dictionary<int, Runner>();
             m_classRadioControls = new Dictionary<string, RadioControl[]>();
             m_itemsToUpdate = new List<DbItem>();
+            m_assignIDsInternally = assignIDsInternally;
 
             m_connStr = "Database=" + database + ";Data Source="+server+";User Id="+user+";Password="+pass;
             m_connection = new MySqlConnection(m_connStr);
@@ -277,6 +287,11 @@ namespace LiveResults.Client
             m_mainTh = new Thread(Run);
             m_mainTh.Name = "Main MYSQL Thread [" + m_connection.DataSource + "]";
             m_mainTh.Start();
+
+            if (m_assignIDsInternally)
+            {
+                m_nextInternalId = m_runners.Count > 0 ? m_runners.Keys.Max() + 1 : 1;
+            }
         }
 
         public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId)
@@ -337,6 +352,23 @@ namespace LiveResults.Client
                 if (!m_currentlyBuffering)
                 {
                     FireLogMsg("Runner added [" + r.Name + "]");
+                }
+            }
+        }
+
+        /// <summary>
+        /// Adds a Runner to this competition
+        /// </summary>
+        /// <param name="r"></param>
+        public void RemoveRunner(Runner r)
+        {
+            if (m_runners.ContainsKey(r.ID))
+            {
+                m_runners.Remove(r.ID);
+                m_itemsToUpdate.Add(new DelRunner { RunnerID = r.ID });
+                if (!m_currentlyBuffering)
+                {
+                    FireLogMsg("Runner deleted [" + r.Name + ", " + r.Class + "]");
                 }
             }
         }
@@ -496,18 +528,126 @@ namespace LiveResults.Client
                 }
 
 
-                if (r.StartTime >= 0)
-                    SetRunnerStartTime(r.ID, r.StartTime);
+                UpdateRunnerTimes(r);
+            }
+        }
 
-                SetRunnerResult(r.ID, r.Time, r.Status);
+        public void UpdateCurrentResultsFromNewSet(Runner[] runners)
+        {
+            if (runners == null)
+                return;
 
-                var spl = r.SplitTimes;
-                if (spl != null)
+            var existingClassGroups = m_runners.Values.GroupBy(x => x.Class, StringComparer.OrdinalIgnoreCase).ToDictionary(x => x.Key, x => x.ToArray(), StringComparer.OrdinalIgnoreCase);
+            foreach (var classGroup in runners.GroupBy(x => x.Class))
+            {
+                if (existingClassGroups.ContainsKey(classGroup.Key))
                 {
-                    foreach (var s in spl)
+                    var existingClass = existingClassGroups[classGroup.Key];
+                    var duplicateCounter = new Dictionary<string, int>();
+                    foreach (var runner in classGroup)
                     {
-                        SetRunnerSplit(r.ID, s.Control, s.Time);
+                        string duplValue = (runner.Name + ":" + runner.Club).ToLower();
+                        if (!duplicateCounter.ContainsKey(duplValue))
+                        {
+                            duplicateCounter.Add(duplValue, 0);
+                        }
+
+                        duplicateCounter[duplValue]++;
+                        int findInstance = duplicateCounter[duplValue];
+
+                        /*Find existing*/
+                        Runner currentRunner = null;
+                        int instNum = 0;
+                        foreach (var existingRunner in existingClass)
+                        {
+                            
+                            if (string.Compare(existingRunner.Name,runner.Name, StringComparison.InvariantCultureIgnoreCase) == 0 &&
+                                string.Compare(existingRunner.Club,runner.Club, StringComparison.InvariantCultureIgnoreCase) == 0)
+                            {
+                                instNum++;
+                                if (instNum == findInstance)
+                                {
+                                    currentRunner = existingRunner;
+                                    break;
+                                }
+                            }
+                        }
+                        if (currentRunner != null)
+                        {
+                            runner.ID = currentRunner.ID;
+                            UpdateRunnerInfo(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
+                        }
+                        else
+                        {
+                            //New runner
+                            runner.ID = m_nextInternalId++;
+                            var newRunner = new Runner(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
+                            AddRunner(newRunner);
+                        }
+                        UpdateRunnerTimes(runner);
                     }
+
+                    /*Detect runners that are removed*/
+                    duplicateCounter = new Dictionary<string, int>();
+                    foreach (var existingRunner in existingClass)
+                    {
+                        string duplValue = (existingRunner.Name + ":" + existingRunner.Club).ToLower();
+                        if (!duplicateCounter.ContainsKey(duplValue))
+                        {
+                            duplicateCounter.Add(duplValue, 0);
+                        }
+
+                        duplicateCounter[duplValue]++;
+                        int findInstance = duplicateCounter[duplValue];
+                        bool exists = false;
+                        int instNum = 0;
+                        foreach (var runner in classGroup)
+                        {
+                            if (string.Compare(existingRunner.Name, runner.Name, StringComparison.InvariantCultureIgnoreCase) == 0 &&
+                                string.Compare(existingRunner.Club, runner.Club, StringComparison.InvariantCultureIgnoreCase) == 0)
+                            {
+                                 instNum++;
+                                 if (instNum == findInstance)
+                                 {
+                                     exists = true;
+                                     break;
+                                 }
+                            }
+                        }
+                        if (!exists)
+                        {
+                            //Remove runner
+                            RemoveRunner(existingRunner);
+                        }
+                    }
+                }
+                else
+                {
+                    //new class, add all
+                    foreach (var runner in classGroup)
+                    {
+                        runner.ID = m_nextInternalId++;
+                        var newRunner = new Runner(runner.ID,runner.Name, runner.Club, runner.Class, runner.SourceId);
+                        AddRunner(newRunner);
+                        UpdateRunnerTimes(runner);
+                    }
+                }
+            }
+        }
+
+        private void UpdateRunnerTimes(Runner runner)
+        {
+            if (runner.StartTime >= 0)
+                SetRunnerStartTime(runner.ID, runner.StartTime);
+
+            SetRunnerResult(runner.ID, runner.Time, runner.Status);
+
+            var spl = runner.SplitTimes;
+            if (spl != null)
+            {
+                foreach (var s in spl)
+                {
+                    SetRunnerSplit(runner.ID, s.Control, s.Time);
                 }
             }
         }
@@ -580,6 +720,31 @@ namespace LiveResults.Client
                                         m_itemsToUpdate.Add(r);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not delete radiocontrol " + r.ControlName + ", " + r.ClassName + ", " + r.Code + " to server due to: " + ee.Message, ee);
+                                    }
+                                    cmd.Parameters.Clear();
+                                }
+                                else if (item is DelRunner)
+                                {
+                                    var dr = item as DelRunner;
+                                    var r = dr.RunnerID;
+                                    cmd.Parameters.Clear();
+                                    cmd.Parameters.AddWithValue("?compid", m_compID);
+                                    cmd.Parameters.AddWithValue("?id", r);
+                                    cmd.CommandText = "delete from results where tavid= ?compid and dbid = ?id";
+                                    try
+                                    {
+                                        cmd.ExecuteNonQuery();
+                                        cmd.CommandText = "delete from runners where tavid= ?compid and dbid = ?id";
+                                        cmd.ExecuteNonQuery();
+                                        cmd.CommandText = "delete from runneraliases where compid= ?compid and id = ?id";
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        //Move failing runner last
+                                        m_itemsToUpdate.Add(dr);
+                                        m_itemsToUpdate.RemoveAt(0);
+                                        throw new ApplicationException("Could not delete runner " + r + " on server due to: " + ee.Message, ee);
                                     }
                                     cmd.Parameters.Clear();
                                 }

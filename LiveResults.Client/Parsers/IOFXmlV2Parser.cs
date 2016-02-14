@@ -33,33 +33,32 @@ namespace LiveResults.Client.Parsers
                         string familyname;
                         string givenname;
                         string club;
-                        string sourceId;
-                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out club, out sourceId)) continue;
+                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out club)) continue;
 
                         var startTimeNode = personNode.SelectSingleNode("Start/StartTime/Clock");
-                        var ccCardNode = personNode.SelectSingleNode("Start/CCard/CCardId");
+                       // var ccCardNode = personNode.SelectSingleNode("Start/CCard/CCardId");
 
-                        if (startTimeNode == null || ccCardNode == null)
+                        if (startTimeNode == null)
                             continue;
                         string starttime = startTimeNode.InnerText;
-                        string si = ccCardNode.InnerText;
-                        string storeAlias;
+                        //string si = ccCardNode.InnerText;
+                        //string storeAlias;
 
-                        if (string.IsNullOrEmpty(sourceId) && string.IsNullOrEmpty(si))
-                        {
-                            string name = givenname + " " + familyname + ", " + club;
-                            if (!m_suppressedIDCalculationErrors.ContainsKey(name))
-                            {
-                                logit("Cannot calculculate ID for runner: " + name + ", skipping [supressing further output for this name]");
-                                m_suppressedIDCalculationErrors.Add(name, name);
-                            }
-                            continue;
-                        }
+                        //if (string.IsNullOrEmpty(sourceId) && string.IsNullOrEmpty(si))
+                        //{
+                        //    string name = givenname + " " + familyname + ", " + club;
+                        //    if (!m_suppressedIDCalculationErrors.ContainsKey(name))
+                        //    {
+                        //        logit("Cannot calculculate ID for runner: " + name + ", skipping [supressing further output for this name]");
+                        //        m_suppressedIDCalculationErrors.Add(name, name);
+                        //    }
+                        //    continue;
+                        //}
                     
 
-                        int dbId = getIdFunc(sourceId, si, out storeAlias);
+                        //int dbId = getIdFunc(sourceId, si, out storeAlias);
 
-                        var runner = new Runner(dbId, givenname + " " + familyname, club, className, storeAlias);
+                        var runner = new Runner(-1, givenname + " " + familyname, club, className);
 
                         if (!string.IsNullOrEmpty(starttime))
                         {
@@ -88,15 +87,15 @@ namespace LiveResults.Client.Parsers
                         string familyname;
                         string givenname;
                         string club;
-                        string sourceId;
-                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out club, out sourceId)) continue;
+                       // string sourceId;
+                        if (!ParseNameClubAndId(personNode, out familyname, out givenname, out club)) continue;
 
                         var competitorStatusNode = personNode.SelectSingleNode("Result/CompetitorStatus");
                         var resultTimeNode = personNode.SelectSingleNode("Result/Time");
                         var startTimeNode = personNode.SelectSingleNode("Result/StartTime/Clock");
-                        var ccCardNode = personNode.SelectSingleNode("Result/CCard/CCardId");
+                        //var ccCardNode = personNode.SelectSingleNode("Result/CCard/CCardId");
                         if (competitorStatusNode == null || competitorStatusNode.Attributes == null || competitorStatusNode.Attributes["value"] == null ||
-                            resultTimeNode == null || ccCardNode == null)
+                            resultTimeNode == null)
                             continue;
 
                         string status = competitorStatusNode.Attributes["value"].Value;
@@ -104,23 +103,23 @@ namespace LiveResults.Client.Parsers
                         string starttime = "";
                         if (startTimeNode != null)
                             starttime = startTimeNode.InnerText;
-                        string si = ccCardNode.InnerText;
-                        string storeAlias;
+                        //string si = ccCardNode.InnerText;
+                        //string storeAlias;
 
-                        if (string.IsNullOrEmpty(sourceId) && string.IsNullOrEmpty(si))
-                        {
-                            string name = givenname + " " + familyname + ", " + club;
-                            if (!m_suppressedIDCalculationErrors.ContainsKey(name))
-                            {
-                                logit("Cannot calculculate ID for runner: " + name + ", skipping [supressing further output for this name]");
-                                m_suppressedIDCalculationErrors.Add(name, name);
-                            }
-                            continue;
-                        }
+                        //if (string.IsNullOrEmpty(sourceId) && string.IsNullOrEmpty(si))
+                        //{
+                        //    string name = givenname + " " + familyname + ", " + club;
+                        //    if (!m_suppressedIDCalculationErrors.ContainsKey(name))
+                        //    {
+                        //        logit("Cannot calculculate ID for runner: " + name + ", skipping [supressing further output for this name]");
+                        //        m_suppressedIDCalculationErrors.Add(name, name);
+                        //    }
+                        //    continue;
+                        //}
 
-                        int dbId = getIdFunc(sourceId, si, out storeAlias);
+                        //int dbId = getIdFunc(sourceId, si, out storeAlias);
                         
-                        var runner = new Runner(dbId, givenname + " " + familyname, club, className, storeAlias);
+                        var runner = new Runner(-1, givenname + " " + familyname, club, className);
 
                         if (!string.IsNullOrEmpty(starttime))
                         {
@@ -224,12 +223,12 @@ namespace LiveResults.Client.Parsers
         }
 
         private static bool ParseNameClubAndId(XmlNode personNode, out string familyname, out string givenname, 
-           out string club, out string sourceId)
+           out string club)
         {
             familyname = null;
             givenname = null;
             club = null;
-            sourceId = null;
+            //sourceId = null;
 
             XmlNode personNameNode = personNode.SelectSingleNode("Person/PersonName");
             if (personNameNode == null)
@@ -239,15 +238,15 @@ namespace LiveResults.Client.Parsers
 
             var familyNameNode = personNameNode.SelectSingleNode("Family");
             var giveNameNode = personNameNode.SelectSingleNode("Given");
-            var personIdNode = personNode.SelectSingleNode("Person/PersonId");
-            if (familyNameNode == null || giveNameNode == null || personIdNode == null)
+            //var personIdNode = personNode.SelectSingleNode("Person/PersonId");
+            if (familyNameNode == null || giveNameNode == null)
             {
                 return false;
             }
 
             familyname = familyNameNode.InnerText;
             givenname = giveNameNode.InnerText;
-            sourceId = personIdNode.InnerText;
+           // sourceId = personIdNode.InnerText;
            
             var clubNode = personNode.SelectSingleNode("Club/ShortName");
             club = "";

@@ -39,7 +39,7 @@ namespace LiveResults.Client
 
         readonly List<FormatItem> m_supportedFormats = new List<FormatItem>();
         private int m_compid = -1;
-        public OEForm()
+        public OEForm(bool showCSVFormats=true)
         {
             InitializeComponent();
             Text = Text + @", " + Encoding.Default.EncodingName + @"," + Encoding.Default.CodePage;
@@ -47,9 +47,17 @@ namespace LiveResults.Client
             m_clients = new List<EmmaMysqlClient>();
 
             m_supportedFormats.Add(new FormatItem("IOF-XML", "Export files in IOF-XML (version 2 supported)", Format.Iofxml));
-            m_supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3 and 11", Format.Oecsv));
-            m_supportedFormats.Add(new FormatItem("OS-csv", "CSV files exported from OLStaffel 10.3 and 11", Format.Oscsv));
-            m_supportedFormats.Add(new FormatItem("OS-csv (Team)", "Team-CSV files exported from OSStaffel 10.3", Format.Oecsvteam));
+            if (showCSVFormats)
+            {
+                m_supportedFormats.Add(new FormatItem("OE-csv", "CSV files exported from OLEinzel 10.3 and 11", Format.Oecsv));
+                m_supportedFormats.Add(new FormatItem("OS-csv", "CSV files exported from OLStaffel 10.3 and 11", Format.Oscsv));
+                m_supportedFormats.Add(new FormatItem("OS-csv (Team)", "Team-CSV files exported from OSStaffel 10.3", Format.Oecsvteam));
+            }
+            else
+            {
+                lblFormatInfo.Visible = cmbFormat.Visible = label5.Visible = lblZeroTime.Visible = txtZeroTime.Visible = false;
+            }
+
             cmbFormat.DataSource = m_supportedFormats;
             cmbFormat.SelectedIndex = 0;
 
@@ -103,6 +111,7 @@ namespace LiveResults.Client
 
         private void button1_Click(object sender, EventArgs e)
         {
+            folderBrowserDialog1.SelectedPath = txtOEDirectory.Text;
             if (folderBrowserDialog1.ShowDialog(this) == DialogResult.OK)
             {
                 txtOEDirectory.Text = folderBrowserDialog1.SelectedPath;
@@ -134,20 +143,11 @@ namespace LiveResults.Client
             EmmaMysqlClient.EmmaServer[] servers = EmmaMysqlClient.GetServersFromConfig();
             Logit("Got servers from obasen...");
             Application.DoEvents();
-            foreach (EmmaMysqlClient.EmmaServer server in servers)
-            {
-                var client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, m_compid);
-
-                client.OnLogMessage += client_OnLogMessage;
-                client.Start();
-                m_clients.Add(client);
-            }
-
-            timer1_Tick(null, null);
+           
 
             var format = cmbFormat.SelectedItem as FormatItem;
 
-
+            bool useInternalIDAllocation = false;
             if ( format.Format == Format.Oecsv || format.Format == Format.Oecsvteam || format.Format == Format.Oscsv)
             {
                 if (!string.IsNullOrEmpty(txtZeroTime.Text))
@@ -186,7 +186,19 @@ namespace LiveResults.Client
                 fileSystemWatcher1.NotifyFilter = NotifyFilters.LastWrite;
                 fileSystemWatcher1.IncludeSubdirectories = false;
                 fileSystemWatcher1.EnableRaisingEvents = true;
+                useInternalIDAllocation = true;
             }
+
+            foreach (EmmaMysqlClient.EmmaServer server in servers)
+            {
+                var client = new EmmaMysqlClient(server.Host, 3306, server.User, server.Pw, server.DB, m_compid, useInternalIDAllocation);
+
+                client.OnLogMessage += client_OnLogMessage;
+                client.Start();
+                m_clients.Add(client);
+            }
+
+            timer1_Tick(null, null);
         }
 
         void m_OSParser_OnResult(Result newResult)
@@ -265,9 +277,7 @@ namespace LiveResults.Client
                         {
                             c.MergeRadioControls(radioControls);
                         }
-
-
-                        c.MergeRunners(runners);
+                        c.UpdateCurrentResultsFromNewSet(runners);
                     }
                 }
                 catch (Exception ee)

@@ -117,23 +117,33 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="OLAImg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OLAImg.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="iof_logohead1" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\iof_logohead1.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="softIconSmall" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\softIconSmall.gif;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="OE" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OE.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="OS" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OS.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OSImg" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OSImg.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="OEImg" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OEImg.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="OSImg" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OSImg.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="OS" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\OS.ico;System.Drawing.Icon, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
-  <data name="OLAImg" type="System.Resources.ResXFileRef, System.Windows.Forms">
-    <value>..\Resources\OLAImg.bmp;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  <data name="iof_logohead" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\iof_logohead.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <assembly alias="System.Windows.Forms" name="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  <data name="ssftiming" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ssftiming.png;System.Drawing.Bitmap, System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
 </root>

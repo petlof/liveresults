@@ -29,17 +29,21 @@ namespace LiveResults.Client
 
         private void button2_MouseEnter(object sender, EventArgs e)
         {
-            lblInfo.Text = "Export liveresults by generic IOF-XML and from SportSoftware OE/OS 20003/2010";
+            lblInfo.Text = "Export liveresults by generic IOF-XML v2 and v3 (SportSoftware 2010, MeOS, Helga, AutoDownload,...)";
         }
 
         private void button3_MouseEnter(object sender, EventArgs e)
         {
-            lblInfo.Text = "Export liveresults from OS-Speaker automatic CSV-export";
+            lblInfo.Text = "Export liveresults from SSF-Timing (BETA)";
+        }
+        private void button4_MouseEnter(object sender, EventArgs e)
+        {
+            lblInfo.Text = "Export liveresults from Sportsoftware OE/OS with CSV-format. Historic reasons, please use IOF XML V3 when possible";
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void buttonRacom_MouseEnter(object sender, EventArgs e)
         {
-            lblInfo.Text = "Export liveresults from OS-Speaker automatic CSV-export";
+            lblInfo.Text = "Export liveresults from RaCom special fileset format";
         }
 
         private void btn_MouseLeave(object sender, EventArgs e)
@@ -65,7 +69,7 @@ namespace LiveResults.Client
 
         private void button2_Click(object sender, EventArgs e)
         {
-            OEForm frm = new OEForm();
+            OEForm frm = new OEForm(false);
             frm.ShowDialog();
         }
 
@@ -140,6 +144,12 @@ namespace LiveResults.Client
         {
             NewSSFTimingComp cmp = new NewSSFTimingComp();
             cmp.ShowDialog(this);
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            OEForm frm = new OEForm();
+            frm.ShowDialog();
         }
 
        

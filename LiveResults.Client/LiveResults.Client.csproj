@@ -343,6 +343,9 @@
     <None Include="Resources\OLAImg.bmp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\iof_logohead.png" />
+    <None Include="Resources\iof_logohead1.png" />
+    <None Include="Resources\ssftiming.png" />
     <Content Include="Wizard\Wizard.bmp" />
     <Content Include="Wizard\wizBigOnlineFolder.gif" />
   </ItemGroup>

@@ -31,12 +31,13 @@
             this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.btnOLA = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
+            this.button4 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblInfo = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.flowLayoutPanel2 = new System.Windows.Forms.FlowLayoutPanel();
-            this.button3 = new System.Windows.Forms.Button();
             this.flowLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -46,11 +47,12 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel1.Controls.Add(this.btnOLA);
             this.flowLayoutPanel1.Controls.Add(this.button2);
-            this.flowLayoutPanel1.Controls.Add(this.button1);
             this.flowLayoutPanel1.Controls.Add(this.button3);
+            this.flowLayoutPanel1.Controls.Add(this.button4);
+            this.flowLayoutPanel1.Controls.Add(this.button1);
             this.flowLayoutPanel1.Location = new System.Drawing.Point(16, 29);
             this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(463, 73);
+            this.flowLayoutPanel1.Size = new System.Drawing.Size(463, 105);
             this.flowLayoutPanel1.TabIndex = 0;
             this.flowLayoutPanel1.Paint += new System.Windows.Forms.PaintEventHandler(this.flowLayoutPanel1_Paint);
             // 
@@ -60,9 +62,9 @@
             this.btnOLA.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.btnOLA.Location = new System.Drawing.Point(3, 3);
             this.btnOLA.Name = "btnOLA";
-            this.btnOLA.Size = new System.Drawing.Size(64, 61);
+            this.btnOLA.Size = new System.Drawing.Size(64, 90);
             this.btnOLA.TabIndex = 0;
-            this.btnOLA.Text = "OLA";
+            this.btnOLA.Text = "OLA, SOFT";
             this.btnOLA.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.btnOLA.UseVisualStyleBackColor = true;
             this.btnOLA.Click += new System.EventHandler(this.btnOLA_Click);
@@ -71,28 +73,60 @@
             // 
             // button2
             // 
-            this.button2.Image = global::LiveResults.Client.Properties.Resources.OEImg;
+            this.button2.Image = global::LiveResults.Client.Properties.Resources.iof_logohead1;
             this.button2.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
             this.button2.Location = new System.Drawing.Point(73, 3);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(114, 61);
+            this.button2.Size = new System.Drawing.Size(114, 90);
             this.button2.TabIndex = 2;
-            this.button2.Text = "XML and OE/OS";
+            this.button2.Text = "IOF XML (SortSoftware OE/OS/MeOs,..)";
             this.button2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             this.button2.MouseEnter += new System.EventHandler(this.button2_MouseEnter);
             this.button2.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             // 
+            // button3
+            // 
+            this.button3.Image = global::LiveResults.Client.Properties.Resources.ssftiming;
+            this.button3.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button3.Location = new System.Drawing.Point(193, 3);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 90);
+            this.button3.TabIndex = 4;
+            this.button3.Text = "SSF Timing (beta)";
+            this.button3.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click_1);
+            this.button3.MouseEnter += new System.EventHandler(this.button3_MouseEnter);
+            this.button3.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
+            // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(193, 3);
+            this.button1.Location = new System.Drawing.Point(372, 3);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 61);
+            this.button1.Size = new System.Drawing.Size(75, 90);
             this.button1.TabIndex = 3;
             this.button1.Text = "RaCom Files";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click_3);
+            this.button1.MouseEnter += new System.EventHandler(this.buttonRacom_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
+            // 
+            // button4
+            // 
+            this.button4.Image = global::LiveResults.Client.Properties.Resources.OEImg;
+            this.button4.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.button4.Location = new System.Drawing.Point(274, 3);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(92, 90);
+            this.button4.TabIndex = 5;
+            this.button4.Text = "OE/OS CSV (old format)";
+            this.button4.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.button4.MouseEnter += new System.EventHandler(this.button4_MouseEnter);
+            this.button4.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             // 
             // label1
             // 
@@ -106,15 +140,15 @@
             // lblInfo
             // 
             this.lblInfo.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.lblInfo.Location = new System.Drawing.Point(13, 109);
+            this.lblInfo.Location = new System.Drawing.Point(12, 137);
             this.lblInfo.Name = "lblInfo";
-            this.lblInfo.Size = new System.Drawing.Size(466, 46);
+            this.lblInfo.Size = new System.Drawing.Size(466, 58);
             this.lblInfo.TabIndex = 2;
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(13, 155);
+            this.label2.Location = new System.Drawing.Point(13, 195);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(82, 13);
             this.label2.TabIndex = 3;
@@ -126,26 +160,16 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.flowLayoutPanel2.FlowDirection = System.Windows.Forms.FlowDirection.TopDown;
-            this.flowLayoutPanel2.Location = new System.Drawing.Point(16, 171);
+            this.flowLayoutPanel2.Location = new System.Drawing.Point(16, 220);
             this.flowLayoutPanel2.Name = "flowLayoutPanel2";
-            this.flowLayoutPanel2.Size = new System.Drawing.Size(463, 86);
+            this.flowLayoutPanel2.Size = new System.Drawing.Size(463, 122);
             this.flowLayoutPanel2.TabIndex = 4;
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(274, 3);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 61);
-            this.button3.TabIndex = 4;
-            this.button3.Text = "SSF Timing";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click_1);
             // 
             // FrmNewCompetition
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(491, 266);
+            this.ClientSize = new System.Drawing.Size(491, 351);
             this.Controls.Add(this.flowLayoutPanel2);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.lblInfo);
@@ -171,5 +195,6 @@
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel2;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
     }
 }

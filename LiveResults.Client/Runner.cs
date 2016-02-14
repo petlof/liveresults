@@ -111,9 +111,14 @@ namespace LiveResults.Client
     {
     }
 
+    class DelRunner : DbItem
+    {
+        public int RunnerID;
+    }
+
     public class Runner : DbItem
     {
-        private readonly int m_id;
+        private int m_id;
         private string m_name;
         private string m_club;
         private string m_class;
@@ -158,6 +163,10 @@ namespace LiveResults.Client
             get
             {
                 return m_id;
+            }
+            set
+            {
+                m_id = value;
             }
 
         }
