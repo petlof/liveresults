@@ -14,6 +14,7 @@ liveresAdminApp.config(['$translateProvider', ($translateProvider: ng.translate.
         'ADMINNEWCOMPCOUNTRY' : 'Land',
         'ADMINNEWCOMPEMAIL' : 'E-mail',
         'ADMINPASSWORD': "Lösenord",
+        'ADMINPASSWORDREPEAT': "Repetera lösenord",
         'ADMINLOGIN': "Logga in",
         'ADMINCREATECOMPETITION': "Skapa tävling",
         'ADMINPASSWORDHINT': "För tävlingar skapade 2015 eller tidigare, ange blankt lösenord. För tävlingar 2016 eller senare ange lösenordet som angavs då tävlingen skapades",

@@ -1,5 +1,6 @@
 
-var liveresAdminApp = angular.module("liveresAdminApp", ['ngRoute', 'liveresAdminControllers', 'pascalprecht.translate', 'ngSanitize','ngStorage',
+var liveresAdminApp = angular.module("liveresAdminApp", ['ngRoute', 'liveresAdminControllers',
+'liveresAdminApp.directives', 'pascalprecht.translate', 'ngSanitize','ngStorage',
 'ui.bootstrap','vcRecaptcha'])
     .config(['$routeProvider', ($routeprovider: ng.route.IRouteProvider) => {
         $routeprovider.when('/:lang', { templateUrl: 'App/Home/Home.html', controller: 'HomeController' });
@@ -12,6 +13,22 @@ angular.module('liveresAdminControllers', ['LiveResults.Admin.Config', 'pascalpr
     .controller("HomeController", <any>LiveResults.Admin.Home.HomeController)
     .controller("EditCompController", <any>LiveResults.Admin.EditComp.EditCompController)
     .controller("AppServices", <any>LiveResults.Admin.App.AppServices);
+    
+angular.module('liveresAdminApp.directives', [])
+  .directive('pwCheck', [function () {
+    return {
+      require: 'ngModel',
+      link: function (scope, elem, attrs, ctrl) {
+        var firstPassword = '#' + attrs.pwCheck;
+        elem.add(firstPassword).on('keyup', function () {
+          scope.$apply(function () {
+            var v = elem.val()===$(firstPassword).val();
+            ctrl.$setValidity('pwmatch', v);
+          });
+        });
+      }
+    }
+  }]);
 
 
 
