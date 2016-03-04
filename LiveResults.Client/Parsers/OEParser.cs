@@ -118,10 +118,12 @@ namespace LiveResults.Client
                     int time = strTimeToInt(parts[fldTime]);
 
 
-                    int status = 0;
+                    int status = 9;
                     try
                     {
                         status = Convert.ToInt32(parts[fldStatus]);
+                        if (status == 0 && time < 0)
+                            status = 9;
                     }
                     catch (Exception ee)
                     {
