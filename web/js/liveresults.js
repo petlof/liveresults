@@ -48,7 +48,7 @@ var LiveResults;
                         }
                     }
                     else {
-                        cl = hash;
+                        cl = decodeURIComponent(hash);
                         if (cl != _this.curClassName) {
                             _this.chooseClass(hash);
                         }
@@ -469,7 +469,8 @@ var LiveResults;
                         "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                             if (aData)
                                 aData.curDrawIndex = iDisplayIndex;
-                        }
+                        },
+                        "bDestroy": true
                     });
                     this.lastClassHash = data.hash;
                 }
@@ -823,7 +824,8 @@ var LiveResults;
                             if (oSettings.aaSorting[0][0] != 1) {
                                 $("#" + _this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + _this.resources["_RESETTODEFAULT"] + "</a>");
                             }
-                        }
+                        },
+                        "bDestroy": true
                     });
                     this.lastClubHash = data.hash;
                 }

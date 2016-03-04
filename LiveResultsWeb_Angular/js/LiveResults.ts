@@ -48,7 +48,7 @@
                             LiveResults.Instance.viewClubResults(hash.substring(6));
                         }
                     } else {
-                        cl = hash;
+                        cl = decodeURIComponent(hash);
                         if (cl != this.curClassName) {
                             this.chooseClass(hash);
                         }
@@ -522,7 +522,8 @@
                         "fnRowCallback": (nRow : any, aData : any, iDisplayIndex : number, iDisplayIndexFull :  number) => {
                             if (aData)
                                 aData.curDrawIndex = iDisplayIndex;
-                        }
+                        },
+                        "bDestroy": true
                     });
 
                     this.lastClassHash = data.hash;
@@ -934,7 +935,8 @@
                             if (oSettings.aaSorting[0][0] != 1) {
                                 $("#" + this.txtResetSorting).html("&nbsp;&nbsp;<a href=\"javascript:LiveResults.Instance.resetSorting()\"><img class=\"eR\" style=\"vertical-align: middle\" src=\"images/cleardot.gif\" border=\"0\"/> " + this.resources["_RESETTODEFAULT"] + "</a>");
                             }
-                        }
+                        },
+                        "bDestroy": true
                     });
 
                     this.lastClubHash = data.hash;
