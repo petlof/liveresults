@@ -273,6 +273,10 @@ namespace LiveResults.Client.Parsers
                     if (m_isRelay)
                     {
                         r.ClassWithoutLeg = className.Substring(0, className.LastIndexOf(' '));
+                        if (!string.IsNullOrEmpty(r.ClassWithoutLeg))
+                            r.ClassWithoutLeg = r.ClassWithoutLeg.Trim();
+
+                        r.Class = r.ClassWithoutLeg + " " + leg;
                     }
                     
 
@@ -341,6 +345,10 @@ namespace LiveResults.Client.Parsers
                             if (parts.Length > 1)
                             {
                                 string className = parts[0];
+                                if (!string.IsNullOrEmpty(className))
+                                {
+                                    className = className.Replace("_", " ");
+                                }
                                 for (int i= 1; i < parts.Length; i++)
                                 {
                                     radioNamesDictionary.Add(className + "::" + (i - 1), parts[i]);
@@ -362,6 +370,8 @@ namespace LiveResults.Client.Parsers
                         {
                             var passingDic = new Dictionary<string, int>();
                             string className = parts[0];
+                            if (!string.IsNullOrEmpty(className))
+                                className = className.Replace("_", " ");
                             for (int spl = 1; spl < parts.Length - 1; spl++)
                             {
                                 int passing = 1;

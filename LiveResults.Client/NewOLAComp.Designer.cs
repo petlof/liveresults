@@ -30,14 +30,11 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewOLAComp));
             this.wizard1 = new Gui.Wizard.Wizard();
-            this.wizardPage2 = new Gui.Wizard.WizardPage();
+            this.wizardPage1 = new Gui.Wizard.WizardPage();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.txtOlaDb = new System.Windows.Forms.TextBox();
             this.label11 = new System.Windows.Forms.Label();
-            this.lstDB = new System.Windows.Forms.ListBox();
-            this.label6 = new System.Windows.Forms.Label();
-            this.wizardPage1 = new Gui.Wizard.WizardPage();
             this.txtPw = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.txtUser = new System.Windows.Forms.TextBox();
@@ -48,33 +45,36 @@
             this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.wizardPage3 = new Gui.Wizard.WizardPage();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cmbOLAComp = new System.Windows.Forms.ComboBox();
-            this.wizardPage4 = new Gui.Wizard.WizardPage();
-            this.cmbOLAEtapp = new System.Windows.Forms.ComboBox();
-            this.label8 = new System.Windows.Forms.Label();
+            this.wizardPage2 = new Gui.Wizard.WizardPage();
+            this.lstDB = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.wizardPage5 = new Gui.Wizard.WizardPage();
             this.chkCreateRadioControls = new System.Windows.Forms.CheckBox();
             this.txtCompName = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
             this.txtCompID = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
+            this.wizardPage4 = new Gui.Wizard.WizardPage();
+            this.cmbOLAEtapp = new System.Windows.Forms.ComboBox();
+            this.label8 = new System.Windows.Forms.Label();
+            this.wizardPage3 = new Gui.Wizard.WizardPage();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cmbOLAComp = new System.Windows.Forms.ComboBox();
             this.wizard1.SuspendLayout();
-            this.wizardPage2.SuspendLayout();
-            this.panel1.SuspendLayout();
             this.wizardPage1.SuspendLayout();
-            this.wizardPage3.SuspendLayout();
-            this.wizardPage4.SuspendLayout();
+            this.panel1.SuspendLayout();
+            this.wizardPage2.SuspendLayout();
             this.wizardPage5.SuspendLayout();
+            this.wizardPage4.SuspendLayout();
+            this.wizardPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // wizard1
             // 
             this.wizard1.Controls.Add(this.wizardPage1);
-            this.wizard1.Controls.Add(this.wizardPage3);
-            this.wizard1.Controls.Add(this.wizardPage4);
             this.wizard1.Controls.Add(this.wizardPage5);
+            this.wizard1.Controls.Add(this.wizardPage4);
+            this.wizard1.Controls.Add(this.wizardPage3);
             this.wizard1.Controls.Add(this.wizardPage2);
             this.wizard1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizard1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -82,23 +82,32 @@
             this.wizard1.Name = "wizard1";
             this.wizard1.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.wizardPage1,
+            this.wizardPage2,
             this.wizardPage3,
             this.wizardPage4,
             this.wizardPage5});
             this.wizard1.Size = new System.Drawing.Size(506, 277);
             this.wizard1.TabIndex = 0;
             // 
-            // wizardPage2
+            // wizardPage1
             // 
-            this.wizardPage2.Controls.Add(this.lstDB);
-            this.wizardPage2.Controls.Add(this.label6);
-            this.wizardPage2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage2.IsFinishPage = false;
-            this.wizardPage2.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage2.Name = "wizardPage2";
-            this.wizardPage2.Size = new System.Drawing.Size(506, 277);
-            this.wizardPage2.TabIndex = 2;
-            this.wizardPage2.ShowFromNext += new System.EventHandler(this.wizardPage2_ShowFromBack);
+            this.wizardPage1.Controls.Add(this.panel1);
+            this.wizardPage1.Controls.Add(this.txtPw);
+            this.wizardPage1.Controls.Add(this.label5);
+            this.wizardPage1.Controls.Add(this.txtUser);
+            this.wizardPage1.Controls.Add(this.txtPort);
+            this.wizardPage1.Controls.Add(this.txtHost);
+            this.wizardPage1.Controls.Add(this.label4);
+            this.wizardPage1.Controls.Add(this.label3);
+            this.wizardPage1.Controls.Add(this.label2);
+            this.wizardPage1.Controls.Add(this.comboBox1);
+            this.wizardPage1.Controls.Add(this.label1);
+            this.wizardPage1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage1.IsFinishPage = false;
+            this.wizardPage1.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage1.Name = "wizardPage1";
+            this.wizardPage1.Size = new System.Drawing.Size(506, 229);
+            this.wizardPage1.TabIndex = 1;
             // 
             // panel1
             // 
@@ -139,43 +148,6 @@
             this.label11.TabIndex = 0;
             this.label11.Text = "Select the database file from the server-share\r\nOn the server its located in the " +
     "AppData folder of the OLA user";
-            // 
-            // lstDB
-            // 
-            this.lstDB.FormattingEnabled = true;
-            this.lstDB.Location = new System.Drawing.Point(13, 26);
-            this.lstDB.Name = "lstDB";
-            this.lstDB.Size = new System.Drawing.Size(218, 82);
-            this.lstDB.TabIndex = 1;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Database";
-            // 
-            // wizardPage1
-            // 
-            this.wizardPage1.Controls.Add(this.panel1);
-            this.wizardPage1.Controls.Add(this.txtPw);
-            this.wizardPage1.Controls.Add(this.label5);
-            this.wizardPage1.Controls.Add(this.txtUser);
-            this.wizardPage1.Controls.Add(this.txtPort);
-            this.wizardPage1.Controls.Add(this.txtHost);
-            this.wizardPage1.Controls.Add(this.label4);
-            this.wizardPage1.Controls.Add(this.label3);
-            this.wizardPage1.Controls.Add(this.label2);
-            this.wizardPage1.Controls.Add(this.comboBox1);
-            this.wizardPage1.Controls.Add(this.label1);
-            this.wizardPage1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage1.IsFinishPage = false;
-            this.wizardPage1.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage1.Name = "wizardPage1";
-            this.wizardPage1.Size = new System.Drawing.Size(506, 229);
-            this.wizardPage1.TabIndex = 1;
             // 
             // txtPw
             // 
@@ -260,65 +232,35 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Type of OLA server";
             // 
-            // wizardPage3
+            // wizardPage2
             // 
-            this.wizardPage3.Controls.Add(this.label7);
-            this.wizardPage3.Controls.Add(this.cmbOLAComp);
-            this.wizardPage3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage3.IsFinishPage = false;
-            this.wizardPage3.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage3.Name = "wizardPage3";
-            this.wizardPage3.Size = new System.Drawing.Size(506, 122);
-            this.wizardPage3.TabIndex = 3;
-            this.wizardPage3.ShowFromNext += new System.EventHandler(this.wizardPage3_ShowFromNext);
+            this.wizardPage2.Controls.Add(this.lstDB);
+            this.wizardPage2.Controls.Add(this.label6);
+            this.wizardPage2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage2.IsFinishPage = false;
+            this.wizardPage2.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage2.Name = "wizardPage2";
+            this.wizardPage2.Size = new System.Drawing.Size(506, 229);
+            this.wizardPage2.TabIndex = 2;
+            this.wizardPage2.ShowFromBack += new System.EventHandler(this.wizardPage2_ShowFromBack);
+            this.wizardPage2.ShowFromNext += new System.EventHandler(this.wizardPage2_ShowFromNext);
             // 
-            // label7
+            // lstDB
             // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 4);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(35, 13);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "Event";
+            this.lstDB.FormattingEnabled = true;
+            this.lstDB.Location = new System.Drawing.Point(13, 26);
+            this.lstDB.Name = "lstDB";
+            this.lstDB.Size = new System.Drawing.Size(218, 82);
+            this.lstDB.TabIndex = 1;
             // 
-            // cmbOLAComp
+            // label6
             // 
-            this.cmbOLAComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbOLAComp.FormattingEnabled = true;
-            this.cmbOLAComp.Location = new System.Drawing.Point(12, 20);
-            this.cmbOLAComp.Name = "cmbOLAComp";
-            this.cmbOLAComp.Size = new System.Drawing.Size(175, 21);
-            this.cmbOLAComp.TabIndex = 0;
-            // 
-            // wizardPage4
-            // 
-            this.wizardPage4.Controls.Add(this.cmbOLAEtapp);
-            this.wizardPage4.Controls.Add(this.label8);
-            this.wizardPage4.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage4.IsFinishPage = false;
-            this.wizardPage4.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage4.Name = "wizardPage4";
-            this.wizardPage4.Size = new System.Drawing.Size(506, 122);
-            this.wizardPage4.TabIndex = 4;
-            this.wizardPage4.ShowFromNext += new System.EventHandler(this.wizardPage4_ShowFromNext);
-            // 
-            // cmbOLAEtapp
-            // 
-            this.cmbOLAEtapp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbOLAEtapp.FormattingEnabled = true;
-            this.cmbOLAEtapp.Location = new System.Drawing.Point(12, 25);
-            this.cmbOLAEtapp.Name = "cmbOLAEtapp";
-            this.cmbOLAEtapp.Size = new System.Drawing.Size(159, 21);
-            this.cmbOLAEtapp.TabIndex = 1;
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(12, 9);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(35, 13);
-            this.label8.TabIndex = 0;
-            this.label8.Text = "Stage";
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 9);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Database";
             // 
             // wizardPage5
             // 
@@ -331,7 +273,7 @@
             this.wizardPage5.IsFinishPage = false;
             this.wizardPage5.Location = new System.Drawing.Point(0, 0);
             this.wizardPage5.Name = "wizardPage5";
-            this.wizardPage5.Size = new System.Drawing.Size(506, 122);
+            this.wizardPage5.Size = new System.Drawing.Size(506, 229);
             this.wizardPage5.TabIndex = 5;
             this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
             // 
@@ -379,6 +321,66 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "CompetitonID";
             // 
+            // wizardPage4
+            // 
+            this.wizardPage4.Controls.Add(this.cmbOLAEtapp);
+            this.wizardPage4.Controls.Add(this.label8);
+            this.wizardPage4.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage4.IsFinishPage = false;
+            this.wizardPage4.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage4.Name = "wizardPage4";
+            this.wizardPage4.Size = new System.Drawing.Size(506, 229);
+            this.wizardPage4.TabIndex = 4;
+            this.wizardPage4.ShowFromNext += new System.EventHandler(this.wizardPage4_ShowFromNext);
+            // 
+            // cmbOLAEtapp
+            // 
+            this.cmbOLAEtapp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOLAEtapp.FormattingEnabled = true;
+            this.cmbOLAEtapp.Location = new System.Drawing.Point(12, 25);
+            this.cmbOLAEtapp.Name = "cmbOLAEtapp";
+            this.cmbOLAEtapp.Size = new System.Drawing.Size(159, 21);
+            this.cmbOLAEtapp.TabIndex = 1;
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(12, 9);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(35, 13);
+            this.label8.TabIndex = 0;
+            this.label8.Text = "Stage";
+            // 
+            // wizardPage3
+            // 
+            this.wizardPage3.Controls.Add(this.label7);
+            this.wizardPage3.Controls.Add(this.cmbOLAComp);
+            this.wizardPage3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage3.IsFinishPage = false;
+            this.wizardPage3.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage3.Name = "wizardPage3";
+            this.wizardPage3.Size = new System.Drawing.Size(506, 229);
+            this.wizardPage3.TabIndex = 3;
+            this.wizardPage3.ShowFromNext += new System.EventHandler(this.wizardPage3_ShowFromNext);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 4);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(35, 13);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "Event";
+            // 
+            // cmbOLAComp
+            // 
+            this.cmbOLAComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOLAComp.FormattingEnabled = true;
+            this.cmbOLAComp.Location = new System.Drawing.Point(12, 20);
+            this.cmbOLAComp.Name = "cmbOLAComp";
+            this.cmbOLAComp.Size = new System.Drawing.Size(175, 21);
+            this.cmbOLAComp.TabIndex = 0;
+            // 
             // NewOLAComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -389,18 +391,18 @@
             this.Name = "NewOLAComp";
             this.Text = "New OLA-connection";
             this.wizard1.ResumeLayout(false);
-            this.wizardPage2.ResumeLayout(false);
-            this.wizardPage2.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
             this.wizardPage1.ResumeLayout(false);
             this.wizardPage1.PerformLayout();
-            this.wizardPage3.ResumeLayout(false);
-            this.wizardPage3.PerformLayout();
-            this.wizardPage4.ResumeLayout(false);
-            this.wizardPage4.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
+            this.wizardPage2.ResumeLayout(false);
+            this.wizardPage2.PerformLayout();
             this.wizardPage5.ResumeLayout(false);
             this.wizardPage5.PerformLayout();
+            this.wizardPage4.ResumeLayout(false);
+            this.wizardPage4.PerformLayout();
+            this.wizardPage3.ResumeLayout(false);
+            this.wizardPage3.PerformLayout();
             this.ResumeLayout(false);
 
         }

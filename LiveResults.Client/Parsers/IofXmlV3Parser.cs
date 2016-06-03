@@ -24,7 +24,7 @@ namespace LiveResults.Client.Parsers
                 XmlNode classNode = classStartNode.SelectSingleNode("iof:Class",nsMgr);
                 if (classNode == null)
                     continue;
-                XmlNode classNameNode = classNode.SelectSingleNode("iof:ShortName",nsMgr);
+                XmlNode classNameNode = classNode.SelectSingleNode("iof:Name",nsMgr);
                 if (classNameNode == null)
                     continue;
 
@@ -110,7 +110,7 @@ namespace LiveResults.Client.Parsers
                 if (classNode == null)
                     continue;
 
-                 XmlNode classNameNode = classNode.SelectSingleNode("iof:ShortName",nsMgr);
+                 XmlNode classNameNode = classNode.SelectSingleNode("iof:Name",nsMgr);
                 if (classNameNode == null)
                     continue;
 
@@ -406,7 +406,6 @@ namespace LiveResults.Client.Parsers
 
             var familyNameNode = personNameNode.SelectSingleNode("iof:Family",nsMgr);
             var giveNameNode = personNameNode.SelectSingleNode("iof:Given",nsMgr);
-            //var personIdNode = personNode.SelectSingleNode("iof:Person/iof:Id",nsMgr);
             if (familyNameNode == null || giveNameNode == null)
             {
                 return false;

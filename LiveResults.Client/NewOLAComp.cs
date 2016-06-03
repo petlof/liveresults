@@ -178,8 +178,10 @@ namespace LiveResults.Client
             }
         }
 
-        private void wizardPage2_ShowFromBack(object sender, EventArgs e)
+        private void wizardPage2_ShowFromNext(object sender, EventArgs e)
         {
+            if (comboBox1.SelectedIndex == 0)
+                wizard1.NextTo(wizardPage3);
             StoreSettings();
             /*Try Connect*/
             IDbConnection conn = null;
@@ -426,6 +428,12 @@ GRANT SELECT ON Controls to live;";
             {
                 txtOlaDb.Text = ofd.FileName;
             }
+        }
+
+        private void wizardPage2_ShowFromBack(object sender, EventArgs e)
+        {
+            if (comboBox1.SelectedIndex == 0)
+                wizard1.NextTo(wizardPage1);
         }
     }
 }

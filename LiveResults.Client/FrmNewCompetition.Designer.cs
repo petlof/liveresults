@@ -32,8 +32,8 @@
             this.btnOLA = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
             this.lblInfo = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
@@ -79,7 +79,7 @@
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(114, 90);
             this.button2.TabIndex = 2;
-            this.button2.Text = "IOF XML (SortSoftware OE/OS/MeOs,..)";
+            this.button2.Text = "IOF XML (SportSoftware OE/OS, MeOs,..)";
             this.button2.TextAlign = System.Drawing.ContentAlignment.BottomCenter;
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -101,18 +101,6 @@
             this.button3.MouseEnter += new System.EventHandler(this.button3_MouseEnter);
             this.button3.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(372, 3);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 90);
-            this.button1.TabIndex = 3;
-            this.button1.Text = "RaCom Files";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_3);
-            this.button1.MouseEnter += new System.EventHandler(this.buttonRacom_MouseEnter);
-            this.button1.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
-            // 
             // button4
             // 
             this.button4.Image = global::LiveResults.Client.Properties.Resources.OEImg;
@@ -127,6 +115,18 @@
             this.button4.Click += new System.EventHandler(this.button4_Click);
             this.button4.MouseEnter += new System.EventHandler(this.button4_MouseEnter);
             this.button4.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(372, 3);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 90);
+            this.button1.TabIndex = 3;
+            this.button1.Text = "RaCom Files";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_3);
+            this.button1.MouseEnter += new System.EventHandler(this.buttonRacom_MouseEnter);
+            this.button1.MouseLeave += new System.EventHandler(this.btn_MouseLeave);
             // 
             // label1
             // 

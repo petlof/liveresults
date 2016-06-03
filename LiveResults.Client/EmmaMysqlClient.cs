@@ -588,7 +588,7 @@ namespace LiveResults.Client
                     }
 
                     /*Detect runners that are removed*/
-                    duplicateCounter = new Dictionary<string, int>();
+                    /*duplicateCounter = new Dictionary<string, int>();
                     foreach (var existingRunner in existingClass)
                     {
                         string duplValue = (existingRunner.Name + ":" + existingRunner.Club).ToLower();
@@ -619,7 +619,7 @@ namespace LiveResults.Client
                             //Remove runner
                             RemoveRunner(existingRunner);
                         }
-                    }
+                    }*/
                 }
                 else
                 {

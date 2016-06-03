@@ -14,13 +14,14 @@ namespace LiveResults.Client
         private readonly int m_eventID;
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
-
+        private bool m_createRadioControls;
         private bool m_continue;
 
-        public SSFTimingParser(IDbConnection conn, int eventID)
+        public SSFTimingParser(IDbConnection conn, int eventID, bool recreateRadioControls = true)
         {
             m_connection = conn;
             m_eventID = eventID;
+            m_createRadioControls = recreateRadioControls;
         }
 
 
@@ -64,9 +65,40 @@ namespace LiveResults.Client
 
                    
                     IDbCommand cmd = m_connection.CreateCommand();
+                    IDbCommand cmdSplits = m_connection.CreateCommand();
+
+                    if (m_createRadioControls)
+                    {
+                        var dlg = OnRadioControl;
+                        if (dlg != null)
+                        {
+                            cmd.CommandText =
+                                "select dbclass.Name as className, dbITimeInfo.Name as intermediateName, dbITimeInfo.Ipos from dbclass, dbITimeInfo where dbclass.RaceId = " +
+                                m_eventID + " and dbITimeInfo.RaceID = " + m_eventID + " and dbITimeInfo.Course = dbclass.course  " +
+                                " and dbiTimeInfo.PresInternet = 'Ja' order by dbclass.Name, ipos";
+                            using (var reader = cmd.ExecuteReader())
+                            {
+
+                                while (reader.Read())
+                                {
+                                    string className = reader["className"] as string;
+                                    string intermediateName = reader["intermediateName"] as string;
+                                    int position = Convert.ToInt32(reader["Ipos"]);
+                                    dlg(intermediateName, 1000 + position, className, position);
+                                }
+                                reader.Close();
+                            }
+                        }
+                    }
+
 
                     cmd.CommandText = "select max(logid) from dbLog where raceid=" + m_eventID;
-                    int maxLogId = Convert.ToInt32(cmd.ExecuteScalar());
+                    var oval = cmd.ExecuteScalar();
+                    int maxLogId = -1;
+                    if (oval != null && oval != DBNull.Value)
+                    {
+                        maxLogId = Convert.ToInt32(oval);
+                    }
 
                     string initialCommand = string.Format(@"select  dbName.FirstName, dbName.LastName,
  dbTeam.Name as teamname, dbclass.name as classname,
@@ -79,9 +111,24 @@ and dbRuns.RaceID = {0}
 and dbRuns.StartNo = dbName.Startno
 and dbTeam.TeamID = dbName.teamid
 and dbclass.classid = dbName.classid", m_eventID);
+
+                    string initialSplitCommand = string.Format(@"select  dbName.FirstName, dbName.LastName,
+ dbTeam.Name as teamname, dbclass.name as classname, dbName.Startno, dbITime.runtime, dbITime.IPos
+from dbName, dbTeam, dbclass, dbITime
+where dbName.raceId = {0}
+and dbTeam.raceId = {0}
+and dbclass.raceid={0}
+and dbITime.RaceID = {0}
+and dbItime.StartNo = dbName.Startno
+and dbTeam.TeamID = dbName.teamid
+and dbclass.classid = dbName.classid", m_eventID);
+
                     cmd.CommandText = initialCommand;
+                    cmdSplits.CommandText = initialSplitCommand;
+
                     string lastRunner = "";
                     ParseReader(cmd, out lastRunner);
+                    ParseReaderSplits(cmdSplits, out lastRunner);
 
                     int lastId = maxLogId;
 
@@ -94,9 +141,25 @@ and dbclass.classid = dbName.classid", m_eventID);
                             /*Kontrollera om nya klasser*/
                             /*Kontrollera om nya resultat*/
                             cmd.CommandText = "select max(logid) from dbLog where raceid=" + m_eventID;
-                            maxLogId = Convert.ToInt32(cmd.ExecuteScalar());
-                            cmd.CommandText = initialCommand + string.Format(@" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID, lastId);
-                            ParseReader(cmd, out lastRunner);
+                            oval = cmd.ExecuteScalar();
+                            maxLogId = -1;
+                            
+                            if (oval != null && oval != DBNull.Value)
+                            {
+                                maxLogId = Convert.ToInt32(oval);
+                            }
+                            if (maxLogId >= 0)
+                            {
+                                cmd.CommandText = initialCommand +
+                                                  string.Format(
+                                                      @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID,
+                                                      lastId);
+                                cmdSplits.CommandText = initialSplitCommand +
+                                                  string.Format(
+                                                      @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID,
+                                                      lastId);
+                                ParseReaderSplits(cmdSplits, out lastRunner);
+                            }
                             lastId = maxLogId;
 
                             Thread.Sleep(1000);
@@ -147,10 +210,7 @@ and dbclass.classid = dbName.classid", m_eventID);
 
                     try
                     {
-                        //int logid = Convert.ToInt32(reader[0]);
-                        //lastId = (logid > lastId ? logid : lastId);
-                        runnerID = Convert.ToInt32(reader["startno"].ToString());
-
+                       runnerID = Convert.ToInt32(reader["startno"].ToString());
 
                         famName = (reader["lastname"] as string);
                         fName = (reader["firstname"] as string);
@@ -222,6 +282,62 @@ and dbclass.classid = dbName.classid", m_eventID);
                         };
                         FireOnResult(res);
                     }
+                }
+
+                reader.Close();
+            }
+        }
+        private void ParseReaderSplits(IDbCommand cmd, out string lastRunner)
+        {
+            lastRunner = null;
+            using (IDataReader reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    int runnerID = 0;
+                    string famName = "", fName = "", club = "", classN = "";
+                    var splits = new List<ResultStruct>();
+                    try
+                    {
+                        runnerID = Convert.ToInt32(reader["startno"].ToString());
+
+                        famName = (reader["lastname"] as string);
+                        fName = (reader["firstname"] as string);
+                        lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
+
+                        club = (reader["teamname"] as string);
+                        classN = (reader["classname"] as string);
+
+
+                        if (reader["runtime"] != null && reader["runtime"] != DBNull.Value)
+                        {
+                            splits.Add(new ResultStruct{
+                                ControlCode =  1000 + Convert.ToInt32(reader["ipos"]),
+                                Time =  GetSSFRunTime(reader["runtime"].ToString()),
+                                ControlNo = Convert.ToInt32(reader["ipos"])
+                            });
+
+                        }
+
+                    }
+                    catch (Exception ee)
+                    {
+                        FireLogMsg(ee.Message);
+                    }
+
+
+                    var res = new Result{
+                        ID = runnerID,
+                        RunnerName = fName + " " + famName,
+                        RunnerClub = club,
+                        Class = classN,
+                        StartTime = 0,
+                        Time = -2,
+                        Status = 0,
+                        SplitTimes =  splits
+                    };
+                    FireOnResult(res);
+
                 }
 
                 reader.Close();

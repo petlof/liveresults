@@ -113,7 +113,12 @@ var LiveResults;
                 try {
                     var data = this.currentTable.fnGetData();
                     var dt = new Date();
-                    var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100 - (this.serverTimeDiff / 10) + (this.eventTimeZoneDiff * 360000);
+                    var currentTimeZoneOffset = -1 * new Date().getTimezoneOffset();
+                    var eventZoneOffset = ((dt.dst() ? 2 : 1) + this.eventTimeZoneDiff) * 60;
+                    var timeZoneDiff = eventZoneOffset - currentTimeZoneOffset;
+                    var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100
+                        - (this.serverTimeDiff / 10) +
+                        (timeZoneDiff * 6000);
                     for (var i = 0; i < data.length; i++) {
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
                             if (data[i].start < time) {
@@ -846,4 +851,12 @@ var LiveResults;
     })();
     LiveResults.AjaxViewer = AjaxViewer;
 })(LiveResults || (LiveResults = {}));
+Date.prototype.stdTimezoneOffset = function () {
+    var jan = new Date(this.getFullYear(), 0, 1);
+    var jul = new Date(this.getFullYear(), 6, 1);
+    return Math.max(jan.getTimezoneOffset(), jul.getTimezoneOffset());
+};
+Date.prototype.dst = function () {
+    return this.getTimezoneOffset() < this.stdTimezoneOffset();
+};
 var ga;
