@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 date_default_timezone_set("Europe/Stockholm");
 
 include_once("./templates/emmalang_sv.php");
@@ -90,6 +90,7 @@ el.style.backgroundColor = "";
 			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0' alt='Deutsch'> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0' alt='Deutsch'> Deutsch</a>")?>
 			| <?php echo($lang == "fr" ? "<img src='images/fr.png' border='0' alt='Français'> Français" : "<a href=\"?lang=fr\" style='text-decoration: none'><img src='images/fr.png' border='0' alt='Français'> Français</a>")?>
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : "<a href=\"?lang=it\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?> 
+                        | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" : "<a href=\"?lang=hu\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?> 
 			|
 
 

@@ -154,6 +154,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                                                   string.Format(
                                                       @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID,
                                                       lastId);
+                                ParseReader(cmd, out lastRunner);
+
                                 cmdSplits.CommandText = initialSplitCommand +
                                                   string.Format(
                                                       @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID,
