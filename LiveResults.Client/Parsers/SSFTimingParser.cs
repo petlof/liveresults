@@ -82,7 +82,11 @@ namespace LiveResults.Client
                                 while (reader.Read())
                                 {
                                     string className = reader["className"] as string;
+                                    if (!string.IsNullOrEmpty(className))
+                                        className = className.Trim();
                                     string intermediateName = reader["intermediateName"] as string;
+                                    if (!string.IsNullOrEmpty(intermediateName))
+                                        intermediateName = intermediateName.Trim();
                                     int position = Convert.ToInt32(reader["Ipos"]);
                                     dlg(intermediateName, 1000 + position, className, position);
                                 }
@@ -111,6 +115,16 @@ and dbRuns.RaceID = {0}
 and dbRuns.StartNo = dbName.Startno
 and dbTeam.TeamID = dbName.teamid
 and dbclass.classid = dbName.classid", m_eventID);
+
+                    initialCommand = string.Format(@"select  dbName.FirstName, dbName.LastName,
+ dbTeam.Name as teamname, dbclass.name as classname,
+ dbName.startTime, dbRuns.RaceTime, dbName.Startno, dbRuns.Status
+from dbName 
+inner join dbTeam on (dbTeam.raceId={0} and dbTeam.TeamID=dbName.TeamID)
+inner join dbclass on (dbClass.RaceId={0} and dbclass.classId=dbName.ClassID)
+left outer join dbRuns on (dbRuns.RaceID = {0} and dbRuns.StartNo = dbName.Startno)
+where dbName.raceId = {0}", m_eventID);
+
 
                     string initialSplitCommand = string.Format(@"select  dbName.FirstName, dbName.LastName,
  dbTeam.Name as teamname, dbclass.name as classname, dbName.Startno, dbITime.runtime, dbITime.IPos
@@ -214,12 +228,16 @@ and dbclass.classid = dbName.classid", m_eventID);
                     {
                        runnerID = Convert.ToInt32(reader["startno"].ToString());
 
-                        famName = (reader["lastname"] as string);
-                        fName = (reader["firstname"] as string);
+                        famName = (reader["lastname"] as string).Trim();
+                        fName = (reader["firstname"] as string).Trim();
                         lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
 
                         club = (reader["teamname"] as string);
+                        if (!string.IsNullOrEmpty(club))
+                            club = club.Trim();
                         classN = (reader["classname"] as string);
+                        if (!string.IsNullOrEmpty(classN))
+                            classN = classN.Trim();
                         status = reader["status"] as string;
 
                         time = -2;
@@ -303,12 +321,12 @@ and dbclass.classid = dbName.classid", m_eventID);
                     {
                         runnerID = Convert.ToInt32(reader["startno"].ToString());
 
-                        famName = (reader["lastname"] as string);
-                        fName = (reader["firstname"] as string);
+                        famName = (reader["lastname"] as string).Trim();
+                        fName = (reader["firstname"] as string).Trim();
                         lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
 
-                        club = (reader["teamname"] as string);
-                        classN = (reader["classname"] as string);
+                        club = (reader["teamname"] as string).Trim();
+                        classN = (reader["classname"] as string).Trim();
 
 
                         if (reader["runtime"] != null && reader["runtime"] != DBNull.Value)
