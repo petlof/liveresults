@@ -79,6 +79,7 @@ namespace LiveResults.Client
                         txtZeroTime.Text = s.ZeroTime;
                         txtExtension.Text = s.extension;
                         txtCompID.Text = s.CompID.ToString(CultureInfo.InvariantCulture);
+                        chkAutoCreateRadioControls.Checked = s.AutoCreateRadioControls;
                         for (int i = 0; i < m_supportedFormats.Count; i++)
                         {
                             if (m_supportedFormats[i].Name == s.Format)
@@ -430,7 +431,8 @@ namespace LiveResults.Client
                     CompID = int.Parse(txtCompID.Text),
                     extension = txtExtension.Text,
                     Format = (cmbFormat.SelectedItem as FormatItem).Name,
-                    ZeroTime = txtZeroTime.Text
+                    ZeroTime = txtZeroTime.Text,
+                    AutoCreateRadioControls = chkAutoCreateRadioControls.Checked
 
                 };
 
@@ -457,6 +459,7 @@ namespace LiveResults.Client
             public string extension { get; set; }
             public string Format { get; set; }
             public string ZeroTime { get; set; }
+            public bool AutoCreateRadioControls { get; set; }
         }
 
         private void button4_Click(object sender, EventArgs e)
