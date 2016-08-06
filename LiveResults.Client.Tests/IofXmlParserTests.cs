@@ -44,7 +44,7 @@ namespace LiveResults.Client.Tests
                new IofXmlParser.IDCalculator(0).CalculateID, true, out radioControls);
 
 
-            var runner = runners.First(x => x.ID == 12208);
+            var runner = runners.First(x => x.Name == "Johann Kugler");
             Assert.AreEqual(0, runner.Status);
             Assert.AreEqual(107600, runner.Time);
             
