@@ -4,3 +4,7 @@ alter table LOGIN add column videotype varchar(255);
 
 --additions 2015-07-18
  alter table login add column twitter varchar(255);
+
+ --addition  2016-08-06
+
+ create table classproperties (tavid integer, className  varchar(50) CHARACTER SET utf8 not null, resolution varchar(10), havebibnumbers bit default 0, startallocation varchar(20), primary key (tavid,className));

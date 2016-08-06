@@ -58,3 +58,5 @@ CREATE TABLE `splitcontrols` (
   `name` varchar(50) character set 'utf8' DEFAULT NULL,
   PRIMARY KEY (`tavid`,`classname`,`corder`,`code`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8; 
+
+ create table classproperties (tavid integer, className  varchar(50) CHARACTER SET utf8 not null, resolution varchar(10), havebibnumbers bit default 0, startallocation varchar(20), primary key (tavid,className));
