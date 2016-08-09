@@ -1,5 +1,6 @@
 var LiveResults;
 (function (LiveResults) {
+    // ReSharper disable once InconsistentNaming
     LiveResults.Instance = null;
     var AjaxViewer = (function () {
         function AjaxViewer(competitionId, language, classesDiv, lastPassingsDiv, resultsHeaderDiv, resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDayEvent, isSingleClass, setAutomaticUpdateText, runnerStatus, showTenthOfSecond) {
@@ -61,12 +62,14 @@ var LiveResults;
             var _this = this;
             this.updatePredictedTimeTimer = setInterval(function () { _this.updatePredictedTimes(); }, 1000);
         };
+        //Detect if the browser is a mobile phone
         AjaxViewer.prototype.mobilecheck = function () {
             var check = false;
             (function (a) { if (/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4)))
                 check = true; })(navigator.userAgent || navigator.vendor || window.opera);
             return check;
         };
+        ///Update the classlist
         AjaxViewer.prototype.updateClassList = function () {
             var _this = this;
             if (this.updateAutomatically) {
@@ -126,6 +129,7 @@ var LiveResults;
                                     $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                                 else {
+                                    //find next split to reach
                                     var nextSplit = 0;
                                     for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
                                         if (data[i].splits[this.curClassSplits[sp].code] != "") {
@@ -135,7 +139,7 @@ var LiveResults;
                                             }
                                         }
                                     }
-                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4 + nextSplit) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                             }
                         }
@@ -145,9 +149,11 @@ var LiveResults;
                 }
             }
         };
+        //Set wether to display tenthofasecond in results
         AjaxViewer.prototype.setShowTenth = function (val) {
             this.showTenthOfSecond = val;
         };
+        //Request data for the last-passings div
         AjaxViewer.prototype.updateLastPassings = function () {
             var _this = this;
             if (this.updateAutomatically) {
@@ -164,6 +170,7 @@ var LiveResults;
                 });
             }
         };
+        //Handle response for updating the last passings..
         AjaxViewer.prototype.handleUpdateLastPassings = function (data) {
             var _this = this;
             if (data != null && data.status == "OK") {
@@ -183,6 +190,7 @@ var LiveResults;
                 _this.updateLastPassings();
             }, this.updateInterval);
         };
+        //Check for updateing of class results
         AjaxViewer.prototype.checkForClassUpdate = function () {
             var _this = this;
             if (this.updateAutomatically) {
@@ -194,6 +202,8 @@ var LiveResults;
                             try {
                                 var reqTime = resp.getResponseHeader("date");
                                 if (reqTime) {
+                                    // var d = new Date(reqTime);
+                                    // d.setTime(d.getTime() + (120 + d.getTimezoneOffset()) * 60 * 1000);
                                     _this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
                                 }
                             }
@@ -216,6 +226,7 @@ var LiveResults;
                 }
             }
         };
+        //handle response from class-results-update
         AjaxViewer.prototype.handleUpdateClassResults = function (data) {
             var _this = this;
             if (data.status == "OK") {
@@ -230,6 +241,7 @@ var LiveResults;
                 _this.checkForClassUpdate();
             }, this.updateInterval);
         };
+        //Check for update in clubresults
         AjaxViewer.prototype.checkForClubUpdate = function () {
             var _this = this;
             if (this.updateAutomatically) {
@@ -255,6 +267,7 @@ var LiveResults;
                 }
             }
         };
+        //handle the response on club-results update
         AjaxViewer.prototype.handleUpdateClubResults = function (data) {
             var _this = this;
             if (data.status == "OK") {
@@ -298,6 +311,8 @@ var LiveResults;
                     try {
                         var reqTime = resp.getResponseHeader("date");
                         if (reqTime) {
+                            //var d = new Date(reqTime);
+                            //d.setTime(d.getTime() + (120 + d.getTimezoneOffset()) * 60 * 1000);
                             _this.serverTimeDiff = new Date().getTime() - new Date(reqTime).getTime();
                         }
                     }
@@ -329,26 +344,32 @@ var LiveResults;
                 $('#' + this.txtResetSorting).html("");
                 if (data.results != null) {
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [0], "mDataProp": "place" });
-                    columns.push({ "sTitle": this.resources["_NAME"], "bSortable": false, "aTargets": [1], "mDataProp": "name" });
+                    var col = 0;
+                    this.curClassSplits = data.splitcontrols;
+                    var haveSplitControls = data.splitcontrols != null && data.splitcontrols.length > 0;
+                    columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [col++], "mDataProp": "place" });
+                    if (!haveSplitControls)
+                        columns.push({ "sTitle": this.resources["_NAME"], "bSortable": false, "aTargets": [col++], "mDataProp": "name" });
                     columns.push({
-                        "sTitle": this.resources["_CLUB"],
+                        "sTitle": haveSplitControls ? this.resources["_NAME"] + " / " + this.resources["_CLUB"] : this.resources["_CLUB"],
                         "bSortable": false,
-                        "aTargets": [2],
+                        "aTargets": [col++],
                         "mDataProp": "club",
                         "fnRender": function (o) {
                             var param = o.aData.club;
                             if (param && param.length > 0)
                                 param = param.replace('\'', '\\\'');
-                            return "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + o.aData.club + "</a>";
+                            var link = "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + o.aData.club + "</a>";
+                            if (haveSplitControls)
+                                return o.aData.name + "<br/>" + link;
+                            else
+                                return link;
                         }
                     });
-                    this.curClassSplits = data.splitcontrols;
                     this.curClassIsMassStart = false;
                     if (data.IsMassStartRace)
                         this.curClassIsMassStart = data.IsMassStartRace;
                     this.updateResultVirtualPosition(data.results);
-                    var col = 3;
                     columns.push({
                         "sTitle": this.resources["_START"],
                         "sClass": "left",
@@ -380,8 +401,16 @@ var LiveResults;
                                 "fnRender": function (o) {
                                     if (!o.aData.splits[value.code + "_place"])
                                         return "";
-                                    else
-                                        return _this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "_place"] + ")";
+                                    else {
+                                        var txt = _this.formatTime(o.aData.splits[value.code], 0) +
+                                            " (" +
+                                            o.aData.splits[value.code + "_place"] +
+                                            ")";
+                                        if (o.aData.splits[value.code + "_timeplus"] != undefined) {
+                                            txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0) + "</span>";
+                                        }
+                                        return txt;
+                                    }
                                 }
                             });
                             col++;
@@ -398,29 +427,41 @@ var LiveResults;
                         "bUseRendered": false,
                         "mDataProp": "result",
                         "fnRender": function (o) {
+                            var res = "";
                             if (o.aData.place == "-" || o.aData.place == "") {
-                                return _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond);
+                                res = _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond);
                             }
                             else {
-                                return _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond) + " (" + o.aData.place + ")";
+                                res = _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond) + " (" + o.aData.place + ")";
+                                if (haveSplitControls) {
+                                    if (o.aData.status == 0)
+                                        res += "<br/>" +
+                                            "<span class=\"plustime\">+" +
+                                            _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) +
+                                            "</span>";
+                                }
                             }
+                            return res;
                         }
                     });
                     col++;
                     columns.push({ "sTitle": "Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "status" });
-                    columns.push({
-                        "sTitle": "",
-                        "sClass": "center",
-                        "bSortable": false,
-                        "aTargets": [col++],
-                        "mDataProp": "timeplus",
-                        "fnRender": function (o) {
-                            if (o.aData.status != 0)
-                                return "";
-                            else
-                                return "+" + _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond);
-                        }
-                    });
+                    if (!haveSplitControls) {
+                        columns.push({
+                            "sTitle": "",
+                            "sClass": "center",
+                            "bSortable": false,
+                            "aTargets": [col++],
+                            "mDataProp": "timeplus",
+                            "fnRender": function (o) {
+                                if (o.aData.status != 0)
+                                    return "";
+                                else
+                                    return "+" +
+                                        _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond);
+                            }
+                        });
+                    }
                     if (this.isMultiDayEvent) {
                         columns.push({
                             "sTitle": this.resources["_TOTAL"],
@@ -435,25 +476,36 @@ var LiveResults;
                                     return _this.formatTime(o.aData.totalresult, o.aData.totalstatus);
                                 }
                                 else {
-                                    return _this.formatTime(o.aData.totalresult, o.aData.totalstatus) + " (" + o.aData.totalplace + ")";
+                                    var txt = _this.formatTime(o.aData.totalresult, o.aData.totalstatus) +
+                                        " (" +
+                                        o.aData.totalplace +
+                                        ")";
+                                    if (haveSplitControls) {
+                                        txt += "<br/><span class=\"plustime\">+" +
+                                            _this.formatTime(o.aData.totalplus, o.aData.totalstatus) +
+                                            "</span>";
+                                    }
+                                    return txt;
                                 }
                             }
                         });
                         col++;
                         columns.push({ "sTitle": "TotalStatus", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "totalstatus" });
-                        columns.push({
-                            "sTitle": "",
-                            "sClass": "center",
-                            "bSortable": false,
-                            "aTargets": [col++],
-                            "mDataProp": "totalplus",
-                            "fnRender": function (o) {
-                                if (o.aData.totalstatus != 0)
-                                    return "";
-                                else
-                                    return "+" + _this.formatTime(o.aData.totalplus, o.aData.totalstatus);
-                            }
-                        });
+                        if (!haveSplitControls) {
+                            columns.push({
+                                "sTitle": "",
+                                "sClass": "center",
+                                "bSortable": false,
+                                "aTargets": [col++],
+                                "mDataProp": "totalplus",
+                                "fnRender": function (o) {
+                                    if (o.aData.totalstatus != 0)
+                                        return "";
+                                    else
+                                        return "+" + _this.formatTime(o.aData.totalplus, o.aData.totalstatus);
+                                }
+                            });
+                        }
                     }
                     columns.push({ "sTitle": "VP", "bVisible": false, "aTargets": [col++], "mDataProp": "virtual_position" });
                     this.currentTable = $('#' + this.resultsDiv).dataTable({
@@ -573,6 +625,7 @@ var LiveResults;
             var _this = this;
             var i;
             data.sort(this.resultSorter);
+            /* move down runners that have not finished to the correct place*/
             var firstFinishedIdx = -1;
             for (i = 0; i < data.length; i++) {
                 if (data[i].place != "") {
@@ -583,6 +636,7 @@ var LiveResults;
             if (firstFinishedIdx == -1)
                 firstFinishedIdx = data.length;
             if (this.curClassIsMassStart) {
+                /*append results from splits backwards (by place on actual split)*/
                 data.sort(function (a, b) { return _this.sortByDistAndSplitPlace(a, b); });
             }
             else {
@@ -591,6 +645,7 @@ var LiveResults;
                     tmp.push(data[i]);
                 }
                 data.splice(0, firstFinishedIdx);
+                //advanced virtual-sorting for individual races
                 tmp.sort(this.sortByDist);
                 for (i = 0; i < tmp.length; i++) {
                     if (data.length == 0)
@@ -603,9 +658,12 @@ var LiveResults;
                 data[i].virtual_position = i;
             }
         };
+        ///Sorts results by the one that have run longest on the course
         AjaxViewer.prototype.sortByDist = function (a, b) {
             return b.progress - a.progress;
         };
+        //Sorts results by the one that have run longest on the course, and if they are on the same split, place on that split
+        //"MassStart-Sorting"
         AjaxViewer.prototype.sortByDistAndSplitPlace = function (a, b) {
             var sortStatusA = a.status;
             var sortStatusB = b.status;
@@ -626,6 +684,7 @@ var LiveResults;
                     return a.start - b.start;
             }
             if (a.progress == b.progress && a.progress > 0 && a.progress < 100) {
+                //Both have reached the same split
                 if (this.curClassSplits != null) {
                     for (var s = this.curClassSplits.length - 1; s >= 0; s--) {
                         var splitCode = this.curClassSplits[s].code;
@@ -637,6 +696,8 @@ var LiveResults;
             }
             return b.progress - a.progress;
         };
+        //Inserts a result in the array of results.
+        //The result to be inserted is assumed to have same or worse progress than all other results already in the array
         AjaxViewer.prototype.insertIntoResults = function (result, data) {
             var d;
             if (this.curClassSplits != null) {
@@ -648,11 +709,16 @@ var LiveResults;
                             if (data[d].splits[splitCode] != "") {
                                 numOthersAtSplit++;
                             }
+                            //insert result 
+                            // * before results with - as placemark
+                            // * before the first result with worse time at this split 
                             if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode])) {
                                 data.splice(d, 0, result);
                                 return;
                             }
                         }
+                        //If numothersatsplit there exists results at this split, but all are better than this one..
+                        //Append last
                         if (numOthersAtSplit > 0) {
                             data.push(result);
                             return;
@@ -766,7 +832,7 @@ var LiveResults;
                             res.placeSortable = 9999;
                     });
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place" });
+                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place", });
                     columns.push({ "sTitle": "placeSortable", "bVisible": false, "mDataProp": "placeSortable", "aTargets": [1] });
                     columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [2], "mDataProp": "name" });
                     columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [3], "mDataProp": "club" });
@@ -846,7 +912,8 @@ var LiveResults;
             this.currentTable.fnSort([[idxCol, 'asc']]);
             $("#" + this.txtResetSorting).html("");
         };
-        AjaxViewer.VERSION = "2015-09-12-01";
+        // ReSharper disable once InconsistentNaming
+        AjaxViewer.VERSION = "2016-08-06-01";
         return AjaxViewer;
     })();
     LiveResults.AjaxViewer = AjaxViewer;
@@ -859,4 +926,6 @@ Date.prototype.stdTimezoneOffset = function () {
 Date.prototype.dst = function () {
     return this.getTimezoneOffset() < this.stdTimezoneOffset();
 };
+//GA tracker-object
 var ga;
+//# sourceMappingURL=LiveResults.js.map

@@ -5,7 +5,7 @@
 
     export class AjaxViewer {
         // ReSharper disable once InconsistentNaming
-        public static VERSION : string = "2015-09-12-01";
+        public static VERSION : string = "2016-08-06-01";
         private updateAutomatically: boolean = true;
         private updateInterval: number = 15000;
         private classUpdateInterval: number = 60000;
@@ -150,7 +150,7 @@
                                         }
                                     }
 
-                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4+nextSplit)+ ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3+nextSplit)+ ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
 
                                 }
                             }
@@ -371,30 +371,38 @@
 
                 if (data.results != null) {
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [0], "mDataProp": "place" });
-                    columns.push({ "sTitle": this.resources["_NAME"], "bSortable": false, "aTargets": [1], "mDataProp": "name" });
+                    var col = 0;
+                    this.curClassSplits = data.splitcontrols;
+                    var haveSplitControls = data.splitcontrols != null && data.splitcontrols.length > 0;
+                    columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [col++], "mDataProp": "place" });
+                    if (!haveSplitControls)
+                        columns.push({ "sTitle": this.resources["_NAME"], "bSortable": false, "aTargets": [col++], "mDataProp": "name" });
                     columns.push({
-                        "sTitle": this.resources["_CLUB"],
+                        "sTitle": haveSplitControls ? this.resources["_NAME"] + " / " + this.resources["_CLUB"] : this.resources["_CLUB"],
                         "bSortable": false,
-                        "aTargets": [2],
+                        "aTargets": [col++],
                         "mDataProp": "club",
                         "fnRender": (o : any) => {
                             var param = o.aData.club;
                             if (param && param.length > 0)
                                 param = param.replace('\'', '\\\'');
-                            return "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + o.aData.club + "</a>";
+                            
+                            var link = "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + o.aData.club + "</a>";
+                            if (haveSplitControls)
+                                return o.aData.name + "<br/>" + link;
+                            else
+                                return link;
                         }
 
                     });
 
-                    this.curClassSplits = data.splitcontrols;
+                    
                     this.curClassIsMassStart = false;
                     if (data.IsMassStartRace)
                         this.curClassIsMassStart = data.IsMassStartRace;
 
                     this.updateResultVirtualPosition(data.results);
 
-                    var col = 3;
                     columns.push({
                         "sTitle": this.resources["_START"],
                         "sClass": "left",
@@ -428,8 +436,17 @@
                                 "fnRender": (o : any) => {
                                     if (!o.aData.splits[value.code + "_place"])
                                         return "";
-                                    else
-                                        return this.formatTime(o.aData.splits[value.code], 0) + " (" + o.aData.splits[value.code + "_place"] + ")";
+                                    else {
+                                        
+                                        var txt = this.formatTime(o.aData.splits[value.code], 0) +
+                                            " (" +
+                                            o.aData.splits[value.code + "_place"] +
+                                            ")";
+                                        if (o.aData.splits[value.code + "_timeplus"] != undefined) {
+                                            txt += "<br/><span class=\"plustime\">+" + this.formatTime(o.aData.splits[value.code + "_timeplus"], 0) + "</span>";
+                                        }
+                                        return txt;
+                                    }
                                 }
                             });
                             col++;
@@ -447,29 +464,42 @@
                         "bUseRendered": false,
                         "mDataProp": "result",
                         "fnRender": (o  : any) => {
+                            var res = "";
                             if (o.aData.place == "-" || o.aData.place == "") {
-                                return this.formatTime(o.aData.result, o.aData.status, this.showTenthOfSecond);
+                                res = this.formatTime(o.aData.result, o.aData.status, this.showTenthOfSecond);
                             } else {
-                                return this.formatTime(o.aData.result, o.aData.status, this.showTenthOfSecond) + " (" + o.aData.place + ")";
+                                res = this.formatTime(o.aData.result, o.aData.status, this.showTenthOfSecond) + " (" + o.aData.place + ")";
+                                if (haveSplitControls) {
+                                    if (o.aData.status == 0)
+                                        res += "<br/>" +
+                                            "<span class=\"plustime\">+" +
+                                            this.formatTime(o.aData.timeplus, o.aData.status, this.showTenthOfSecond) +
+                                            "</span>";
+                                }
                             }
+
+                            return res;
                         }
                     });
 
                     col++;
                     columns.push({ "sTitle": "Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "status" });
-                    columns.push({
-                        "sTitle": "",
-                        "sClass": "center",
-                        "bSortable": false,
-                        "aTargets": [col++],
-                        "mDataProp": "timeplus",
-                        "fnRender": (o : any) => {
-                            if (o.aData.status != 0)
-                                return "";
-                            else
-                                return "+" + this.formatTime(o.aData.timeplus, o.aData.status, this.showTenthOfSecond);
-                        }
-                    });
+                    if (!haveSplitControls) {
+                        columns.push({
+                            "sTitle": "",
+                            "sClass": "center",
+                            "bSortable": false,
+                            "aTargets": [col++],
+                            "mDataProp": "timeplus",
+                            "fnRender": (o: any) => {
+                                if (o.aData.status != 0)
+                                    return "";
+                                else
+                                    return "+" +
+                                        this.formatTime(o.aData.timeplus, o.aData.status, this.showTenthOfSecond);
+                            }
+                        });
+                    }
 
                     if (this.isMultiDayEvent) {
 
@@ -481,30 +511,42 @@
                             "aTargets": [col],
                             "bUseRendered": false,
                             "mDataProp": "totalresult",
-                            "fnRender": (o : any) => {
+                            "fnRender": (o: any) => {
                                 if (o.aData.totalplace == "-" || o.aData.totalplace == "") {
                                     return this.formatTime(o.aData.totalresult, o.aData.totalstatus);
                                 } else {
-                                    return this.formatTime(o.aData.totalresult, o.aData.totalstatus) + " (" + o.aData.totalplace + ")";
+                                    var txt = this.formatTime(o.aData.totalresult, o.aData.totalstatus) +
+                                        " (" +
+                                        o.aData.totalplace +
+                                        ")";
+
+                                    if (haveSplitControls) {
+                                        txt += "<br/><span class=\"plustime\">+" +
+                                            this.formatTime(o.aData.totalplus, o.aData.totalstatus) +
+                                            "</span>";
+                                    }
+                                    return txt;
                                 }
                             }
                         });
 
                         col++;
                         columns.push({ "sTitle": "TotalStatus", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "totalstatus" });
-                        columns.push({
-                            "sTitle": "",
-                            "sClass": "center",
-                            "bSortable": false,
-                            "aTargets": [col++],
-                            "mDataProp": "totalplus",
-                            "fnRender": (o : any) => {
-                                if (o.aData.totalstatus != 0)
-                                    return "";
-                                else
-                                    return "+" + this.formatTime(o.aData.totalplus, o.aData.totalstatus);
-                            }
-                        });
+                        if (!haveSplitControls) {
+                            columns.push({
+                                "sTitle": "",
+                                "sClass": "center",
+                                "bSortable": false,
+                                "aTargets": [col++],
+                                "mDataProp": "totalplus",
+                                "fnRender": (o: any) => {
+                                    if (o.aData.totalstatus != 0)
+                                        return "";
+                                    else
+                                        return "+" + this.formatTime(o.aData.totalplus, o.aData.totalstatus);
+                                }
+                            });
+                        }
 
                     }
 

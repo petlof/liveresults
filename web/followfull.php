@@ -45,6 +45,7 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 <meta name="viewport" content="width=1200,initial-scale=1.0">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#555556">
 <link rel="stylesheet" type="text/css" href="css/style-eoc.css">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">

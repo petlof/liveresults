@@ -19,6 +19,10 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 <html>
 <head><title><?=$_TITLE?></title>
 <meta http-equiv="Content-Type" content="text/html;charset=<?=$CHARSET?>">
+<meta name="viewport" content="width=1200,initial-scale=1.0">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#555556">
 <link rel="stylesheet" type="text/css" href="css/style-eoc.css">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
@@ -46,7 +50,7 @@ el.style.backgroundColor = "";
 <body>
 <!-- MAIN DIV -->
 <div class="maindiv">
-<table border="0" cellpadding="0" cellspacing="0" width="800">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
      <td valign="bottom">
 

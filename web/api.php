@@ -344,6 +344,7 @@ elseif ($_GET['method'] == 'getclassresults')
       $splitplace = 1;
       $cursplitplace = 1;
       $cursplittime = "";
+      $bestsplittime = -1;
       foreach ($results as $key => $res)
       {   
         $sp_time = "";
@@ -354,7 +355,21 @@ elseif ($_GET['method'] == 'getclassresults')
          
        
           if (isset($res[$split['code']."_time"]))
+          {
             $sp_time = $res[$split['code']."_time"];
+            if ($bestsplittime < 0)
+              $bestsplittime = $sp_time;
+          }
+          
+          if ($sp_time != "")
+          {
+            $results[$key][$split['code']."_timeplus"] =$sp_time - $bestsplittime;
+          }
+          else 
+          {
+            $results[$key][$split['code']."_timeplus"] = -1;
+          }
+          
           if ($cursplittime != $sp_time)
           {
             $cursplitplace = $splitplace;
@@ -472,7 +487,7 @@ elseif ($_GET['method'] == 'getclassresults')
               if ($status == 9 || $status == 10)
                 $splitStatus = 0;
                 
-							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"];
+							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"].",\"".$split['code']."_timeplus\": ".$res[$split['code']."_timeplus"];
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
 							if ($spage < 120)
 								$modified = true;
