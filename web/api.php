@@ -357,7 +357,7 @@ elseif ($_GET['method'] == 'getclassresults')
           if (isset($res[$split['code']."_time"]))
           {
             $sp_time = $res[$split['code']."_time"];
-            if ($bestsplittime < 0)
+            if ($bestsplittime < 0 && ($raceStatus == 0 || $raceStatus == 9 || $raceStatus == 10))
               $bestsplittime = $sp_time;
           }
           

@@ -225,7 +225,7 @@ namespace LiveResults.Client
 
                     string initialCommand = string.Format(@"select  dbName.FirstName, dbName.LastName,
  dbTeam.Name as teamname, dbclass.name as classname,
- dbName.startTime, dbRuns.RaceTime, dbName.Startno, dbRuns.Status
+ dbName.startTime, dbRuns.RaceTime, dbName.Startno, dbRuns.Status, dbRuns.Starttime as actualstarttime
 from dbName 
 inner join dbTeam on (dbTeam.raceId={0} and dbTeam.TeamID=dbName.TeamID)
 inner join dbclass on (dbClass.RaceId={0} and dbclass.classId=dbName.ClassID)
@@ -397,6 +397,14 @@ and dbclass.classid = dbName.classid", m_eventID);
                         if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
                         {
                             startTime = ParseDateTime(reader["starttime"].ToString());
+                        }
+
+                        if (!isRelay)
+                        {
+                            if (reader["actualstarttime"] != null && reader["actualstarttime"] != DBNull.Value)
+                            {
+                                startTime = ParseDateTime(reader["actualstarttime"].ToString());
+                            }
                         }
 
 
