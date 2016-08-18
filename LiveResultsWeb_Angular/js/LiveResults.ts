@@ -438,12 +438,12 @@
                                         return "";
                                     else {
                                         
-                                        var txt = this.formatTime(o.aData.splits[value.code], 0) +
+                                        var txt = this.formatTime(o.aData.splits[value.code], 0, this.showTenthOfSecond) +
                                             " (" +
                                             o.aData.splits[value.code + "_place"] +
                                             ")";
                                         if (o.aData.splits[value.code + "_timeplus"] != undefined) {
-                                            txt += "<br/><span class=\"plustime\">+" + this.formatTime(o.aData.splits[value.code + "_timeplus"], 0) + "</span>";
+                                            txt += "<br/><span class=\"plustime\">+" + this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, this.showTenthOfSecond) + "</span>";
                                         }
                                         return txt;
                                     }
