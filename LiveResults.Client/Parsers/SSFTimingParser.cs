@@ -580,7 +580,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                 }
             }
             
-            return (int)dt.TimeOfDay.TotalSeconds * 100 * factor;
+            return (int)Math.Round(dt.TimeOfDay.TotalSeconds * 100 * factor);
         }
 
         private static DateTime ParseDateTime(string tTime)
