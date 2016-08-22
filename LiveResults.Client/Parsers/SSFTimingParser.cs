@@ -132,7 +132,7 @@ namespace LiveResults.Client
                                     {
                                         if (intermediateName.Contains("-"))
                                         {
-                                            intermediateName = intermediateName.Split('-')[1].Trim();
+                                            intermediateName = intermediateName.Split(new string[] {"-"},2,StringSplitOptions.RemoveEmptyEntries)[1].Trim();
                                         }
                                     }
                                     if (!string.IsNullOrEmpty(intermediateName))
@@ -430,6 +430,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                     }
 
                     int rstatus = GetStatusFromCode(ref time, status);
+
                     if (rstatus != 999)
                     {
                         var res = new Result
@@ -517,6 +518,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                             {
                                    time = stime;
                                    status = GetStatusFromCode(ref time, reader["status"].ToString().Trim());
+                                   if (status == 9)
+                                       status = 0;
                             }
                             else
                             {

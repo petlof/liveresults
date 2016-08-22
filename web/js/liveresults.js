@@ -402,12 +402,12 @@ var LiveResults;
                                     if (!o.aData.splits[value.code + "_place"])
                                         return "";
                                     else {
-                                        var txt = _this.formatTime(o.aData.splits[value.code], 0) +
+                                        var txt = _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond) +
                                             " (" +
                                             o.aData.splits[value.code + "_place"] +
                                             ")";
                                         if (o.aData.splits[value.code + "_timeplus"] != undefined) {
-                                            txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0) + "</span>";
+                                            txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
                                         }
                                         return txt;
                                     }
