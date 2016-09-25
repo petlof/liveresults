@@ -4,7 +4,10 @@ using System.Data;
 using System.Globalization;
 using System.Threading;
 using LiveResults.Client.Model;
-
+using System.Configuration;
+using System.IO;
+using System.Linq;
+using System.Xml;
 namespace LiveResults.Client
 {
     
@@ -57,6 +60,7 @@ namespace LiveResults.Client
 
         private void Run()
         {
+            string splitsPaths = ConfigurationManager.AppSettings["splitspath"];
             while (m_continue)
             {
                 try
@@ -95,7 +99,7 @@ namespace LiveResults.Client
 
                     int version = Convert.ToInt32(cmd.ExecuteScalar());
 
-                    string baseCommand = "select results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime, entries.allocationControl, entries.allocationEntryId from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
+                    string baseCommand = "select results.bibNumber, results.individualCourseId, results.rawDataFromElectronicPunchingCardsId, results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime, entries.allocationControl, entries.allocationEntryId from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
                     string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
 
                     RelayEventCache relayEventCache = null;
@@ -129,7 +133,7 @@ namespace LiveResults.Client
                         }
 
 
-                        baseCommand = "select results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.resultId as entryId, results.finishTime, results.allocatedStartTime, results.starttime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and  results.modifyDate > " + paramOper + " order by relayLeg";
+                        baseCommand = "select results.bibNumber, results.individualCourseId, results.rawDataFromElectronicPunchingCardsId, results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.resultId as entryId, results.finishTime, results.allocatedStartTime, results.starttime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and  results.modifyDate > " + paramOper + " order by relayLeg";
                         splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, results.starttime from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                     }
 
@@ -140,6 +144,7 @@ namespace LiveResults.Client
 
                     cmd.CommandText = baseCommand;
                     IDbCommand cmdSplits = m_connection.CreateCommand();
+                    IDbCommand cmdSplitTimes = m_connection.CreateCommand();
                     cmdSplits.CommandText = splitbaseCommand;
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "date";
@@ -197,6 +202,9 @@ namespace LiveResults.Client
                                 (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime;
                             }
 
+                            List<object[]> splitsToRead = null;
+                            if (!string.IsNullOrEmpty(splitsPaths))
+                             splitsToRead = new List<object[]>();
 
                             cmd.Prepare();
                             reader = cmd.ExecuteReader();
@@ -245,7 +253,17 @@ namespace LiveResults.Client
                                         iStartTime = (int)(startTime.TimeOfDay.TotalSeconds * 100);
                                     }
 
-                                   
+                                   if (splitsToRead != null && reader["bibNumber"] != null && reader["bibNumber"] != DBNull.Value && reader["rawDataFromElectronicPunchingCardsId"] != null && reader["rawDataFromElectronicPunchingCardsId"] != DBNull.Value)
+                                   {
+                                       int bibNumber = Convert.ToInt32(reader["bibNumber"]);
+                                       if (!File.Exists(Path.Combine(splitsPaths, bibNumber + ".xml")))
+                                       {
+                                           int courseId = Convert.ToInt32(reader["individualCourseId"]);
+                                           int rawCardId = Convert.ToInt32(reader["rawDataFromElectronicPunchingCardsId"]);
+                                           splitsToRead.Add(new object[] { bibNumber, courseId, rawCardId, startTime, time });
+                                       }
+                                   }
+
 
                                 }
                                 catch (Exception ee)
@@ -332,6 +350,119 @@ namespace LiveResults.Client
                                 }
                             }
                             reader.Close();
+
+                            if (splitsToRead != null && splitsToRead.Count > 0)
+                            {
+                                while (splitsToRead.Count > 0)
+                                {
+                                    object[] toRead = splitsToRead[0];
+                                    splitsToRead.RemoveAt(0);
+                                    int bibNumber = (int)toRead[0];
+                                    int courseId = (int)toRead[1];
+                                    int rawDataId = (int)toRead[2];
+                                    DateTime startTime = (DateTime)toRead[3];
+                                    int time = (int)toRead[4];
+
+                                    cmdSplitTimes.CommandText = @"select ordered, punchingCode from punchingUnits pu, controlspunchingunits cpu, coursesWayPointControls cwp where
+ cwp.controlId = cpu.control and cpu.punchingUnit=pu.punchingUnitId and cwp.courseId=" + courseId + " order by ordered";
+
+                                    List<int[]> courseWayPointCodes = new List<int[]>();
+                                    using (var splreader = cmdSplitTimes.ExecuteReader())
+                                    {
+                                        int lastOrder = -1;
+                                        while (splreader.Read())
+                                        {
+                                            int code = Convert.ToInt32(splreader["punchingCode"]);
+                                            int order = Convert.ToInt32(splreader["ordered"]);
+                                            if (courseWayPointCodes.Count == 0 || order > lastOrder)
+                                            {
+                                                courseWayPointCodes.Add(new int[] { code });
+                                            }
+                                            else
+                                            {
+                                                var l = new List<int>(courseWayPointCodes[courseWayPointCodes.Count-1]);
+                                                l.Add( code);
+                                                courseWayPointCodes[courseWayPointCodes.Count - 1] = l.ToArray();
+                                            }
+                                        }
+                                        splreader.Close();
+                                    }
+
+                                    DateTime cardReadTime = DateTime.MinValue;
+                                    cmdSplitTimes.CommandText = @"select readInTime from rawdatafromelectronicpunchingcards where Id=" + rawDataId;
+                                    using (var splreader = cmdSplitTimes.ExecuteReader())
+                                    {
+                                        int lastOrder = -1;
+                                        if (splreader.Read())
+                                        {
+                                            cardReadTime = Convert.ToDateTime(splreader["readInTime"]);
+                                        }
+                                        splreader.Close();
+                                    }
+
+                                    cmdSplitTimes.CommandText = @"select punchingCode, punchingTime from rawpunches where rawCardId=" + rawDataId + " order by controlNUmber";
+                                    List<int[]> punches = new List<int[]>();
+                                    using (var splreader = cmdSplitTimes.ExecuteReader())
+                                    {
+                                        while (splreader.Read())
+                                        {
+                                            punches.Add(new int[] { Convert.ToInt32(splreader["punchingCode"]), Convert.ToInt32(splreader["punchingTime"]) });
+                                        }
+                                        splreader.Close();
+                                    }
+
+
+                                    int curIdx = punches.Count - 1;
+                                    int timeAtReadOut = -1;
+                                    while (curIdx > 0)
+                                    {
+                                        if (punches[curIdx][0] >= 250 && punches[curIdx][0] <= 254)
+                                        {
+                                            timeAtReadOut = punches[curIdx][1];
+                                            break;
+                                        }
+                                        curIdx--;
+                                    }
+
+                                    DateTime[] splits = new DateTime[courseWayPointCodes.Count];
+                                    
+                                    int wayPointIx = courseWayPointCodes.Count - 1;
+                                    if (timeAtReadOut > 0)
+                                    {
+                                        curIdx--;
+                                        while (curIdx >= 0 && wayPointIx >= 0)
+                                        {
+                                            int punch = punches[curIdx][0];
+                                            if (Array.IndexOf<int>(courseWayPointCodes[wayPointIx], punch) >= 0)
+                                            {
+                                                DateTime punchTime = cardReadTime.AddSeconds(-1*(timeAtReadOut - punches[curIdx][1]));
+                                                //splits.Add(new object[] { punches[curIdx]);
+                                                splits[wayPointIx] = punchTime;
+                                                wayPointIx--;
+                                            }
+                                            curIdx--;
+                                        }
+                                    }
+
+                                    using (var xml = XmlWriter.Create(Path.Combine(splitsPaths, bibNumber + ".xml"), new XmlWriterSettings() { Indent = true }))
+                                    {
+                                        xml.WriteStartDocument();
+                                        xml.WriteStartElement("splits");
+                                        xml.WriteAttributeString("bibNumber",bibNumber.ToString());
+                                        xml.WriteAttributeString("startTime", startTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                                        xml.WriteAttributeString("totalTimeSeconds", time.ToString());
+                                        for (int i = 0; i < splits.Length; i++)
+                                        {
+                                            xml.WriteStartElement("split");
+                                            xml.WriteAttributeString("control", (i+1).ToString());
+                                            xml.WriteAttributeString("punchTime", splits[i].ToString("yyyy-MM-dd HH:mm:ss"));
+                                            xml.WriteAttributeString("splitTimeSeconds", ((int)(i > 0 ? (splits[i] - splits[i - 1]).TotalSeconds : 0)).ToString());
+                                            xml.WriteEndElement();
+                                        }
+                                        xml.WriteEndElement();
+                                    }
+                                }
+                            }
 
                             reader = cmdSplits.ExecuteReader();
                             while (reader.Read())

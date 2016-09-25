@@ -250,8 +250,8 @@ namespace LiveResults.Client.Parsers
                 string tmp;
                 while ((tmp = sr.ReadLine()) != null)
                 {
-                    string stnr = tmp.Substring(0, 3).Trim();
-                    string sinr = tmp.Substring(4, 10).Trim();
+                    string stnr = tmp.Substring(0, 5).Trim();
+                    string sinr = tmp.Substring(6, 8).Trim();
                     string className = tmp.Substring(15, 7).Trim();
                     string name = tmp.Substring(31, 23).Trim();
                     string start = tmp.Substring(54).Trim();

@@ -160,10 +160,10 @@ namespace LiveResults.Client.Parsers
                                     var competitorStatusNode = teamMemberResult.SelectSingleNode("iof:Result/iof:OverallResult/iof:Status", nsMgr);
                                     var resultTimeNode = teamMemberResult.SelectSingleNode("iof:Result/iof:OverallResult/iof:Time", nsMgr);
                                     var startTimeNode = teamMemberResult.SelectSingleNode("iof:Result/iof:StartTime", nsMgr);
-                                    if (competitorStatusNode == null)
-                                        continue;
 
-                                    string status = competitorStatusNode.InnerText;
+                                    string status = "notActivated";
+                                    if (competitorStatusNode != null)
+                                        status = competitorStatusNode.InnerText;
 
                                     if (status.ToLower() == "notcompeting" || status.ToLower() == "cancelled")
                                     {
