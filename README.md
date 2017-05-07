@@ -1,3 +1,5 @@
+[![PayPal - The safer, easier way to pay online!](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_donations&business=peter%40lofas%2ese&lc=US&item_name=Orienteering%20LiveResults&currency_code=EUR&bn=PP%2dDonationsBF%3abtn_donateCC_LG%2egif%3aNonHosted)
+
 EmmaClient is a client-server system for publishing liveresults from Orienteering events. It have been used on many major events such as JWOC, WOC, EOC,..
 
 **Current Build status**
