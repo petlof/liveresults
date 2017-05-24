@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 date_default_timezone_set("Europe/Stockholm");
 
 include_once("./templates/emmalang_sv.php");
@@ -97,6 +97,24 @@ el.style.backgroundColor = "";
                         | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" : "<a href=\"?lang=hu\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?>
                         | <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" : "<a href=\"?lang=es\" style='text-decoration: none'><img src='images/es.png' border='0' alt='Español'> Español</a>")?>
 			|
+
+
+<h1 class="categoriesheader">LIVE TODAY!</h1>
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" id="tblComps">
+			<tr><th align="left"><?= $_DATE?></th><th align="left"><?= $_NAME?></th><th align="left"><?= $_ORGANIZER?></th></tr>
+<?php
+	$comps = Emma::GetCompetitionsToday();
+	  foreach ($comps as $comp)
+        {
+        ?>
+                <tr id="row<?=$comp["tavid"]?>" style="font-size:12px;font-weight:bold;"><td><?=date("Y-m-d",strtotime($comp['compDate']))?></td>
+                <td><a onmouseover="colorRow('row<?=$comp["tavid"]?>')" onmouseout="resetRow('row<?=$comp["tavid"]?>')" href="followfull.php?comp=<?=$comp["tavid"]?>&amp;lang=<?=$l$
+                <td style="font-weight:normal"><?=$comp["organizer"]?></td>
+                </tr>
+        <?php
+        }
+        ?>
+                        </table>
 
 
 						<h1 class="categoriesheader"><?=$_CHOOSECMP?></h1>

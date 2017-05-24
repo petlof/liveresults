@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using LiveResults.Client.Parsers;
 using NUnit.Framework;
+using LiveResults.Model;
 
 namespace LiveResults.Client.Tests
 {

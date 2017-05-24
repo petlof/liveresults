@@ -1,5 +1,4 @@
 ﻿using System.Globalization;
-using System.Web.UI.Design;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -10,13 +9,17 @@ using System.Text;
 using System.Threading;
 using System.Linq;
 
-namespace LiveResults.Client
+namespace LiveResults.Model
 {
     public delegate void LogMessageDelegate(string msg);
 
    
     public class EmmaMysqlClient : IDisposable
     {
+        public delegate void RunnerChangedDelegate(Runner runner);
+        public event RunnerChangedDelegate RunnerChanged;
+
+
 
         private static readonly Dictionary<int,Dictionary<string,int>> m_compsSourceToIdMapping = 
             new Dictionary<int, Dictionary<string, int>>(); 
@@ -145,7 +148,30 @@ namespace LiveResults.Client
             }
         }
 
-       
+        public RadioControl[] GetAllRadioControls()
+        {
+            Dictionary<int, RadioControl> radios = new Dictionary<int, RadioControl>();
+            foreach (var kvp in m_classRadioControls)
+            {
+                foreach (var radioControl in kvp.Value)
+                {
+                    if (!radios.ContainsKey(radioControl.Code))
+                    {
+                        radios.Add(radioControl.Code, radioControl);
+                    }
+                }
+                
+            }
+            return radios.Values.ToArray();
+        }
+
+        public RadioControl[] GetRadioControlsForClass(string className)
+        {
+            return m_classRadioControls.ContainsKey(className) ? m_classRadioControls[className] : null;
+            
+        }
+
+
 
         private void FireLogMsg(string msg)
         {
@@ -158,6 +184,28 @@ namespace LiveResults.Client
             if (!IsRunnerAdded(dbId))
                 return null;
             return m_runners[dbId];
+        }
+
+        public string[] GetClasses()
+        {
+            Dictionary<string,string> classes = new Dictionary<string, string>();
+            foreach (var r in m_runners)
+            {
+                if (!classes.ContainsKey(r.Value.Class))
+                    classes.Add(r.Value.Class,"");
+            }
+
+            return classes.Keys.ToArray();
+        }
+
+        public Runner[] GetAllRunners()
+        {
+            return m_runners.Values.ToArray();
+        }
+
+        public Runner[] GetRunnersInClass(string className)
+        {
+            return m_runners.Values.Where(x => x.Class == className).ToArray();
         }
 
         private bool m_continue;

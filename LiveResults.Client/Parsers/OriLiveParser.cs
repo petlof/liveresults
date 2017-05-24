@@ -11,6 +11,7 @@ using System.Net;
 using System.Text.RegularExpressions;
 using System.Web.Script.Serialization;
 using System.Xml;
+using LiveResults.Model;
 
 namespace LiveResults.Client
 {

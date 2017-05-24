@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiveResults.Model;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
@@ -240,13 +241,5 @@ namespace LiveResults.Client
             }
             
         }
-    }
-
-    public struct ResultStruct
-    {
-        public int ControlNo;
-        public int ControlCode;
-        public int Time;
-        public int Place;
     }
 }

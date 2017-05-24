@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web.UI.Design.WebControls;
 
-namespace LiveResults.Client
+namespace LiveResults.Model
 {
     public class RunnerPair
     {

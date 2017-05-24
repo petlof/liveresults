@@ -58,6 +58,41 @@ class Emma
 
         }
 
+public static function GetCompetitionsToday()
+
+        {
+
+          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
+
+	  mysql_select_db(self::$db_database);
+	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
+	  if (mysql_errno()) {
+
+	   		printf("Connect failed: %s\n", mysql_error());
+
+	   		exit();
+
+		}
+
+	 $result = mysql_query("select compName, compDate,tavid,organizer,timediff,multidaystage,multidayparent from login where public = 1 and compDate = '".date("Y-m-d")."'",$conn);
+
+         $ret = Array();
+
+         while ($tmp = mysql_fetch_array($result))
+
+	 {
+
+ 		$ret[] = $tmp;
+
+         }
+
+		mysql_free_result($result);
+
+ 	return $ret;
+
+        }
+
+
 public static function GetRadioControls($compid)
 
         {

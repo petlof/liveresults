@@ -12,6 +12,7 @@ using System.Data.OleDb;
 using System.Data.H2;
 using System.IO;
 using System.Xml.Serialization;
+using LiveResults.Model;
 
 namespace LiveResults.Client
 {

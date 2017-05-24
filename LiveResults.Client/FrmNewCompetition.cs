@@ -6,7 +6,9 @@ using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
 using System.IO;
+using LiveResults.CasparClient;
 using LiveResults.Client.Parsers;
+using LiveResults.Model;
 
 namespace LiveResults.Client
 {
@@ -152,8 +154,59 @@ namespace LiveResults.Client
             frm.ShowDialog();
         }
 
-       
+        private void label2_Click(object sender, EventArgs e)
+        {
+            CasparClient.CasparControlFrm frm = new CasparControlFrm();
+            frm.Show();
+        }
 
-       
+        private void flowLayoutPanel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void FrmNewCompetition_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.R)
+            {
+                var parser = new RaceTimerParser(new string[]
+                {
+                    "http://www.racetimer.se/sv/race/resultlist/3647?race_id=3646&layout=racetimer&rc_id=14200&per_page=2500&commit=Visa+resultat+%3E%3E",
+                    "http://www.racetimer.se/sv/race/resultlist/3647?race_id=3646&layout=racetimer&rc_id=14417&per_page=2500&commit=Visa+resultat+%3E%3E",
+                    "http://www.racetimer.se/sv/race/resultlist/3647?race_id=3646&layout=racetimer&rc_id=14418&per_page=2005&commit=Visa+resultat+%3E%3E",
+                    "http://www.racetimer.se/sv/race/resultlist/3647?race_id=3646&layout=racetimer&rc_id=14419&per_page=2500&commit=Visa+resultat+%3E%3E"
+
+                });
+                var mon = new FrmMonitor();
+                mon.CompetitionID = -112;
+                mon.SetParser(parser);
+                mon.ShowDialog(this);
+            }
+
+            if (e.KeyCode == Keys.W)
+            {
+                var parser = new TulospalveluParser(new string[]
+                {
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/str8w/tilanne/1/0/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/str8m/tilanne/1/0/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/1/0/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/2/0/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/3/0/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/4/0/"
+
+                });
+                var mon = new FrmMonitor();
+                mon.CompetitionID = 12496;
+                mon.SetParser(parser);
+                mon.ShowDialog(this);
+            }
+
+        }
+
+        private void FrmNewCompetition_KeyPress(object sender, KeyPressEventArgs e)
+        {
+
+          
+        }
     }
 }
