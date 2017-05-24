@@ -69,6 +69,10 @@
       <Project>{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}</Project>
       <Name>LiveResults.Client</Name>
     </ProjectReference>
+    <ProjectReference Include="..\LiveResults.Model\LiveResults.Model.csproj">
+      <Project>{90078189-7b0a-4c17-bcda-b1f9e564fc5e}</Project>
+      <Name>LiveResults.Model</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\testfiles\20150125_100921_emma_preReadout.csv">

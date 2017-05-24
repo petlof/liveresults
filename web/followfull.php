@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 date_default_timezone_set("Europe/Stockholm");
 $lang = "sv";
 
@@ -161,7 +161,7 @@ $(document).ready(function()
 	<?php }?>
 
 	<?php if ($showTimePrediction){ ?>
-		res.eventTimeZoneDiff = <?=$currentComp->TimeZoneDiff();?>
+		res.eventTimeZoneDiff = <?=$currentComp->TimeZoneDiff();?>;
 		res.startPredictionUpdate();
 
 	<?php }?>

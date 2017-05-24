@@ -24,7 +24,7 @@
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile>
     </AssemblyOriginatorKeyFile>
-    <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <PublishUrl>c:\OpenSource\EmmaPublishCombined\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Web</InstallFrom>
@@ -51,6 +51,7 @@
     </SccAuxPath>
     <SccProvider>
     </SccProvider>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -153,7 +154,6 @@
     <Compile Include="FrmNewRacomComp.Designer.cs">
       <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
     </Compile>
-    <Compile Include="Model\TeamHolder.cs" />
     <Compile Include="NewSSFTimingComp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -162,12 +162,13 @@
     </Compile>
     <Compile Include="Parsers\IofXmlParser.cs" />
     <Compile Include="Parsers\IofXmlV3Parser.cs" />
+    <Compile Include="Parsers\TulospalveluParser.cs" />
+    <Compile Include="Parsers\RaceTimerParser.cs" />
     <Compile Include="Parsers\SSFTimingParser.cs" />
     <Compile Include="Parsers\OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
     <Compile Include="Parsers\LiveResultater_no_Parser.cs" />
     <Compile Include="Parsers\RacomFileSetParser.cs" />
-    <Compile Include="Result.cs" />
     <Compile Include="SirapInterface.cs" />
     <Compile Include="Parsers\WocParser.cs" />
     <Compile Include="FrmMonitor.cs">
@@ -182,7 +183,6 @@
     <Compile Include="FrmNewCompetition.Designer.cs">
       <DependentUpon>FrmNewCompetition.cs</DependentUpon>
     </Compile>
-    <Compile Include="IExternalSystemResultParser.cs" />
     <Compile Include="NewOLAComp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -197,7 +197,6 @@
       <DependentUpon>OEForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Parsers\OSParser.cs" />
-    <Compile Include="EmmaMysqlClient.cs" />
     <Compile Include="Parsers\OEParser.cs" />
     <Compile Include="Parsers\OlaParser.cs" />
     <Compile Include="Program.cs" />
@@ -267,7 +266,6 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Runner.cs" />
     <Compile Include="Wizard\Header.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -353,6 +351,14 @@
     <ProjectReference Include="..\H2Sharp\H2Sharp.csproj">
       <Project>{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}</Project>
       <Name>H2Sharp</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LiveResults.CasparClient\LiveResults.CasparClient.csproj">
+      <Project>{ab05a898-690a-41b6-9f90-b8669eedd976}</Project>
+      <Name>LiveResults.CasparClient</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\LiveResults.Model\LiveResults.Model.csproj">
+      <Project>{90078189-7b0a-4c17-bcda-b1f9e564fc5e}</Project>
+      <Name>LiveResults.Model</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

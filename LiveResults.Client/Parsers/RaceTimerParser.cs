@@ -13,14 +13,14 @@ using System.Xml;
 
 namespace LiveResults.Client.Parsers
 {
-    public class LiveResultaterNoParser : IExternalSystemResultParser
+    public class RaceTimerParser : IExternalSystemResultParser
     {
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
 
         private bool m_continue;
         readonly string[] m_urls;
-        public LiveResultaterNoParser(string[] urls)
+        public RaceTimerParser(string[] urls)
         {
             m_urls = urls;
         }
@@ -64,7 +64,7 @@ namespace LiveResults.Client.Parsers
 
                     var runnerIds = new Dictionary<string, int>();
                     var bf = new BinaryFormatter();
-                    if (File.Exists("runnerids.data"))
+                    if (File.Exists("racetimerrunnerids.data"))
                     {
                         var st = File.OpenRead("runnerids.data");
                         runnerIds = bf.Deserialize(st) as Dictionary<string, int>;
@@ -78,21 +78,25 @@ namespace LiveResults.Client.Parsers
                     foreach (var url in m_urls)
                     {
                         var html = wc.DownloadString(url);
-                        var rex = new Regex("<td valign=\"top\">.*?<h3>(?<passing>.*?)</h3>.*?<table cellpadding='1' cellspacing='0' class='list2'>(?<data>.*?)</table></td>", RegexOptions.Singleline);
+                        var rex = new Regex("<h2 style=\"color:#000000;\">(?<passing>.*?)</h2>.*?<table class=\"result-list\" width=\"100%\" border=\"0\" align=\"left\" id=\"top3-list\" cellspacing=\"0\">(?<data>.*?)</table>", RegexOptions.Singleline);
+                        var rexName = new Regex("<a href.*?>(?<name>)</a>", RegexOptions.Singleline);
                         var matches = rex.Matches(html);
-                        var results = new Dictionary<int, List<ResultStruct>>();
+                        //var results = new Dictionary<int, List<ResultStruct>>();
 
                         var idToRunners = new Dictionary<int, Runner>();
 
                         foreach (Match m in matches)
                         {
-                            
-                            var data = m.Groups["data"].Value;
-                            var passing = m.Groups["passing"].Value;
-                            
-                            data = data.Replace("class=siste", "class=\"siste\"");
+
+                            var data = m.Groups["data"].Value.Trim();
+                            var passing = m.Groups["passing"].Value.Trim();
+
+                            data = data.Replace("&#187;", "");
+                            data = data.Replace("?layout=racetimer&race_id=", "");
+                            data = data.Replace("&", "&amp;");
+                            /*data = data.Replace("class=siste", "class=\"siste\"");
                             data = data.Replace("class=odd", "class=\"odd\"");
-                            data = data.Replace("class=even", "class=\"even\"");
+                            data = data.Replace("class=even", "class=\"even\"");*/
                             var xml = new XmlDocument();
                             xml.LoadXml("<?xml version=\"1.0\" encoding=\"utf-8\"?><table>" + data + "</table>");
                             var trs = xml.GetElementsByTagName("tr");
@@ -101,87 +105,89 @@ namespace LiveResults.Client.Parsers
                             {
                                 string place = trs[i].ChildNodes[0].InnerText;
                                 //string starttime = trs[i].ChildNodes[1].InnerText;
+                                string bibNo = trs[i].ChildNodes[5].InnerText.Trim();
+                                string name = trs[i].ChildNodes[1].InnerText;
+                                //var nm = rexName.Match(fname);
+                                //string name = nm.Groups[1].Value;
 
-                                string name = trs[i].ChildNodes[2].InnerText;
-                                string className = trs[i].ChildNodes[3].InnerText;
-                                string club = trs[i].ChildNodes[4].InnerText;
+                                string className = passing; // trs[i].ChildNodes[3].InnerText;
+                                string club = trs[i].ChildNodes[3].InnerText;
 
-                                string raceTime = trs[i].ChildNodes[5].InnerText;
+                                string raceTime = trs[i].ChildNodes[6].InnerText.Trim();
 
                                 //string raceTime = trs[i].ChildNodes[trs[i].ChildNodes.Count - 1].InnerText;
                                 //DateTime startTime = DateTime.ParseExact(starttime, new string[] { "H:mm:ss", "HH:mm:ss" }, CultureInfo.InvariantCulture, DateTimeStyles.None);
                                 int time = -4;
                                 int status = 10;
 
-                                if (!runnerIds.ContainsKey(club + "-" + name))
-                                    runnerIds.Add(club + "-" + name, nextRid++);
+                              /*  if (!runnerIds.ContainsKey(club + "-" + name))
+                                    runnerIds.Add(club + "-" + name, nextRid++);*/
 
-                                int id = runnerIds[club + "-" + name];
+                                int id = Convert.ToInt32(bibNo);//runnerIds[club + "-" + name];
 
-                                if (!results.ContainsKey(id))
-                                    results.Add(id, new List<ResultStruct>());
+                                /*if (!results.ContainsKey(id))
+                                    results.Add(id, new List<ResultStruct>());*/
 
-                                if (place=="DNF" || place=="DSQ")
+                                if (place == "DNF" || place == "DSQ")
                                 {
                                     status = 4;
                                 }
-                                else if (place=="DNS")
+                                else if (place == "DNS")
                                 {
                                     status = 1;
                                 }
                                 else if (raceTime.Length > 0)
                                 {
                                     var tid = ParseDateTime(raceTime);
-                                    time = tid.Hour*360000 + tid.Minute*6000 + tid.Second*100;
-                                    if (string.Compare(passing, "Finish", StringComparison.InvariantCultureIgnoreCase) == 0)
-                                        status = 0;
+                                    time = tid.Hour * 360000 + tid.Minute * 6000 + tid.Second * 100;
+                                    //if (string.Compare(passing, "Finish", StringComparison.InvariantCultureIgnoreCase) == 0)
+                                    status = 0;
                                 }
-                                if (string.Compare(passing,"Finish", StringComparison.InvariantCultureIgnoreCase) == 0)
+
+                                /*  if (!radios.ContainsKey(className) || radios[className].Count < results[id].Count)
+                                  {
+                                      UpdateRadiocontrols(radios, className, results, id);
+                                  }*/
+                                FireOnResult(new Result
                                 {
-                                    if (!radios.ContainsKey(className) || radios[className].Count < results[id].Count)
-                                    {
-                                        UpdateRadiocontrols(radios, className, results, id);
-                                    }
-                                    FireOnResult(new Result
-                                    {
-                                        ID = id,
-                                        Class = className,
-                                        RunnerClub = club,
-                                        RunnerName = name,
-                                        SplitTimes = results[id].OrderBy(x=>x.Time).ToList(),
-                                        Status = status,
-                                        Time = time
+                                    ID = id,
+                                    Class = className,
+                                    RunnerClub = club,
+                                    RunnerName = name,
+                                    //SplitTimes = results[id].OrderBy(x=>x.Time).ToList(),
+                                    Status = status,
+                                    Time = time
 
-                                    });
+                                });
 
-                                    results.Remove(id);
-                                }
-                                else
-                                {
-
-                                    if (!idToRunners.ContainsKey(id))
-                                        idToRunners.Add(id, new Runner(id, name, club, className));
-
-                                    results[id].Add(new ResultStruct
-                                    {
-                                        ControlCode = int.Parse(passing),
-                                        Time = time
-                                    });
-                                }
+                               // results.Remove(id);
+                                /* }
+                                 else
+                                 {
+ 
+                                     if (!idToRunners.ContainsKey(id))
+                                         idToRunners.Add(id, new Runner(id, name, club, className));
+ 
+                                     results[id].Add(new ResultStruct
+                                     {
+                                         ControlCode = int.Parse(passing),
+                                         Time = time
+                                     });
+                                 }*/
 
                                 //                            int start = startTime.Hour * 3600 * 100 + startTime.Minute * 60 * 100 + startTime.Second * 100;
 
 
                             }
 
-                            
+
 
                             //                        data = data.Replace("&nbsp;", " ");
  //                       data = data.Replace("&nbsp", "");
 
                         }
 
-                        foreach (var res in results)
+                        /*foreach (var res in results)
                         {
                             var r = idToRunners[res.Key];
 
@@ -201,7 +207,7 @@ namespace LiveResults.Client.Parsers
                                 Time = -10
 
                             });
-                        }
+                        }*/
 
 
 
@@ -305,8 +311,13 @@ namespace LiveResults.Client.Parsers
                         {
                             if (!DateTime.TryParseExact(tTime, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
                             {
-                                if (!DateTime.TryParseExact(tTime, "mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
+                                if (!DateTime.TryParseExact(tTime, "H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                                    out startTime))
                                 {
+                                    if (!DateTime.TryParseExact(tTime, "mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None,
+                                        out startTime))
+                                    {
+                                    }
                                 }
                             }
                         }

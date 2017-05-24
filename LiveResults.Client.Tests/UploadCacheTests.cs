@@ -1,4 +1,5 @@
-﻿using NUnit.Framework;
+﻿using LiveResults.Model;
+using NUnit.Framework;
 
 namespace LiveResults.Client.Tests
 {

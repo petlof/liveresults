@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Threading;
 using LiveResults.Client.Model;
 using System.Linq;
+using LiveResults.Model;
 
 namespace LiveResults.Client
 {

@@ -6,6 +6,7 @@ using System.Data;
 using System.Globalization;
 using System.Net;
 using System.Web.Script.Serialization;
+using LiveResults.Model;
 
 namespace LiveResults.Client
 {

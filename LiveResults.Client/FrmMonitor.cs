@@ -1,10 +1,12 @@
-﻿using System;
+﻿using LiveResults.Model;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Text;
 using System.Windows.Forms;
+using LiveResults.CasparClient;
 
 namespace LiveResults.Client
 {
@@ -12,6 +14,9 @@ namespace LiveResults.Client
     {
         IExternalSystemResultParser m_Parser;
         List<EmmaMysqlClient> m_Clients = new List<EmmaMysqlClient>();
+
+        private CasparClient.CasparControlFrm casparForm = null;
+
         public FrmMonitor()
         {
             InitializeComponent();
@@ -101,6 +106,10 @@ namespace LiveResults.Client
                 }
                 m_Parser.Start();
                 btnStartSTop.Text = "Stop";
+
+                casparForm = new CasparControlFrm();
+                casparForm.Show();
+                casparForm.SetEmmaClient(m_Clients[0]);
             }
             else
             {

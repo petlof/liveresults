@@ -1,5 +1,5 @@
 ﻿
-namespace LiveResults.Client
+namespace LiveResults.Model
 {
     public interface IExternalSystemResultParser
     {

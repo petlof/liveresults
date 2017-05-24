@@ -9,6 +9,7 @@ using System.Threading;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 using LiveResults.Client.Parsers;
+using LiveResults.Model;
 
 namespace LiveResults.Client
 {
@@ -17,6 +18,8 @@ namespace LiveResults.Client
         readonly List<EmmaMysqlClient> m_clients;
         OSParser m_osParser;
         OEParser m_oeParser;
+
+        private CasparClient.CasparControlFrm casparForm = null;
 
         enum Format { Iofxml, Oecsv, Oscsv, Oecsvteam }
         class FormatItem
@@ -144,6 +147,8 @@ namespace LiveResults.Client
             EmmaMysqlClient.EmmaServer[] servers = EmmaMysqlClient.GetServersFromConfig();
             Logit("Got servers from obasen...");
             Application.DoEvents();
+
+        
            
 
             var format = cmbFormat.SelectedItem as FormatItem;
@@ -198,6 +203,10 @@ namespace LiveResults.Client
                 client.Start();
                 m_clients.Add(client);
             }
+
+            casparForm = new LiveResults.CasparClient.CasparControlFrm();
+            casparForm.Show();
+            casparForm.SetEmmaClient(m_clients[0]);
 
             timer1_Tick(null, null);
         }
