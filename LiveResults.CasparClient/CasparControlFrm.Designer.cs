@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.btnConnect = new System.Windows.Forms.Button();
@@ -50,15 +51,28 @@
             this.label3 = new System.Windows.Forms.Label();
             this.txtName = new System.Windows.Forms.TextBox();
             this.label2 = new System.Windows.Forms.Label();
+            this.tabPage4 = new System.Windows.Forms.TabPage();
+            this.btnClockUpdate = new System.Windows.Forms.Button();
+            this.label9 = new System.Windows.Forms.Label();
+            this.txtClockRefTime = new System.Windows.Forms.TextBox();
+            this.chkClockShowTenth = new System.Windows.Forms.CheckBox();
+            this.btnStopClock = new System.Windows.Forms.Button();
+            this.btnStartClock = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label11 = new System.Windows.Forms.Label();
+            this.rdoResultTypeLowerThrid = new System.Windows.Forms.RadioButton();
+            this.rdoResultListTypeFF = new System.Windows.Forms.RadioButton();
+            this.btnShowResultList = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
+            this.lblResultNumPages = new System.Windows.Forms.Label();
             this.button4 = new System.Windows.Forms.Button();
             this.button3 = new System.Windows.Forms.Button();
-            this.lblResultNumPages = new System.Windows.Forms.Label();
-            this.button1 = new System.Windows.Forms.Button();
-            this.btnShowResultList = new System.Windows.Forms.Button();
+            this.cmbResultListClassPosition = new System.Windows.Forms.ComboBox();
+            this.label10 = new System.Windows.Forms.Label();
             this.btnRefreshResultListClasses = new System.Windows.Forms.Button();
             this.cmbClass = new System.Windows.Forms.ComboBox();
             this.lblClass = new System.Windows.Forms.Label();
+            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.btnPrewarningForceUpdate = new System.Windows.Forms.Button();
             this.btnStopPrewarning = new System.Windows.Forms.Button();
@@ -66,21 +80,17 @@
             this.btnRefreshPrewarningControls = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.lstRadioControls = new System.Windows.Forms.CheckedListBox();
-            this.tabPage4 = new System.Windows.Forms.TabPage();
-            this.btnStopClock = new System.Windows.Forms.Button();
-            this.btnStartClock = new System.Windows.Forms.Button();
-            this.chkClockShowTenth = new System.Windows.Forms.CheckBox();
-            this.txtClockRefTime = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.btnClockUpdate = new System.Windows.Forms.Button();
-            this.cmbResultListClassPosition = new System.Windows.Forms.ComboBox();
-            this.label10 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
+            this.label12 = new System.Windows.Forms.Label();
+            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.chkShowAlsoAlreadyPassed = new System.Windows.Forms.CheckBox();
+            this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage4.SuspendLayout();
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
-            this.tabPage4.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -145,9 +155,10 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Controls.Add(this.tabPage4);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage5);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(11, 87);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
@@ -213,7 +224,6 @@
             this.txtNameFinder.Size = new System.Drawing.Size(364, 22);
             this.txtNameFinder.TabIndex = 12;
             this.txtNameFinder.TextChanged += new System.EventHandler(this.txtNameFinder_TextChanged);
-            this.txtNameFinder.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtNameFinder_KeyDown);
             this.txtNameFinder.KeyUp += new System.Windows.Forms.KeyEventHandler(this.txtNameFinder_KeyUp);
             // 
             // listBox1
@@ -347,15 +357,97 @@
             this.label2.TabIndex = 0;
             this.label2.Text = "Row1 (NAME)";
             // 
+            // tabPage4
+            // 
+            this.tabPage4.Controls.Add(this.btnClockUpdate);
+            this.tabPage4.Controls.Add(this.label9);
+            this.tabPage4.Controls.Add(this.txtClockRefTime);
+            this.tabPage4.Controls.Add(this.chkClockShowTenth);
+            this.tabPage4.Controls.Add(this.btnStopClock);
+            this.tabPage4.Controls.Add(this.btnStartClock);
+            this.tabPage4.Location = new System.Drawing.Point(4, 25);
+            this.tabPage4.Name = "tabPage4";
+            this.tabPage4.Size = new System.Drawing.Size(856, 401);
+            this.tabPage4.TabIndex = 3;
+            this.tabPage4.Text = "Clock";
+            this.tabPage4.UseVisualStyleBackColor = true;
+            // 
+            // btnClockUpdate
+            // 
+            this.btnClockUpdate.Location = new System.Drawing.Point(225, 110);
+            this.btnClockUpdate.Margin = new System.Windows.Forms.Padding(4);
+            this.btnClockUpdate.Name = "btnClockUpdate";
+            this.btnClockUpdate.Size = new System.Drawing.Size(143, 28);
+            this.btnClockUpdate.TabIndex = 16;
+            this.btnClockUpdate.Text = "Update settings";
+            this.btnClockUpdate.UseVisualStyleBackColor = true;
+            this.btnClockUpdate.Click += new System.EventHandler(this.btnClockUpdate_Click);
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(8, 48);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(202, 17);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "Reference time (HH24:MM:SS)";
+            // 
+            // txtClockRefTime
+            // 
+            this.txtClockRefTime.Location = new System.Drawing.Point(11, 68);
+            this.txtClockRefTime.Name = "txtClockRefTime";
+            this.txtClockRefTime.Size = new System.Drawing.Size(195, 22);
+            this.txtClockRefTime.TabIndex = 14;
+            this.txtClockRefTime.Text = "00:00:00";
+            // 
+            // chkClockShowTenth
+            // 
+            this.chkClockShowTenth.AutoSize = true;
+            this.chkClockShowTenth.Location = new System.Drawing.Point(9, 21);
+            this.chkClockShowTenth.Name = "chkClockShowTenth";
+            this.chkClockShowTenth.Size = new System.Drawing.Size(173, 21);
+            this.chkClockShowTenth.TabIndex = 13;
+            this.chkClockShowTenth.Text = "Show tenth of seconds";
+            this.chkClockShowTenth.UseVisualStyleBackColor = true;
+            // 
+            // btnStopClock
+            // 
+            this.btnStopClock.Location = new System.Drawing.Point(117, 110);
+            this.btnStopClock.Margin = new System.Windows.Forms.Padding(4);
+            this.btnStopClock.Name = "btnStopClock";
+            this.btnStopClock.Size = new System.Drawing.Size(100, 28);
+            this.btnStopClock.TabIndex = 12;
+            this.btnStopClock.Text = "Hide";
+            this.btnStopClock.UseVisualStyleBackColor = true;
+            this.btnStopClock.Click += new System.EventHandler(this.btnStopClock_Click);
+            // 
+            // btnStartClock
+            // 
+            this.btnStartClock.Location = new System.Drawing.Point(9, 110);
+            this.btnStartClock.Margin = new System.Windows.Forms.Padding(4);
+            this.btnStartClock.Name = "btnStartClock";
+            this.btnStartClock.Size = new System.Drawing.Size(100, 28);
+            this.btnStartClock.TabIndex = 11;
+            this.btnStartClock.Text = "Show";
+            this.btnStartClock.UseVisualStyleBackColor = true;
+            this.btnStartClock.Click += new System.EventHandler(this.btnStartClock_Click);
+            // 
             // tabPage2
             // 
-            this.tabPage2.Controls.Add(this.cmbResultListClassPosition);
-            this.tabPage2.Controls.Add(this.label10);
+            this.tabPage2.Controls.Add(this.chkShowAlsoAlreadyPassed);
+            this.tabPage2.Controls.Add(this.listBox2);
+            this.tabPage2.Controls.Add(this.label12);
+            this.tabPage2.Controls.Add(this.button2);
+            this.tabPage2.Controls.Add(this.label11);
+            this.tabPage2.Controls.Add(this.rdoResultTypeLowerThrid);
+            this.tabPage2.Controls.Add(this.rdoResultListTypeFF);
+            this.tabPage2.Controls.Add(this.btnShowResultList);
+            this.tabPage2.Controls.Add(this.button1);
+            this.tabPage2.Controls.Add(this.lblResultNumPages);
             this.tabPage2.Controls.Add(this.button4);
             this.tabPage2.Controls.Add(this.button3);
-            this.tabPage2.Controls.Add(this.lblResultNumPages);
-            this.tabPage2.Controls.Add(this.button1);
-            this.tabPage2.Controls.Add(this.btnShowResultList);
+            this.tabPage2.Controls.Add(this.cmbResultListClassPosition);
+            this.tabPage2.Controls.Add(this.label10);
             this.tabPage2.Controls.Add(this.btnRefreshResultListClasses);
             this.tabPage2.Controls.Add(this.cmbClass);
             this.tabPage2.Controls.Add(this.lblClass);
@@ -368,59 +460,113 @@
             this.tabPage2.Text = "Resultlist";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Location = new System.Drawing.Point(69, 88);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(116, 17);
+            this.label11.TabIndex = 27;
+            this.label11.Text = "Type of result list";
+            // 
+            // rdoResultTypeLowerThrid
+            // 
+            this.rdoResultTypeLowerThrid.AutoSize = true;
+            this.rdoResultTypeLowerThrid.Location = new System.Drawing.Point(167, 107);
+            this.rdoResultTypeLowerThrid.Name = "rdoResultTypeLowerThrid";
+            this.rdoResultTypeLowerThrid.Size = new System.Drawing.Size(104, 21);
+            this.rdoResultTypeLowerThrid.TabIndex = 26;
+            this.rdoResultTypeLowerThrid.TabStop = true;
+            this.rdoResultTypeLowerThrid.Text = "Lower Third";
+            this.rdoResultTypeLowerThrid.UseVisualStyleBackColor = true;
+            this.rdoResultTypeLowerThrid.CheckedChanged += new System.EventHandler(this.rdoResultTypeLowerThrid_CheckedChanged);
+            // 
+            // rdoResultListTypeFF
+            // 
+            this.rdoResultListTypeFF.AutoSize = true;
+            this.rdoResultListTypeFF.Checked = true;
+            this.rdoResultListTypeFF.Location = new System.Drawing.Point(72, 107);
+            this.rdoResultListTypeFF.Name = "rdoResultListTypeFF";
+            this.rdoResultListTypeFF.Size = new System.Drawing.Size(95, 21);
+            this.rdoResultListTypeFF.TabIndex = 25;
+            this.rdoResultListTypeFF.TabStop = true;
+            this.rdoResultListTypeFF.Text = "Full Frame";
+            this.rdoResultListTypeFF.UseVisualStyleBackColor = true;
+            // 
+            // btnShowResultList
+            // 
+            this.btnShowResultList.Location = new System.Drawing.Point(67, 144);
+            this.btnShowResultList.Margin = new System.Windows.Forms.Padding(4);
+            this.btnShowResultList.Name = "btnShowResultList";
+            this.btnShowResultList.Size = new System.Drawing.Size(100, 28);
+            this.btnShowResultList.TabIndex = 20;
+            this.btnShowResultList.Text = "Show";
+            this.btnShowResultList.UseVisualStyleBackColor = true;
+            this.btnShowResultList.Click += new System.EventHandler(this.btnShowResultList_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(175, 144);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 28);
+            this.button1.TabIndex = 21;
+            this.button1.Text = "Hide";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click_1);
+            // 
+            // lblResultNumPages
+            // 
+            this.lblResultNumPages.AutoSize = true;
+            this.lblResultNumPages.Location = new System.Drawing.Point(135, 202);
+            this.lblResultNumPages.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblResultNumPages.Name = "lblResultNumPages";
+            this.lblResultNumPages.Size = new System.Drawing.Size(77, 17);
+            this.lblResultNumPages.TabIndex = 22;
+            this.lblResultNumPages.Text = "Page x of x";
+            // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(167, 169);
+            this.button4.Location = new System.Drawing.Point(223, 196);
             this.button4.Margin = new System.Windows.Forms.Padding(4);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(60, 28);
-            this.button4.TabIndex = 16;
+            this.button4.TabIndex = 24;
             this.button4.Text = ">";
             this.button4.UseVisualStyleBackColor = true;
             this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(11, 169);
+            this.button3.Location = new System.Drawing.Point(67, 196);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(60, 28);
-            this.button3.TabIndex = 15;
+            this.button3.TabIndex = 23;
             this.button3.Text = "<";
             this.button3.UseVisualStyleBackColor = true;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
-            // lblResultNumPages
+            // cmbResultListClassPosition
             // 
-            this.lblResultNumPages.AutoSize = true;
-            this.lblResultNumPages.Location = new System.Drawing.Point(79, 175);
-            this.lblResultNumPages.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.lblResultNumPages.Name = "lblResultNumPages";
-            this.lblResultNumPages.Size = new System.Drawing.Size(77, 17);
-            this.lblResultNumPages.TabIndex = 14;
-            this.lblResultNumPages.Text = "Page x of x";
+            this.cmbResultListClassPosition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbResultListClassPosition.FormattingEnabled = true;
+            this.cmbResultListClassPosition.Location = new System.Drawing.Point(72, 51);
+            this.cmbResultListClassPosition.Margin = new System.Windows.Forms.Padding(4);
+            this.cmbResultListClassPosition.Name = "cmbResultListClassPosition";
+            this.cmbResultListClassPosition.Size = new System.Drawing.Size(261, 24);
+            this.cmbResultListClassPosition.TabIndex = 18;
+            this.cmbResultListClassPosition.SelectedIndexChanged += new System.EventHandler(this.cmbResultListClassPosition_SelectedIndexChanged);
             // 
-            // button1
+            // label10
             // 
-            this.button1.Location = new System.Drawing.Point(156, 117);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 28);
-            this.button1.TabIndex = 12;
-            this.button1.Text = "Hide";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click_1);
-            // 
-            // btnShowResultList
-            // 
-            this.btnShowResultList.Location = new System.Drawing.Point(11, 117);
-            this.btnShowResultList.Margin = new System.Windows.Forms.Padding(4);
-            this.btnShowResultList.Name = "btnShowResultList";
-            this.btnShowResultList.Size = new System.Drawing.Size(100, 28);
-            this.btnShowResultList.TabIndex = 11;
-            this.btnShowResultList.Text = "Show";
-            this.btnShowResultList.UseVisualStyleBackColor = true;
-            this.btnShowResultList.Click += new System.EventHandler(this.btnShowResultList_Click);
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(8, 54);
+            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(58, 17);
+            this.label10.TabIndex = 17;
+            this.label10.Text = "Position";
             // 
             // btnRefreshResultListClasses
             // 
@@ -453,6 +599,15 @@
             this.lblClass.Size = new System.Drawing.Size(42, 17);
             this.lblClass.TabIndex = 0;
             this.lblClass.Text = "Class";
+            // 
+            // tabPage5
+            // 
+            this.tabPage5.Location = new System.Drawing.Point(4, 25);
+            this.tabPage5.Name = "tabPage5";
+            this.tabPage5.Size = new System.Drawing.Size(856, 401);
+            this.tabPage5.TabIndex = 4;
+            this.tabPage5.Text = "Passing LowerThird";
+            this.tabPage5.UseVisualStyleBackColor = true;
             // 
             // tabPage3
             // 
@@ -532,101 +687,50 @@
             this.lstRadioControls.Size = new System.Drawing.Size(204, 106);
             this.lstRadioControls.TabIndex = 0;
             // 
-            // tabPage4
+            // button2
             // 
-            this.tabPage4.Controls.Add(this.btnClockUpdate);
-            this.tabPage4.Controls.Add(this.label9);
-            this.tabPage4.Controls.Add(this.txtClockRefTime);
-            this.tabPage4.Controls.Add(this.chkClockShowTenth);
-            this.tabPage4.Controls.Add(this.btnStopClock);
-            this.tabPage4.Controls.Add(this.btnStartClock);
-            this.tabPage4.Location = new System.Drawing.Point(4, 25);
-            this.tabPage4.Name = "tabPage4";
-            this.tabPage4.Size = new System.Drawing.Size(856, 401);
-            this.tabPage4.TabIndex = 3;
-            this.tabPage4.Text = "Clock";
-            this.tabPage4.UseVisualStyleBackColor = true;
+            this.button2.Location = new System.Drawing.Point(283, 144);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(156, 28);
+            this.button2.TabIndex = 28;
+            this.button2.Text = "Force Update";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // btnStopClock
+            // label12
             // 
-            this.btnStopClock.Location = new System.Drawing.Point(117, 110);
-            this.btnStopClock.Margin = new System.Windows.Forms.Padding(4);
-            this.btnStopClock.Name = "btnStopClock";
-            this.btnStopClock.Size = new System.Drawing.Size(100, 28);
-            this.btnStopClock.TabIndex = 12;
-            this.btnStopClock.Text = "Hide";
-            this.btnStopClock.UseVisualStyleBackColor = true;
-            this.btnStopClock.Click += new System.EventHandler(this.btnStopClock_Click);
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(478, 17);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(239, 17);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "Follow runner (right click to unselect)";
             // 
-            // btnStartClock
+            // listBox2
             // 
-            this.btnStartClock.Location = new System.Drawing.Point(9, 110);
-            this.btnStartClock.Margin = new System.Windows.Forms.Padding(4);
-            this.btnStartClock.Name = "btnStartClock";
-            this.btnStartClock.Size = new System.Drawing.Size(100, 28);
-            this.btnStartClock.TabIndex = 11;
-            this.btnStartClock.Text = "Show";
-            this.btnStartClock.UseVisualStyleBackColor = true;
-            this.btnStartClock.Click += new System.EventHandler(this.btnStartClock_Click);
+            this.listBox2.FormattingEnabled = true;
+            this.listBox2.ItemHeight = 16;
+            this.listBox2.Location = new System.Drawing.Point(481, 34);
+            this.listBox2.Name = "listBox2";
+            this.listBox2.Size = new System.Drawing.Size(364, 260);
+            this.listBox2.TabIndex = 30;
+            this.listBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
             // 
-            // chkClockShowTenth
+            // chkShowAlsoAlreadyPassed
             // 
-            this.chkClockShowTenth.AutoSize = true;
-            this.chkClockShowTenth.Location = new System.Drawing.Point(9, 21);
-            this.chkClockShowTenth.Name = "chkClockShowTenth";
-            this.chkClockShowTenth.Size = new System.Drawing.Size(173, 21);
-            this.chkClockShowTenth.TabIndex = 13;
-            this.chkClockShowTenth.Text = "Show tenth of seconds";
-            this.chkClockShowTenth.UseVisualStyleBackColor = true;
+            this.chkShowAlsoAlreadyPassed.AutoSize = true;
+            this.chkShowAlsoAlreadyPassed.Location = new System.Drawing.Point(481, 301);
+            this.chkShowAlsoAlreadyPassed.Name = "chkShowAlsoAlreadyPassed";
+            this.chkShowAlsoAlreadyPassed.Size = new System.Drawing.Size(276, 21);
+            this.chkShowAlsoAlreadyPassed.TabIndex = 33;
+            this.chkShowAlsoAlreadyPassed.Text = "Show also runners that already passed";
+            this.chkShowAlsoAlreadyPassed.UseVisualStyleBackColor = true;
             // 
-            // txtClockRefTime
+            // timer1
             // 
-            this.txtClockRefTime.Location = new System.Drawing.Point(11, 68);
-            this.txtClockRefTime.Name = "txtClockRefTime";
-            this.txtClockRefTime.Size = new System.Drawing.Size(195, 22);
-            this.txtClockRefTime.TabIndex = 14;
-            this.txtClockRefTime.Text = "00:00:00";
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(8, 48);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(202, 17);
-            this.label9.TabIndex = 15;
-            this.label9.Text = "Reference time (HH24:MM:SS)";
-            // 
-            // btnClockUpdate
-            // 
-            this.btnClockUpdate.Location = new System.Drawing.Point(225, 110);
-            this.btnClockUpdate.Margin = new System.Windows.Forms.Padding(4);
-            this.btnClockUpdate.Name = "btnClockUpdate";
-            this.btnClockUpdate.Size = new System.Drawing.Size(143, 28);
-            this.btnClockUpdate.TabIndex = 16;
-            this.btnClockUpdate.Text = "Update settings";
-            this.btnClockUpdate.UseVisualStyleBackColor = true;
-            this.btnClockUpdate.Click += new System.EventHandler(this.btnClockUpdate_Click);
-            // 
-            // cmbResultListClassPosition
-            // 
-            this.cmbResultListClassPosition.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbResultListClassPosition.FormattingEnabled = true;
-            this.cmbResultListClassPosition.Location = new System.Drawing.Point(72, 51);
-            this.cmbResultListClassPosition.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbResultListClassPosition.Name = "cmbResultListClassPosition";
-            this.cmbResultListClassPosition.Size = new System.Drawing.Size(261, 24);
-            this.cmbResultListClassPosition.TabIndex = 18;
-            this.cmbResultListClassPosition.SelectedIndexChanged += new System.EventHandler(this.cmbResultListClassPosition_SelectedIndexChanged);
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(8, 54);
-            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(58, 17);
-            this.label10.TabIndex = 17;
-            this.label10.Text = "Position";
+            this.timer1.Enabled = true;
+            this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
             // CasparControlFrm
             // 
@@ -643,12 +747,12 @@
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabPage4.ResumeLayout(false);
+            this.tabPage4.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
-            this.tabPage4.ResumeLayout(false);
-            this.tabPage4.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -677,11 +781,6 @@
         private System.Windows.Forms.Button btnRefreshResultListClasses;
         private System.Windows.Forms.ComboBox cmbClass;
         private System.Windows.Forms.Label lblClass;
-        private System.Windows.Forms.Label lblResultNumPages;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.Button btnShowResultList;
-        private System.Windows.Forms.Button button4;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.Button btnPrewarningForceUpdate;
         private System.Windows.Forms.Button btnStopPrewarning;
@@ -702,5 +801,19 @@
         private System.Windows.Forms.CheckBox chkClockShowTenth;
         private System.Windows.Forms.ComboBox cmbResultListClassPosition;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.TabPage tabPage5;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.RadioButton rdoResultTypeLowerThrid;
+        private System.Windows.Forms.RadioButton rdoResultListTypeFF;
+        private System.Windows.Forms.Button btnShowResultList;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Label lblResultNumPages;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.CheckBox chkShowAlsoAlreadyPassed;
+        private System.Windows.Forms.ListBox listBox2;
+        private System.Windows.Forms.Label label12;
+        private System.Windows.Forms.Timer timer1;
     }
 }

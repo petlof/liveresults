@@ -154,6 +154,12 @@
     <Compile Include="FrmNewRacomComp.Designer.cs">
       <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
     </Compile>
+    <Compile Include="FrmReSimulateEvent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmReSimulateEvent.Designer.cs">
+      <DependentUpon>FrmReSimulateEvent.cs</DependentUpon>
+    </Compile>
     <Compile Include="NewSSFTimingComp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,6 +217,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmNewRacomComp.resx">
       <DependentUpon>FrmNewRacomComp.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FrmReSimulateEvent.resx">
+      <DependentUpon>FrmReSimulateEvent.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewSSFTimingComp.resx">
       <DependentUpon>NewSSFTimingComp.cs</DependentUpon>
