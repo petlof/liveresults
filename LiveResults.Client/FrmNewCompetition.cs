@@ -187,18 +187,27 @@ namespace LiveResults.Client
             {
                 var parser = new TulospalveluParser(new string[]
                 {
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/str8w/tilanne/1/0/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/str8m/tilanne/1/0/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/1/0/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/2/0/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/3/0/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wrelay/SPRINT/tilanne/4/0/"
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/m21/smart/1/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/w21/smart/1/"
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21q/smart/1/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/w21q/smart/1/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21/smart/2/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/w21/smart/2/"
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_silja/h21e/tilanne/1/0/"
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/MEN/tilanne/1/0/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/WOMEN/tilanne/1/0/",
+
 
                 });
                 var mon = new FrmMonitor();
-                mon.CompetitionID = 12496;
+                mon.CompetitionID = 12507;
                 mon.SetParser(parser);
                 mon.ShowDialog(this);
+            }
+            if (e.KeyCode == Keys.S)
+            {
+                var frm = new FrmReSimulateEvent();
+                frm.ShowDialog(this);
             }
 
         }

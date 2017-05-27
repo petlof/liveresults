@@ -323,6 +323,14 @@ namespace LiveResults.Model
                 ResultUpdated = true;
             }
         }
+
+        public void ClearTimeAndSplits()
+        {
+            m_time = 0;
+            m_status = 0;
+            if (m_splitTimes != null)
+                m_splitTimes.Clear();
+        }
     }
 
     public class SplitTime

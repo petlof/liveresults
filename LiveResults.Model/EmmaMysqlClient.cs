@@ -16,9 +16,13 @@ namespace LiveResults.Model
    
     public class EmmaMysqlClient : IDisposable
     {
-        public delegate void RunnerChangedDelegate(Runner runner);
-        public event RunnerChangedDelegate RunnerChanged;
+        public delegate void ResultChangedDelegate(Runner runner, int position);
+        public event ResultChangedDelegate ResultChanged;
 
+        void FireResultChanged(Runner r, int position)
+        {
+            ResultChanged?.Invoke(r, position);
+        }
 
 
         private static readonly Dictionary<int,Dictionary<string,int>> m_compsSourceToIdMapping = 
@@ -469,6 +473,7 @@ namespace LiveResults.Model
                 m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
+                    FireResultChanged(r, 1000);
                     FireLogMsg("Runner result changed: [" + r.Name + ", " + r.Time + "]");
                 }
             }
@@ -486,6 +491,7 @@ namespace LiveResults.Model
                 m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
+                    FireResultChanged(r, controlcode);
                     FireLogMsg("Runner Split Changes: [" + r.Name + ", {cn: " + controlcode + ", t: " + time + "}]");
                 }
             }
@@ -708,17 +714,27 @@ namespace LiveResults.Model
 
         private void Run()
         {
+            bool runOffline = ConfigurationManager.AppSettings["runoffline"] == "true";
             while (m_continue)
             {
                 try
                 {
-                    m_connection = new MySqlConnection(m_connStr);
-                    m_connection.Open();
-                    SetCodePage(m_connection);
+                    if (!runOffline)
+                    {
+                        m_connection = new MySqlConnection(m_connStr);
+                        m_connection.Open();
+                        SetCodePage(m_connection);
+                    }
                     while (m_continue)
                     {
                         if (m_itemsToUpdate.Count > 0)
                         {
+                            if (runOffline)
+                            {
+                                m_itemsToUpdate.RemoveAt(0);
+                                continue;
+                            }
+
                             using (MySqlCommand cmd = m_connection.CreateCommand())
                             {
                                 var item = m_itemsToUpdate[0];
