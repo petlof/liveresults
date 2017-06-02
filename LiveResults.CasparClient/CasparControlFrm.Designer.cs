@@ -59,6 +59,10 @@
             this.btnStopClock = new System.Windows.Forms.Button();
             this.btnStartClock = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.chkShowAlsoAlreadyPassed = new System.Windows.Forms.CheckBox();
+            this.listBox2 = new System.Windows.Forms.ListBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.button2 = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.rdoResultTypeLowerThrid = new System.Windows.Forms.RadioButton();
             this.rdoResultListTypeFF = new System.Windows.Forms.RadioButton();
@@ -80,11 +84,19 @@
             this.btnRefreshPrewarningControls = new System.Windows.Forms.Button();
             this.label6 = new System.Windows.Forms.Label();
             this.lstRadioControls = new System.Windows.Forms.CheckedListBox();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label12 = new System.Windows.Forms.Label();
-            this.listBox2 = new System.Windows.Forms.ListBox();
-            this.chkShowAlsoAlreadyPassed = new System.Windows.Forms.CheckBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.cmbPreClass1 = new System.Windows.Forms.ComboBox();
+            this.cmbPreClass2 = new System.Windows.Forms.ComboBox();
+            this.cmbPreClass3 = new System.Windows.Forms.ComboBox();
+            this.cmbPreClass4 = new System.Windows.Forms.ComboBox();
+            this.txtNumQ1 = new System.Windows.Forms.TextBox();
+            this.txtNumQ2 = new System.Windows.Forms.TextBox();
+            this.txtNumQ3 = new System.Windows.Forms.TextBox();
+            this.txtNumQ4 = new System.Windows.Forms.TextBox();
+            this.cmbPre1 = new System.Windows.Forms.ComboBox();
+            this.cmbPre2 = new System.Windows.Forms.ComboBox();
+            this.cmbPre3 = new System.Windows.Forms.ComboBox();
+            this.cmbPre4 = new System.Windows.Forms.ComboBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -460,6 +472,47 @@
             this.tabPage2.Text = "Resultlist";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // chkShowAlsoAlreadyPassed
+            // 
+            this.chkShowAlsoAlreadyPassed.AutoSize = true;
+            this.chkShowAlsoAlreadyPassed.Location = new System.Drawing.Point(481, 301);
+            this.chkShowAlsoAlreadyPassed.Name = "chkShowAlsoAlreadyPassed";
+            this.chkShowAlsoAlreadyPassed.Size = new System.Drawing.Size(276, 21);
+            this.chkShowAlsoAlreadyPassed.TabIndex = 33;
+            this.chkShowAlsoAlreadyPassed.Text = "Show also runners that already passed";
+            this.chkShowAlsoAlreadyPassed.UseVisualStyleBackColor = true;
+            this.chkShowAlsoAlreadyPassed.CheckedChanged += new System.EventHandler(this.chkShowAlsoAlreadyPassed_CheckedChanged);
+            // 
+            // listBox2
+            // 
+            this.listBox2.FormattingEnabled = true;
+            this.listBox2.ItemHeight = 16;
+            this.listBox2.Location = new System.Drawing.Point(481, 34);
+            this.listBox2.Name = "listBox2";
+            this.listBox2.Size = new System.Drawing.Size(364, 260);
+            this.listBox2.TabIndex = 30;
+            this.listBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(478, 17);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(239, 17);
+            this.label12.TabIndex = 29;
+            this.label12.Text = "Follow runner (right click to unselect)";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(283, 144);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(156, 28);
+            this.button2.TabIndex = 28;
+            this.button2.Text = "Force Update";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
             // label11
             // 
             this.label11.AutoSize = true;
@@ -611,6 +664,18 @@
             // 
             // tabPage3
             // 
+            this.tabPage3.Controls.Add(this.cmbPre4);
+            this.tabPage3.Controls.Add(this.cmbPre3);
+            this.tabPage3.Controls.Add(this.cmbPre2);
+            this.tabPage3.Controls.Add(this.cmbPre1);
+            this.tabPage3.Controls.Add(this.txtNumQ4);
+            this.tabPage3.Controls.Add(this.txtNumQ3);
+            this.tabPage3.Controls.Add(this.txtNumQ2);
+            this.tabPage3.Controls.Add(this.txtNumQ1);
+            this.tabPage3.Controls.Add(this.cmbPreClass4);
+            this.tabPage3.Controls.Add(this.cmbPreClass3);
+            this.tabPage3.Controls.Add(this.cmbPreClass2);
+            this.tabPage3.Controls.Add(this.cmbPreClass1);
             this.tabPage3.Controls.Add(this.btnPrewarningForceUpdate);
             this.tabPage3.Controls.Add(this.btnStopPrewarning);
             this.tabPage3.Controls.Add(this.btnStartPrewarning);
@@ -634,6 +699,7 @@
             this.btnPrewarningForceUpdate.TabIndex = 5;
             this.btnPrewarningForceUpdate.Text = "Force Update";
             this.btnPrewarningForceUpdate.UseVisualStyleBackColor = true;
+            this.btnPrewarningForceUpdate.Click += new System.EventHandler(this.btnPrewarningForceUpdate_Click);
             // 
             // btnStopPrewarning
             // 
@@ -687,50 +753,114 @@
             this.lstRadioControls.Size = new System.Drawing.Size(204, 106);
             this.lstRadioControls.TabIndex = 0;
             // 
-            // button2
-            // 
-            this.button2.Location = new System.Drawing.Point(283, 144);
-            this.button2.Margin = new System.Windows.Forms.Padding(4);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(156, 28);
-            this.button2.TabIndex = 28;
-            this.button2.Text = "Force Update";
-            this.button2.UseVisualStyleBackColor = true;
-            this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(478, 17);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(239, 17);
-            this.label12.TabIndex = 29;
-            this.label12.Text = "Follow runner (right click to unselect)";
-            // 
-            // listBox2
-            // 
-            this.listBox2.FormattingEnabled = true;
-            this.listBox2.ItemHeight = 16;
-            this.listBox2.Location = new System.Drawing.Point(481, 34);
-            this.listBox2.Name = "listBox2";
-            this.listBox2.Size = new System.Drawing.Size(364, 260);
-            this.listBox2.TabIndex = 30;
-            this.listBox2.MouseDown += new System.Windows.Forms.MouseEventHandler(this.listBox2_MouseDown);
-            // 
-            // chkShowAlsoAlreadyPassed
-            // 
-            this.chkShowAlsoAlreadyPassed.AutoSize = true;
-            this.chkShowAlsoAlreadyPassed.Location = new System.Drawing.Point(481, 301);
-            this.chkShowAlsoAlreadyPassed.Name = "chkShowAlsoAlreadyPassed";
-            this.chkShowAlsoAlreadyPassed.Size = new System.Drawing.Size(276, 21);
-            this.chkShowAlsoAlreadyPassed.TabIndex = 33;
-            this.chkShowAlsoAlreadyPassed.Text = "Show also runners that already passed";
-            this.chkShowAlsoAlreadyPassed.UseVisualStyleBackColor = true;
-            // 
             // timer1
             // 
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // cmbPreClass1
+            // 
+            this.cmbPreClass1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass1.FormattingEnabled = true;
+            this.cmbPreClass1.Location = new System.Drawing.Point(405, 21);
+            this.cmbPreClass1.Name = "cmbPreClass1";
+            this.cmbPreClass1.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass1.TabIndex = 6;
+            // 
+            // cmbPreClass2
+            // 
+            this.cmbPreClass2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass2.FormattingEnabled = true;
+            this.cmbPreClass2.Location = new System.Drawing.Point(405, 51);
+            this.cmbPreClass2.Name = "cmbPreClass2";
+            this.cmbPreClass2.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass2.TabIndex = 7;
+            // 
+            // cmbPreClass3
+            // 
+            this.cmbPreClass3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass3.FormattingEnabled = true;
+            this.cmbPreClass3.Location = new System.Drawing.Point(405, 81);
+            this.cmbPreClass3.Name = "cmbPreClass3";
+            this.cmbPreClass3.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass3.TabIndex = 8;
+            // 
+            // cmbPreClass4
+            // 
+            this.cmbPreClass4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass4.FormattingEnabled = true;
+            this.cmbPreClass4.Location = new System.Drawing.Point(405, 111);
+            this.cmbPreClass4.Name = "cmbPreClass4";
+            this.cmbPreClass4.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass4.TabIndex = 9;
+            // 
+            // txtNumQ1
+            // 
+            this.txtNumQ1.Location = new System.Drawing.Point(805, 23);
+            this.txtNumQ1.Name = "txtNumQ1";
+            this.txtNumQ1.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ1.TabIndex = 10;
+            this.txtNumQ1.Text = "20";
+            // 
+            // txtNumQ2
+            // 
+            this.txtNumQ2.Location = new System.Drawing.Point(805, 51);
+            this.txtNumQ2.Name = "txtNumQ2";
+            this.txtNumQ2.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ2.TabIndex = 11;
+            this.txtNumQ2.Text = "20";
+            // 
+            // txtNumQ3
+            // 
+            this.txtNumQ3.Location = new System.Drawing.Point(805, 81);
+            this.txtNumQ3.Name = "txtNumQ3";
+            this.txtNumQ3.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ3.TabIndex = 12;
+            this.txtNumQ3.Text = "20";
+            // 
+            // txtNumQ4
+            // 
+            this.txtNumQ4.Location = new System.Drawing.Point(805, 111);
+            this.txtNumQ4.Name = "txtNumQ4";
+            this.txtNumQ4.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ4.TabIndex = 13;
+            this.txtNumQ4.Text = "20";
+            // 
+            // cmbPre1
+            // 
+            this.cmbPre1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre1.FormattingEnabled = true;
+            this.cmbPre1.Location = new System.Drawing.Point(660, 21);
+            this.cmbPre1.Name = "cmbPre1";
+            this.cmbPre1.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre1.TabIndex = 14;
+            // 
+            // cmbPre2
+            // 
+            this.cmbPre2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre2.FormattingEnabled = true;
+            this.cmbPre2.Location = new System.Drawing.Point(660, 51);
+            this.cmbPre2.Name = "cmbPre2";
+            this.cmbPre2.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre2.TabIndex = 15;
+            // 
+            // cmbPre3
+            // 
+            this.cmbPre3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre3.FormattingEnabled = true;
+            this.cmbPre3.Location = new System.Drawing.Point(660, 81);
+            this.cmbPre3.Name = "cmbPre3";
+            this.cmbPre3.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre3.TabIndex = 16;
+            // 
+            // cmbPre4
+            // 
+            this.cmbPre4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre4.FormattingEnabled = true;
+            this.cmbPre4.Location = new System.Drawing.Point(660, 111);
+            this.cmbPre4.Name = "cmbPre4";
+            this.cmbPre4.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre4.TabIndex = 17;
             // 
             // CasparControlFrm
             // 
@@ -815,5 +945,17 @@
         private System.Windows.Forms.ListBox listBox2;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Timer timer1;
+        private System.Windows.Forms.ComboBox cmbPreClass4;
+        private System.Windows.Forms.ComboBox cmbPreClass3;
+        private System.Windows.Forms.ComboBox cmbPreClass2;
+        private System.Windows.Forms.ComboBox cmbPreClass1;
+        private System.Windows.Forms.TextBox txtNumQ4;
+        private System.Windows.Forms.TextBox txtNumQ3;
+        private System.Windows.Forms.TextBox txtNumQ2;
+        private System.Windows.Forms.TextBox txtNumQ1;
+        private System.Windows.Forms.ComboBox cmbPre4;
+        private System.Windows.Forms.ComboBox cmbPre3;
+        private System.Windows.Forms.ComboBox cmbPre2;
+        private System.Windows.Forms.ComboBox cmbPre1;
     }
 }

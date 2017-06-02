@@ -250,7 +250,7 @@ namespace LiveResults.CasparClient
         {
             if (m_emmaClient != null)
             {
-                cmbClass.DataSource = m_emmaClient.GetClasses();
+                cmbClass.DataSource = m_emmaClient.GetClasses().OrderBy(x => x).ToList();
             }
         }
 
@@ -258,13 +258,16 @@ namespace LiveResults.CasparClient
         {
             
             m_ResultsCurrentClassName = cmbClass.SelectedItem as string;
-            List <cmbRadio>radios  = m_emmaClient.GetRadioControlsForClass(m_ResultsCurrentClassName)
-                .OrderBy(x => x.Order).Select(x => new cmbRadio()
-                {
-                    code = x.Code,
-                    Name = x.ControlName
-                }).ToList();
-
+            List<cmbRadio> radios = new List<cmbRadio>();
+            if (m_emmaClient.GetRadioControlsForClass(m_ResultsCurrentClassName) != null)
+            {
+                radios = m_emmaClient.GetRadioControlsForClass(m_ResultsCurrentClassName)
+                    .OrderBy(x => x.Order).Select(x => new cmbRadio()
+                    {
+                        code = x.Code,
+                        Name = x.ControlName
+                    }).ToList();
+            }
             radios.Insert(0,new cmbRadio
             {
                 code = 1000,
@@ -363,6 +366,9 @@ namespace LiveResults.CasparClient
                     if (m_currentResultList.Length > 0)
                     {
                         cgData.SetData("follow_tref", "" + (int)((runnerCurrentTime - m_currentResultList[0].Time) / 100));
+                    }
+                    else {
+                        cgData.SetData("follow_tref", "" + (int)((runnerCurrentTime) / 100));
                     }
                     var nextResultItem = m_currentResultList.FirstOrDefault(x => x.Time > runnerCurrentTime);
                     if (nextResultItem != null)
@@ -552,34 +558,109 @@ namespace LiveResults.CasparClient
 
         private void btnRefreshPrewarningControls_Click(object sender, EventArgs e)
         {
-            lstRadioControls.DataSource = m_emmaClient.GetAllRadioControls();
+            var radios = m_emmaClient.GetAllRadioControls();
+            lstRadioControls.DataSource = radios.Select(x => x).ToArray();
             lstRadioControls.DisplayMember = "Code";
-            
+
+            cmbPre1.DataSource = radios.Select(x => x).ToArray();
+            cmbPre1.DisplayMember = "Code";
+            cmbPre2.DataSource = radios.Select(x => x).ToArray();
+            cmbPre2.DisplayMember = "Code";
+            cmbPre3.DataSource = radios.Select(x => x).ToArray();
+            cmbPre3.DisplayMember = "Code";
+            cmbPre4.DataSource = radios.Select(x => x).ToArray();
+            cmbPre4.DisplayMember = "Code";
+
+            var classes = m_emmaClient.GetClasses().OrderBy(x => x).ToArray();
+            var classesToChoose = new string[classes.Length + 1];
+            classes.CopyTo(classesToChoose, 1);
+            classesToChoose[0] = "None";
+            cmbPreClass1.DataSource = classesToChoose.Select(x => x).ToArray();
+            cmbPreClass2.DataSource = classesToChoose.Select(x => x).ToArray();
+            cmbPreClass3.DataSource = classesToChoose.Select(x => x).ToArray();
+            cmbPreClass4.DataSource = classesToChoose.Select(x => x).ToArray();
         }
 
+        private bool showingPrewarned = false;
         private void btnStartPrewarning_Click(object sender, EventArgs e)
         {
             if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
             {
-
+                
                 CasparCGDataCollection cgData = new CasparCGDataCollection();
 
                 UpdatePrewarnedRunners(cgData);
 
                 //UpdateResultListPage(cgData);
 
-                string templateName = templateFolder + "/prewarned_runners";
+                string templateName = templateFolder + "/ResultList_Q";
                 m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG.Add(Properties.Settings.Default.GraphicsLayerPrewarnedRunners, templateName, true, cgData);
-                System.Diagnostics.Debug.WriteLine("Add");
-                System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.GraphicsLayerNaming);
-                System.Diagnostics.Debug.WriteLine(templateName);
-                System.Diagnostics.Debug.WriteLine(cgData.ToXml());
+                showingPrewarned = true;
             }
         }
 
         private void UpdatePrewarnedRunners(CasparCGDataCollection cgData)
         {
-            cgData.SetData("title", "Prewarned runners");
+            int follIdx = 0;
+            if (cmbPreClass1.SelectedIndex > 0)
+            {
+                SetCGDataForPrewarnedClass(cgData, cmbPreClass1,cmbPre1,int.Parse(txtNumQ1.Text), 1, ref follIdx);
+            }
+            if (cmbPreClass2.SelectedIndex > 0)
+            {
+                SetCGDataForPrewarnedClass(cgData, cmbPreClass2, cmbPre2, int.Parse(txtNumQ2.Text), 2, ref follIdx);
+            }
+            if (cmbPreClass3.SelectedIndex > 0)
+            {
+                SetCGDataForPrewarnedClass(cgData, cmbPreClass3, cmbPre3, int.Parse(txtNumQ3.Text), 3, ref follIdx);
+            }
+            if (cmbPreClass4.SelectedIndex > 0)
+            {
+                SetCGDataForPrewarnedClass(cgData, cmbPreClass4, cmbPre4, int.Parse(txtNumQ4.Text), 4, ref follIdx);
+            }
+            /*if (cmbPreClass2.SelectedIndex > 0)
+            {
+                cgData.SetData("title_class_2", cmbPreClass2.SelectedItem as string);
+                var leader = m_emmaClient.GetRunnersInClass(cmbPreClass2.SelectedItem as string)
+                    .Where(x => x.Time > 0 && x.Status == 0).OrderBy(x => x.Time).FirstOrDefault();
+                if (leader != null)
+                {
+                    cgData.SetData("res2_name_0", leader.Name);
+                    cgData.SetData("res2_club_0", leader.Club);
+                    cgData.SetData("res2_place_0", "1");
+                    cgData.SetData("res2_time_0", formatTime(leader.Time, leader.Status, false, true, true));
+                }
+            }
+            if (cmbPreClass3.SelectedIndex > 0)
+            {
+                cgData.SetData("title_class_3", cmbPreClass3.SelectedItem as string);
+                var leader = m_emmaClient.GetRunnersInClass(cmbPreClass3.SelectedItem as string)
+                    .Where(x => x.Time > 0 && x.Status == 0).OrderBy(x => x.Time).FirstOrDefault();
+                if (leader != null)
+                {
+                    cgData.SetData("res3_name_0", leader.Name);
+                    cgData.SetData("res3_club_0", leader.Club);
+                    cgData.SetData("res3_place_0", "1");
+                    cgData.SetData("res3_time_0", formatTime(leader.Time, leader.Status, false, true, true));
+                }
+            }
+            if (cmbPreClass4.SelectedIndex > 0)
+            {
+                cgData.SetData("title_class_4", cmbPreClass4.SelectedItem as string);
+                var leader = m_emmaClient.GetRunnersInClass(cmbPreClass4.SelectedItem as string)
+                    .Where(x => x.Time > 0 && x.Status == 0).OrderBy(x => x.Time).FirstOrDefault();
+                if (leader != null)
+                {
+                    cgData.SetData("res4_name_0", leader.Name);
+                    cgData.SetData("res4_club_0", leader.Club);
+                    cgData.SetData("res4_place_0", "1");
+                    cgData.SetData("res4_time_0", formatTime(leader.Time, leader.Status, false, true, true));
+                }
+            }
+            */
+
+
+            /*
             int pos = 0;
             foreach (var runner in m_emmaClient.GetAllRunners().OrderByDescending(x => x.StartTime + x.Time))
             {
@@ -593,6 +674,82 @@ namespace LiveResults.CasparClient
                 if (pos > 2)
                     break;
 
+            }*/
+        }
+
+        private void SetCGDataForPrewarnedClass(CasparCGDataCollection cgData, ComboBox cmbBox, ComboBox preWarnControl,int numQualifiers, int resIdx, ref int follIdx)
+        {
+            cgData.SetData("title_class_" + resIdx, cmbBox.SelectedItem as string);
+            var res = m_emmaClient.GetRunnersInClass(cmbBox.SelectedItem as string)
+                .Where(x => x.Time > 0 && (x.Status == 0|| x.Status == 10)).OrderBy(x => x.Time).ToList();
+
+            Runner leader = null;
+            if (res.Count > 0)
+            {
+                leader = res[0];
+                cgData.SetData("res" + resIdx + "_name_0", leader.Name);
+                cgData.SetData("res" + resIdx + "_club_0", leader.Club);
+                cgData.SetData("res" + resIdx + "_place_0", "1");
+                cgData.SetData("res" + resIdx + "_time_0", formatTime(leader.Time, leader.Status, false, true, true));
+            }
+
+            //Get Prewarned
+                int preWarnCode = (preWarnControl.SelectedItem as RadioControl).Code;
+            foreach (var prewarned in m_emmaClient.GetRunnersInClass(cmbBox.SelectedItem as string)
+                .Where(x => x.Time <= 0 && (x.Status == 0 || x.Status == 9 || x.Status == 10) && x.SplitTimes != null &&
+                            x.SplitTimes.Any(y => y.Control == preWarnCode)))
+            {
+                var curTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100 - prewarned.StartTime;
+                cgData.SetData("foll_name_" + follIdx, prewarned.Name);
+                cgData.SetData("foll_club_" + follIdx, prewarned.Club);
+                cgData.SetData("foll_place_" + follIdx, "");
+                cgData.SetData("foll_timeref_" + follIdx, (leader != null && curTime < leader.Time ? "" : "+") +  (leader != null ? curTime - leader.Time : curTime)/100 + ".0");
+                follIdx++;
+            }
+
+            //Finished within 10sek
+            var curRealTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100;
+            foreach (var prewarned in m_emmaClient.GetRunnersInClass(cmbBox.SelectedItem as string)
+                .Where(x => x.Time > 0 /*&& (x.StartTime+x.Time) < curRealTime */&& (x.StartTime+x.Time) > curRealTime-10*100 && x.Status == 0))
+            {
+                if (prewarned != leader)
+                {
+                    // var curTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100 - prewarned.StartTime;
+                    cgData.SetData("foll_name_" + follIdx, prewarned.Name);
+                    cgData.SetData("foll_club_" + follIdx, prewarned.Club);
+                    var pTime = prewarned.Time;
+                    cgData.SetData("foll_place_" + follIdx, res.Count(x => x.Time > 0 && x.Status == 0 && x.Time < pTime)+1 + "");
+                    cgData.SetData("foll_time_" + follIdx,
+                        "+" + formatTime(prewarned.Time - leader.Time, prewarned.Status, false, true, true));
+                    follIdx++;
+                }
+            }
+
+
+            if (leader != null)
+            {
+
+                int place = 1;
+                int lastTime = res[0].Time;
+                for (int i = 1; i < res.Count; i++)
+                {
+                    if (place == numQualifiers)
+                    {
+                        cgData.SetData("res" + resIdx + "_name_1", res[i].Name);
+                        cgData.SetData("res" + resIdx + "_club_1", res[i].Club);
+                        cgData.SetData("res" + resIdx + "_place_1", "" + place);
+                        cgData.SetData("res" + resIdx + "_time_1",
+                            "+" + formatTime(res[i].Time - leader.Time, res[i].Status, false, true, true));
+                    }
+                    if (res[i].Time == lastTime)
+                    {
+                    }
+                    else
+                    {
+                        place = i + 2;
+                        lastTime = res[i].Time;
+                    }
+                }
             }
         }
 
@@ -602,6 +759,7 @@ namespace LiveResults.CasparClient
             {
                 m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG.Stop(Properties.Settings.Default.GraphicsLayerPrewarnedRunners);
             }
+            showingPrewarned = false;
         }
 
      
@@ -719,7 +877,10 @@ namespace LiveResults.CasparClient
             
             public override string ToString()
             {
-                return runner.Name + " " + runner.Club;
+                int h = (int)(runner.StartTime / (100.0 * 60 * 60));
+                int m = (int)((runner.StartTime - h * 60 * 60 * 100) / (100.0 * 60));
+                int s = (int)((runner.StartTime - h * 60 * 60 * 100 - m * 60 * 100) / (100.0));
+                return h.ToString().PadLeft(2, '0') + ":" + m.ToString().PadLeft(2,'0') + ":" + s.ToString().PadLeft(2,'0') + " - " +  runner.Name + " " + runner.Club;
             }
         }
 
@@ -728,7 +889,13 @@ namespace LiveResults.CasparClient
             var selItem = cmbResultListClassPosition.SelectedItem as cmbRadio;
             m_ResultsCurrentPosition = selItem;
             UpdateCurrentResultList();
-            listBox2.DataSource = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName).OrderBy(x => x.StartTime).Select(x=>new lstBoxItem { runner =x }).ToList();
+            var runners = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName).OrderBy(x => x.StartTime).Select(x => new lstBoxItem { runner = x }).ToList();
+            if (!chkShowAlsoAlreadyPassed.Checked && m_currentResultList != null)
+            {
+                var idsInResults = m_currentResultList.Select(x => x.runner.ID).ToArray();
+                runners = runners.Where(x => Array.IndexOf(idsInResults, x.runner.ID) < 0).ToList();
+            }
+            listBox2.DataSource = runners;
             m_ResultCurrentPage = 1;
             updateResultPageXOfX();
         }
@@ -779,6 +946,7 @@ namespace LiveResults.CasparClient
             }
         }
 
+        private DateTime pwUpdate = DateTime.MinValue;
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (DateTime.Now > m_nextForcedUpdate)
@@ -786,6 +954,33 @@ namespace LiveResults.CasparClient
                 m_nextForcedUpdate = DateTime.MaxValue;
                 button2_Click(sender, e);
             }
+            if (showingPrewarned && (DateTime.Now - pwUpdate).TotalSeconds > 1)
+            {
+                btnPrewarningForceUpdate_Click(sender, e);
+                pwUpdate = DateTime.Now;
+            }
+        }
+
+        private void btnPrewarningForceUpdate_Click(object sender, EventArgs e)
+        {
+            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
+            {
+                CasparCGDataCollection cgData = new CasparCGDataCollection();
+                UpdatePrewarnedRunners(cgData);
+                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
+                    .Update(Properties.Settings.Default.GraphicsLayerPrewarnedRunners, cgData);
+            }
+        }
+
+        private void chkShowAlsoAlreadyPassed_CheckedChanged(object sender, EventArgs e)
+        {
+            var runners = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName).OrderBy(x => x.StartTime).Select(x => new lstBoxItem { runner = x }).ToList();
+            if (!chkShowAlsoAlreadyPassed.Checked && m_currentResultList != null)
+            {
+                var idsInResults = m_currentResultList.Select(x => x.runner.ID).ToArray();
+                runners = runners.Where(x => Array.IndexOf(idsInResults, x.runner.ID) < 0).ToList();
+            }
+            listBox2.DataSource = runners;
         }
     }
 }
