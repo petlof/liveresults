@@ -187,8 +187,10 @@ namespace LiveResults.Client
             {
                 var parser = new TulospalveluParser(new string[]
                 {
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/m21/smart/1/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/w21/smart/1/"
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/m21/smart/1/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/w21/smart/1/"
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/m21/smart/2/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/w21/smart/2/"
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21q/smart/1/",
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/w21q/smart/1/",
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21/smart/2/",
@@ -200,7 +202,7 @@ namespace LiveResults.Client
 
                 });
                 var mon = new FrmMonitor();
-                mon.CompetitionID = 12507;
+                mon.CompetitionID = 12513;
                 mon.SetParser(parser);
                 mon.ShowDialog(this);
             }
@@ -216,6 +218,17 @@ namespace LiveResults.Client
         {
 
           
+        }
+
+        private void button5_MouseEnter(object sender, EventArgs e)
+        {
+            lblInfo.Text = "Export liveresults from MeOS";
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            NewMeosComp frm = new NewMeosComp();
+            frm.ShowDialog(this);
         }
     }
 }

@@ -46,6 +46,22 @@ namespace LiveResults.Client
 
                 if (startTime < m_StartTime)
                     m_StartTime = startTime;
+
+                foreach (var splitTime in runner.SplitTimes)
+                {
+                    DateTime eventTime = startTime.AddSeconds(splitTime.Time / 100.0);
+                    events.Add(new Event
+                    {
+                        occurs = eventTime,
+                        Data = new ResultStruct
+                        {
+                            ControlCode = splitTime.Control,
+                            Time = splitTime.Time
+                        },
+                        runner = runner
+                    });
+                }
+
                 if (runner.Time > 0)
                 {
                     DateTime eventTime = startTime.AddSeconds(runner.Time / 100.0);
@@ -88,6 +104,10 @@ namespace LiveResults.Client
                 if (ev.Data.ControlCode == 1000)
                 {
                     m_client.SetRunnerResult(ev.runner.ID, ev.Data.Time, 0);
+                }
+                else
+                {
+                    m_client.SetRunnerSplit(ev.runner.ID, ev.Data.ControlCode, ev.Data.Time);
                 }
                 eventsToSimulate.RemoveAt(0);
                 listBox1.DataSource = eventsToSimulate.Take(20).ToList();
