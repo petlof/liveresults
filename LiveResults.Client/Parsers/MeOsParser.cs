@@ -21,13 +21,14 @@ namespace LiveResults.Client
         private readonly bool m_recreateRadioControls;
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
-
+        private bool m_isRelay = false;
         private bool m_continue;
         
-        public MeOsParser(IDbConnection conn, bool recreateRadioControls = true)
+        public MeOsParser(IDbConnection conn, bool recreateRadioControls = true, bool isRelay = false)
         {
             m_connection = conn;
             m_recreateRadioControls = recreateRadioControls;
+            m_isRelay = isRelay;
         }
 
 
@@ -75,7 +76,16 @@ namespace LiveResults.Client
 
                     string baseCommand =
                         "select r.id,r.bib, r.name,c.name as clubname,r.starttime, r.Status, cl.name as classname, r.FinishTime,r.counter, r.removed from orunner r, oclub c, oclass cl where r.class = cl.id and c.ID = r.club and r.counter > " + paramOper + " order by r.counter"; 
+                   
                     string splitbaseCommand = "select p.counter, p.time, p.type,r.id,r.bib, r.name,c.name as clubname,r.starttime, r.Status, cl.name as classname from opunch p, orunner r, oclub c, oclass cl where p.CardNo = r.CardNo AND r.class = cl.id and c.ID = r.club and p.counter > " + paramOper + " order by p.counter";
+
+                    if (m_isRelay)
+                    {
+                        baseCommand =
+                        "select r.id,r.bib, r.name,r.starttime, r.Status, cl.name as classname, r.FinishTime,r.counter, r.removed from orunner r, oclass cl where r.class = cl.id and r.counter > " + paramOper + " order by r.counter";
+                        splitbaseCommand = "select p.counter, p.time, p.type,r.id,r.bib, r.name,r.starttime, r.Status, cl.name as classname from opunch p, orunner r, oclass cl where p.CardNo = r.CardNo AND r.class = cl.id  and p.counter > " + paramOper + " order by p.counter";
+                    }
+                    string teamCommand = "select id, name, runners, (select legmethod from oclass oc where oc.id = class) as legmethod, counter from oTeam where counter > " + paramOper + " order by counter";
 
                     if (m_recreateRadioControls)
                     {
@@ -85,6 +95,12 @@ namespace LiveResults.Client
                     cmd.CommandText = baseCommand;
                     IDbCommand cmdSplits = m_connection.CreateCommand();
                     IDbCommand cmdSplitTimes = m_connection.CreateCommand();
+                    IDbCommand cmdTeams = null;
+                    if (m_isRelay)
+                    {
+                        cmdTeams = m_connection.CreateCommand();
+                        cmdTeams.CommandText = teamCommand;
+                    }
                     cmdSplits.CommandText = splitbaseCommand;
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "counter";
@@ -100,14 +116,39 @@ namespace LiveResults.Client
                         splitparam.DbType = DbType.Int32;
                         splitparam.Value = -1;
 
-                    int lastCounter = -1;
-                    int lastSplitCounter = -1;
-                   
+                    if (m_isRelay)
+                    {
+                        IDbDataParameter teamparam = cmdTeams.CreateParameter();
+                        teamparam.ParameterName = "counter";
+
+                        teamparam.DbType = DbType.Int32;
+                        teamparam.Value = -1;
+                        cmdTeams.Parameters.Add(teamparam);
+                    }
+
+                    
                     cmd.Parameters.Add(param);
                     cmdSplits.Parameters.Add(splitparam);
+                    
+
+                    int lastCounter = -1;
+                    int lastTeamCounter = -1;
+                    int lastSplitCounter = -1;
 
                     FireLogMsg("MeOS Monitor thread started");
                     IDataReader reader = null;
+                    Dictionary<int, int> teamStarttimes = null;
+                    Dictionary<int, int> runnerToTeamMap = null;
+                    Dictionary<int, string> teamNames = null;
+                    Dictionary<int, int> runnerLeg= null;
+                    if (m_isRelay)
+                    {
+                        teamStarttimes = new Dictionary<int, int>();
+                        runnerToTeamMap = new Dictionary<int, int>();
+                        runnerLeg = new Dictionary<int, int>();
+                        teamNames = new Dictionary<int, string>();
+
+                    }
                     while (m_continue)
                     {
                         string lastRunner = "";
@@ -117,8 +158,64 @@ namespace LiveResults.Client
                             /*Kontrollera om nya resultat*/
 
                             (cmd.Parameters["counter"] as IDbDataParameter).Value = lastCounter;
+                            
                             (cmdSplits.Parameters["counter"] as IDbDataParameter).Value = lastSplitCounter;
                             cmd.Prepare();
+
+                            if (m_isRelay)
+                            {
+                                (cmdTeams.Parameters["counter"] as IDbDataParameter).Value = lastTeamCounter;
+                                reader = cmdTeams.ExecuteReader();
+                                while (reader.Read())
+                                {
+                                    string name = reader["name"] as string;
+                                    int counter = Convert.ToInt32(reader["counter"]);
+                                    if (counter > lastTeamCounter)
+                                        lastTeamCounter = counter;
+
+                                    int id = Convert.ToInt32(reader["iD"]);
+                                    if (!teamNames.ContainsKey(id))
+                                        teamNames.Add(id, name);
+                                    else
+                                        teamNames[id] = name;
+
+                                    string[] legSetup = (reader["legmethod"] as string).Split('*');
+                                    string[] leg1Parts = legSetup[0].Split(':');
+                                    int leg1StartTime = (Convert.ToInt32(leg1Parts[2]) + zeroTime) * 100;
+
+
+                                    if (!teamStarttimes.ContainsKey(id))
+                                        teamStarttimes.Add(id, leg1StartTime);
+                                    else
+                                        teamStarttimes[id] = leg1StartTime;
+
+                                    string runners = reader["runners"] as string;
+                                    string[] arunners = runners.Split(';');
+                                    for (int i = 0; i < arunners.Length; i++)
+                                    {
+                                        var arunn = arunners[i];
+                                        if (string.IsNullOrEmpty(arunn))
+                                            continue;
+                                        int idRunner = Convert.ToInt32(arunn);
+                                        if (!runnerToTeamMap.ContainsKey(idRunner))
+                                            runnerToTeamMap.Add(idRunner, id);
+                                        else
+                                            runnerToTeamMap[idRunner] = id;
+
+                                        if (!runnerLeg.ContainsKey(idRunner))
+                                        {
+                                            runnerLeg.Add(idRunner, i + 1);
+                                        }
+                                        else
+                                        {
+                                            runnerLeg[idRunner] = i + 1;
+                                        }
+                                    }
+                                }
+
+                                reader.Close();
+                            }
+
                             reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
@@ -132,21 +229,28 @@ namespace LiveResults.Client
                                     lastCounter = counter > lastCounter ? counter : lastCounter;
                                     runnerID = Convert.ToInt32(reader["id"]);
 
+                                    int teamId = runnerToTeamMap[runnerID];
+
                                     time = -9;
-                                    iStartTime = 0;
-                                    if (reader["finishtime"] != null && reader["finishtime"] != DBNull.Value && Convert.ToInt32(reader["finishtime"]) > 0 &&
-                                        reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    iStartTime = m_isRelay ? teamStarttimes[teamId] : -1;
+                                    if (m_isRelay)
                                     {
-                                        iStartTime = Convert.ToInt32(reader["starttime"]) * 100 + zeroTime * 100;
-                                        time = (Convert.ToInt32(reader["finishtime"]) - Convert.ToInt32(reader["starttime"])) * 100;
+                                        if (reader["finishtime"] != null && reader["finishtime"] != DBNull.Value && Convert.ToInt32(reader["finishtime"]) > 0)
+                                        {
+                                            time = (Convert.ToInt32(reader["finishtime"])+zeroTime) * 100 - iStartTime;
+                                        }
                                     }
 
                                     runnerName = reader["name"] as string;
 
                                     lastRunner = runnerName;
 
-                                    club = (reader["clubname"] as string);
+                                    club = m_isRelay ? teamNames[teamId] : (reader["clubname"] as string);
                                     classN = (reader["classname"] as string);
+                                    if (m_isRelay)
+                                    {
+                                        classN += "-" + runnerLeg[runnerID];
+                                    }
                                     status = Convert.ToInt32(reader["status"]);
                                 }
                                 catch (Exception ee)
@@ -241,23 +345,36 @@ namespace LiveResults.Client
 
                                     int time = Convert.ToInt32(reader["time"]);
                                     int iStartTime = 0;
-                                    if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    if (m_isRelay)
                                     {
-                                        iStartTime = Convert.ToInt32(reader["starttime"]) * 100 + zeroTime * 100;
-                                        //time = (Convert.ToInt32(reader["finishtime"]) - Convert.ToInt32(reader["starttime"])) * 100;
+                                        int teamId = runnerToTeamMap[runnerID];
+                                        iStartTime = teamStarttimes[teamId];
                                     }
                                     else
                                     {
-                                        continue;
+                                        if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                        {
+                                            iStartTime = Convert.ToInt32(reader["starttime"]) * 100 + zeroTime * 100;
+                                            //time = (Convert.ToInt32(reader["finishtime"]) - Convert.ToInt32(reader["starttime"])) * 100;
+                                        }
+                                        else
+                                        {
+                                            continue;
+                                        }
                                     }
                                     time = (time * 100 + zeroTime * 100) - iStartTime;
                                     string runnerName = reader["name"] as string;
 
                                     lastRunner = runnerName;
 
-                                    string club = (reader["clubname"] as string);
+                                    string club =  m_isRelay ? "" : (reader["clubname"] as string);
                                     string classN = (reader["classname"] as string);
-
+                                    if (m_isRelay)
+                                    {
+                                        int teamId = runnerToTeamMap[runnerID];
+                                        club = teamNames[teamId];
+                                        classN += "-" + runnerLeg[runnerID];
+                                    }
 
                                     int sCont = Convert.ToInt32(reader["Type"]);
 

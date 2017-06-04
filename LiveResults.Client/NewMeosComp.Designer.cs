@@ -29,6 +29,9 @@
         private void InitializeComponent()
         {
             this.wizard1 = new Gui.Wizard.Wizard();
+            this.wizardPage3 = new Gui.Wizard.WizardPage();
+            this.label7 = new System.Windows.Forms.Label();
+            this.cmbMeosComp = new System.Windows.Forms.ComboBox();
             this.wizardPage1 = new Gui.Wizard.WizardPage();
             this.txtPw = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
@@ -44,20 +47,18 @@
             this.label10 = new System.Windows.Forms.Label();
             this.txtCompID = new System.Windows.Forms.TextBox();
             this.label9 = new System.Windows.Forms.Label();
-            this.wizardPage3 = new Gui.Wizard.WizardPage();
-            this.label7 = new System.Windows.Forms.Label();
-            this.cmbMeosComp = new System.Windows.Forms.ComboBox();
+            this.chkIsRelay = new System.Windows.Forms.CheckBox();
             this.wizard1.SuspendLayout();
+            this.wizardPage3.SuspendLayout();
             this.wizardPage1.SuspendLayout();
             this.wizardPage5.SuspendLayout();
-            this.wizardPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // wizard1
             // 
+            this.wizard1.Controls.Add(this.wizardPage5);
             this.wizard1.Controls.Add(this.wizardPage3);
             this.wizard1.Controls.Add(this.wizardPage1);
-            this.wizard1.Controls.Add(this.wizardPage5);
             this.wizard1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizard1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.wizard1.Location = new System.Drawing.Point(0, 0);
@@ -69,9 +70,44 @@
             this.wizardPage5});
             this.wizard1.Size = new System.Drawing.Size(675, 223);
             this.wizard1.TabIndex = 0;
+            
+            // 
+            // wizardPage3
+            // 
+            this.wizardPage3.Controls.Add(this.label7);
+            this.wizardPage3.Controls.Add(this.cmbMeosComp);
+            this.wizardPage3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage3.IsFinishPage = false;
+            this.wizardPage3.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage3.Margin = new System.Windows.Forms.Padding(4);
+            this.wizardPage3.Name = "wizardPage3";
+            this.wizardPage3.Size = new System.Drawing.Size(675, 175);
+            this.wizardPage3.TabIndex = 3;
+            this.wizardPage3.ShowFromNext += new System.EventHandler(this.wizardPage3_ShowFromNext);
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(13, 4);
+            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(44, 17);
+            this.label7.TabIndex = 1;
+            this.label7.Text = "Event";
+            // 
+            // cmbMeosComp
+            // 
+            this.cmbMeosComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbMeosComp.FormattingEnabled = true;
+            this.cmbMeosComp.Location = new System.Drawing.Point(16, 25);
+            this.cmbMeosComp.Margin = new System.Windows.Forms.Padding(4);
+            this.cmbMeosComp.Name = "cmbMeosComp";
+            this.cmbMeosComp.Size = new System.Drawing.Size(473, 25);
+            this.cmbMeosComp.TabIndex = 0;
             // 
             // wizardPage1
             // 
+            this.wizardPage1.Controls.Add(this.chkIsRelay);
             this.wizardPage1.Controls.Add(this.txtPw);
             this.wizardPage1.Controls.Add(this.label5);
             this.wizardPage1.Controls.Add(this.txtUser);
@@ -172,7 +208,7 @@
             this.wizardPage5.Location = new System.Drawing.Point(0, 0);
             this.wizardPage5.Margin = new System.Windows.Forms.Padding(4);
             this.wizardPage5.Name = "wizardPage5";
-            this.wizardPage5.Size = new System.Drawing.Size(675, 164);
+            this.wizardPage5.Size = new System.Drawing.Size(675, 175);
             this.wizardPage5.TabIndex = 5;
             this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
             // 
@@ -225,38 +261,15 @@
             this.label9.TabIndex = 0;
             this.label9.Text = "CompetitonID";
             // 
-            // wizardPage3
+            // chkIsRelay
             // 
-            this.wizardPage3.Controls.Add(this.label7);
-            this.wizardPage3.Controls.Add(this.cmbMeosComp);
-            this.wizardPage3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage3.IsFinishPage = false;
-            this.wizardPage3.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage3.Margin = new System.Windows.Forms.Padding(4);
-            this.wizardPage3.Name = "wizardPage3";
-            this.wizardPage3.Size = new System.Drawing.Size(675, 175);
-            this.wizardPage3.TabIndex = 3;
-            this.wizardPage3.ShowFromNext += new System.EventHandler(this.wizardPage3_ShowFromNext);
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(13, 4);
-            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(44, 17);
-            this.label7.TabIndex = 1;
-            this.label7.Text = "Event";
-            // 
-            // cmbMeosComp
-            // 
-            this.cmbMeosComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbMeosComp.FormattingEnabled = true;
-            this.cmbMeosComp.Location = new System.Drawing.Point(16, 25);
-            this.cmbMeosComp.Margin = new System.Windows.Forms.Padding(4);
-            this.cmbMeosComp.Name = "cmbMeosComp";
-            this.cmbMeosComp.Size = new System.Drawing.Size(473, 25);
-            this.cmbMeosComp.TabIndex = 0;
+            this.chkIsRelay.AutoSize = true;
+            this.chkIsRelay.Location = new System.Drawing.Point(96, 140);
+            this.chkIsRelay.Name = "chkIsRelay";
+            this.chkIsRelay.Size = new System.Drawing.Size(73, 21);
+            this.chkIsRelay.TabIndex = 10;
+            this.chkIsRelay.Text = "IsRelay";
+            this.chkIsRelay.UseVisualStyleBackColor = true;
             // 
             // NewMeosComp
             // 
@@ -264,16 +277,16 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(675, 223);
             this.Controls.Add(this.wizard1);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "NewMeosComp";
             this.Text = "New Meos-connection";
             this.wizard1.ResumeLayout(false);
+            this.wizardPage3.ResumeLayout(false);
+            this.wizardPage3.PerformLayout();
             this.wizardPage1.ResumeLayout(false);
             this.wizardPage1.PerformLayout();
             this.wizardPage5.ResumeLayout(false);
             this.wizardPage5.PerformLayout();
-            this.wizardPage3.ResumeLayout(false);
-            this.wizardPage3.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -299,5 +312,6 @@
         private System.Windows.Forms.TextBox txtCompName;
         private System.Windows.Forms.Label label10;
         public System.Windows.Forms.CheckBox chkCreateRadioControls;
+        private System.Windows.Forms.CheckBox chkIsRelay;
     }
 }

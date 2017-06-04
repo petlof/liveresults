@@ -248,10 +248,12 @@ GRANT SELECT ON Controls to live;";
             //start
             FrmMonitor monForm = new FrmMonitor();
             this.Hide();
-            MeOsParser pars = new MeOsParser(GetDBConnection((cmbMeosComp.SelectedItem as MeosComp).NameId), chkCreateRadioControls.Checked);
+            MeOsParser pars = new MeOsParser(GetDBConnection((cmbMeosComp.SelectedItem as MeosComp).NameId), chkCreateRadioControls.Checked, chkIsRelay.Checked);
             monForm.SetParser(pars as IExternalSystemResultParser);
             monForm.CompetitionID = Convert.ToInt32(txtCompID.Text);
             monForm.ShowDialog(this);
         }
+
+       
     }
 }
