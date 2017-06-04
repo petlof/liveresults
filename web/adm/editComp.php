@@ -13,6 +13,10 @@ else if (isset($_GET['what']) && $_GET['what'] == "delctr")
 {
 	Emma::DelRadioControl($_GET['compid'],$_GET['code'],$_GET['class']);
 }
+else if (isset($_GET['what']) && $_GET['what'] == "delallctr")
+{
+	Emma::DelAllRadioControls($_GET['compid']);
+}
 
 
 include_once("../templates/emmalang_sv.php");
@@ -217,6 +221,11 @@ for ($i = 0; $i < sizeof($rcontrols); $i++)
 
 ?>
 </table>
+
+<br/><hr/>
+<a href='javascript:confirmDelete(\"Do you want to delete ALL radiocontrols?\",\"?compid=".$_GET['compid']."&what=delallctr&compid=".$_GET['compid']."\");'>Delete all radio controls</a>
+<br/><hr/><br/>
+
 <br/><b>Add Radio Control</b><br/>
 Code = 1000*passingcnt + controlCode, <br/>
 ex. first pass at control 53 => Code = 1053, second pass => Code = 2053<br/>

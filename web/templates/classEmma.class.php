@@ -144,9 +144,30 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	 mysql_query("delete from splitcontrols where tavid=$compid and code=$code and classname='$classname'",$conn);
 
         }
+		
+	public static function DelAllRadioControls($compid)
+
+	{
+		$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
+
+		mysql_select_db(self::$db_database);
+
+		if (mysql_errno()) {
+
+			printf("Connect failed: %s\n", mysql_error());
+
+			exit();
+
+		}
+
+		mysql_query("delete from splitcontrols where tavid=$compid",$conn);
+
+    }
+
 
 
 	public static function CreateCompetition($name,$org,$date)
+
         {
 
         $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
@@ -163,40 +184,13 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 		}
 	 $res = mysql_query("select max(tavid)+1 from login",$conn);
 	 $id = mysql_result($res,0,0);
-	 if ($id < 10000)
+	if ($id < 10000)
 		$id = 10000;
 
 
 	 mysql_query("insert into login(tavid,user,pass,compName,organizer,compDate,public) values(".$id.",'".md5($name.$org.$date)."','".md5("liveresultat")."','".$name."','".$org."','".$date."',0)" ,$conn) or die(mysql_error());
 
 	}
-	
-	public static function CreateCompetitionFull($name,$org,$date, $email, $password, $country)
-    {
-
-        $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
-	 $res = mysql_query("select max(tavid)+1 from login",$conn);
-	 $id = mysql_result($res,0,0);
-	 if ($id < 10000)
-		$id = 10000;
-
-
-	 mysql_query("insert into login(tavid,user,pass,compName,organizer,compDate,public, country) values(".$id.",'".$email."','".md5($password)."','".$name."','".$org."','".$date."',0,'".$country."')" ,$conn) or die(mysql_error());
-	 	return $id;
-	}
-	
-	
 	public static function AddRadioControl($compid,$classname,$name,$code)
 
         {
@@ -294,7 +288,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		}
 
-	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, timezone, videourl, videotype,multidaystage,multidayparent from login where tavid=$compid",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, videourl, videotype,multidaystage,multidayparent from login where tavid=$compid",$conn);
 
          $ret = null;
 
@@ -453,27 +447,6 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 
 	}
-
-
-function getAllSplitControls()
-{
-	$ret = Array();
-	$q = "SELECT code, name,classname,corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder";
-	if ($result = mysql_query($q))
-	{
-		while($tmp = mysql_fetch_array($result))
-		{
-			$ret[] = $tmp;
-		}
-		mysql_free_result($result);
-	} 
-	else
-	{ 
-		echo(mysql_error());
-	}
-	
-	return $ret;
-}
 
 
 
