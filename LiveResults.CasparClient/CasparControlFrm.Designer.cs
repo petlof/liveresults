@@ -78,6 +78,18 @@
             this.lblClass = new System.Windows.Forms.Label();
             this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.cmbPre4 = new System.Windows.Forms.ComboBox();
+            this.cmbPre3 = new System.Windows.Forms.ComboBox();
+            this.cmbPre2 = new System.Windows.Forms.ComboBox();
+            this.cmbPre1 = new System.Windows.Forms.ComboBox();
+            this.txtNumQ4 = new System.Windows.Forms.TextBox();
+            this.txtNumQ3 = new System.Windows.Forms.TextBox();
+            this.txtNumQ2 = new System.Windows.Forms.TextBox();
+            this.txtNumQ1 = new System.Windows.Forms.TextBox();
+            this.cmbPreClass4 = new System.Windows.Forms.ComboBox();
+            this.cmbPreClass3 = new System.Windows.Forms.ComboBox();
+            this.cmbPreClass2 = new System.Windows.Forms.ComboBox();
+            this.cmbPreClass1 = new System.Windows.Forms.ComboBox();
             this.btnPrewarningForceUpdate = new System.Windows.Forms.Button();
             this.btnStopPrewarning = new System.Windows.Forms.Button();
             this.btnStartPrewarning = new System.Windows.Forms.Button();
@@ -85,18 +97,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.lstRadioControls = new System.Windows.Forms.CheckedListBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.cmbPreClass1 = new System.Windows.Forms.ComboBox();
-            this.cmbPreClass2 = new System.Windows.Forms.ComboBox();
-            this.cmbPreClass3 = new System.Windows.Forms.ComboBox();
-            this.cmbPreClass4 = new System.Windows.Forms.ComboBox();
-            this.txtNumQ1 = new System.Windows.Forms.TextBox();
-            this.txtNumQ2 = new System.Windows.Forms.TextBox();
-            this.txtNumQ3 = new System.Windows.Forms.TextBox();
-            this.txtNumQ4 = new System.Windows.Forms.TextBox();
-            this.cmbPre1 = new System.Windows.Forms.ComboBox();
-            this.cmbPre2 = new System.Windows.Forms.ComboBox();
-            this.cmbPre3 = new System.Windows.Forms.ComboBox();
-            this.cmbPre4 = new System.Windows.Forms.ComboBox();
+            this.checkFollowTail = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -446,6 +447,7 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.checkFollowTail);
             this.tabPage2.Controls.Add(this.chkShowAlsoAlreadyPassed);
             this.tabPage2.Controls.Add(this.listBox2);
             this.tabPage2.Controls.Add(this.label12);
@@ -690,6 +692,110 @@
             this.tabPage3.Text = "Prewarned runners";
             this.tabPage3.UseVisualStyleBackColor = true;
             // 
+            // cmbPre4
+            // 
+            this.cmbPre4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre4.FormattingEnabled = true;
+            this.cmbPre4.Location = new System.Drawing.Point(660, 111);
+            this.cmbPre4.Name = "cmbPre4";
+            this.cmbPre4.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre4.TabIndex = 17;
+            // 
+            // cmbPre3
+            // 
+            this.cmbPre3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre3.FormattingEnabled = true;
+            this.cmbPre3.Location = new System.Drawing.Point(660, 81);
+            this.cmbPre3.Name = "cmbPre3";
+            this.cmbPre3.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre3.TabIndex = 16;
+            // 
+            // cmbPre2
+            // 
+            this.cmbPre2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre2.FormattingEnabled = true;
+            this.cmbPre2.Location = new System.Drawing.Point(660, 51);
+            this.cmbPre2.Name = "cmbPre2";
+            this.cmbPre2.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre2.TabIndex = 15;
+            // 
+            // cmbPre1
+            // 
+            this.cmbPre1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPre1.FormattingEnabled = true;
+            this.cmbPre1.Location = new System.Drawing.Point(660, 21);
+            this.cmbPre1.Name = "cmbPre1";
+            this.cmbPre1.Size = new System.Drawing.Size(108, 24);
+            this.cmbPre1.TabIndex = 14;
+            // 
+            // txtNumQ4
+            // 
+            this.txtNumQ4.Location = new System.Drawing.Point(805, 111);
+            this.txtNumQ4.Name = "txtNumQ4";
+            this.txtNumQ4.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ4.TabIndex = 13;
+            this.txtNumQ4.Text = "20";
+            // 
+            // txtNumQ3
+            // 
+            this.txtNumQ3.Location = new System.Drawing.Point(805, 81);
+            this.txtNumQ3.Name = "txtNumQ3";
+            this.txtNumQ3.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ3.TabIndex = 12;
+            this.txtNumQ3.Text = "20";
+            // 
+            // txtNumQ2
+            // 
+            this.txtNumQ2.Location = new System.Drawing.Point(805, 51);
+            this.txtNumQ2.Name = "txtNumQ2";
+            this.txtNumQ2.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ2.TabIndex = 11;
+            this.txtNumQ2.Text = "20";
+            // 
+            // txtNumQ1
+            // 
+            this.txtNumQ1.Location = new System.Drawing.Point(805, 23);
+            this.txtNumQ1.Name = "txtNumQ1";
+            this.txtNumQ1.Size = new System.Drawing.Size(39, 22);
+            this.txtNumQ1.TabIndex = 10;
+            this.txtNumQ1.Text = "20";
+            // 
+            // cmbPreClass4
+            // 
+            this.cmbPreClass4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass4.FormattingEnabled = true;
+            this.cmbPreClass4.Location = new System.Drawing.Point(405, 111);
+            this.cmbPreClass4.Name = "cmbPreClass4";
+            this.cmbPreClass4.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass4.TabIndex = 9;
+            // 
+            // cmbPreClass3
+            // 
+            this.cmbPreClass3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass3.FormattingEnabled = true;
+            this.cmbPreClass3.Location = new System.Drawing.Point(405, 81);
+            this.cmbPreClass3.Name = "cmbPreClass3";
+            this.cmbPreClass3.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass3.TabIndex = 8;
+            // 
+            // cmbPreClass2
+            // 
+            this.cmbPreClass2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass2.FormattingEnabled = true;
+            this.cmbPreClass2.Location = new System.Drawing.Point(405, 51);
+            this.cmbPreClass2.Name = "cmbPreClass2";
+            this.cmbPreClass2.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass2.TabIndex = 7;
+            // 
+            // cmbPreClass1
+            // 
+            this.cmbPreClass1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbPreClass1.FormattingEnabled = true;
+            this.cmbPreClass1.Location = new System.Drawing.Point(405, 21);
+            this.cmbPreClass1.Name = "cmbPreClass1";
+            this.cmbPreClass1.Size = new System.Drawing.Size(236, 24);
+            this.cmbPreClass1.TabIndex = 6;
+            // 
             // btnPrewarningForceUpdate
             // 
             this.btnPrewarningForceUpdate.Location = new System.Drawing.Point(240, 169);
@@ -758,109 +864,15 @@
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // cmbPreClass1
+            // checkFollowTail
             // 
-            this.cmbPreClass1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPreClass1.FormattingEnabled = true;
-            this.cmbPreClass1.Location = new System.Drawing.Point(405, 21);
-            this.cmbPreClass1.Name = "cmbPreClass1";
-            this.cmbPreClass1.Size = new System.Drawing.Size(236, 24);
-            this.cmbPreClass1.TabIndex = 6;
-            // 
-            // cmbPreClass2
-            // 
-            this.cmbPreClass2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPreClass2.FormattingEnabled = true;
-            this.cmbPreClass2.Location = new System.Drawing.Point(405, 51);
-            this.cmbPreClass2.Name = "cmbPreClass2";
-            this.cmbPreClass2.Size = new System.Drawing.Size(236, 24);
-            this.cmbPreClass2.TabIndex = 7;
-            // 
-            // cmbPreClass3
-            // 
-            this.cmbPreClass3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPreClass3.FormattingEnabled = true;
-            this.cmbPreClass3.Location = new System.Drawing.Point(405, 81);
-            this.cmbPreClass3.Name = "cmbPreClass3";
-            this.cmbPreClass3.Size = new System.Drawing.Size(236, 24);
-            this.cmbPreClass3.TabIndex = 8;
-            // 
-            // cmbPreClass4
-            // 
-            this.cmbPreClass4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPreClass4.FormattingEnabled = true;
-            this.cmbPreClass4.Location = new System.Drawing.Point(405, 111);
-            this.cmbPreClass4.Name = "cmbPreClass4";
-            this.cmbPreClass4.Size = new System.Drawing.Size(236, 24);
-            this.cmbPreClass4.TabIndex = 9;
-            // 
-            // txtNumQ1
-            // 
-            this.txtNumQ1.Location = new System.Drawing.Point(805, 23);
-            this.txtNumQ1.Name = "txtNumQ1";
-            this.txtNumQ1.Size = new System.Drawing.Size(39, 22);
-            this.txtNumQ1.TabIndex = 10;
-            this.txtNumQ1.Text = "20";
-            // 
-            // txtNumQ2
-            // 
-            this.txtNumQ2.Location = new System.Drawing.Point(805, 51);
-            this.txtNumQ2.Name = "txtNumQ2";
-            this.txtNumQ2.Size = new System.Drawing.Size(39, 22);
-            this.txtNumQ2.TabIndex = 11;
-            this.txtNumQ2.Text = "20";
-            // 
-            // txtNumQ3
-            // 
-            this.txtNumQ3.Location = new System.Drawing.Point(805, 81);
-            this.txtNumQ3.Name = "txtNumQ3";
-            this.txtNumQ3.Size = new System.Drawing.Size(39, 22);
-            this.txtNumQ3.TabIndex = 12;
-            this.txtNumQ3.Text = "20";
-            // 
-            // txtNumQ4
-            // 
-            this.txtNumQ4.Location = new System.Drawing.Point(805, 111);
-            this.txtNumQ4.Name = "txtNumQ4";
-            this.txtNumQ4.Size = new System.Drawing.Size(39, 22);
-            this.txtNumQ4.TabIndex = 13;
-            this.txtNumQ4.Text = "20";
-            // 
-            // cmbPre1
-            // 
-            this.cmbPre1.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPre1.FormattingEnabled = true;
-            this.cmbPre1.Location = new System.Drawing.Point(660, 21);
-            this.cmbPre1.Name = "cmbPre1";
-            this.cmbPre1.Size = new System.Drawing.Size(108, 24);
-            this.cmbPre1.TabIndex = 14;
-            // 
-            // cmbPre2
-            // 
-            this.cmbPre2.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPre2.FormattingEnabled = true;
-            this.cmbPre2.Location = new System.Drawing.Point(660, 51);
-            this.cmbPre2.Name = "cmbPre2";
-            this.cmbPre2.Size = new System.Drawing.Size(108, 24);
-            this.cmbPre2.TabIndex = 15;
-            // 
-            // cmbPre3
-            // 
-            this.cmbPre3.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPre3.FormattingEnabled = true;
-            this.cmbPre3.Location = new System.Drawing.Point(660, 81);
-            this.cmbPre3.Name = "cmbPre3";
-            this.cmbPre3.Size = new System.Drawing.Size(108, 24);
-            this.cmbPre3.TabIndex = 16;
-            // 
-            // cmbPre4
-            // 
-            this.cmbPre4.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.cmbPre4.FormattingEnabled = true;
-            this.cmbPre4.Location = new System.Drawing.Point(660, 111);
-            this.cmbPre4.Name = "cmbPre4";
-            this.cmbPre4.Size = new System.Drawing.Size(108, 24);
-            this.cmbPre4.TabIndex = 17;
+            this.checkFollowTail.AutoSize = true;
+            this.checkFollowTail.Location = new System.Drawing.Point(481, 328);
+            this.checkFollowTail.Name = "checkFollowTail";
+            this.checkFollowTail.Size = new System.Drawing.Size(96, 21);
+            this.checkFollowTail.TabIndex = 34;
+            this.checkFollowTail.Text = "Follow Tail";
+            this.checkFollowTail.UseVisualStyleBackColor = true;
             // 
             // CasparControlFrm
             // 
@@ -957,5 +969,6 @@
         private System.Windows.Forms.ComboBox cmbPre3;
         private System.Windows.Forms.ComboBox cmbPre2;
         private System.Windows.Forms.ComboBox cmbPre1;
+        private System.Windows.Forms.CheckBox checkFollowTail;
     }
 }

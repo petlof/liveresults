@@ -427,6 +427,14 @@ namespace LiveResults.Model
 
         public void SetRadioControl(string className, int code, string controlName, int order)
         {
+            if (!m_classRadioControls.ContainsKey(className))
+                m_classRadioControls.Add(className, new RadioControl[0]);
+
+            var radios = new List<RadioControl>();
+            radios.AddRange(m_classRadioControls[className]);
+            radios.Add(new RadioControl { ClassName = className, Code = code, ControlName = controlName, Order = order });
+            m_classRadioControls[className] = radios.ToArray();
+            //m_classRadioControls.Add(className,new RadioControl[] { );
             m_itemsToUpdate.Add(new RadioControl
             {
                 ClassName = className,

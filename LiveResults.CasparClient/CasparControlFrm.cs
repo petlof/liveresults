@@ -396,7 +396,11 @@ namespace LiveResults.CasparClient
 
             }
 
-
+            bool followTail = false;
+            checkFollowTail.Invoke(new MethodInvoker(delegate
+            {
+                followTail = checkFollowTail.Checked;
+            }));
             if (m_currentResultList.Length > 0)
             {
                 int leaderTime = m_currentResultList[0].Time;
@@ -421,8 +425,28 @@ namespace LiveResults.CasparClient
                         pos = i+2;
                     }
                     p++;
+
+                    if (i == 0 && followTail && list.Count() > 5)
+                    {
+                        i = list.Count() - 5;
+                        pos = i + 2;
+                    }
+
+                   
+
                     if (p > 4)
                         break;
+                }
+                if (followTail)
+                {
+                    cgData.SetData("tail_plus_time", ((int)(DateTime.Now.TimeOfDay.TotalSeconds - (m_currentResultList[0].runner.StartTime + m_currentResultList[0].Time)/100)) + "");
+                }
+            }
+            else
+            {
+                if (followTail)
+                {
+                    cgData.SetData("tail_plus_time", ((int)(DateTime.Now.TimeOfDay.TotalSeconds - (10*3600))) + "");
                 }
             }
 
