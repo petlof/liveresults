@@ -2,7 +2,7 @@
 
 	include_once("../templates/classEmma.class.php");
 
-   $lang = "sv";
+   $lang = "en";
 
    if (isset($_GET['lang']) && $_GET['lang'] != "")
 
@@ -70,30 +70,6 @@ el.style.backgroundColor = "";
 
 <div class="maindiv">
 
-<table width="759" cellpadding="0" cellspacing="0" border="0" ID="Table6">
-
-	<tr>
-
-
-
-
-
-		<TR>
-
-			<TD>
-
-
-			</TD>
-
-		</TR>
-
-
-
-
-
-</table>
-
-
 
 <table border="0" cellpadding="0" cellspacing="0" width="759">
 
@@ -137,7 +113,7 @@ el.style.backgroundColor = "";
 
              <tr>
 
-               <td><a href="index.php"><?=$_CHOOSECMP?></a></td>
+               <td><a href="../index.php"><?=$_CHOOSECMP?></a></td>
 
              </tr>
 
