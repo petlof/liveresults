@@ -145,6 +145,17 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
         }
 
+        public static function DelAllRadioControls($compid)
+		{
+			$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
+			mysql_select_db(self::$db_database);
+			if (mysql_errno()) {
+				printf("Connect failed: %s\n", mysql_error());
+				exit();
+			}
+			mysql_query("delete from splitcontrols where tavid=$compid",$conn);
+   }
+
 
 	public static function CreateCompetition($name,$org,$date)
         {
