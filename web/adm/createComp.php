@@ -11,7 +11,7 @@ if (isset($_POST['btnSubmit']))
 
 include_once("../templates/emmalang_sv.php");
 
-   $lang = "sv";
+   $lang = "en";
 
    if (isset($_GET['lang']) && $_GET['lang'] != "")
 
@@ -80,32 +80,6 @@ el.style.backgroundColor = "";
 
 <div class="maindiv">
 
-<table width="759" cellpadding="0" cellspacing="0" border="0" ID="Table6">
-
-	<tr>
-
-
-
-
-
-		<TR>
-
-			<TD>
-
-		<a href="/liveresultat/"><img src="/pics/header.jpg" alt="Svenska Orienteringsförbundet" align="left" width="759" height="91" border="0"></a>
-
-			</TD>
-
-		</TR>
-
-
-
-
-
-</table>
-
-
-
 <table border="0" cellpadding="0" cellspacing="0" width="759">
 
   <tr>
@@ -147,8 +121,8 @@ el.style.backgroundColor = "";
        <table border="0" cellpadding="0" cellspacing="0">
 
              <tr>
-
-               <td><a href="index.php"><?=$_CHOOSECMP?></a></td>
+              <td><a href="admincompetitions.php">Adminpage Competitionindex</a> | </td>
+               <td><a href="../index.php"><?=$_CHOOSECMP?> to view</a></td>
 
              </tr>
 
