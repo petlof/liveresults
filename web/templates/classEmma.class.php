@@ -17,11 +17,11 @@ class Emma
    var $m_IsMultiDayEvent = false;
    var $m_MultiDayStage = -1;
    var $m_MultiDayParent = -1;
-   
+
    var $m_VideoFormat = "";
    var $m_VideoUrl = "";
    var $m_TwitterFeed = "";
-   
+
 	var $m_Conn;
 
         public static function GetCompetitions()
@@ -170,7 +170,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	 mysql_query("insert into login(tavid,user,pass,compName,organizer,compDate,public) values(".$id.",'".md5($name.$org.$date)."','".md5("liveresultat")."','".$name."','".$org."','".$date."',0)" ,$conn) or die(mysql_error());
 
 	}
-	
+
 	public static function CreateCompetitionFull($name,$org,$date, $email, $password, $country)
     {
 
@@ -195,8 +195,8 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	 mysql_query("insert into login(tavid,user,pass,compName,organizer,compDate,public, country) values(".$id.",'".$email."','".md5($password)."','".$name."','".$org."','".$date."',0,'".$country."')" ,$conn) or die(mysql_error());
 	 	return $id;
 	}
-	
-	
+
+
 	public static function AddRadioControl($compid,$classname,$name,$code)
 
         {
@@ -353,10 +353,10 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		    if (isset($tmp["videotype"]))
 				$this->m_VideoFormat= $tmp["videotype"];
-        
+
          if (isset($tmp["twitter"]))
 				$this->m_TwitterFeed= $tmp["twitter"];
-        
+
 		    if (isset($tmp['multidaystage']))
 		    {
 		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null && $tmp['multidaystage'] > 1)
@@ -375,12 +375,12 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	{
 		return $this->m_IsMultiDayEvent;
 	}
-  
+
   function HasVideo()
 	{
 		return $this->m_VideoFormat != "";
 	}
-  
+
    function HasTwitter()
 	{
 		return $this->m_TwitterFeed != "";
@@ -394,7 +394,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		}
 		return "";
 	}
-  
+
   function GetTwitterFeed()
   {
     return $this->m_TwitterFeed;
@@ -414,12 +414,12 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	  return $this->m_CompDate;
 
 	}
-  
+
   function TimeZoneDiff()
   {
     return $this->m_TimeDiff/3600;
   }
-  
+
 
 	function Classes()
 	{
@@ -466,12 +466,12 @@ function getAllSplitControls()
 			$ret[] = $tmp;
 		}
 		mysql_free_result($result);
-	} 
+	}
 	else
-	{ 
+	{
 		echo(mysql_error());
 	}
-	
+
 	return $ret;
 }
 
@@ -733,24 +733,30 @@ function getAllSplitControls()
 	{
 				$ret = Array();
 
-				$q = "Select TavId,multidaystage from login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
+
 
 				$ar = Array();
-				$comps = "(";
-				if ($result = mysql_query($q,$this->m_Conn))
+				if ($this->m_MultiDayParent == -1)
 				{
-					$f = 1;
-					while ($row = mysql_fetch_array($result))
+				     $comps = "(".$this->m_CompId.")";
+    			} else {
+    				$q = "Select TavId,multidaystage from login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
+					$comps = "(";
+					if ($result = mysql_query($q,$this->m_Conn))
 					{
-						$ar[$row["TavId"]] = $row["TavId"];
-						if ($f == 0)
-							$comps .=",";
-						$comps .= $row["TavId"];
-						$f = 0;
+						$f = 1;
+						while ($row = mysql_fetch_array($result))
+						{
+							$ar[$row["TavId"]] = $row["TavId"];
+							if ($f == 0)
+								$comps .=",";
+							$comps .= $row["TavId"];
+							$f = 0;
+						}
 					}
+					mysql_free_result($result);
+					$comps .= ")";
 				}
-				mysql_free_result($result);
-				$comps .= ")";
 
 
 				$q = "SELECT results.Time, results.Status, results.TavId, results.DbID From runners,results where results.Control = 1000 and results.DbID = runners.DbId AND results.TavId in $comps AND runners.TavId = results.TavId AND runners.Class = '".mysql_real_escape_string($className)."'  ORDER BY results.Dbid";
