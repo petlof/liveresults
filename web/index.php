@@ -96,6 +96,7 @@ el.style.backgroundColor = "";
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : "<a href=\"?lang=it\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?>
                         | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" : "<a href=\"?lang=hu\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?>
                         | <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" : "<a href=\"?lang=es\" style='text-decoration: none'><img src='images/es.png' border='0' alt='Español'> Español</a>")?>
+                        | <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" : "<a href=\"?lang=pl\" style='text-decoration: none'><img src='images/pl.png' border='0' alt='Polska'> Polska</a>")?>
 			|
 
 
