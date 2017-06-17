@@ -129,7 +129,7 @@ el.style.backgroundColor = "";
 
     <td class="searchmenu" colspan="2" style="padding: 5px;">
 
-       <table border="0" cellpadding="0" cellspacing="0" width="400">
+       <table border="0" cellpadding="0" cellspacing="0">
 
              <tr>
 
