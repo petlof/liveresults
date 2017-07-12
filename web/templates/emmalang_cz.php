@@ -1,7 +1,7 @@
 ﻿<?php
 
 //Language-ressource file: Czech = Česky
-//translated by Richard PÁTEK and Lukas Konig 
+//translated by Richard PÁTEK and Lukas Konig
 
 $_TITLE = "Online výsledky";
 $_CHOOSECMP = "Vyberte závod";
@@ -85,5 +85,5 @@ $_CLASS = "Kategorie";
 // 2.1
 $_ORGANIZER = "Pořadatel";
 $_DATE = "Datum";
-
+$_EVENTNAME = "Jméno";
 ?>

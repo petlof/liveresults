@@ -43,9 +43,9 @@ var LiveResults;
                     var hash = window.location.hash.substring(1);
                     var cl;
                     if (hash.indexOf('club::') >= 0) {
-                        cl = hash.substring(6);
+                        cl = decodeURIComponent(hash.substring(6));
                         if (cl != _this.curClubName) {
-                            LiveResults.Instance.viewClubResults(hash.substring(6));
+                            LiveResults.Instance.viewClubResults(cl);
                         }
                     }
                     else {
@@ -915,7 +915,7 @@ var LiveResults;
         // ReSharper disable once InconsistentNaming
         AjaxViewer.VERSION = "2016-08-06-01";
         return AjaxViewer;
-    })();
+    }());
     LiveResults.AjaxViewer = AjaxViewer;
 })(LiveResults || (LiveResults = {}));
 Date.prototype.stdTimezoneOffset = function () {

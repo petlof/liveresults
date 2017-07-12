@@ -60,6 +60,6 @@ $_TITLE = "Resultados en directo";
  // 2.1
  $_ORGANIZER = "Organizador";
  $_DATE = "Fecha";
-
+$_EVENTNAME = "Nombre";
 
 ?>

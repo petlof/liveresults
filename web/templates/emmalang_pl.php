@@ -83,5 +83,5 @@ $_CLASS = "Kategoria";
 // 2.1
 $_ORGANIZER = "Organizator";
 $_DATE = "Data";
-
+$_EVENTNAME = "Nazwa";
 ?>

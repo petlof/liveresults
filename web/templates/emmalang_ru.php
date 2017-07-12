@@ -64,6 +64,7 @@ $_CLASS = "Группа";
 
 $_ORGANIZER = "Oрганизатор";
 $_DATE = "Дата";
+$_EVENTNAME = "Имя";
 
 
 ?>
