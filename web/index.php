@@ -89,8 +89,8 @@ el.style.backgroundColor = "";
                       | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0' alt='Svenska'> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0' alt='Svenska'> Svenska</a>")?>
 			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0' alt='English'> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0' alt='English'> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi</a>")?>
-			| <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='???????'> ???????" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='???????'> ???????</a>")?>
-			| <?php echo($lang == "cz" ? "<img src='images/cz.png' border='0' alt='?esky'> ?esky" : "<a href=\"?lang=cz\" style='text-decoration: none'><img src='images/cz.png' border='0' alt='?esky'> ?esky</a>")?>
+			| <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Русский'> Русский" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Русский'> Русский</a>")?>
+			| <?php echo($lang == "cz" ? "<img src='images/cz.png' border='0' alt='Česky'> Česky" : "<a href=\"?lang=cz\" style='text-decoration: none'><img src='images/cz.png' border='0' alt='Česky'> Česky</a>")?>
 			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0' alt='Deutsch'> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0' alt='Deutsch'> Deutsch</a>")?>
 			| <?php echo($lang == "fr" ? "<img src='images/fr.png' border='0' alt='Français'> Français" : "<a href=\"?lang=fr\" style='text-decoration: none'><img src='images/fr.png' border='0' alt='Français'> Français</a>")?>
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : "<a href=\"?lang=it\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?>
@@ -102,14 +102,14 @@ el.style.backgroundColor = "";
 
 <h1 class="categoriesheader">LIVE TODAY!</h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" id="tblComps">
-			<tr><th align="left"><?= $_DATE?></th><th align="left"><?= $_NAME?></th><th align="left"><?= $_ORGANIZER?></th></tr>
+			<tr><th align="left"><?= $_DATE?></th><th align="left"><?= $_EVENTNAME?></th><th align="left"><?= $_ORGANIZER?></th></tr>
 <?php
 	$comps = Emma::GetCompetitionsToday();
 	  foreach ($comps as $comp)
         {
         ?>
                 <tr id="row<?=$comp["tavid"]?>" style="font-size:12px;font-weight:bold;"><td><?=date("Y-m-d",strtotime($comp['compDate']))?></td>
-                <td><a onmouseover="colorRow('row<?=$comp["tavid"]?>')" onmouseout="resetRow('row<?=$comp["tavid"]?>')" href="followfull.php?comp=<?=$comp["tavid"]?>&amp;lang=<?=$l$
+                <td><a onmouseover="colorRow('row<?=$comp["tavid"]?>')" onmouseout="resetRow('row<?=$comp["tavid"]?>')" href="followfull.php?comp=<?=$comp['tavid']?>&amp;lang=<?=$lang?>"><?=$comp["compName"]?></a></td>
                 <td style="font-weight:normal"><?=$comp["organizer"]?></td>
                 </tr>
         <?php
@@ -120,7 +120,7 @@ el.style.backgroundColor = "";
 
 						<h1 class="categoriesheader"><?=$_CHOOSECMP?></h1>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" id="tblComps">
-			<tr><th align="left"><?= $_DATE?></th><th align="left"><?= $_NAME?></th><th align="left"><?= $_ORGANIZER?></th></tr>
+			<tr><th align="left"><?= $_DATE?></th><th align="left"><?= $_EVENTNAME?></th><th align="left"><?= $_ORGANIZER?></th></tr>
 <?php
 	$comps = Emma::GetCompetitions();
 	foreach ($comps as $comp)

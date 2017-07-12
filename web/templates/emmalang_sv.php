@@ -54,6 +54,7 @@ $_START = "Start";
 $_TOTAL = "Total";
 $_CLASS = "Klass";
 
+$_EVENTNAME = "Namn";
 $_ORGANIZER = "Arrangör";
 $_DATE = "Datum";
 ?>
