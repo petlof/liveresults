@@ -141,12 +141,14 @@ namespace LiveResults.Client
                     Dictionary<int, int> runnerToTeamMap = null;
                     Dictionary<int, string> teamNames = null;
                     Dictionary<int, int> runnerLeg= null;
+                    Dictionary<int, int[]> teamStatus = null;
                     if (m_isRelay)
                     {
                         teamStarttimes = new Dictionary<int, int>();
                         runnerToTeamMap = new Dictionary<int, int>();
                         runnerLeg = new Dictionary<int, int>();
                         teamNames = new Dictionary<int, string>();
+                        teamStatus = new Dictionary<int, int[] >();
 
                     }
                     while (m_continue)
@@ -314,6 +316,27 @@ namespace LiveResults.Client
                                         Debug.WriteLine("Unknwon status: " + status);
                                         break;
                                 }
+
+                                if (m_isRelay)
+                                {
+                                    int teamId = runnerToTeamMap[runnerID];
+                                    if (!teamStatus.ContainsKey(teamId))
+                                    {
+                                        teamStatus.Add(teamId, new int[4]);
+                                        teamStatus[teamId][runnerLeg[runnerID]-1] = rstatus;
+                                    }
+                                    else
+                                    {
+                                        if (teamStatus[teamId].Any(x=>x> 0))
+                                            rstatus = teamStatus[teamId].First(x=>x > 0);
+                                        
+
+                                        teamStatus[teamId][runnerLeg[runnerID]-1] = rstatus;
+                                    }
+                                }
+
+                                
+
                                 if (rstatus != 999)
                                 {
                                     var res = new Result

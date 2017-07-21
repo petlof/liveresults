@@ -415,6 +415,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                             {
 
                                 time = GetSSFRunTime(reader["RaceTime"].ToString());
+								//Round to whole seconds
+                                time = ((int)(Math.Floor(time / 100d)) * 100);
                             }
                         }
 
@@ -515,6 +517,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                         if (reader["runtime"] != null && reader["runtime"] != DBNull.Value)
                         {
                             int stime = GetSSFRunTime(reader["runtime"].ToString());
+							//Round to whole seconds
+                            stime = ((int)(Math.Floor(stime / 100d)) * 100);
                             if (isRelay && !relayLegs[classN].IsLastLeg && relayLegs[classN].ITimeForFinish == Convert.ToInt32(reader["ipos"]))
                             {
                                    time = stime;

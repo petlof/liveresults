@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 using System.IO;
+#if _CASPARCG_
 using LiveResults.CasparClient;
+#endif
 using LiveResults.Client.Parsers;
 using LiveResults.Model;
 
@@ -153,12 +151,13 @@ namespace LiveResults.Client
             OEForm frm = new OEForm();
             frm.ShowDialog();
         }
-
+#if _CASPARCG_
         private void label2_Click(object sender, EventArgs e)
         {
             CasparClient.CasparControlFrm frm = new CasparControlFrm();
             frm.Show();
         }
+#endif
 
         private void flowLayoutPanel2_Paint(object sender, PaintEventArgs e)
         {
@@ -187,10 +186,16 @@ namespace LiveResults.Client
             {
                 var parser = new TulospalveluParser(new string[]
                 {
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_jwoc_long/m20/smart/1/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_jwoc_long/w20/smart/1/"
+                    /*"http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/1/0",
+                    "http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/2/0",
+                    "http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/3/0",
+                    "http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/4/0"*/
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/m21/smart/1/",
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/w21/smart/1/"
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/m21/smart/2/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/w21/smart/2/"
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/m21/smart/2/",
+                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/w21/smart/2/"
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21q/smart/1/",
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/w21q/smart/1/",
                     //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21/smart/2/",
@@ -202,7 +207,7 @@ namespace LiveResults.Client
 
                 });
                 var mon = new FrmMonitor();
-                mon.CompetitionID = 12513;
+                mon.CompetitionID = 12683;
                 mon.SetParser(parser);
                 mon.ShowDialog(this);
             }

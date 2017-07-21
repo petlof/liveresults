@@ -2,7 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows.Forms;
+#if _CASPARCG_
 using LiveResults.CasparClient;
+#endif
 using LiveResults.Model;
 
 namespace LiveResults.Client
@@ -146,9 +148,11 @@ namespace LiveResults.Client
         {
             if (e.KeyCode == Keys.F12)
             {
+#if _CASPARCG_
                 CasparControlFrm frm =new CasparControlFrm();
                 frm.SetEmmaClient(m_client);
                 frm.Show();
+#endif
             }
         }
     }

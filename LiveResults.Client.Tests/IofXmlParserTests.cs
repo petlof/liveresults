@@ -35,6 +35,33 @@ namespace LiveResults.Client.Tests
         }
 
         [Test]
+        public void ParseIofXmlFileTenthOfSecond()
+        {
+            RadioControl[] radioControls;
+            var runners = Parsers.IofXmlParser.ParseFile(TestHelpers.GetPathToTestFile("oe_speaker_result_0.1sec.xml"),
+                delegate (string msg)
+                {
+                }, false,
+               new IofXmlParser.IDCalculator(0).CalculateID, true, out radioControls);
+
+
+            Assert.AreEqual(82, runners.Length);
+
+            Assert.AreEqual("Vladislav Kiselev", runners[0].Name);
+            Assert.AreEqual("Russian Federation", runners[0].Club);
+            Assert.AreEqual("Men", runners[0].Class);
+            Assert.AreEqual(97830, runners[0].Time);
+            Assert.AreEqual(0, runners[0].Status);
+            Assert.AreEqual(3, runners[0].SplitTimes.Length);
+            Assert.AreEqual(1069, runners[0].SplitTimes[0].Control);
+            Assert.AreEqual(51920, runners[0].SplitTimes[0].Time);
+            Assert.AreEqual(1049, runners[0].SplitTimes[1].Control);
+            Assert.AreEqual(91920, runners[0].SplitTimes[1].Time);
+            Assert.AreEqual(1100, runners[0].SplitTimes[2].Control);
+            Assert.AreEqual(96520, runners[0].SplitTimes[2].Time);
+        }
+
+        [Test]
         public void TestFinishPunchDetected()
         {
             RadioControl[] radioControls;

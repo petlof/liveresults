@@ -43,9 +43,9 @@
                     var hash = window.location.hash.substring(1);
                     var cl : string;
                     if (hash.indexOf('club::') >= 0) {
-                        cl = hash.substring(6);
+                        cl = decodeURIComponent(hash.substring(6));
                         if (cl != this.curClubName) {
-                            LiveResults.Instance.viewClubResults(hash.substring(6));
+                            LiveResults.Instance.viewClubResults(cl);
                         }
                     } else {
                         cl = decodeURIComponent(hash);

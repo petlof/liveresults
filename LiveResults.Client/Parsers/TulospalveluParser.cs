@@ -70,7 +70,7 @@ namespace LiveResults.Client.Parsers
                     var teamTotalStatus = new Dictionary<string, int>();
 
                     var radioControlsRex = new Regex("<a href='/tulokset/en/.*?/tilanne/\\d/(?<control>[1-9])/'>(?<name>.*?)</a>");
-                    var rex = new Regex("<h2>(?<classname>.*?)</h2>.*?<table class=\'tuloslista\' cellspacing=0>(?<data>.*?)</table>",
+                    var rex = new Regex("<h\\d>(?<classname>.*?)</h\\d>.*?<table class=\'tuloslista\' cellspacing=0>(?<data>.*?)</table>",
                         RegexOptions.Singleline);
                     var rexBibClub = new Regex("(?<club>.*) \\((?<bibNo>\\d+)\\)", RegexOptions.Singleline);
                     foreach (var url in m_urls)
@@ -294,21 +294,23 @@ namespace LiveResults.Client.Parsers
             for (int i = 0; i < trs.Count; i++)
             {
                 string place = trs[i].ChildNodes[0].InnerText;
-                string name = trs[i].ChildNodes[2].InnerText;
-                string club = trs[i].ChildNodes[3].InnerText;
+                string name = trs[i].ChildNodes[4].InnerText;
+                string club = trs[i].ChildNodes[2].InnerText;
 
-                //var ms = rexBibClub.Match(club);
+                
                 string bibNo = trs[i].ChildNodes[1].InnerText;
-                //club = ms.Groups["club"].Value;
+                var ms = rexBibClub.Match(club);
+                club = ms.Groups["club"].Value;
+                bibNo = ms.Groups["bibNo"].Value;
 
 
-                string raceTime = trs[i].ChildNodes[5].InnerText.Trim();
+                string raceTime = trs[i].ChildNodes[3].InnerText.Trim();
                 int time = -4;
                 int status = 10;
 
                 int id = (!string.IsNullOrEmpty(relayLeg) ?  Convert.ToInt32(relayLeg) * 1000000 : 0) + Convert.ToInt32(bibNo);
 
-                if (raceTime == "DQ" || raceTime == "DNF")
+                if (raceTime == "DQ" || raceTime == "DNF" || raceTime == "hylätty" || raceTime== "keskeytti")
                 {
                     status = 4;
                 }
