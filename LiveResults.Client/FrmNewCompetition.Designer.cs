@@ -164,7 +164,9 @@
             this.label2.Size = new System.Drawing.Size(107, 17);
             this.label2.TabIndex = 3;
             this.label2.Text = "Recent projects";
+#if _CASPARCG_
             this.label2.Click += new System.EventHandler(this.label2_Click);
+#endif
             // 
             // flowLayoutPanel2
             // 
@@ -214,7 +216,7 @@
 
         }
 
-        #endregion
+#endregion
 
         private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         private System.Windows.Forms.Label label1;

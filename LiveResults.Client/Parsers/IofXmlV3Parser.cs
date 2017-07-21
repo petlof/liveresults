@@ -293,6 +293,9 @@ namespace LiveResults.Client.Parsers
             time = "";
             if (resultTimeNode != null)
                 time = resultTimeNode.InnerText;
+
+            FixKraemerTimeFormat(ref time);
+
             string starttime = "";
             if (startTimeNode != null)
                 starttime = startTimeNode.InnerText;
@@ -336,6 +339,15 @@ namespace LiveResults.Client.Parsers
             runner.SetResult(itime, istatus);
         }
 
+        private static void FixKraemerTimeFormat(ref string time)
+        {
+            if (!string.IsNullOrEmpty(time) && time.Contains(","))
+            {
+                //Hack for krämer-software exporting decimal numbers with local numberformat for which can be , for decimal separator
+                time = time.Replace(",", ".");
+            }
+        }
+
         private static void ParseSplitTimes(XmlNamespaceManager nsMgr, Runner runner, string time, XmlNodeList splittimes)
         {
             if (splittimes != null)
@@ -363,6 +375,7 @@ namespace LiveResults.Client.Parsers
                                 //Målstämpling
                                 if (!string.IsNullOrEmpty(time))
                                 {
+                                    FixKraemerTimeFormat(ref time);
                                     var itime = (int)(Convert.ToDouble(time, CultureInfo.InvariantCulture) * 100);
                                     runner.SetResult(itime, 0);
                                 }
@@ -378,6 +391,7 @@ namespace LiveResults.Client.Parsers
 
                             if (!string.IsNullOrEmpty(sSplittime))
                             {
+                                FixKraemerTimeFormat(ref sSplittime);
                                 int iSplittime = (int)(Convert.ToDouble(sSplittime, CultureInfo.InvariantCulture) * 100);
                                 lsplitCodes.Add(iSplitcode);
                                 lsplitTimes.Add(iSplittime);

@@ -19,8 +19,9 @@ namespace LiveResults.Client
         OSParser m_osParser;
         OEParser m_oeParser;
 
+#if _CASPARCG_
         private CasparClient.CasparControlFrm casparForm = null;
-
+#endif
         enum Format { Iofxml, Oecsv, Oscsv, Oecsvteam }
         class FormatItem
         {
@@ -203,11 +204,11 @@ namespace LiveResults.Client
                 client.Start();
                 m_clients.Add(client);
             }
-
+#if _CASPARCG_
             casparForm = new LiveResults.CasparClient.CasparControlFrm();
             casparForm.Show();
             casparForm.SetEmmaClient(m_clients[0]);
-
+#endif
             timer1_Tick(null, null);
         }
 
