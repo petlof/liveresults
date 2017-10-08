@@ -216,8 +216,7 @@ namespace LiveResults.Client
                                 
                                 try
                                 {
-                                    string sModDate = Convert.ToString(reader[0]);
-                                    DateTime modDate = ParseDateTime(sModDate);
+                                    DateTime modDate = reader.GetDateTime(reader.GetOrdinal("modifyDate"));
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = Convert.ToInt32(reader["entryid"].ToString());
 
@@ -238,13 +237,11 @@ namespace LiveResults.Client
 
                                     if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
                                     {
-                                        string tTime = reader["allocatedStartTime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = reader.GetDateTime(reader.GetOrdinal("allocatedStartTime"));
                                     }
                                     if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
                                     {
-                                        string tTime = reader["starttime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = reader.GetDateTime(reader.GetOrdinal("starttime"));
                                     }
 
 
@@ -396,7 +393,7 @@ namespace LiveResults.Client
                                         int lastOrder = -1;
                                         if (splreader.Read())
                                         {
-                                            cardReadTime = Convert.ToDateTime(splreader["readInTime"]);
+                                            cardReadTime = splreader.GetDateTime(splreader.GetOrdinal("readInTime"));
                                         }
                                         splreader.Close();
                                     }
@@ -470,15 +467,11 @@ namespace LiveResults.Client
                             {
                                 try
                                 {
-                                    string smod = Convert.ToString(reader[0]);
-                                    DateTime mod;
-                                    mod = ParseDateTime(smod);
+                                    DateTime mod = reader.GetDateTime(reader.GetOrdinal("modifyDate"));
 
                                     lastSplitDateTime = (mod > lastSplitDateTime ? mod : lastSplitDateTime);
 
-                                    string tTime = Convert.ToString(reader[1]);
-                                    DateTime pTime;
-                                    pTime = ParseDateTime(tTime);
+                                    DateTime pTime = reader.GetDateTime(reader.GetOrdinal("passedTime"));
                                     int sCont = reader.GetInt32(2);
                                     int entryid = Convert.ToInt32(reader["entryid"].ToString());
                                     DateTime startTime;
@@ -491,13 +484,11 @@ namespace LiveResults.Client
                                     //else 
                                     if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
                                     {
-                                        tTime = reader["allocatedStartTime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = reader.GetDateTime(reader.GetOrdinal("allocatedStartTime"));
                                     }
                                     else if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
                                     {
-                                        tTime = reader["starttime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = reader.GetDateTime(reader.GetOrdinal("starttime"));
                                     }
                                     else
                                     {
@@ -691,24 +682,6 @@ namespace LiveResults.Client
             {
                 FireOnResult(res);
             }
-        }
-
-        private static DateTime ParseDateTime(string tTime)
-        {
-            DateTime startTime;
-            if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
-            {
-                if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss.f", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
-                {
-                    if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss.ff", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
-                    {
-                        if (!DateTime.TryParseExact(tTime, "yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, out startTime))
-                        {
-                        }
-                    }
-                }
-            }
-            return startTime;
         }
 
 
