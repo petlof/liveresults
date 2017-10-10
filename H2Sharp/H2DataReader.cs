@@ -204,14 +204,22 @@ namespace System.Data.H2
         }
         public override int GetOrdinal(string name)
         {
-            for (int index = 0; index < Meta.getColumnCount(); ++index)
+            for (int index = 1; index <= Meta.getColumnCount(); ++index)
             {
                 if (Meta.getColumnName(index) == name)
                 {
-                    return index;
+                    return index-1;
                 }
             }
-            return -1;
+            string name2 = name.ToLower();
+            for (int index = 1; index <= Meta.getColumnCount(); ++index)
+            {
+                if (Meta.getColumnName(index).ToLower() == name2)
+                {
+                    return index - 1;
+                }
+            }
+            throw new IndexOutOfRangeException();
         }
         public override DataTable GetSchemaTable()
         {
