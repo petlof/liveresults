@@ -209,6 +209,9 @@ namespace LiveResults.Client
 
                             cmd.Prepare();
                             reader = cmd.ExecuteReader();
+                            int ordModifyDate = reader.GetOrdinal("modifyDate");
+                            int ordAllocatedStartTime = reader.GetOrdinal("allocatedStartTime");
+                            int ordStartTime = reader.GetOrdinal("starttime");
                             while (reader.Read())
                             {
                                 int time = 0, runnerID = 0, iStartTime = 0;
@@ -216,8 +219,7 @@ namespace LiveResults.Client
                                 
                                 try
                                 {
-                                    string sModDate = Convert.ToString(reader[0]);
-                                    DateTime modDate = ParseDateTime(sModDate);
+                                    DateTime modDate = DBGetDateTime(reader, ordModifyDate);
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = Convert.ToInt32(reader["entryid"].ToString());
 
@@ -236,15 +238,13 @@ namespace LiveResults.Client
 
                                     DateTime startTime = DateTime.MinValue;
 
-                                    if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                    if (reader[ordAllocatedStartTime] != null && reader[ordAllocatedStartTime] != DBNull.Value)
                                     {
-                                        string tTime = reader["allocatedStartTime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = DBGetDateTime(reader, ordAllocatedStartTime);
                                     }
-                                    if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    if (reader[ordStartTime] != null && reader[ordStartTime] != DBNull.Value)
                                     {
-                                        string tTime = reader["starttime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = DBGetDateTime(reader, ordStartTime);
                                     }
 
 
@@ -396,7 +396,7 @@ namespace LiveResults.Client
                                         int lastOrder = -1;
                                         if (splreader.Read())
                                         {
-                                            cardReadTime = Convert.ToDateTime(splreader["readInTime"]);
+                                            cardReadTime = DBGetDateTime(splreader, splreader.GetOrdinal("readInTime"));
                                         }
                                         splreader.Close();
                                     }
@@ -466,19 +466,21 @@ namespace LiveResults.Client
                             }
 
                             reader = cmdSplits.ExecuteReader();
+                            ordModifyDate = reader.GetOrdinal("modifyDate");
+                            int ordPassedTime = reader.GetOrdinal("passedTime");
+                            ordAllocatedStartTime = reader.GetOrdinal("allocatedStartTime");
+                            ordStartTime = reader.GetOrdinal("starttime");
                             while (reader.Read())
                             {
                                 try
                                 {
-                                    string smod = Convert.ToString(reader[0]);
                                     DateTime mod;
-                                    mod = ParseDateTime(smod);
+                                    mod = DBGetDateTime(reader, ordModifyDate);
 
                                     lastSplitDateTime = (mod > lastSplitDateTime ? mod : lastSplitDateTime);
 
-                                    string tTime = Convert.ToString(reader[1]);
                                     DateTime pTime;
-                                    pTime = ParseDateTime(tTime);
+                                    pTime = DBGetDateTime(reader, ordPassedTime);
                                     int sCont = reader.GetInt32(2);
                                     int entryid = Convert.ToInt32(reader["entryid"].ToString());
                                     DateTime startTime;
@@ -489,15 +491,13 @@ namespace LiveResults.Client
                                     //    startTime = ParseDateTime(tTime);
                                     //}
                                     //else 
-                                    if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                    if (reader[ordAllocatedStartTime] != null && reader[ordAllocatedStartTime] != DBNull.Value)
                                     {
-                                        tTime = reader["allocatedStartTime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = DBGetDateTime(reader, ordAllocatedStartTime);
                                     }
-                                    else if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    else if (reader[ordStartTime] != null && reader[ordStartTime] != DBNull.Value)
                                     {
-                                        tTime = reader["starttime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = DBGetDateTime(reader, ordStartTime);
                                     }
                                     else
                                     {
@@ -691,6 +691,25 @@ namespace LiveResults.Client
             {
                 FireOnResult(res);
             }
+        }
+
+        private DateTime DBGetDateTime(IDataReader dbReader, int colOrd)
+        {
+            DateTime obj;
+            obj = DateTime.MinValue;
+            if (dbReader[colOrd] != null && dbReader[colOrd] != DBNull.Value)
+            {
+                if (m_connection is System.Data.H2.H2Connection)
+                {
+                    string dateTimeString = dbReader[colOrd].ToString();
+                    obj = ParseDateTime(dateTimeString);
+                }
+                else
+                {
+                    obj = dbReader.GetDateTime(colOrd);
+                }
+            }
+            return obj;
         }
 
         private static DateTime ParseDateTime(string tTime)
