@@ -59,6 +59,7 @@
             this.btnStopClock = new System.Windows.Forms.Button();
             this.btnStartClock = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.checkFollowTail = new System.Windows.Forms.CheckBox();
             this.chkShowAlsoAlreadyPassed = new System.Windows.Forms.CheckBox();
             this.listBox2 = new System.Windows.Forms.ListBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -76,7 +77,6 @@
             this.btnRefreshResultListClasses = new System.Windows.Forms.Button();
             this.cmbClass = new System.Windows.Forms.ComboBox();
             this.lblClass = new System.Windows.Forms.Label();
-            this.tabPage5 = new System.Windows.Forms.TabPage();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.cmbPre4 = new System.Windows.Forms.ComboBox();
             this.cmbPre3 = new System.Windows.Forms.ComboBox();
@@ -97,7 +97,6 @@
             this.label6 = new System.Windows.Forms.Label();
             this.lstRadioControls = new System.Windows.Forms.CheckedListBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.checkFollowTail = new System.Windows.Forms.CheckBox();
             this.groupBox1.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
@@ -170,7 +169,6 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage4);
             this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage5);
             this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Location = new System.Drawing.Point(11, 87);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
@@ -474,6 +472,16 @@
             this.tabPage2.Text = "Resultlist";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // checkFollowTail
+            // 
+            this.checkFollowTail.AutoSize = true;
+            this.checkFollowTail.Location = new System.Drawing.Point(481, 328);
+            this.checkFollowTail.Name = "checkFollowTail";
+            this.checkFollowTail.Size = new System.Drawing.Size(96, 21);
+            this.checkFollowTail.TabIndex = 34;
+            this.checkFollowTail.Text = "Follow Tail";
+            this.checkFollowTail.UseVisualStyleBackColor = true;
+            // 
             // chkShowAlsoAlreadyPassed
             // 
             this.chkShowAlsoAlreadyPassed.AutoSize = true;
@@ -655,15 +663,6 @@
             this.lblClass.TabIndex = 0;
             this.lblClass.Text = "Class";
             // 
-            // tabPage5
-            // 
-            this.tabPage5.Location = new System.Drawing.Point(4, 25);
-            this.tabPage5.Name = "tabPage5";
-            this.tabPage5.Size = new System.Drawing.Size(856, 401);
-            this.tabPage5.TabIndex = 4;
-            this.tabPage5.Text = "Passing LowerThird";
-            this.tabPage5.UseVisualStyleBackColor = true;
-            // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.cmbPre4);
@@ -691,6 +690,7 @@
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Prewarned runners";
             this.tabPage3.UseVisualStyleBackColor = true;
+            this.tabPage3.Click += new System.EventHandler(this.tabPage3_Click);
             // 
             // cmbPre4
             // 
@@ -700,6 +700,7 @@
             this.cmbPre4.Name = "cmbPre4";
             this.cmbPre4.Size = new System.Drawing.Size(108, 24);
             this.cmbPre4.TabIndex = 17;
+            this.cmbPre4.Visible = false;
             // 
             // cmbPre3
             // 
@@ -709,6 +710,7 @@
             this.cmbPre3.Name = "cmbPre3";
             this.cmbPre3.Size = new System.Drawing.Size(108, 24);
             this.cmbPre3.TabIndex = 16;
+            this.cmbPre3.Visible = false;
             // 
             // cmbPre2
             // 
@@ -718,6 +720,7 @@
             this.cmbPre2.Name = "cmbPre2";
             this.cmbPre2.Size = new System.Drawing.Size(108, 24);
             this.cmbPre2.TabIndex = 15;
+            this.cmbPre2.Visible = false;
             // 
             // cmbPre1
             // 
@@ -727,6 +730,7 @@
             this.cmbPre1.Name = "cmbPre1";
             this.cmbPre1.Size = new System.Drawing.Size(108, 24);
             this.cmbPre1.TabIndex = 14;
+            this.cmbPre1.Visible = false;
             // 
             // txtNumQ4
             // 
@@ -735,6 +739,7 @@
             this.txtNumQ4.Size = new System.Drawing.Size(39, 22);
             this.txtNumQ4.TabIndex = 13;
             this.txtNumQ4.Text = "20";
+            this.txtNumQ4.Visible = false;
             // 
             // txtNumQ3
             // 
@@ -743,6 +748,7 @@
             this.txtNumQ3.Size = new System.Drawing.Size(39, 22);
             this.txtNumQ3.TabIndex = 12;
             this.txtNumQ3.Text = "20";
+            this.txtNumQ3.Visible = false;
             // 
             // txtNumQ2
             // 
@@ -751,6 +757,7 @@
             this.txtNumQ2.Size = new System.Drawing.Size(39, 22);
             this.txtNumQ2.TabIndex = 11;
             this.txtNumQ2.Text = "20";
+            this.txtNumQ2.Visible = false;
             // 
             // txtNumQ1
             // 
@@ -759,6 +766,7 @@
             this.txtNumQ1.Size = new System.Drawing.Size(39, 22);
             this.txtNumQ1.TabIndex = 10;
             this.txtNumQ1.Text = "20";
+            this.txtNumQ1.Visible = false;
             // 
             // cmbPreClass4
             // 
@@ -768,6 +776,7 @@
             this.cmbPreClass4.Name = "cmbPreClass4";
             this.cmbPreClass4.Size = new System.Drawing.Size(236, 24);
             this.cmbPreClass4.TabIndex = 9;
+            this.cmbPreClass4.Visible = false;
             // 
             // cmbPreClass3
             // 
@@ -777,6 +786,7 @@
             this.cmbPreClass3.Name = "cmbPreClass3";
             this.cmbPreClass3.Size = new System.Drawing.Size(236, 24);
             this.cmbPreClass3.TabIndex = 8;
+            this.cmbPreClass3.Visible = false;
             // 
             // cmbPreClass2
             // 
@@ -786,6 +796,7 @@
             this.cmbPreClass2.Name = "cmbPreClass2";
             this.cmbPreClass2.Size = new System.Drawing.Size(236, 24);
             this.cmbPreClass2.TabIndex = 7;
+            this.cmbPreClass2.Visible = false;
             // 
             // cmbPreClass1
             // 
@@ -795,6 +806,7 @@
             this.cmbPreClass1.Name = "cmbPreClass1";
             this.cmbPreClass1.Size = new System.Drawing.Size(236, 24);
             this.cmbPreClass1.TabIndex = 6;
+            this.cmbPreClass1.Visible = false;
             // 
             // btnPrewarningForceUpdate
             // 
@@ -863,16 +875,6 @@
             // 
             this.timer1.Enabled = true;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // checkFollowTail
-            // 
-            this.checkFollowTail.AutoSize = true;
-            this.checkFollowTail.Location = new System.Drawing.Point(481, 328);
-            this.checkFollowTail.Name = "checkFollowTail";
-            this.checkFollowTail.Size = new System.Drawing.Size(96, 21);
-            this.checkFollowTail.TabIndex = 34;
-            this.checkFollowTail.Text = "Follow Tail";
-            this.checkFollowTail.UseVisualStyleBackColor = true;
             // 
             // CasparControlFrm
             // 
@@ -943,7 +945,6 @@
         private System.Windows.Forms.CheckBox chkClockShowTenth;
         private System.Windows.Forms.ComboBox cmbResultListClassPosition;
         private System.Windows.Forms.Label label10;
-        private System.Windows.Forms.TabPage tabPage5;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.RadioButton rdoResultTypeLowerThrid;
         private System.Windows.Forms.RadioButton rdoResultListTypeFF;
