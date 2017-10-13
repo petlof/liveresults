@@ -254,7 +254,7 @@ namespace LiveResults.Client
                                         iStartTime = (int)(startTime.TimeOfDay.TotalSeconds * 100);
                                     }
 
-                                   if (splitsToRead != null && reader["bibNumber"] != null && reader["bibNumber"] != DBNull.Value && reader["rawDataFromElectronicPunchingCardsId"] != null && reader["rawDataFromElectronicPunchingCardsId"] != DBNull.Value)
+                                   /*if (splitsToRead != null && reader["bibNumber"] != null && reader["bibNumber"] != DBNull.Value && reader["rawDataFromElectronicPunchingCardsId"] != null && reader["rawDataFromElectronicPunchingCardsId"] != DBNull.Value)
                                    {
                                        int bibNumber = Convert.ToInt32(reader["bibNumber"]);
                                        if (!File.Exists(Path.Combine(splitsPaths, bibNumber + ".xml")))
@@ -263,7 +263,7 @@ namespace LiveResults.Client
                                            int rawCardId = Convert.ToInt32(reader["rawDataFromElectronicPunchingCardsId"]);
                                            splitsToRead.Add(new object[] { bibNumber, courseId, rawCardId, startTime, time });
                                        }
-                                   }
+                                   }*/
 
 
                                 }

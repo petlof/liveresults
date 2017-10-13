@@ -42,6 +42,9 @@
             this.button3 = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
             this.listBox2 = new System.Windows.Forms.ListBox();
+            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
+            this.button4 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -60,6 +63,7 @@
             this.textBox1.Name = "textBox1";
             this.textBox1.Size = new System.Drawing.Size(100, 22);
             this.textBox1.TabIndex = 1;
+            this.textBox1.TextChanged += new System.EventHandler(this.textBox1_TextChanged);
             // 
             // button1
             // 
@@ -168,11 +172,40 @@
             this.listBox2.Size = new System.Drawing.Size(304, 196);
             this.listBox2.TabIndex = 11;
             // 
+            // textBox2
+            // 
+            this.textBox2.Location = new System.Drawing.Point(445, 6);
+            this.textBox2.Name = "textBox2";
+            this.textBox2.Size = new System.Drawing.Size(100, 22);
+            this.textBox2.TabIndex = 14;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(369, 9);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(70, 17);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Publish to";
+            // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(845, 89);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(137, 23);
+            this.button4.TabIndex = 15;
+            this.button4.Text = "Sync to current time";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
             // FrmReSimulateEvent
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(998, 303);
+            this.Controls.Add(this.button4);
+            this.Controls.Add(this.textBox2);
+            this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.listBox2);
             this.Controls.Add(this.button3);
@@ -210,5 +243,8 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.ListBox listBox2;
+        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Button button4;
     }
 }
