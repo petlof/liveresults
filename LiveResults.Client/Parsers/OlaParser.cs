@@ -491,13 +491,13 @@ namespace LiveResults.Client
                                     //    startTime = ParseDateTime(tTime);
                                     //}
                                     //else 
-                                    if (reader[ordAllocatedStartTime] != null && reader[ordAllocatedStartTime] != DBNull.Value)
-                                    {
-                                        startTime = DBGetDateTime(reader, ordAllocatedStartTime);
-                                    }
-                                    else if (reader[ordStartTime] != null && reader[ordStartTime] != DBNull.Value)
+                                    if (reader[ordStartTime] != null && reader[ordStartTime] != DBNull.Value)
                                     {
                                         startTime = DBGetDateTime(reader, ordStartTime);
+                                    }
+                                    else if (reader[ordAllocatedStartTime] != null && reader[ordAllocatedStartTime] != DBNull.Value)
+                                    {
+                                        startTime = DBGetDateTime(reader, ordAllocatedStartTime);
                                     }
                                     else
                                     {
