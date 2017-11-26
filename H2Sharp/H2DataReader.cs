@@ -28,7 +28,7 @@
 
 using System.Data.Common;
 using java.sql;
-
+using System.Globalization;
 
 namespace System.Data.H2
 {
@@ -206,7 +206,7 @@ namespace System.Data.H2
         {
             for (int index = 0; index < Meta.getColumnCount(); ++index)
             {
-                if (Meta.getColumnName(index) == name)
+                if (string.Compare(Meta.getColumnName(ConvertOrdnal(index)), name, true) == 0)
                 {
                     return index;
                 }
