@@ -186,28 +186,13 @@ namespace LiveResults.Client
             {
                 var parser = new TulospalveluParser(new string[]
                 {
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_jwoc_long/m20/smart/1/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_jwoc_long/w20/smart/1/"
-                    /*"http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/1/0",
-                    "http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/2/0",
-                    "http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/3/0",
-                    "http://online.jukola.com/tulokset/en/j2017_ve/ve/tilanne/4/0"*/
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/m21/smart/1/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcmiddle/w21/smart/1/"
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/m21/smart/2/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wclong/w21/smart/2/"
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21q/smart/1/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/w21q/smart/1/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/m21/smart/2/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/w21/smart/2/"
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_silja/h21e/tilanne/1/0/"
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/MEN/tilanne/1/0/",
-                    //"http://online4.tulospalvelu.fi/tulokset/en/2017_wcsprint/WOMEN/tilanne/1/0/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_yllassprint/men/smart/1/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_yllassprint/women/smart/1/"
 
 
                 });
                 var mon = new FrmMonitor();
-                mon.CompetitionID = 12683;
+                mon.CompetitionID = 13181;
                 mon.SetParser(parser);
                 mon.ShowDialog(this);
             }
