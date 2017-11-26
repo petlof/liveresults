@@ -216,8 +216,8 @@ namespace LiveResults.Client
                                 
                                 try
                                 {
-                                    string sModDate = Convert.ToString(reader[0]);
-                                    DateTime modDate = ParseDateTime(sModDate);
+
+                                    DateTime modDate = GetDbDateTime(reader, "modifyDate");
                                     lastDateTime = (modDate > lastDateTime ? modDate : lastDateTime);
                                     runnerID = Convert.ToInt32(reader["entryid"].ToString());
 
@@ -238,34 +238,18 @@ namespace LiveResults.Client
 
                                     if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
                                     {
-                                        string tTime = reader["allocatedStartTime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = GetDbDateTime(reader, "allocatedStartTime");
                                     }
                                     if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
                                     {
-                                        string tTime = reader["starttime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = GetDbDateTime(reader, "starttime");
                                     }
-
 
                                     iStartTime = 0;
                                     if (startTime > DateTime.MinValue)
                                     {
                                         iStartTime = (int)(startTime.TimeOfDay.TotalSeconds * 100);
                                     }
-
-                                   /*if (splitsToRead != null && reader["bibNumber"] != null && reader["bibNumber"] != DBNull.Value && reader["rawDataFromElectronicPunchingCardsId"] != null && reader["rawDataFromElectronicPunchingCardsId"] != DBNull.Value)
-                                   {
-                                       int bibNumber = Convert.ToInt32(reader["bibNumber"]);
-                                       if (!File.Exists(Path.Combine(splitsPaths, bibNumber + ".xml")))
-                                       {
-                                           int courseId = Convert.ToInt32(reader["individualCourseId"]);
-                                           int rawCardId = Convert.ToInt32(reader["rawDataFromElectronicPunchingCardsId"]);
-                                           splitsToRead.Add(new object[] { bibNumber, courseId, rawCardId, startTime, time });
-                                       }
-                                   }*/
-
-
                                 }
                                 catch (Exception ee)
                                 {
@@ -351,7 +335,7 @@ namespace LiveResults.Client
                                 }
                             }
                             reader.Close();
-
+                            #region readsplits
                             if (splitsToRead != null && splitsToRead.Count > 0)
                             {
                                 while (splitsToRead.Count > 0)
@@ -464,40 +448,30 @@ namespace LiveResults.Client
                                     }
                                 }
                             }
+                            #endregion
 
                             reader = cmdSplits.ExecuteReader();
                             while (reader.Read())
                             {
                                 try
                                 {
-                                    string smod = Convert.ToString(reader[0]);
-                                    DateTime mod;
-                                    mod = ParseDateTime(smod);
+                                    DateTime mod = GetDbDateTime(reader, "modifyDate");
 
                                     lastSplitDateTime = (mod > lastSplitDateTime ? mod : lastSplitDateTime);
 
                                     string tTime = Convert.ToString(reader[1]);
-                                    DateTime pTime;
-                                    pTime = ParseDateTime(tTime);
+                                    DateTime pTime = GetDbDateTime(reader, "passedTime");
                                     int sCont = reader.GetInt32(2);
                                     int entryid = Convert.ToInt32(reader["entryid"].ToString());
                                     DateTime startTime;
 
-                                    //if (isRelay && reader["firstStartTime"] != null && reader["firstStartTime"] != DBNull.Value)
-                                    //{
-                                    //    tTime = reader["firstStartTime"].ToString();
-                                    //    startTime = ParseDateTime(tTime);
-                                    //}
-                                    //else 
-                                    if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
+                                    if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
                                     {
-                                        tTime = reader["allocatedStartTime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = GetDbDateTime(reader, "starttime");
                                     }
-                                    else if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
+                                    else if (reader["allocatedStartTime"] != null && reader["allocatedStartTime"] != DBNull.Value)
                                     {
-                                        tTime = reader["starttime"].ToString();
-                                        startTime = ParseDateTime(tTime);
+                                        startTime = GetDbDateTime(reader, "allocatedStartTime");
                                     }
                                     else
                                     {
@@ -525,8 +499,6 @@ namespace LiveResults.Client
 
                                     if (isRelay)
                                     {
-                                        //classn = classn + "-" + Convert.ToString(reader["relayLeg"]);
-
                                         relayEventCache.SetTeamLegSplitResult(entryid, classn, club, name, Convert.ToInt32(reader["relayLeg"].ToString()), (int)startTime.TimeOfDay.TotalSeconds * 100, sCont, (int)time, passedCount);
                                     }
                                     else
@@ -691,6 +663,25 @@ namespace LiveResults.Client
             {
                 FireOnResult(res);
             }
+        }
+
+        private DateTime GetDbDateTime(IDataReader reader, string columnName)
+        {
+            DateTime ret = DateTime.MinValue;
+            object value = reader[columnName];
+            if (value != null && value != DBNull.Value)
+            {
+                if (m_connection is System.Data.H2.H2Connection)
+                {
+                    string dateTimeString = value.ToString();
+                    ret = ParseDateTime(dateTimeString);
+                }
+                else
+                {
+                    ret = reader.GetDateTime(reader.GetOrdinal(columnName));
+                }
+            }
+            return ret;
         }
 
         private static DateTime ParseDateTime(string tTime)
