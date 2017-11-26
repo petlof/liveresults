@@ -50,7 +50,7 @@ namespace LiveResults.Client
                 if (startTime < m_StartTime)
                     m_StartTime = startTime;
 
-                foreach (var splitTime in runner.StageSplitTimes)
+                foreach (var splitTime in runner.SplitTimes)
                 {
                     DateTime eventTime = startTime.AddSeconds(splitTime.Time / 100.0);
                     events.Add(new Event
@@ -66,16 +66,16 @@ namespace LiveResults.Client
                     });
                 }
 
-                if (runner.StageTime > 0)
+                if (runner.Time > 0)
                 {
-                    DateTime eventTime = startTime.AddSeconds(runner.StageTime / 100.0);
+                    DateTime eventTime = startTime.AddSeconds(runner.Time / 100.0);
                     events.Add(new Event
                     {
                         occurs = eventTime,
                         Data = new ResultStruct
                         {
                             ControlCode = 1000,
-                            Time = runner.StageTime
+                            Time = runner.Time
                         },
                         runner = runner,
                         RunnerStatus = runner.StageStatus

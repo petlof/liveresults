@@ -4,9 +4,11 @@ using System.ComponentModel;
 using System.Configuration;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Windows.Forms;
+using System.Xml.Serialization;
 using LiveResults.Model;
 using Svt.Caspar;
 using Svt.Network;
@@ -24,33 +26,24 @@ namespace LiveResults.CasparClient
             ? "resultsv2"
             : ConfigurationManager.AppSettings["caspar_template_path"];
 
-        CasparDevice m_Caspar = new CasparDevice();
+        readonly CasparDevice m_Caspar = new CasparDevice();
 
         private EmmaMysqlClient m_emmaClient = null;
-
-        private resultListItem[] m_currentResultList;
         private int m_ResultCurrentPage = 1;
         private string m_ResultsCurrentClassName = "";
         private cmbRadio m_ResultsCurrentPosition = null;
 
-        Dictionary<int, string> runnerStatus = new Dictionary<int, string>();
 
 
         public CasparControlFrm()
         {
             InitializeComponent();
+
+            LoadSettings();
+
             DisableControls();
 
-            runnerStatus.Add(1, "DNS");
-            runnerStatus.Add(2, "DNF");
-            runnerStatus.Add(11, "WO");
-            runnerStatus.Add(12, "MO");
-            runnerStatus.Add(0, "OK");
-            runnerStatus.Add(3, "MP");
-            runnerStatus.Add(4, "DSQ");
-            runnerStatus.Add(5, "OT");
-            runnerStatus.Add(9, "");
-            runnerStatus.Add(10, "");
+            
 
 
             m_Caspar.Connected += m_Caspar_Connected;
@@ -65,26 +58,12 @@ namespace LiveResults.CasparClient
         public void SetEmmaClient(EmmaMysqlClient client)
         {
             m_emmaClient = client;
-            m_emmaClient.ResultChanged += EmmaClientOnResultChanged;
+          //  m_emmaClient.ResultChanged += EmmaClientOnResultChanged;
         }
 
-        private void EmmaClientOnResultChanged(Runner runner, int resultPosition)
+     /*   private void EmmaClientOnResultChanged(Runner runner, int resultPosition)
         {
-            if (!string.IsNullOrEmpty(m_ResultsCurrentClassName) && m_ResultsCurrentPosition != null)
-            {
-                if (rdoResultTypeLowerThrid.Checked && runner.Class == m_ResultsCurrentClassName &&
-                    resultPosition == m_ResultsCurrentPosition.code)
-                {
-                    UpdateCurrentResultList();
-                    string templateName;
-                    var cgData = GetResultsCasparData(out templateName);
-                    if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-                    {
-                        m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
-                            .Update(Properties.Settings.Default.GraphicsLayerResultList, cgData);
-                    }
-                }
-            }
+            
             if (showingPrewarned)
             {
                 if (resultPosition == 1000)
@@ -103,7 +82,7 @@ namespace LiveResults.CasparClient
                     }
                 }
             }
-        }
+        }*/
 
         // update text on button
         private void UpdateConnectButtonText()
@@ -243,34 +222,6 @@ namespace LiveResults.CasparClient
             }
         }
 
-        private void btnShowNameLabel_Click(object sender, EventArgs e)
-        {
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-
-                CasparCGDataCollection cgData = new CasparCGDataCollection();
-                cgData.SetData("label_name", txtName.Text);
-                cgData.SetData("label_title", txtTitleClub.Text);
-                string templateName = m_templateFolder + "/Title";
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
-                    .Add(Properties.Settings.Default.GraphicsLayerNaming, templateName, true, cgData);
-                System.Diagnostics.Debug.WriteLine("Add");
-                System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.GraphicsLayerNaming);
-                System.Diagnostics.Debug.WriteLine(templateName);
-                System.Diagnostics.Debug.WriteLine(cgData.ToXml());
-            }
-        }
-
-        private void btnHideNameLabel_Click(object sender, EventArgs e)
-        {
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG.Stop(Properties.Settings.Default.GraphicsLayerNaming);
-                System.Diagnostics.Debug.WriteLine("Stop");
-                System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.GraphicsLayerNaming);
-            }
-        }
-
         private void btnRefreshResultListClasses_Click(object sender, EventArgs e)
         {
             if (m_emmaClient != null)
@@ -316,25 +267,23 @@ namespace LiveResults.CasparClient
             }
         }
 
-        void updateResultPageXOfX()
-        {
-            int numPages = (int) Math.Ceiling(m_currentResultList.Length / 12.0);
-            lblResultNumPages.Text = "Page " + m_ResultCurrentPage + " / " + numPages;
-        }
+       
 
-        private void btnShowResultList_Click(object sender, EventArgs e)
+        private void btnQueueResultList_Click(object sender, EventArgs e)
         {
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
+            if (rdoResultListTypeFF.Checked)
             {
-                UpdateCurrentResultList();
-                string templateName;
-                var cgData = GetResultsCasparData(out templateName);
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
-                    .Add(Properties.Settings.Default.GraphicsLayerResultList, templateName, true, cgData);
+                AddJobToQueue(new PlayoutJobResultList(m_Caspar, m_templateFolder, m_emmaClient, cmbClass.SelectedItem as string,
+                    (cmbResultListClassPosition.SelectedItem as cmbRadio).code, (cmbResultListClassPosition.SelectedItem as cmbRadio).Name));
+            }
+            else if (rdoResultTypeLowerThrid.Checked)
+            {
+                AddJobToQueue(new PlayoutJobResultListLowerThird(m_Caspar, m_templateFolder, m_emmaClient, cmbClass.SelectedItem as string,
+                   (cmbResultListClassPosition.SelectedItem as cmbRadio).code, (cmbResultListClassPosition.SelectedItem as cmbRadio).Name));
             }
         }
 
-        private CasparCGDataCollection GetResultsCasparData(out string templateName)
+    /*    private CasparCGDataCollection GetResultsCasparData(out string templateName)
         {
             CasparCGDataCollection cgData = new CasparCGDataCollection();
             templateName = "";
@@ -349,12 +298,12 @@ namespace LiveResults.CasparClient
                 templateName = m_templateFolder + "/ResultList_Passing";
             }
             return cgData;
-        }
+        }*/
 
         private DateTime m_nextForcedUpdate = DateTime.MaxValue;
         private DateTime m_nextPrewarnedForcedUpdate = DateTime.MaxValue;
 
-        private void UpdateResultListPagePassing(CasparCGDataCollection cgData)
+   /*     private void UpdateResultListPagePassing(CasparCGDataCollection cgData)
         {
             cgData.SetData("title_class", m_ResultsCurrentClassName + " - " + m_ResultsCurrentPosition.Name);
 
@@ -485,46 +434,9 @@ namespace LiveResults.CasparClient
 
 
 
-        }
+        }*/
 
-        private void UpdateResultListPage(CasparCGDataCollection cgData)
-        {
-            if (m_currentResultList == null)
-                return;
-            cgData.SetData("title_class", m_ResultsCurrentClassName);
-            int numPerPage = 10;
-            var list = m_currentResultList.Skip((m_ResultCurrentPage - 1) * numPerPage).Take(numPerPage).ToList();
-            cgData.SetData("title_class_description",
-                "Ställning vid " + (m_ResultsCurrentPosition.Name == "Finish" ? "Mål" : m_ResultsCurrentPosition.Name));
-            int lastTime = -1;
-            int pos = (m_ResultCurrentPage - 1) * numPerPage + 1;
-            if (m_currentResultList.Length > 0)
-            {
-                int winnerTime = m_currentResultList[0].Time;
-                for (int i = 0; i < list.Count(); i++)
-                {
-                    string sPos = list[i].Time != lastTime ? pos.ToString() : "=";
-                    pos++;
-                    lastTime = list[i].Time;
-                    cgData.SetData("res_name_" + i, list[i].runner.Name);
-                    cgData.SetData("res_club_" + i, list[i].runner.Club);
-                    cgData.SetData("res_place_" + i, list[i].Status == 0 ? sPos : "-");
-                    cgData.SetData("res_time_" + i, formatTime(list[i].Time, list[i].Status, false, true, false));
-                    if (list[i].Status == 0)
-                    {
-                        cgData.SetData("res_timeplus_" + i,
-                            "+" + formatTime(list[i].Time - winnerTime, list[i].Status, false, true, false));
-                    }
-                    else
-                    {
-                        cgData.SetData("res_timeplus_" + i, "-");
-                    }
-                }
-            }
-
-
-        }
-
+       
         private void button1_Click_1(object sender, EventArgs e)
         {
             if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
@@ -532,102 +444,6 @@ namespace LiveResults.CasparClient
                 m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG.Stop(Properties.Settings.Default.GraphicsLayerResultList);
                 System.Diagnostics.Debug.WriteLine("Stop");
                 System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.GraphicsLayerNaming);
-            }
-        }
-
-        private void button4_Click(object sender, EventArgs e)
-        {
-            m_ResultCurrentPage++;
-            updateResultPageXOfX();
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-
-                CasparCGDataCollection cgData = new CasparCGDataCollection();
-
-
-                UpdateResultListPage(cgData);
-
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
-                    .Update(Properties.Settings.Default.GraphicsLayerResultList, cgData);
-                System.Diagnostics.Debug.WriteLine("Update");
-                System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.GraphicsLayerNaming);
-                System.Diagnostics.Debug.WriteLine(cgData.ToXml());
-            }
-        }
-
-        private void button3_Click(object sender, EventArgs e)
-        {
-            if (m_ResultCurrentPage < 1)
-                m_ResultCurrentPage = 1;
-
-            m_ResultCurrentPage--;
-            updateResultPageXOfX();
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-
-                CasparCGDataCollection cgData = new CasparCGDataCollection();
-
-
-                UpdateResultListPage(cgData);
-
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
-                    .Update(Properties.Settings.Default.GraphicsLayerResultList, cgData);
-                System.Diagnostics.Debug.WriteLine("Update");
-                System.Diagnostics.Debug.WriteLine(Properties.Settings.Default.GraphicsLayerNaming);
-                System.Diagnostics.Debug.WriteLine(cgData.ToXml());
-            }
-        }
-
-
-        private string formatTime(int time, int status, bool showTenthOs, bool showHours, bool padZeros)
-        {
-
-            if (status != 0)
-            {
-                return this.runnerStatus[status];
-            }
-            else
-            {
-                if (showHours)
-                {
-                    int hours = ((int) Math.Floor(time / 360000.0));
-                    int minutes = ((int) Math.Floor((time - hours * 360000d) / 6000d));
-                    int seconds = ((int) Math.Floor((time - minutes * 6000d - hours * 360000) / 100));
-                    int tenth = ((int) Math.Floor((time - minutes * 6000d - hours * 360000 - seconds * 100) / 10));
-                    if (hours > 0)
-                    {
-                        string sHours = hours.ToString();
-                        if (padZeros)
-                            sHours = sHours.ToString().PadLeft(2, '0');
-
-                        return sHours + ":" + minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0') +
-                               (showTenthOs ? "." + tenth.ToString() : "");
-                    }
-                    else
-                    {
-
-
-                        return (padZeros ? minutes.ToString().PadLeft(2, '0') : minutes.ToString()) + ":" +
-                               seconds.ToString().PadLeft(2, '0') + (showTenthOs ? "." + tenth : "");
-                    }
-
-                }
-                else
-                {
-
-                    int minutes = (int) Math.Floor(time / 6000d);
-                    int seconds = (int) Math.Floor((time - minutes * 6000d) / 100);
-                    int tenth = (int) Math.Floor((time - minutes * 6000d - seconds * 100) / 10);
-                    if (padZeros)
-                    {
-                        return minutes.ToString().PadLeft(2, '0') + ":" + seconds.ToString().PadLeft(2, '0') +
-                               (showTenthOs ? "." + tenth : "");
-                    }
-                    else
-                    {
-                        return minutes + ":" + seconds.ToString().PadLeft(2, '0') + (showTenthOs ? "." + tenth : "");
-                    }
-                }
             }
         }
 
@@ -658,7 +474,7 @@ namespace LiveResults.CasparClient
 
         private bool showingPrewarned = false;
 
-        private void btnStartPrewarning_Click(object sender, EventArgs e)
+      /*  private void btnStartPrewarning_Click(object sender, EventArgs e)
         {
             if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
             {
@@ -674,9 +490,9 @@ namespace LiveResults.CasparClient
                     .Add(Properties.Settings.Default.GraphicsLayerPrewarnedRunners, templateName, true, cgData);
                 showingPrewarned = true;
             }
-        }
+        }*/
 
-        private void UpdatePrewarnedRunners(CasparCGDataCollection cgData)
+       /* private void UpdatePrewarnedRunners(CasparCGDataCollection cgData)
         {
             //Radios
             var radios = new List<int>();
@@ -759,10 +575,10 @@ namespace LiveResults.CasparClient
                     break;
 
             }*/
-        }
+       // }
+    
 
-
-        private void SetCGDataForPrewarnedRunners(CasparCGDataCollection cgData, int[] prewarnControls)
+      /*  private void SetCGDataForPrewarnedRunners(CasparCGDataCollection cgData, int[] prewarnControls)
         {
             m_nextPrewarnedForcedUpdate = DateTime.MaxValue;
             cgData.SetData("title", "Förvarnade");
@@ -772,9 +588,20 @@ namespace LiveResults.CasparClient
             var curRealTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100;
             bool hadRunnerFinishedWithin10sek = false;
             foreach (var prewarned in m_emmaClient.GetAllRunners()
-                .Where(x => x.StageTime > 0 && (x.StartTime + x.StageTime) > curRealTime - 10 * 100 && x.Status == 0)
-                .OrderBy(x => x.StartTime + x.StageTime))
+                .Where(x => x.Time > 0 && (x.StartTime + x.Time) > curRealTime - 10 * 100 && x.Status == 0)
+                .OrderBy(x => x.StartTime + x.Time))
             {
+                int startTime = prewarned.StartTime;
+                if (prewarned.Class.EndsWith("-2"))
+                {
+                    startTime = m_emmaClient.GetAllRunners()
+                        .Where(x => x.Class == prewarned.Class.Substring(0, prewarned.Class.Length - 2) + "-1" && x.Club == prewarned.Club)
+                        .First().StartTime;
+                }
+
+                if ((curRealTime -10*100)> startTime + prewarned.Time)
+                    continue;
+
                 var betterResInclass = m_emmaClient.GetRunnersInClass(prewarned.Class)
                     .Where(x => x.Time > 0 && x.Time < prewarned.Time && x.Status == 0).OrderBy(x => x.Time).ToArray();
                 var leader = betterResInclass.Any() ? betterResInclass[0] : null;
@@ -791,7 +618,7 @@ namespace LiveResults.CasparClient
                         true));
                 follIdx++;
                 hadRunnerFinishedWithin10sek = true;
-                if (follIdx > 16)
+                if (follIdx > 15)
                     break;
 
             }
@@ -808,7 +635,7 @@ namespace LiveResults.CasparClient
             double minTimeUntilUpdatePlaceRequired = double.MaxValue;
 
             foreach (var prewarned in m_emmaClient.GetAllRunners()
-                .Where(x => x.StageTime <= 0 && (x.Status == 0 || x.Status == 9 || x.Status == 10) && x.SplitTimes != null &&
+                .Where(x => x.Time <= 0 && (x.Status == 0 || x.Status == 9 || x.Status == 10) && x.SplitTimes != null &&
                             x.SplitTimes.Any(y => Array.IndexOf(prewarnControls, y.Control) >= 0))
                 .OrderBy(x => x.StartTime + x.StageSplitTimes.Max(m => m.Time)))
             {
@@ -817,16 +644,15 @@ namespace LiveResults.CasparClient
                 Runner leader = classResults.Any() ? classResults[0] : null;
 
                 int startTime = prewarned.StartTime;
-                if (prewarned.Class.EndsWith("-2"))
+                if (prewarned.Class.EndsWith("-2", StringComparison.Ordinal))
                 {
-                    startTime = m_emmaClient.GetAllRunners()
-                        .Where(x => x.Class == prewarned.Class.Substring(0, prewarned.Class.Length - 2) + "-1" && x.Club == prewarned.Club)
-                        .First().StartTime;
+                    startTime = m_emmaClient
+                        .GetAllRunners()
+                        .First(x => x.Class == prewarned.Class.Substring(0, prewarned.Class.Length - 2) + "-1" && x.Club == prewarned.Club).StartTime;
                 }
 
 
-                var curTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100 - startTime +
-                              prewarned.TotalTimeBeforeThisStage;
+                var curTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100 - startTime;
                 cgData.SetData("res_name_" + follIdx, prewarned.Name);
                 cgData.SetData("res_class_" + follIdx, prewarned.Class);
                 cgData.SetData("res_club_" + follIdx, prewarned.Club);
@@ -878,9 +704,9 @@ namespace LiveResults.CasparClient
                 }
                 
             }
-        }
+        }*/
 
-        private void SetCGDataForPrewarnedClass(CasparCGDataCollection cgData, ComboBox cmbBox, ComboBox preWarnControl,int numQualifiers, int resIdx, ref int follIdx)
+       /* private void SetCGDataForPrewarnedClass(CasparCGDataCollection cgData, ComboBox cmbBox, ComboBox preWarnControl,int numQualifiers, int resIdx, ref int follIdx)
         {
             cgData.SetData("title_class_" + resIdx, cmbBox.SelectedItem as string);
             var res = m_emmaClient.GetRunnersInClass(cmbBox.SelectedItem as string)
@@ -913,7 +739,7 @@ namespace LiveResults.CasparClient
             //Finished within 10sek
             var curRealTime = DateTime.Now.Hour * 360000 + DateTime.Now.Minute * 6000 + DateTime.Now.Second * 100;
             foreach (var prewarned in m_emmaClient.GetRunnersInClass(cmbBox.SelectedItem as string)
-                .Where(x => x.Time > 0 /*&& (x.StartTime+x.Time) < curRealTime */&& (x.StartTime+x.Time) > curRealTime-10*100 && x.Status == 0))
+                .Where(x => x.Time > 0 && (x.StartTime+x.Time) > curRealTime-10*100 && x.Status == 0))
             {
                 if (prewarned != leader)
                 {
@@ -954,7 +780,7 @@ namespace LiveResults.CasparClient
                     }
                 }
             }
-        }
+        }*/
 
         private void btnStopPrewarning_Click(object sender, EventArgs e)
         {
@@ -973,7 +799,9 @@ namespace LiveResults.CasparClient
             if (txtNameFinder.Text.Length > 0)
             {
                 listBox1.DisplayMember = "Name";
-                listBox1.DataSource = m_emmaClient.GetAllRunners().Where(x => x.Name.IndexOf(txtNameFinder.Text) >= 0 || x.Club.IndexOf(txtNameFinder.Text) >= 0)
+                listBox1.DataSource = m_emmaClient.GetAllRunners()
+                    .Where(x => x.Name.IndexOf(txtNameFinder.Text, StringComparison.InvariantCultureIgnoreCase) >= 0 
+                    || x.Club.IndexOf(txtNameFinder.Text, StringComparison.InvariantCultureIgnoreCase) >= 0)
                     .ToArray();
             }
             else
@@ -994,84 +822,23 @@ namespace LiveResults.CasparClient
             txtTitleClub.Text = r.Club;
         }
 
-        private void btnStartClock_Click(object sender, EventArgs e)
+        private void btnQueueClock_Click(object sender, EventArgs e)
         {
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-
-                CasparCGDataCollection cgData = new CasparCGDataCollection();
-
-                cgData.SetData("ref_time", txtClockRefTime.Text);
-                cgData.SetData("show_tenth", chkClockShowTenth.Checked.ToString().ToLower());
-
-
-                string templateName = m_templateFolder + "/clock";
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG.Add(Properties.Settings.Default.GraphicsLayersClock, templateName, true, cgData);
-            }
+            AddJobToQueue(new PlayoutJobClock(m_Caspar, m_templateFolder, txtClockRefTime.Text, chkClockShowTenth.Checked));
         }
 
-        private void btnStopClock_Click(object sender, EventArgs e)
-        {
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG.Stop(Properties.Settings.Default.GraphicsLayersClock);
-                
-            }
-        }
-
-        private void btnClockUpdate_Click(object sender, EventArgs e)
-        {
-            if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
-            {
-                CasparCGDataCollection cgData = new CasparCGDataCollection();
-
-                cgData.SetData("ref_time", txtClockRefTime.Text);
-                cgData.SetData("show_tenth", chkClockShowTenth.Checked.ToString().ToLower());
-
-                m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
-                    .Update(Properties.Settings.Default.GraphicsLayersClock, cgData);
-            }
-        }
+        
 
         private void tabControl1_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.F1)
             {
-                if (tabControl1.SelectedTab == tabPage1)
-                {
-                    btnHideNameLabel_Click(sender,new EventArgs());
-                }
                 if (tabControl1.SelectedTab == tabPage2)
                 {
                     button1_Click_1(sender, new EventArgs());
                 }
-                if (tabControl1.SelectedTab == tabPage4)
-                {
-                    btnStopClock_Click(sender,new EventArgs());
-                }
             }
-            if (e.KeyCode == Keys.F2)
-            {
-                if (tabControl1.SelectedTab == tabPage1)
-                {
-                    btnShowNameLabel_Click(sender,new EventArgs());
-                }
-                if (tabControl1.SelectedTab == tabPage2)
-                {
-                    btnShowResultList_Click(sender, new EventArgs());
-                }
-                if (tabControl1.SelectedTab == tabPage4)
-                {
-                    btnStartClock_Click(sender, new EventArgs());
-                }
-            }
-        }
-
-        class resultListItem
-        {
-            public Runner runner;
-            public int Time;
-            public int Status;
+           
         }
 
         class lstBoxItem
@@ -1087,51 +854,23 @@ namespace LiveResults.CasparClient
             }
         }
 
-        private void cmbResultListClassPosition_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            var selItem = cmbResultListClassPosition.SelectedItem as cmbRadio;
-            m_ResultsCurrentPosition = selItem;
-            UpdateCurrentResultList();
-            var runners = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName).OrderBy(x => x.StartTime).Select(x => new lstBoxItem { runner = x }).ToList();
-            if (!chkShowAlsoAlreadyPassed.Checked && m_currentResultList != null)
-            {
-                var idsInResults = m_currentResultList.Select(x => x.runner.ID).ToArray();
-                runners = runners.Where(x => Array.IndexOf(idsInResults, x.runner.ID) < 0).ToList();
-            }
-            listBox2.DataSource = runners;
-            m_ResultCurrentPage = 1;
-            updateResultPageXOfX();
-        }
+        //private void cmbResultListClassPosition_SelectedIndexChanged(object sender, EventArgs e)
+        //{
+        //    var selItem = cmbResultListClassPosition.SelectedItem as cmbRadio;
+        //    m_ResultsCurrentPosition = selItem;
+        //    UpdateCurrentResultList();
+        //    var runners = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName).OrderBy(x => x.StartTime).Select(x => new lstBoxItem { runner = x }).ToList();
+        //    if (!chkShowAlsoAlreadyPassed.Checked && m_currentResultList != null)
+        //    {
+        //        var idsInResults = m_currentResultList.Select(x => x.runner.ID).ToArray();
+        //        runners = runners.Where(x => Array.IndexOf(idsInResults, x.runner.ID) < 0).ToList();
+        //    }
+        //    listBox2.DataSource = runners;
+        //    m_ResultCurrentPage = 1;
+        //    updateResultPageXOfX();
+        //}
 
-        private void UpdateCurrentResultList()
-        {
-            if (m_ResultsCurrentPosition == null)
-                return;
-            if (m_ResultsCurrentPosition.code == 1000)
-            {
-                m_currentResultList = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName)
-                    .Where(x => x.Status != 9 && x.Status != 10 && x.Time != 0).OrderBy(x => x.Status).ThenBy(x => x.Time).Select(
-                        x => new resultListItem
-                        {
-                            runner= x,
-                            Status = x.Status,
-                            Time = x.Time
-                        }).ToArray();
-            }
-            else
-            {
-                m_currentResultList = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName)
-                    .Where(x => x.SplitTimes != null && x.SplitTimes.Any(y => y.Control == m_ResultsCurrentPosition.code)).OrderBy(x => x.SplitTimes.First(y => y.Control == m_ResultsCurrentPosition.code).Time).Select(x => new resultListItem() { runner = x, Status = 0, Time = x.SplitTimes.First(y => y.Control == m_ResultsCurrentPosition.code).Time }).ToArray();
-
-            }
-        }
-
-        private void rdoResultTypeLowerThrid_CheckedChanged(object sender, EventArgs e)
-        {
-            button3.Visible = lblResultNumPages.Visible = button4.Visible = rdoResultListTypeFF.Checked;
-        }
-
-        private void button2_Click(object sender, EventArgs e)
+       /* private void button2_Click(object sender, EventArgs e)
         {
             if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
             {
@@ -1141,37 +880,10 @@ namespace LiveResults.CasparClient
                 m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
                     .Update(Properties.Settings.Default.GraphicsLayerResultList, cgData);
             }
-        }
+        }*/
 
-        private void listBox2_MouseDown(object sender, MouseEventArgs e)
-        {
-            if (e.Button == MouseButtons.Right)
-            {
-                listBox2.SelectedItem = null;
-            }
-        }
 
-        private DateTime pwUpdate = DateTime.MinValue;
-        private void timer1_Tick(object sender, EventArgs e)
-        {
-            if (DateTime.Now > m_nextForcedUpdate)
-            {
-                m_nextForcedUpdate = DateTime.MaxValue;
-                button2_Click(sender, e);
-            }
-            if (showingPrewarned && DateTime.Now > m_nextPrewarnedForcedUpdate)
-            {
-                m_nextPrewarnedForcedUpdate = DateTime.MaxValue;
-                btnPrewarningForceUpdate_Click(sender, e);
-            }
-            /*if (showingPrewarned && (DateTime.Now - pwUpdate).TotalSeconds > 1)
-            {
-                btnPrewarningForceUpdate_Click(sender, e);
-                pwUpdate = DateTime.Now;
-            }*/
-        }
-
-        private void btnPrewarningForceUpdate_Click(object sender, EventArgs e)
+      /*  private void btnPrewarningForceUpdate_Click(object sender, EventArgs e)
         {
             if (m_Caspar.IsConnected && m_Caspar.Channels.Count > 0)
             {
@@ -1180,9 +892,9 @@ namespace LiveResults.CasparClient
                 m_Caspar.Channels[Properties.Settings.Default.CasparChannel].CG
                     .Update(Properties.Settings.Default.GraphicsLayerPrewarnedRunners, cgData);
             }
-        }
+        }*/
 
-        private void chkShowAlsoAlreadyPassed_CheckedChanged(object sender, EventArgs e)
+      /*  private void chkShowAlsoAlreadyPassed_CheckedChanged(object sender, EventArgs e)
         {
             var runners = m_emmaClient.GetRunnersInClass(m_ResultsCurrentClassName).OrderBy(x => x.StartTime).Select(x => new lstBoxItem { runner = x }).ToList();
             if (!chkShowAlsoAlreadyPassed.Checked && m_currentResultList != null)
@@ -1191,11 +903,188 @@ namespace LiveResults.CasparClient
                 runners = runners.Where(x => Array.IndexOf(idsInResults, x.runner.ID) < 0).ToList();
             }
             listBox2.DataSource = runners;
-        }
+        }*/
 
         private void tabPage3_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void CasparControlFrm_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            List<string> templates = new List<string>();
+            foreach (string item in lstNameTemplates.Items)
+            {
+                templates.Add(item);
+            }
+            var setts = new Settings
+            {
+                CasparServer = txtCGServer.Text,
+                SavedStrings = templates.ToArray()
+            };
+            var serializer = new XmlSerializer(typeof(Settings));
+            using (var stream = File.Create(GetSettingsPath()))
+            {
+                serializer.Serialize(stream, setts);
+            }
+        }
+
+        private void LoadSettings()
+        {
+            try
+            {
+                var setts = GetSettingsPath();
+                if (File.Exists(setts))
+                {
+                    var serializer = new XmlSerializer(typeof(Settings));
+                    using (var stream = File.OpenRead(setts))
+                    {
+                        var settings = (Settings) serializer.Deserialize(stream);
+                        txtCGServer.Text = settings.CasparServer;
+                        if (settings.SavedStrings != null)
+                        {
+                            foreach (var str in settings.SavedStrings)
+                            {
+                                lstNameTemplates.Items.Add(str);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ee)
+            {
+                MessageBox.Show("Failed to load settings: " + ee.Message);
+            }
+        }
+
+        private string GetSettingsPath()
+        {
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "LiveResults.Client",
+                "Casparsetts.xml");
+
+            if (!Directory.Exists(Path.GetDirectoryName(path)))
+                Directory.CreateDirectory(Path.GetDirectoryName(path));
+
+            return path;
+        }
+
+        public class Settings
+        {
+            public string CasparServer
+            {
+                get;
+                set;
+            }
+
+            public string[] SavedStrings
+            {
+                get;
+                set;
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            PlayoutJobTitle job = new PlayoutJobTitle(m_Caspar, m_templateFolder, txtName.Text, txtTitleClub.Text);
+            AddJobToQueue(job);
+        }
+
+        private void AddJobToQueue(PlayoutJob job)
+        {
+            PlayoutItem item = new PlayoutItem(job);
+            item.Width = pnlQueue.Width - item.Margin.Left - item.Margin.Right;
+            item.MouseDown += Item_MouseDown;
+            
+            pnlQueue.Controls.Add(item);
+        }
+
+        private void Item_MouseDown(object sender, MouseEventArgs e)
+        {
+            PlayoutItem itm = sender as PlayoutItem;
+            itm.Selected = true;
+            selJobControls.Controls.Clear();
+            itm.SetupControlPanel(selJobControls);
+
+            foreach (PlayoutItem item in pnlQueue.Controls)
+            {
+                if (item != null && item != itm)
+                {
+                    item.Selected = false;
+                }
+            }
+            pnlQueue.Invalidate(true);
+            timer1_Tick(sender, e);
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            
+            using (var g = previewPanel.CreateGraphics())
+            {
+                using (var bmp = new Bitmap(previewPanel.Width, previewPanel.Height))
+                {
+                    using (var gg = Graphics.FromImage(bmp))
+                    {
+                        gg.Clear(Color.Black);
+
+                        foreach (PlayoutItem item in pnlQueue.Controls)
+                        {
+                            if (item.Selected)
+                            {
+                                item.RenderPreview(gg, bmp.Width, bmp.Height);
+                            }
+                        }
+                    }
+                    g.DrawImage(bmp, 0, 0);
+                }
+            }
+        }
+
+        private void button1_Click_2(object sender, EventArgs e)
+        {
+            PlayoutItem selItem = null;
+            foreach (PlayoutItem itm in pnlQueue.Controls)
+            {
+                if (itm.Selected)
+                {
+                    selItem = itm;
+                    break;
+                }
+            }
+
+            if (selItem != null)
+            {
+                pnlQueue.Controls.Remove(selItem);
+            }
+            pnlQueue.Invalidate(true);
+            timer1_Tick(sender, e);
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+            foreach (PlayoutItem item in pnlQueue.Controls)
+            {
+                if (item.IsPlaying)
+                {
+                    item.ForceUpdate();
+                }
+            }
+        }
+
+        private void btnStartPrewarning_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            var radios = new List<int>();
+            foreach (var selvalue in lstRadioControls.CheckedItems)
+            {
+                radios.Add((selvalue as RadioControl).Code);
+            }
+
+            AddJobToQueue(new PlayoutJobResultListPrewarned(m_Caspar, m_templateFolder, m_emmaClient, radios.ToArray()));
         }
     }
 }

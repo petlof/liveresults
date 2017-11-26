@@ -326,10 +326,6 @@ namespace LiveResults.Model
                 }
                 reader.Close();
 
-                LoadDataForPreviousStages(cmd);
-
-
-
                 cmd.Dispose();
 
                 ResetUpdated();
@@ -358,7 +354,7 @@ namespace LiveResults.Model
             }
         }
 
-        private static void LoadDataForPreviousStages(MySqlCommand cmd)
+       /* private void LoadDataForPreviousStages(MySqlCommand cmd)
         {
             MySqlDataReader reader;
             if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["multistage_day1"]))
@@ -376,10 +372,16 @@ namespace LiveResults.Model
                     {
                         time, status
                     });
+
+                    if (m_runners.ContainsKey(dbId))
+                    {
+                        m_runners[dbId].SetResultFromPreviousDays(time, status);
+                    }
                 }
                 reader.Close();
+                
             }
-        }
+        }*/
 
         public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId)
         {
@@ -435,11 +437,7 @@ namespace LiveResults.Model
             if (!m_runners.ContainsKey(r.ID))
             {
                 m_runners.Add(r.ID, r);
-                if (m_runnerPreviousDaysTotalTime.ContainsKey(r.ID))
-                {
-                    r.SetResultFromPreviousDays(m_runnerPreviousDaysTotalTime[r.ID][0], m_runnerPreviousDaysTotalTime[r.ID][1]);
-                }
-
+               
                 m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {

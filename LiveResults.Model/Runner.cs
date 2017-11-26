@@ -124,8 +124,6 @@ namespace LiveResults.Model
         private int m_start;
         private int m_time;
         private int m_status;
-        private int m_statusFromPreviousDays;
-        private int m_timeFromPreviousDays;
         private string m_sourceId;
 
         public bool RunnerUpdated;
@@ -207,14 +205,6 @@ namespace LiveResults.Model
         {
             get
             {
-                return m_time > 0 ? m_time + m_timeFromPreviousDays : m_time;
-            }
-        }
-
-        public int StageTime
-        {
-            get
-            {
                 return m_time;
             }
         }
@@ -233,24 +223,6 @@ namespace LiveResults.Model
         }
 
         public SplitTime[] SplitTimes
-        {
-            get
-            {
-                if (m_timeFromPreviousDays > 0)
-                {
-                    return m_splitTimes.Values.Select(x => new SplitTime()
-                    {
-                        Control = x.Control,
-                        Time = x.Time + m_timeFromPreviousDays,
-                        Updated = x.Updated
-                    }).ToArray();
-                }
-
-                return m_splitTimes.Values.ToArray();
-            }
-        }
-
-        public SplitTime[] StageSplitTimes
         {
             get
             {
@@ -275,9 +247,6 @@ namespace LiveResults.Model
         {
             get
             {
-                if ((m_status == 0 || m_status == 10 || m_status == 9) && m_statusFromPreviousDays != 0)
-                    return m_statusFromPreviousDays;
-
                 return m_status;
             }
         }
@@ -327,20 +296,6 @@ namespace LiveResults.Model
         public bool HasResultChanged(int time, int status)
         {
             return m_time != time || m_status != status;
-        }
-
-        public void SetResultFromPreviousDays(int time, int status)
-        {
-            m_statusFromPreviousDays = status;
-            m_timeFromPreviousDays = time;
-        }
-
-        public int TotalTimeBeforeThisStage
-        {
-            get
-            {
-                return m_timeFromPreviousDays;
-            }
         }
 
         public void SetResult(int time, int status)

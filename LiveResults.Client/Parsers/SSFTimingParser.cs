@@ -18,6 +18,7 @@ namespace LiveResults.Client
         public event LogMessageDelegate OnLogMessage;
         private bool m_createRadioControls;
         private bool m_continue;
+        private bool m_useTenth = true;
 
         public SSFTimingParser(IDbConnection conn, int eventID, bool recreateRadioControls = true)
         {
@@ -416,7 +417,14 @@ and dbclass.classid = dbName.classid", m_eventID);
 
                                 time = GetSSFRunTime(reader["RaceTime"].ToString());
 								//Round to whole seconds
-                                time = ((int)(Math.Floor(time / 100d)) * 100);
+                                if (m_useTenth)
+                                {
+                                    time = ((int)(Math.Floor(time / 10d)) * 10);
+                                }
+                                else
+                                {
+                                    time = ((int) (Math.Floor(time / 100d)) * 100);
+                                }
                             }
                         }
 
@@ -517,8 +525,17 @@ and dbclass.classid = dbName.classid", m_eventID);
                         if (reader["runtime"] != null && reader["runtime"] != DBNull.Value)
                         {
                             int stime = GetSSFRunTime(reader["runtime"].ToString());
-							//Round to whole seconds
-                            stime = ((int)(Math.Floor(stime / 100d)) * 100);
+                            //Round to whole seconds
+                            if (m_useTenth)
+                            {
+                                stime = ((int) (Math.Floor(stime / 10d)) * 10);
+                            }
+                            else
+                            {
+                                stime = ((int) (Math.Floor(stime / 100d)) * 100);
+                             
+                            }
+
                             if (isRelay && !relayLegs[classN].IsLastLeg && relayLegs[classN].ITimeForFinish == Convert.ToInt32(reader["ipos"]))
                             {
                                    time = stime;
