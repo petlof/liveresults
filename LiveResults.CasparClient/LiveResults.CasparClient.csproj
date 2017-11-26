@@ -54,16 +54,33 @@
     <Compile Include="CasparControlFrm.Designer.cs">
       <DependentUpon>CasparControlFrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Helpers.cs" />
+    <Compile Include="PlayoutItem.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="PlayoutItem.Designer.cs">
+      <DependentUpon>PlayoutItem.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PlayoutJob.cs" />
+    <Compile Include="PlayoutJobResultList_Prewarned.cs" />
+    <Compile Include="PlayoutJobResultList_LowerThird.cs" />
+    <Compile Include="PlayoutJobResultList.cs" />
+    <Compile Include="PlayoutJobClock.cs" />
+    <Compile Include="PlayoutJobTitle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
+    <Compile Include="ResultListItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="CasparControlFrm.resx">
       <DependentUpon>CasparControlFrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="PlayoutItem.resx">
+      <DependentUpon>PlayoutItem.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
