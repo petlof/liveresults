@@ -24,21 +24,20 @@ class Emma
 
 	var $m_Conn;
 
+	private static function openConnection() {
+		$conn = mysql_connect(self::$db_server, self::$db_user, self::$db_pw);
+		mysql_select_db(self::$db_database, $conn);
+		mysql_set_charset(self::$MYSQL_CHARSET, $conn);
+		if (mysql_errno()) {
+			printf("Connect failed: %s\n", mysql_error());
+			exit();
+		}
+		return $conn;
+	}
         public static function GetCompetitions()
 
         {
-
-          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+            $conn = self::openConnection();
 
 	 $result = mysql_query("select compName, compDate,tavid,organizer,timediff,multidaystage,multidayparent from login where public = 1 order by compDate desc",$conn);
 
@@ -61,18 +60,7 @@ class Emma
 public static function GetCompetitionsToday()
 
         {
-
-          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+            $conn = self::openConnection();
 
 	 $result = mysql_query("select compName, compDate,tavid,organizer,timediff,multidaystage,multidayparent from login where public = 1 and compDate = '".date("Y-m-d")."'",$conn);
 
@@ -96,18 +84,7 @@ public static function GetCompetitionsToday()
 public static function GetRadioControls($compid)
 
         {
-	$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+            $conn = self::openConnection();
 
 	 $result = mysql_query("select * from splitcontrols where tavid=$compid order by corder",$conn);
 
@@ -129,17 +106,7 @@ public static function GetRadioControls($compid)
 public static function DelRadioControl($compid,$code,$classname)
 
         {
-$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 
 	 mysql_query("delete from splitcontrols where tavid=$compid and code=$code and classname='$classname'",$conn);
 
@@ -147,31 +114,14 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
         public static function DelAllRadioControls($compid)
 		{
-			$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-			mysql_select_db(self::$db_database);
-			if (mysql_errno()) {
-				printf("Connect failed: %s\n", mysql_error());
-				exit();
-			}
+        $conn = self::openConnection();
 			mysql_query("delete from splitcontrols where tavid=$compid",$conn);
    }
 
 
 	public static function CreateCompetition($name,$org,$date)
         {
-
-        $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 	 $res = mysql_query("select max(tavid)+1 from login",$conn);
 	 $id = mysql_result($res,0,0);
 	 if ($id < 10000)
@@ -184,19 +134,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
 	public static function CreateCompetitionFull($name,$org,$date, $email, $password, $country)
     {
-
-        $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 	 $res = mysql_query("select max(tavid)+1 from login",$conn);
 	 $id = mysql_result($res,0,0);
 	 if ($id < 10000)
@@ -211,19 +149,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	public static function AddRadioControl($compid,$classname,$name,$code)
 
         {
-
-          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 	 $res = mysql_query("select count(*)+1 from splitcontrols where classname='$classname' and tavid=$compid",$conn);
 	 $id = mysql_result($res,0,0);
 
@@ -234,19 +160,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
         {
-
-          $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 	 $sql = "update login set compName = '$name', organizer='$org', compDate ='$date',timediff=$timediff, public=". (!isset($public) ? "0":"1") ." where tavid=$id";
 
 	 mysql_query($sql ,$conn) or die(mysql_error());
@@ -256,19 +170,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	public static function GetAllCompetitions()
 
         {
-
-         $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 
 	 $result = mysql_query("select compName, compDate,tavid,timediff,organizer,public from login order by compDate desc",$conn);
 
@@ -291,19 +193,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	public static function GetCompetition($compid)
 
         {
-
-         $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-	  mysql_select_db(self::$db_database);
-	  mysql_set_charset(self::$MYSQL_CHARSET,$conn);
-
-	  if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+        $conn = self::openConnection();
 
 	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, timezone, videourl, videotype,multidaystage,multidayparent from login where tavid=$compid",$conn);
 
@@ -330,20 +220,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		$this->m_CompId = $compID;
 
-		$this->m_Conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-
-		mysql_select_db(self::$db_database,$this->m_Conn);
-		mysql_set_charset(self::$MYSQL_CHARSET,$this->m_Conn);
-
-		/* check connection */
-
-		if (mysql_errno()) {
-
-	   		printf("Connect failed: %s\n", mysql_error());
-
-	   		exit();
-
-		}
+		$this->m_Conn = self::openConnection();
 
 
 
