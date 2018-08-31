@@ -26,11 +26,11 @@ class Emma
 
 	private static function openConnection() {
 		$conn = mysqli_connect(self::$db_server, self::$db_user, self::$db_pw, self::$db_database);
-		mysqli_set_charset($conn, self::$MYSQL_CHARSET);
 		if (mysqli_connect_errno()) {
 			printf("Connect failed: %s\n", mysqli_connect_error());
 			exit();
 		}
+		mysqli_set_charset($conn, self::$MYSQL_CHARSET);
 		return $conn;
 	}
         public static function GetCompetitions()
