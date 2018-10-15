@@ -110,7 +110,7 @@ function confirmDelete(msg,url)
 
 			<TD>
 
-		<a href="/liveresultat/"><img src="/pics/header.jpg" alt="Svenska Orienteringsförbundet" align="left" width="759" height="91" border="0"></a>
+
 
 			</TD>
 
@@ -166,10 +166,10 @@ function confirmDelete(msg,url)
 
              <tr>
 
-               <td><a href="admincompetitions.php">Competitionindex</a></td>
+             <td><a href="admincompetitions.php">Adminpage Competitionindex</a> | </td>
+               <td><a href="../index.php"><?=$_CHOOSECMP?> to view</a></td>
 
              </tr>
-
        </table>
 
      </td>
