@@ -21,7 +21,7 @@ else if (isset($_GET['what']) && $_GET['what'] == "delallctr")
 
 include_once("../templates/emmalang_sv.php");
 
-   $lang = "sv";
+   $lang = "en";
 
    if (isset($_GET['lang']) && $_GET['lang'] != "")
 
@@ -170,6 +170,7 @@ function confirmDelete(msg,url)
                <td><a href="../index.php"><?=$_CHOOSECMP?> to view</a></td>
 
              </tr>
+
        </table>
 
      </td>
@@ -223,7 +224,7 @@ for ($i = 0; $i < sizeof($rcontrols); $i++)
 </table>
 
 <br/><hr/>
-<a href='javascript:confirmDelete(\"Do you want to delete ALL radiocontrols?\",\"?compid=".$_GET['compid']."&what=delallctr&compid=".$_GET['compid']."\");'>Delete all radio controls</a>
+<a href="javascript:confirmDelete('Do you want to delete ALL radiocontrols?','?compid=<?= $_GET['compid']?>&what=delallctr&compid=<?= $_GET['compid']?>');">Delete all radio controls</a>
 <br/><hr/><br/>
 
 <br/><b>Add Radio Control</b><br/>
