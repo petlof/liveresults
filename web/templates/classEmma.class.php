@@ -17,11 +17,11 @@ class Emma
    var $m_IsMultiDayEvent = false;
    var $m_MultiDayStage = -1;
    var $m_MultiDayParent = -1;
-
+   
    var $m_VideoFormat = "";
    var $m_VideoUrl = "";
    var $m_TwitterFeed = "";
-
+   
 	var $m_Conn;
 
         public static function GetCompetitions()
@@ -73,8 +73,7 @@ public static function GetCompetitionsToday()
 	   		exit();
 
 		}
-
-	 $result = mysql_query("select compName, compDate,tavid,organizer,timediff,multidaystage,multidayparent from login where public = 1 and compDate = '".date("Y-m-d")."'",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,timediff,multidaystage,multidayparent from login where public = 1 and compDate = '". date("Y-m-d")."'",$conn);
 
          $ret = Array();
 
@@ -91,6 +90,7 @@ public static function GetCompetitionsToday()
  	return $ret;
 
         }
+
 
 
 public static function GetRadioControls($compid)
@@ -145,16 +145,17 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
         }
 
-        public static function DelAllRadioControls($compid)
-		{
-			$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
-			mysql_select_db(self::$db_database);
-			if (mysql_errno()) {
-				printf("Connect failed: %s\n", mysql_error());
-				exit();
-			}
-			mysql_query("delete from splitcontrols where tavid=$compid",$conn);
-   }
+
+public static function DelAllRadioControls($compid) 
+{
+	$conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
+	mysql_select_db(self::$db_database);
+	if (mysql_errno()) {
+		printf("Connect failed: %s\n", mysql_error());
+		exit();
+	}
+	mysql_query("delete from splitcontrols where tavid=$compid",$conn);
+}
 
 
 	public static function CreateCompetition($name,$org,$date)
@@ -174,7 +175,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 		}
 	 $res = mysql_query("select max(tavid)+1 from login",$conn);
 	 $id = mysql_result($res,0,0);
-	 if ($id < 10000)
+	if ($id < 10000)
 		$id = 10000;
 
 
@@ -183,7 +184,7 @@ $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 	}
 
 	public static function CreateCompetitionFull($name,$org,$date, $email, $password, $country)
-    {
+    	{
 
         $conn = mysql_connect(self::$db_server,self::$db_user,self::$db_pw);
 
@@ -305,7 +306,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		}
 
-	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff, timezone, videourl, videotype,multidaystage,multidayparent from login where tavid=$compid",$conn);
+	 $result = mysql_query("select compName, compDate,tavid,organizer,public,timediff,timezone, videourl, videotype,multidaystage,multidayparent from login where tavid=$compid",$conn);
 
          $ret = null;
 
@@ -364,10 +365,10 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		    if (isset($tmp["videotype"]))
 				$this->m_VideoFormat= $tmp["videotype"];
-
+        
          if (isset($tmp["twitter"]))
 				$this->m_TwitterFeed= $tmp["twitter"];
-
+        
 		    if (isset($tmp['multidaystage']))
 		    {
 		    	if ($tmp['multidaystage'] != null && $tmp['multidayparent'] != null && $tmp['multidaystage'] > 1)
@@ -386,12 +387,12 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	{
 		return $this->m_IsMultiDayEvent;
 	}
-
+  
   function HasVideo()
 	{
 		return $this->m_VideoFormat != "";
 	}
-
+  
    function HasTwitter()
 	{
 		return $this->m_TwitterFeed != "";
@@ -405,7 +406,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 		}
 		return "";
 	}
-
+  
   function GetTwitterFeed()
   {
     return $this->m_TwitterFeed;
@@ -425,12 +426,12 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 	  return $this->m_CompDate;
 
 	}
-
+  
   function TimeZoneDiff()
   {
     return $this->m_TimeDiff/3600;
   }
-
+  
 
 	function Classes()
 	{
@@ -465,11 +466,10 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 	}
 
-
 function getAllSplitControls()
 {
 	$ret = Array();
-	$q = "SELECT code, name,classname,corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder";
+	$q = "SELECT code, name, classname, corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder";
 	if ($result = mysql_query($q))
 	{
 		while($tmp = mysql_fetch_array($result))
@@ -477,15 +477,14 @@ function getAllSplitControls()
 			$ret[] = $tmp;
 		}
 		mysql_free_result($result);
-	}
+	} 
 	else
-	{
+	{ 
 		echo(mysql_error());
 	}
-
+	
 	return $ret;
 }
-
 
 
   function getSplitControlsForClass($className)
@@ -744,14 +743,13 @@ function getAllSplitControls()
 	{
 				$ret = Array();
 
-
-
 				$ar = Array();
 				if ($this->m_MultiDayParent == -1)
 				{
 				     $comps = "(".$this->m_CompId.")";
-    			} else {
-    				$q = "Select TavId,multidaystage from login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
+	    			} else {
+    					$q = "Select TavId,multidaystage from login where MultiDayParent = ".$this->m_MultiDayParent." and MultiDayStage <=".$this->m_MultiDayStage." order by multidaystage";
+
 					$comps = "(";
 					if ($result = mysql_query($q,$this->m_Conn))
 					{

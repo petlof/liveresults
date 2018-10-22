@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 date_default_timezone_set("Europe/Stockholm");
 $lang = "sv";
 
@@ -58,7 +58,7 @@ window.mobilecheck = function() {
 </script>
 
 <?php
-$debug = false;
+$debug = isset($_GET['debug']) && $_GET["debug"] == "true";
 if ($debug)
 {
 ?>
@@ -66,15 +66,24 @@ if ($debug)
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
-<script language="javascript" type="text/javascript" src="js/liveresults.js"></script>
+<script language="javascript" type="text/javascript" src="js/LiveResults.debug.js?rnd=<?=time()?>"></script>
 <?php }
 else
 {?>
 <!-- RELEASE-->
-<script language="javascript" type="text/javascript" src="js/liveresults.min.2015071601.js"></script>
+<script language="javascript" type="text/javascript" src="js/liveresults.min.20170627.js"></script>
 <?php }?>
-
+<script language="javascript" type="text/javascript" src="js/NoSleep.min.js"></script>
 <script language="javascript" type="text/javascript">
+
+var noSleep = new NoSleep();
+
+function enableNoSleep() {
+  noSleep.enable();
+  document.removeEventListener('click', enableNoSleep, false);
+}
+
+document.addEventListener('click', enableNoSleep, false);
 
 
 var res = null;
@@ -163,7 +172,7 @@ $(document).ready(function()
 	<?php if ($showTimePrediction){ ?>
 		res.eventTimeZoneDiff = <?=$currentComp->TimeZoneDiff();?>;
 		res.startPredictionUpdate();
-
+				
 	<?php }?>
 });
 
@@ -193,9 +202,9 @@ function changeFontSize(val)
              <tr>
                <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
                <td>|</td>
-				<td><a href="http://emmaclient.codeplex.com/documentation" target="_blank"><?=$_FORORGANIZERS?></a></td>
+				<td><a href="https://liveresults.github.io/documentation/" target="_blank"><?=$_FORORGANIZERS?></a></td>
                <td>|</td>
-               <td><a href="http://emmaclient.codeplex.com/wikipage?title=For%20Developers%20%28API%29" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
+               <td><a href="https://liveresults.github.io/documentation/#developer" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
        </table>
      </td>
   </tr>
@@ -235,36 +244,43 @@ function changeFontSize(val)
 <?php }?>
 <?php if (!$isSingleClass && !$isSingleClub) {?>
 			<div id="langchooser">
-                        | <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
+| <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
 "<a href=\"?lang=sv&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' alt='Svenska'> Svenska</a>")?>
                                                         | <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
 "<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' alt='English'> English</a>")?>
                         | <?php echo($lang == "fi" ? "<img src='images/fi.png' alt='Suomeksi'> Suomeksi" :
 "<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png'  alt='Suomeksi'> Suomeksi</a>")?>
-                        | <?php echo($lang == "ru" ? "<img src='images/ru.png' alt='???????'> ???????" :
-"<a href=\"?lang=ru&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' alt='???????'> ???????</a>")?>
-                        | <?php echo($lang == "cz" ? "<img src='images/cz.png' alt='?esky'> ?esky" :
-"<a href=\"?lang=cz&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/cz.png' alt='?esky'> ?esky</a>")?>
+                        | <?php echo($lang == "ru" ? "<img src='images/ru.png' alt='Русский'> Русский" :
+"<a href=\"?lang=ru&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/ru.png' alt='Русский'> Русский</a>")?>
+                        | <?php echo($lang == "cz" ? "<img src='images/cz.png' alt='Česky'> Česky" :
+"<a href=\"?lang=cz&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/cz.png' alt='Česky'> Česky</a>")?>
                         | <?php echo($lang == "de" ? "<img src='images/de.png' alt='Deutsch'> Deutsch" :
 "<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>
+ | <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
+"<a href=\"?lang=bg&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/bg.png' alt='български'> български</a>")?>
 						| <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
 "<a href=\"?lang=fr&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fr.png' alt='Français'> Français</a>")?>
-                        | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" :
-"<a href=\"?lang=it&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?>
- | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" :
-"<a href=\"?lang=hu&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?>
+                        | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : 
+"<a href=\"?lang=it&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?> 
+                        | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" : 
+"<a href=\"?lang=hu&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?> 
+
  | <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" :
 "<a href=\"?lang=es&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/es.png' border='0' alt='Español'> Español</a>")?>
  | <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" :
 "<a href=\"?lang=pl&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pl.png' border='0' alt='Polska'> Polska</a>")?>
+ | <?php echo($lang == "pt" ? "<img src='images/pt.png?a' border='0' alt='Português'> Português" :
+"<a href=\"?lang=pt&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pt.png?a' border='0' alt='Português'> Português</a>")?>
 
 |
+
 </div>
 <?php }?>
 <?php if($showLastPassings){?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
 			<tr>
-			<!--Customized logo --><!--<td width="161">
+			<!--Customized logo -->
+			<!--<td width="161">
 			<img src="images/fin5.png"/></td>-->
 			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings">
@@ -368,6 +384,16 @@ function removeTwitter()
 </div>
 
 <br><br>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-54989483-1', 'auto');
+  ga('send', 'pageview');
+
+</script>
 
 </body>
 

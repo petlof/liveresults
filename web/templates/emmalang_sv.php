@@ -1,5 +1,5 @@
 <?php
-$_TITLE = "Liveresultat på nätet";
+$_TITLE = "Liveresultat orientering";
 $_CHOOSECMP = "Välj tävling";
 $_AUTOUPDATE = "Automatisk Uppdatering";
 $_UP15SEK = "Var 15:e sekund";

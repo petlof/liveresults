@@ -1,62 +1,62 @@
 <?php
 
-//Language-ressource file: Spanish = Español
-//translated by Antonio Vázquez
+//Language-ressource file: Spanish = EspaÃ±ol
+//translated by Antonio VÃ¡zquez
 
 
 $_TITLE = "Resultados en directo";
- $_CHOOSECMP = "Elija competición";
- $_AUTOUPDATE = "Actualización automática";
+ $_CHOOSECMP = "Elija competiciÃ³n";
+ $_AUTOUPDATE = "ActualizaciÃ³n automÃ¡tica";
  $_UP15SEK = "Cada 15 segundos";
  $_UP30SEK = "Dos veces por minuto";
  $_UP60SEK = "Una vez por minuto";
  $_UP120SEK = "Cada dos minutos";
  $_UPNEVER = "Nunca";
- $_LASTPASSINGS="Últimas actualizaciones";
+ $_LASTPASSINGS="Ãšltimas actualizaciones";
  $_LASTPASSFINISHED="en meta";
- $_LASTPASSPASSED="pasó por control";
+ $_LASTPASSPASSED="pasÃ³ por control";
  $_LASTPASSWITHTIME="con un tiempo de";
- $_CHOOSECLASS="Elija categoría";
- $_NOCLASSESYET="Todavía no se han definido categorías";
+ $_CHOOSECLASS="Elija categorÃ­a";
+ $_NOCLASSESYET="TodavÃ­a no se han definido categorÃ­as";
  $_CONTROLFINISH="Meta";
  $_NAME="Nombre";
  $_CLUB="Club";
- $_NATION = "País";
+ $_NATION = "PaÃ­s";
  $_TIME="Tiempo";
- $_NOCLASSCHOSEN="¡No se ha elegido categoría!";
- $_HELPREDRESULTS="Los resultados actualizados en los dos últimos minutos se indican en rojo";
- $_NOTICE="Los resultados mostrados en esta página no son oficiales. Para resultados oficiales por favor visite el sitio web del organizador.";
+ $_NOCLASSCHOSEN="Â¡No se ha elegido categorÃ­a!";
+ $_HELPREDRESULTS="Los resultados actualizados en los dos Ãºltimos minutos se indican en rojo";
+ $_NOTICE="Los resultados mostrados en esta pÃ¡gina no son oficiales. Para resultados oficiales por favor visite el sitio web del organizador.";
  $_STATUSDNS = "no sale";
  $_STATUSDNF = "abandona";
  $_STATUSWO = "no sale";
- $_STATUSMOVEDUP = "cambiado de categoría";
+ $_STATUSMOVEDUP = "cambiado de categorÃ­a";
  //runner moved to another class
  $_STATUSNOTSTARTED="sin salida";
- $_STATUSOK = "Pasó";
+ $_STATUSOK = "PasÃ³";
  $_STATUSMP = "error tarjeta";
  $_STATUSDSQ= "descalificado";
  $_STATUSOT="fuera de control";
  //Over time
- $_FIRSTPAGECHOOSE = "Elija competición a seguir";
+ $_FIRSTPAGECHOOSE = "Elija competiciÃ³n a seguir";
  $_FIRSTPAGEARCHIVE = "Archivo";
  $_FIRSTPAGELIVE = "En directo";
  //new 2.0
  $_LOADINGRESULTS = "Cargando resultados...";
- $_ON = "Sí";
+ $_ON = "SÃ­";
  $_OFF = "No";
- $_TEXTSIZE = "Tamaño de texto";
- $_LARGER = "más grande";
- $_SMALLER = "más pequeño";
+ $_TEXTSIZE = "TamaÃ±o de texto";
+ $_LARGER = "mÃ¡s grande";
+ $_SMALLER = "mÃ¡s pequeÃ±o";
  $_OPENINNEW = "Abrir en nueva ventana";
- $_FORORGANIZERS = "Información para organizadores";
- $_FORDEVELOPERS = "Información para desarrolladores (api)";
+ $_FORORGANIZERS = "InformaciÃ³n para organizadores";
+ $_FORDEVELOPERS = "InformaciÃ³n para desarrolladores (api)";
  $_RESETTODEFAULT = "Ordenar por defecto";
  $_OPENINNEWWINDOW = "Abrir en nueva ventana";
  $_INSTRUCTIONSHELP = "Instrucciones / ayuda";
- $_LOADINGCLASSES = "Cargando categorías ...";
+ $_LOADINGCLASSES = "Cargando categorÃ­as ...";
  $_START = "Salida";
  $_TOTAL = "Total";
- $_CLASS = "Categoría";
+ $_CLASS = "CategorÃ­a";
  // 2.1
  $_ORGANIZER = "Organizador";
  $_DATE = "Fecha";
