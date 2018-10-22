@@ -1,8 +1,7 @@
 <?
-$link = mysql_connect("localhost","root","vol8090ant");
-mysql_select_db("EMMA3",$link);
+$link = mysqli_connect("localhost","root","vol8090ant", "EMMA3");
 
-mysql_query("insert into gprspunches(si,code,received) values(".$_GET['sinumber'].",".$_GET['code'].",now())");
+mysqli_query($link, "insert into gprspunches(si,code,received) values(".$_GET['sinumber'].",".$_GET['code'].",now())");
 echo("OK");
-mysql_close($link);
+mysqli_close($link);
 ?>
