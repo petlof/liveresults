@@ -9,6 +9,7 @@ include_once("templates/emmalang_en.php");
 include_once("templates/emmalang_$lang.php");
 include_once("templates/classEmma.class.php");
 
+
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
 
 header('content-type: application/json; charset='.$CHARSET);
@@ -35,14 +36,14 @@ if ($_GET['method'] == 'getcompetitions')
 				if (!$first)
 					echo(",");
 				echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
-                                
+
                                 echo (", \"timediff\": ".$comp["timediff"]);
                                 if ($comp["multidaystage"] != "")
                                 {
                                     echo(", \"multidaystage\": ".$comp["multidaystage"].", \"multidayfirstday\": ".$comp["multidayparent"]);
                                 }
-                                
-                                
+
+
                                 echo("}$br");
 				$first = false;
 			}
@@ -50,8 +51,8 @@ if ($_GET['method'] == 'getcompetitions')
 }
 else if ($_GET['method'] == 'setcompetitioninfo')
 {
-        $compid = $_POST['comp'];		
-		Emma::UpdateCompetition($compid,$_POST["compName"],$_POST["organizer"],$_POST["date"],$_POST["public"],$_POST["timediff"]);		
+        $compid = $_POST['comp'];
+		Emma::UpdateCompetition($compid,$_POST["compName"],$_POST["organizer"],$_POST["date"],$_POST["public"],$_POST["timediff"]);
 		echo("{\"status\": \"OK\"");
 }
 else if ($_GET['method'] == 'createcompetition')
@@ -69,14 +70,14 @@ else if ($_GET['method'] == 'createcompetition')
 			echo("{\"status\": \"Error\", \"message\": \"email not set\"}");
 		if (!isset($data->password))
 			echo("{\"status\": \"Error\", \"message\": \"password not set\"}");
-		
+
 		$id = Emma::CreateCompetitionFull($data->name,$data->organizer,$data->date,$data->email,$data->password,$data->country);
-        
+
 		if ($id > 0)
 		{
 			echo("{\"status\": \"OK\", \"competitionid\": ".$id." }");
 		}
-		else 
+		else
 		{
 			echo("{\"status\": \"Error\", \"message\": \"Error adding competition\" }");
 		}
@@ -88,7 +89,7 @@ else if ($_GET['method'] == 'getcompetitioninfo')
           if (isset($comp["tavid"]))
           {
                 echo("{\"id\": ".$comp["tavid"].", \"name\": \"".$comp["compName"]."\", \"organizer\": \"".$comp["organizer"]."\", \"date\": \"".date("Y-m-d",strtotime($comp['compDate']))."\"");
-                                
+
                 echo (", \"timediff\": ".$comp["timediff"]);
 				echo (", \"timezone\": \"".$comp["timezone"]."\"");
 				echo (", \"isPublic\": ".(isset($comp["public"]) ? $comp["public"] : false));
@@ -96,10 +97,10 @@ else if ($_GET['method'] == 'getcompetitioninfo')
                 {
                     echo(", \"multidaystage\": ".$comp["multidaystage"].", \"multidayfirstday\": ".$comp["multidayparent"]);
                 }
-                                                
+
                 echo("}");
           }
-          else 
+          else
           {
              echo("{\"id\": ".$_GET["comp"]."}");
           }
@@ -335,63 +336,66 @@ elseif ($_GET['method'] == 'getclassresults')
         {
           if ($b[$split['code']."_time"] == $a[$split['code']."_time"])
             return 0;
-          else 
+          else
             return $a[$split['code']."_time"] < $b[$split['code']."_time"] ? -1 : 1;
         }
       }
       );
-      
+
       $splitplace = 1;
       $cursplitplace = 1;
       $cursplittime = "";
       $bestsplittime = -1;
       foreach ($results as $key => $res)
-      {   
+      {
         $sp_time = "";
         $raceTime = $res['Time'];
         $raceStatus = $res['Status'];
         if ($raceTime == "")
 				  $raceStatus = 9;
-         
-       
+
+
           if (isset($res[$split['code']."_time"]))
           {
             $sp_time = $res[$split['code']."_time"];
-            if ($bestsplittime < 0 && ($raceStatus == 0 || $raceStatus == 9 || $raceStatus == 10))
+		    if ($bestsplittime < 0 && ($raceStatus == 0 || $raceStatus == 9 || $raceStatus == 10))
+		    {
               $bestsplittime = $sp_time;
+            }
           }
-          
+
           if ($sp_time != "")
           {
             $results[$key][$split['code']."_timeplus"] =$sp_time - $bestsplittime;
           }
-          else 
+          else
           {
             $results[$key][$split['code']."_timeplus"] = -1;
           }
-          
+
           if ($cursplittime != $sp_time)
           {
             $cursplitplace = $splitplace;
           }
           if ($raceStatus == 0 || $raceStatus == 9 || $raceStatus == 10)
-          { 
+          {
             $results[$key][$split['code']."_place"] = $cursplitplace;
             $splitplace++;
             if (isset($res[$split['code']."_time"]))
               $cursplittime = $res[$split['code']."_time"];
           }
-          else 
+          else
           {
             $results[$key][$split['code']."_place"] = "\"-\"";
           }
       }
 		}
-    
+
     usort($results,"sortByResult");
 		$splitJSON .= "$br]";
 
 		$first = true;
+		$firstNonQualifierSet = false;
 		foreach ($results as $res)
 		{
 			if (!$first)
@@ -411,12 +415,12 @@ elseif ($_GET['method'] == 'getclassresults')
 			if ($status == 9 || $status == 10)
 			{
 				$cp = "";
-        
+
         if (count($splits) == 0)
         {
           $progress = 0;
         }
-        else 
+        else
         {
           $passedSplits = 0;
           $splitCnt = 0;
@@ -432,7 +436,7 @@ elseif ($_GET['method'] == 'getclassresults')
 			elseif ($status != 0 || $time < 0)
 			{
 				$cp = "-";
-        $progress = 100; 
+        $progress = 100;
 			}
 			elseif ($time == $lastTime)
 			{
@@ -467,12 +471,12 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			if($resultsAsArray)
 			{
-				$ret .= "[\"$cp\", \"".$res['Name']."\",$br \"".$res['Club']."\",$br ".$res['Time'].",$br ".$status.",$br ".($time-$winnerTime).",$modified]";
+				$ret .= "[\"$cp\", \"".$res['Name']."\",$br \"".str_replace("\"","'",$res['Club'])."\",$br ".$res['Time'].",$br ".$status.",$br ".($time-$winnerTime).",$modified]";
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\",$br \"name\": \"".$res['Name']."\",$br \"club\": \"".$res['Club']."\",$br \"result\": \"".$time."\",$br \"status\" : ".$status.",$br \"timeplus\": \"$timeplus\",$br \"progress\": $progress $tot";
-    
+				$ret .= "{\"place\": \"$cp\",$br \"name\": \"".$res['Name']."\",$br \"club\": \"".str_replace("\"","'",$res['Club'])."\",$br \"result\": \"".$time."\",$br \"status\" : ".$status.",$br \"timeplus\": \"$timeplus\",$br \"progress\": $progress $tot";
+
 				if (count($splits) > 0)
 				{
 					$ret .= ",$br \"splits\": {";
@@ -486,7 +490,7 @@ elseif ($_GET['method'] == 'getclassresults')
               $splitStatus = $status;
               if ($status == 9 || $status == 10)
                 $splitStatus = 0;
-                
+
 							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"].",\"".$split['code']."_timeplus\": ".$res[$split['code']."_timeplus"];
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
 							if ($spage < 120)
@@ -512,10 +516,18 @@ elseif ($_GET['method'] == 'getclassresults')
 					$ret .= ",$br \"start\": \"\"";
 				}
 
+				$rowClass="";
 				if ($modified)
 				{
+					$rowClass="new_result";
 					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
 				}
+
+				if (strlen($rowClass) > 0)
+				{
+					 $ret .= ",$br \"DT_RowClass\": \"$rowClass\"";
+				}
+
 
 				$ret .= "$br}";
 			}
@@ -532,6 +544,11 @@ elseif ($_GET['method'] == 'getclassresults')
 		else
 		{
 			echo("{ \"status\": \"OK\",$br \"className\": \"".$class."\",$br \"splitcontrols\": $splitJSON,$br \"results\": [$br$ret$br]");
+			 if ($_GET['comp'] == "11838" || $_GET['comp'] == "12096" || $_GET['comp'] == "12793" || $_GET['comp'] == "12998" )
+                        {
+                           echo(",$br \"IsMassStartRace\": true");
+                        }
+
 			echo(",$br \"hash\": \"". $hash."\"}");
 		}
 }
@@ -543,13 +560,6 @@ else
 	echo("{ \"status\": \"ERR\", \"message\": \"No method given\"}");
 }
 
-/*function sortResultsBySplitCode($code)
-{
- return function ($a,$b) use ($code) {
-   return $a[$code."_time"] - $b[$code."_time"];
- }
-}*/
-
 function sortByResult($a,$b)
 {
   if ($a["Status"] == 0 && $b["Status"] != 0)
@@ -560,11 +570,11 @@ function sortByResult($a,$b)
   {
     return 1;
   }
-  else if ($a["Status"] != $b["Status"]) 
+  else if ($a["Status"] != $b["Status"])
   {
     return $a["Status"] - $b["Status"];
   }
-  else 
+  else
   {
     return $a["Time"] - $b["Time"];
   }
