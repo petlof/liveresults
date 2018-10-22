@@ -194,11 +194,11 @@ namespace LiveResults.Client.Parsers
 
             var rexRunnerId = new Regex("<a href=.*kilpailijat/(?<id>\\d+)/\\d/\">(?<name>.*?)</a>");
 
-            for (int i = 6; i < trs[0].ChildNodes.Count - 2; i++)
+            for (int i = 5; i < trs[0].ChildNodes.Count - 2; i++)
             {
                 string name = trs[0].ChildNodes[i].InnerXml.Split(new string[] {"<br />"},StringSplitOptions.None)[1];
-                int code = 1001 + i-6;
-                int order = i - 6;
+                int code = 1001 + i-5;
+                int order = i - 5;
                 OnRadioControl(name, code, className, order);
             }
 
@@ -223,7 +223,7 @@ namespace LiveResults.Client.Parsers
                 List<ResultStruct> splits = new List<ResultStruct>();
                 for (int split = 5; split < trs[i].ChildNodes.Count - 1; split++)
                 {
-                    var splitCode = 1001 + split - 6;
+                    var splitCode = 1001 + split - 5;
                     var splittime = trs[i].ChildNodes[split].InnerText.Trim();
                     if (!string.IsNullOrEmpty(splittime))
                     {

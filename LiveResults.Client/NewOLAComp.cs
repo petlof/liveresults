@@ -436,5 +436,10 @@ GRANT SELECT ON Controls to live;";
             if (comboBox1.SelectedIndex == 0)
                 wizard1.NextTo(wizardPage1);
         }
+
+        private void wizard1_Load(object sender, EventArgs e)
+        {
+
+        }
     }
 }

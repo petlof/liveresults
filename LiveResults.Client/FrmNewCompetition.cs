@@ -186,13 +186,13 @@ namespace LiveResults.Client
             {
                 var parser = new TulospalveluParser(new string[]
                 {
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_yllassprint/men/smart/1/",
-                    "http://online4.tulospalvelu.fi/tulokset/en/2017_yllassprint/women/smart/1/"
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_yllaslong/men/smart/1/",
+                    "http://online4.tulospalvelu.fi/tulokset/en/2017_yllaslong/women/smart/1/"
 
 
                 });
                 var mon = new FrmMonitor();
-                mon.CompetitionID = 13181;
+                mon.CompetitionID = 13187;
                 mon.SetParser(parser);
                 mon.ShowDialog(this);
             }

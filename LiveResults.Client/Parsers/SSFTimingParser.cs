@@ -18,7 +18,7 @@ namespace LiveResults.Client
         public event LogMessageDelegate OnLogMessage;
         private bool m_createRadioControls;
         private bool m_continue;
-        private bool m_useTenth = true;
+        private bool m_useTenth = false;
 
         public SSFTimingParser(IDbConnection conn, int eventID, bool recreateRadioControls = true)
         {
