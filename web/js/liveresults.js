@@ -2,7 +2,7 @@ var LiveResults;
 (function (LiveResults) {
     // ReSharper disable once InconsistentNaming
     LiveResults.Instance = null;
-    var AjaxViewer = (function () {
+    var AjaxViewer = /** @class */ (function () {
         function AjaxViewer(competitionId, language, classesDiv, lastPassingsDiv, resultsHeaderDiv, resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDayEvent, isSingleClass, setAutomaticUpdateText, runnerStatus, showTenthOfSecond) {
             var _this = this;
             this.competitionId = competitionId;
@@ -638,6 +638,9 @@ var LiveResults;
             if (this.curClassIsMassStart) {
                 /*append results from splits backwards (by place on actual split)*/
                 data.sort(function (a, b) { return _this.sortByDistAndSplitPlace(a, b); });
+                /*for (i = 0; i < tmp.length; i++) {
+                    data.push(tmp[i]);
+                }*/
             }
             else {
                 var tmp = Array();
@@ -832,7 +835,7 @@ var LiveResults;
                             res.placeSortable = 9999;
                     });
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place", });
+                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place" });
                     columns.push({ "sTitle": "placeSortable", "bVisible": false, "mDataProp": "placeSortable", "aTargets": [1] });
                     columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [2], "mDataProp": "name" });
                     columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [3], "mDataProp": "club" });
@@ -928,4 +931,3 @@ Date.prototype.dst = function () {
 };
 //GA tracker-object
 var ga;
-//# sourceMappingURL=LiveResults.js.map
