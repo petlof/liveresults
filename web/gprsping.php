@@ -10,17 +10,16 @@ if (isset($_GET["sq"]))
 	$sq = $_GET["sq"];
 
 
-$conn = mysql_connect("localhost","liveresultat","web") or die(mysql_error());
-mysql_select_db("liveresultat");
-		/* check connection */ 
-		if (mysql_errno()) {
-	   		printf("Connect failed: %s\n", mysql_error());
-	   		exit();
-		}
+$conn = mysqli_connect("localhost","liveresultat","web", "liveresultat");
+/* check connection */
+if (mysqli_connect_errno()) {
+	printf("Connect failed: %s\n", mysqli_connect_error());
+	exit();
+}
 
 $sql = "replace into gprsping values('$d',now(),'$sq')";
-mysql_query($sql,$conn);
+mysqli_query($conn, $sql);
 
-mysql_close($conn);
+mysqli_close($conn);
 echo("OK");
 ?>
