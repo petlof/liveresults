@@ -377,7 +377,7 @@ function removeTwitter()
 
 </table>
 
-<p align="left">&copy;2012-, Liveresults (http://emmaclient.codeplex.com), <?=$_NOTICE?></p>
+<p align="left">&copy;2012-, Liveresults (https://liveresults.github.io/documentation/), <?=$_NOTICE?></p>
 
 
 
