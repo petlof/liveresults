@@ -20,7 +20,7 @@ var LiveResults;
             this.runnerStatus = runnerStatus;
             this.showTenthOfSecond = showTenthOfSecond;
             this.updateAutomatically = true;
-            this.updateInterval = 15000;
+            this.updateInterval = 7000;
             this.classUpdateInterval = 60000;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
@@ -69,6 +69,7 @@ var LiveResults;
                 check = true; })(navigator.userAgent || navigator.vendor || window.opera);
             return check;
         };
+        
         ///Update the classlist
         AjaxViewer.prototype.updateClassList = function () {
             var _this = this;
@@ -347,11 +348,23 @@ var LiveResults;
                     var col = 0;
                     this.curClassSplits = data.splitcontrols;
                     var haveSplitControls = data.splitcontrols != null && data.splitcontrols.length > 0;
-                    columns.push({ "sTitle": "#", "bSortable": false, "aTargets": [col++], "mDataProp": "place" });
+                    columns.push({
+                        "sTitle": "#",
+                        "bSortable": false,
+                        "aTargets": [col++],
+                        "mDataProp": "place"
+                    });
                     if (!haveSplitControls)
-                        columns.push({ "sTitle": this.resources["_NAME"], "bSortable": false, "aTargets": [col++], "mDataProp": "name" });
+                        columns.push({
+                            "sTitle": this.resources["_NAME"],
+                            "sClass": "left",
+                            "bSortable": false,
+                            "aTargets": [col++],
+                            "mDataProp": "name"
+                        });
                     columns.push({
                         "sTitle": haveSplitControls ? this.resources["_NAME"] + " / " + this.resources["_CLUB"] : this.resources["_CLUB"],
+                        "sClass": "left",
                         "bSortable": false,
                         "aTargets": [col++],
                         "mDataProp": "club",
@@ -372,55 +385,96 @@ var LiveResults;
                     this.updateResultVirtualPosition(data.results);
                     columns.push({
                         "sTitle": this.resources["_START"],
-                        "sClass": "left",
+                        "sClass": "right",
                         "sType": "numeric",
                         "aDataSort": [col],
                         "aTargets": [col],
                         "bUseRendered": false,
                         "mDataProp": "start",
                         "fnRender": function (o) {
-                            if (o.aData.start == "") {
+                            if (o.aData.start == "")
+                            {
                                 return "";
                             }
-                            else {
-                                return _this.formatTime(o.aData.start, 0, false, true);
+                            else
+                            {
+                                var txt = _this.formatTime(o.aData.start, 0, false, true);
+                                if ((o.aData.splits != undefined) && (o.aData.splits["0_place"] >= 1))
+                                    txt += " (" + o.aData.splits["0_place"] + ")" +
+                                           "<br /><span class=\"plustime\">+" +
+                                         _this.formatTime(o.aData.splits["0_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                                return txt;
                             }
                         }
                     });
                     col++;
-                    if (data.splitcontrols != null) {
-                        $.each(data.splitcontrols, function (key, value) {
-                            columns.push({
-                                "sTitle": value.name,
-                                "sClass": "left",
-                                "sType": "numeric",
-                                "aDataSort": [col + 1, col],
-                                "aTargets": [col],
-                                "bUseRendered": false,
-                                "mDataProp": "splits." + value.code,
-                                "fnRender": function (o) {
-                                    if (!o.aData.splits[value.code + "_place"])
-                                        return "";
-                                    else {
-                                        var txt = _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond) +
-                                            " (" +
-                                            o.aData.splits[value.code + "_place"] +
-                                            ")";
-                                        if (o.aData.splits[value.code + "_timeplus"] != undefined) {
-                                            txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                    if (data.splitcontrols != null)
+                    {
+                        $.each(data.splitcontrols, function (key, value)
+                        {
+                            if (value.code>0 && value.code<100000)
+                            {
+                                columns.push(
+                                    {
+                                        "sTitle": value.name,
+                                        "sClass": "right",
+                                        "sType": "numeric",
+                                        "aDataSort": [col + 1, col],
+                                        "aTargets": [col],
+                                        "bUseRendered": false,
+                                        "mDataProp": "splits." + value.code,
+                                        "fnRender": function (o)
+                                        {
+                                            if (!o.aData.splits[value.code + "_place"])
+                                                return "";
+                                            else
+                                            {
+                                                var txt = "";
+                                                var spc = "";
+                                                if ((value.code == 999) && (o.aData.splits["999_place"] != undefined)) // Leg time
+                                                {
+                                                    //if (o.aData.splits["999_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
+                                                    txt += "<span class=\"legtime\">" + _this.formatTime(o.aData.splits[(999)], 0, _this.showTenthOfSecond) +
+                                                        spc + " (" + o.aData.splits["999_place"] + ")";
+                                                    txt += "<br/>+" + _this.formatTime(o.aData.splits["999_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                                                }
+                                                else
+                                                {
+                                                    if ((o.aData.splits[(value.code + 100000) + "_place"] != undefined) && (o.aData.splits[value.code + "_place"] != 1))
+                                                    {
+                                                        //if (o.aData.splits[value.code + "_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
+                                                        txt += "<span class=\"\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) +
+                                                            spc + " (" + o.aData.splits[value.code + "_place"] + ")</span>";
+                                                    }
+                                                    else
+                                                    {
+                                                        //if (o.aData.splits[value.code + "_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
+                                                        txt += _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond) +
+                                                            spc + " (" + o.aData.splits[value.code + "_place"] + ")";
+                                                    }
+                                                    if (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined)
+                                                    {
+                                                        //if (o.aData.splits[(value.code + 100000) + "_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
+                                                        txt += "<br/><span class=\"legtime\">" + _this.formatTime(o.aData.splits[(value.code + 100000)], 0, _this.showTenthOfSecond) +
+                                                            spc + " (" + o.aData.splits[(value.code + 100000) + "_place"] + ")</span>";
+                                                    }
+                                                    else if (o.aData.splits[value.code + "_timeplus"] != undefined)
+                                                        txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + "</span>"
+                                                }
+                                                return txt;
+                                            }
                                         }
-                                        return txt;
-                                    }
-                                }
-                            });
-                            col++;
-                            columns.push({ "sTitle": value.name + "_Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "splits." + value.code + "_status" });
+                                    });
+                                col++;
+                            }
+                        
+                        columns.push({ "sTitle": value.name + "_Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "splits." + value.code + "_status" });
                         });
                     }
                     var timecol = col;
                     columns.push({
                         "sTitle": this.resources["_CONTROLFINISH"],
-                        "sClass": "left",
+                        "sClass": "right",
                         "sType": "numeric",
                         "aDataSort": [col + 1, col, 0],
                         "aTargets": [col],
@@ -449,7 +503,7 @@ var LiveResults;
                     if (!haveSplitControls) {
                         columns.push({
                             "sTitle": "",
-                            "sClass": "center",
+                            "sClass": "right",
                             "bSortable": false,
                             "aTargets": [col++],
                             "mDataProp": "timeplus",
@@ -465,7 +519,7 @@ var LiveResults;
                     if (this.isMultiDayEvent) {
                         columns.push({
                             "sTitle": this.resources["_TOTAL"],
-                            "sClass": "left",
+                            "sClass": "right",
                             "sType": "numeric",
                             "aDataSort": [col + 1, col, 0],
                             "aTargets": [col],
@@ -494,7 +548,7 @@ var LiveResults;
                         if (!haveSplitControls) {
                             columns.push({
                                 "sTitle": "",
-                                "sClass": "center",
+                                "sClass": "right",
                                 "bSortable": false,
                                 "aTargets": [col++],
                                 "mDataProp": "totalplus",
@@ -561,7 +615,7 @@ var LiveResults;
         };
         AjaxViewer.prototype.formatTime = function (time, status, showTenthOs, showHours, padZeros) {
             if (arguments.length == 2 || arguments.length == 3) {
-                if (this.language == 'fi') {
+                if (this.language == 'fi' || this.language == 'no') {
                     showHours = true;
                     padZeros = false;
                 }
@@ -571,7 +625,7 @@ var LiveResults;
                 }
             }
             else if (arguments.length == 4) {
-                if (this.language == 'fi') {
+                if (this.language == 'fi' || this.language == 'no') {
                     padZeros = false;
                 }
                 else {
@@ -835,10 +889,10 @@ var LiveResults;
                             res.placeSortable = 9999;
                     });
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "aTargets": [0], "mDataProp": "place" });
+                    columns.push({ "sTitle": "#", "sClass": "left", "aTargets": [0], "mDataProp": "place" });
                     columns.push({ "sTitle": "placeSortable", "bVisible": false, "mDataProp": "placeSortable", "aTargets": [1] });
-                    columns.push({ "sTitle": this.resources["_NAME"], "aTargets": [2], "mDataProp": "name" });
-                    columns.push({ "sTitle": this.resources["_CLUB"], "bSortable": false, "aTargets": [3], "mDataProp": "club" });
+                    columns.push({ "sTitle": this.resources["_NAME"], "sClass": "left", "aTargets": [2], "mDataProp": "name" });
+                    columns.push({ "sTitle": this.resources["_CLUB"], "sClass": "left", "bSortable": false, "aTargets": [3], "mDataProp": "club" });
                     columns.push({
                         "sTitle": this.resources["_CLASS"], "aTargets": [4], "mDataProp": "class",
                         "fnRender": function (o) {
@@ -850,7 +904,7 @@ var LiveResults;
                     });
                     var col = 5;
                     columns.push({
-                        "sTitle": this.resources["_START"], "sClass": "left", "sType": "numeric", "aDataSort": [col], "aTargets": [col], "bUseRendered": false, "mDataProp": "start",
+                        "sTitle": this.resources["_START"], "sClass": "right", "sType": "numeric", "aDataSort": [col], "aTargets": [col], "bUseRendered": false, "mDataProp": "start",
                         "fnRender": function (o) {
                             if (o.aData.start == "") {
                                 return "";
@@ -863,7 +917,7 @@ var LiveResults;
                     col++;
                     var timecol = col;
                     columns.push({
-                        "sTitle": this.resources["_CONTROLFINISH"], "sClass": "left", "sType": "numeric", "aDataSort": [col + 1, col, 0], "aTargets": [col], "bUseRendered": false, "mDataProp": "result",
+                        "sTitle": this.resources["_CONTROLFINISH"], "sClass": "right", "sType": "numeric", "aDataSort": [col + 1, col, 0], "aTargets": [col], "bUseRendered": false, "mDataProp": "result",
                         "fnRender": function (o) {
                             if (o.aData.place == "-" || o.aData.place == "") {
                                 return _this.formatTime(o.aData.result, o.aData.status);
@@ -876,7 +930,7 @@ var LiveResults;
                     col++;
                     columns.push({ "sTitle": "Status", "bVisible": false, "aTargets": [col++], "sType": "numeric", "mDataProp": "status" });
                     columns.push({
-                        "sTitle": "", "sClass": "center", "bSortable": false, "aTargets": [col++], "mDataProp": "timeplus",
+                        "sTitle": "", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "timeplus",
                         "fnRender": function (o) {
                             if (o.aData.status != 0)
                                 return "";

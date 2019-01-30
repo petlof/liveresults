@@ -1,6 +1,6 @@
 <?php
-date_default_timezone_set("Europe/Stockholm");
-$lang = "sv";
+date_default_timezone_set("Europe/Oslo");
+$lang = "no";
 
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
@@ -46,7 +46,7 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#555556">
-<link rel="stylesheet" type="text/css" href="css/style-eoc.css">
+<link rel="stylesheet" type="text/css" href="css/style-eoc.css?as">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <script type="text/javascript">
@@ -58,7 +58,8 @@ window.mobilecheck = function() {
 </script>
 
 <?php
-$debug = isset($_GET['debug']) && $_GET["debug"] == "true";
+//$debug = isset($_GET['debug']) && $_GET["debug"] == "true";
+$debug = true;
 if ($debug)
 {
 ?>
@@ -66,12 +67,15 @@ if ($debug)
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
-<script language="javascript" type="text/javascript" src="js/LiveResults.debug.js?rnd=<?=time()?>"></script>
+<script language="javascript" type="text/javascript" src="js/liveresults.js"></script> 
+<!-- <script language="javascript" type="text/javascript" src="js/LiveResults.debug.js?rnd=<?=time()?>"></script>
+-->
 <?php }
 else
 {?>
 <!-- RELEASE-->
 <script language="javascript" type="text/javascript" src="js/liveresults.min.20170627.js"></script>
+
 <?php }?>
 <script language="javascript" type="text/javascript" src="js/NoSleep.min.js"></script>
 <script language="javascript" type="text/javascript">
@@ -242,11 +246,14 @@ function changeFontSize(val)
 <?php if (!$showPath) {?>
 <h1 class="categoriesheader" style="margin-bottom: 4px; color: black"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
 <?php }?>
-<?php if (!$isSingleClass && !$isSingleClub) {?>
+
+
+<!--- LANGUAGE TABLE --->
+<?php if (!$isSingleClass && !$isSingleClub){?>				
 			<div id="langchooser">
-| <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
+						| <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
 "<a href=\"?lang=sv&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' alt='Svenska'> Svenska</a>")?>
-                                                        | <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
+						| <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
 "<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' alt='English'> English</a>")?>
                         | <?php echo($lang == "fi" ? "<img src='images/fi.png' alt='Suomeksi'> Suomeksi" :
 "<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png'  alt='Suomeksi'> Suomeksi</a>")?>
@@ -256,26 +263,30 @@ function changeFontSize(val)
 "<a href=\"?lang=cz&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/cz.png' alt='Česky'> Česky</a>")?>
                         | <?php echo($lang == "de" ? "<img src='images/de.png' alt='Deutsch'> Deutsch" :
 "<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>
- | <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
+						| <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
 "<a href=\"?lang=bg&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/bg.png' alt='български'> български</a>")?>
+|
+</div>
+<div>
 						| <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
 "<a href=\"?lang=fr&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fr.png' alt='Français'> Français</a>")?>
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : 
 "<a href=\"?lang=it&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?> 
                         | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" : 
 "<a href=\"?lang=hu&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?> 
-
- | <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" :
+						| <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" :
 "<a href=\"?lang=es&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/es.png' border='0' alt='Español'> Español</a>")?>
- | <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" :
+						| <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" :
 "<a href=\"?lang=pl&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pl.png' border='0' alt='Polska'> Polska</a>")?>
- | <?php echo($lang == "pt" ? "<img src='images/pt.png?a' border='0' alt='Português'> Português" :
+						| <?php echo($lang == "pt" ? "<img src='images/pt.png?a' border='0' alt='Português'> Português" :
 "<a href=\"?lang=pt&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pt.png?a' border='0' alt='Português'> Português</a>")?>
-
+						| <?php echo($lang == "no" ? "<img src='images/no.png?a' border='0' alt='Norsk'> Norsk" :
+"<a href=\"?lang=no&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/no.png?a' border='0' alt='Norsk'> Norsk</a>")?>
 |
-
 </div>
 <?php }?>
+
+<!--- PASSING TABLE --->
 <?php if($showLastPassings){?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
 			<tr>
@@ -293,6 +304,8 @@ function changeFontSize(val)
 </td>
 </tr></table><br>
 <?php }?>
+
+<!--- RESULT TABLE --->
 			<table border="0" cellpadding="0" cellspacing="0" width="100%">
 
 			<tr>

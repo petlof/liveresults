@@ -1,14 +1,16 @@
+
 /*------------------------------*/
 /* --- GENERAL TAGS CLASSES --- */
 /*------------------------------*/
 
-body {background-color: #ffffff; margin-top:5px; margin-left:5px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
+body {background-color: #ffffff; margin: 0; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
 
 /* html documents within iframes */
 body.iframed {margin-left:0px; margin-right:0px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
 
 table {font-size:1em;}
 td{font-family: arial, helvetica, verdana, geneva, sans-serif; font-size:1em; line-height: 1.4em; white-space: nowrap;}
+th { white-space: normal;}
 
 a:link {font-size:1em; color:#F1592A;}
 a:visited {font-size:1em; color:#F1592A;}
@@ -22,18 +24,53 @@ h1{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 h2{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 h3{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 
+#divClasses {
+font-size: 1.1em;
+line-height: 1.4em;
+}
+
+.firstnonqualifier {
+    border-top: 3px dashed grey;
+}
+
 /* Submenu classes */
 /*td.submenu{background: #3A5C9C; border-left:1px solid #ABC9EF; border-right:1px solid #ABC9EF;}*/
-td.submenu{background: #dddddd;}
-td.submenu table tr td {background: #dddddd; color:#000000; padding:3px 9px 3px 9px; font-weight:bold;}
-td.submenu table tr td a:link, td.submenu table tr td a:visited {color: #000000; text-decoration: none;}
-td.submenu table tr td a:hover {text-decoration: underline; color:#0000FF;}
+td.submenu{background: #555556;}
+td.submenu table tr td {color:#DDDDDD; padding:3px 9px 3px 9px; font-weight:bold;}
+td.submenu table tr td a:link, td.submenu table tr td a:visited {color: #FFF; text-decoration: none;}
+td.submenu table tr td a:hover {text-decoration: underline; color: #F1592A;}
 
+td.searchmenu { padding-left: 5px;}
 
-tr.new_result { background-color: #F9B7A4 !important;font-weight: bold;  border-bottom: 1px solid white; }
-tr.new_result a {color: black;}
+tr.new_result {  color: white; background-color: #F1592A !important;font-weight: bold;  border-bottom: 1px solid white; }
+tr.new_result a {color: white;}
 tr.new_result td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
 tr.new_result td.sorting_1 { background-color: #F9B7A4 !important;  border-bottom: 1px solid white;}
+
+tr.new_result td:last-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 15px
+}
+
+table.dataTable td {
+vertical-align: top;
+}
+
+.plustime {
+ color: #666;
+}
+
+TR.new_result .plustime {
+ color: white;
+}
+
+.legtime {
+    color: #3A5C9C;
+}
+
+TR.new_result .legtime {
+    color: white;
+}
 
 /*predicted times*/
 td i {
@@ -41,7 +78,7 @@ td i {
 }
 
 tr.new_result td i {
-    color: black;
+    color: white;
 }
 
 #langchooser { vertical-align: middle; line-height:21px;}

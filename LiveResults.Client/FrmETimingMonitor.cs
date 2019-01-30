@@ -109,18 +109,18 @@ namespace LiveResults.Client
                     string stringCliCompDate = cli.compDate.ToString("yyyy-MM-dd");
                     if (!( String.Equals(stringCliCompDate, stringCompDate) && String.Equals(cli.organizer, Organizer)))
                     {
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + " Parser aborts!");
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  eTiming:\t" + Organizer + " - " + stringCompDate);
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  Emma:\t" + cli.organizer + " - " + stringCliCompDate);
                         listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + " Organizer or date does NOT match!");
-                        listBox1.Items.Insert(0, "   eTiming: " + Organizer + " - " + stringCompDate);
-                        listBox1.Items.Insert(0, "   Emma:    " + cli.organizer + " - " + stringCliCompDate);
-                        listBox1.Items.Insert(0, "Parser aborts!");
                         dateOrganizerOK = false;
                         break;
                     }
                     else
                     {
-                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + " Organizer and date match:");
-                        listBox1.Items.Insert(0, "   eTiming: " + Organizer + " - " + stringCompDate);
-                        listBox1.Items.Insert(0, "   Emma:    " + cli.organizer + " - " + stringCliCompDate);
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "   eTiming:\t" + Organizer + " - " + stringCompDate);
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "   Emma:\t" + cli.organizer + " - " + stringCliCompDate);
+                        listBox1.Items.Insert(0, DateTime.Now.ToString("HH:mm:ss") + "  Organizer and date match.");
                         if (deleteEmmaIDs)
                             cli.DeleteUnusedRunners(eTimingId);
                     }

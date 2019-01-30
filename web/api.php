@@ -1,6 +1,7 @@
 <?php
 date_default_timezone_set("Europe/Stockholm");
 $lang = "sv";
+$hightime = 60;
 
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
@@ -14,9 +15,9 @@ $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUS
 
 header('content-type: application/json; charset='.$CHARSET);
 header('Access-Control-Allow-Origin: *');
-header('cache-control: max-age=15');
+header('cache-control: max-age=5');
 header('pragma: public');
-header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 15));
+header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 5));
 
 if (!isset($_GET['method']))
 {
@@ -201,7 +202,7 @@ elseif ($_GET['method'] == 'getclubresults')
 			$timeplus = $res['TimePlus'];
 
 			$age = time()-strtotime($res['Changed']);
-			$modified = $age < 120 ? 1:0;
+			$modified = $age < $hightime ? 1:0;
 
 			if (!$unformattedTimes)
 			{
@@ -304,6 +305,10 @@ elseif ($_GET['method'] == 'getclassresults')
 		$winnerTime = 0;
 		$resultsAsArray = false;
 		$unformattedTimes = false;
+
+		$qualLim  = 12;
+		$firstNonQualifierSet = false;
+
 		if (isset($_GET['resultsAsArray']))
 			$resultsAsArray  = true;
 
@@ -346,6 +351,7 @@ elseif ($_GET['method'] == 'getclassresults')
       $cursplitplace = 1;
       $cursplittime = "";
       $bestsplittime = -1;
+
       foreach ($results as $key => $res)
       {
         $sp_time = "";
@@ -395,7 +401,7 @@ elseif ($_GET['method'] == 'getclassresults')
 		$splitJSON .= "$br]";
 
 		$first = true;
-		$firstNonQualifierSet = false;
+
 		foreach ($results as $res)
 		{
 			if (!$first)
@@ -407,7 +413,7 @@ elseif ($_GET['method'] == 'getclassresults')
 
 			$status = $res['Status'];
 			$cp = $place;
-      $progress = 0;
+			$progress = 0;
 
 			if ($time == "")
 				$status = 9;
@@ -416,21 +422,21 @@ elseif ($_GET['method'] == 'getclassresults')
 			{
 				$cp = "";
 
-        if (count($splits) == 0)
-        {
-          $progress = 0;
-        }
-        else
-        {
-          $passedSplits = 0;
-          $splitCnt = 0;
-          foreach ($splits as $split)
+			if (count($splits) == 0)
+			{
+				$progress = 0;
+			}
+			else
+			{
+			$passedSplits = 0;
+			$splitCnt = 0;
+			foreach ($splits as $split)
 		      {
-            $splitCnt++;
-            if (isset($res[$split['code']."_time"]))
-              $passedSplits = $splitCnt;
-          }
-          $progress = ($passedSplits * 100.0) / (count($splits)+1);
+				$splitCnt++;
+				if (isset($res[$split['code']."_time"]))
+				$passedSplits = $splitCnt;
+			}
+			$progress = ($passedSplits * 100.0) / (count($splits)+1);
         }
 			}
 			elseif ($status != 0 || $time < 0)
@@ -453,7 +459,7 @@ elseif ($_GET['method'] == 'getclassresults')
 			}
 
 			$age = time()-strtotime($res['Changed']);
-			$modified = $age < 120 ? 1:0;
+			$modified = $age < $hightime ? 1:0;
 
 			if (!$unformattedTimes)
 			{
@@ -493,7 +499,7 @@ elseif ($_GET['method'] == 'getclassresults')
 
 							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"].",\"".$split['code']."_timeplus\": ".$res[$split['code']."_timeplus"];
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
-							if ($spage < 120)
+							if ($spage < $hightime)
 								$modified = true;
 						}
 						else
@@ -527,7 +533,13 @@ elseif ($_GET['method'] == 'getclassresults')
 				{
 					 $ret .= ",$br \"DT_RowClass\": \"$rowClass\"";
 				}
-
+				
+				// Qualification limit
+				if ($place>$qualLim && $firstNonQualifierSet == false && $_GET['comp'] == "00001")
+				{						 
+					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
+					$firstNonQualifierSet = true;
+				}
 
 				$ret .= "$br}";
 			}
@@ -544,7 +556,7 @@ elseif ($_GET['method'] == 'getclassresults')
 		else
 		{
 			echo("{ \"status\": \"OK\",$br \"className\": \"".$class."\",$br \"splitcontrols\": $splitJSON,$br \"results\": [$br$ret$br]");
-			 if ($_GET['comp'] == "11838" || $_GET['comp'] == "12096" || $_GET['comp'] == "12793" || $_GET['comp'] == "12998" )
+			 if ($_GET['comp'] == "11838" || $_GET['comp'] == "12096" || $_GET['comp'] == "12793" || $_GET['comp'] == "12998" || $_GET['comp'] == "00000")
                         {
                            echo(",$br \"IsMassStartRace\": true");
                         }
@@ -595,7 +607,7 @@ function formatTime($time,$status,& $RunnerStatus)
 
   }
 
-   if ($lang == "fi")
+   if ($lang == "no" or $lang == "fi")
 
 {
 

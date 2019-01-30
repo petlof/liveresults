@@ -248,8 +248,8 @@ namespace LiveResults.Client
                 case 0:
                     return new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + txtETimingDb.Text + ";");
                 case 1:
-                    return new OleDbConnection("Provider=SQL Server Native Client 11.0;Data Source=" + txtHost.Text + "; Port=" + txtPort + "; UID=" + txtUser.Text + ";PWD=" + txtPw.Text + (schema != null ? "; Database=" + schema : ""));
-            }
+                    return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + "," + txtPort.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
+             }
             return null;
         }
 

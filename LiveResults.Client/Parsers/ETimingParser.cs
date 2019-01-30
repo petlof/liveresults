@@ -72,6 +72,7 @@ namespace LiveResults.Client
             public string LegName;
             public string LegStatus;
             public int LegTime;
+            public int TotalTime;
         }
 
         private class RelayTeam
@@ -154,6 +155,8 @@ namespace LiveResults.Client
                      *  ordinary pass time = code + 1000*nc             + 100000
                      *  relay pass time    = code + 1000*nc + 10000*leg + 100000
                      *  change-over code   = 999  + 1000    + 10000*leg
+                     *  exchange time code = 0
+                     *  leg time code      = 999
                      * 
                      *  nc  = number of occurrence
                      *  leg = leg number
@@ -251,11 +254,39 @@ namespace LiveResults.Client
                                         intermediates.Add(new IntermediateTime
                                         {
                                             ClassName = className,
-                                            IntermediateName = "Time",
+                                            IntermediateName = "Tid",
                                             Position = 998,
-                                            Order = 100
+                                            Order = 998
                                         });
                                     }
+
+                                    // Add exchange and leg times for legs 2 and up
+                                    for (int i = 2; i <= numLegs; i++) // Relay
+                                    {
+                                        string classN = className;
+                                        if (!classN.EndsWith("-"))
+                                                classN += "-";
+                                        classN += Convert.ToString(i);
+
+                                        intermediates.Add(new IntermediateTime
+                                        {
+                                            ClassName = classN,
+                                            IntermediateName = "Veksling",
+                                            Position = 0,
+                                            Order = 0
+                                        });
+
+                                        intermediates.Add(new IntermediateTime
+                                        {
+                                             ClassName = classN,
+                                             IntermediateName = "EtpTid",
+                                             Position = 999,
+                                             Order = 999
+                                        });
+                                        
+
+                                    }
+
 
                                     if (RadioPosts.ContainsKey(cource))
                                     {
@@ -293,8 +324,21 @@ namespace LiveResults.Client
                                                     Position = Code + radioCnt[CodeforCnt] * 1000 + AddforLeg,
                                                     Order = radioControl.Order
                                                 });
-                                            }
 
+                                                // Add passing time for relay
+                                                if (numLegs > 0) // Relay
+                                                {
+                                                    intermediates.Add(new IntermediateTime
+                                                    {
+                                                        ClassName = classN,
+                                                        IntermediateName = radioControl.Description + "PassTime",
+                                                        Position = Code + radioCnt[CodeforCnt] * 1000 + AddforLeg + 100000,
+                                                        Order = radioControl.Order
+                                                    });
+                                                }
+
+                                            }
+                                            
                                             // Add codes for one-line relay classes
                                             if (numLegs > 0 && m_oneLineRelayRes)  
                                             {
@@ -411,9 +455,18 @@ namespace LiveResults.Client
                             if (true)
                             {
                                 // Check for updates and parse if changes
-                                GetLastUpdates(cmdLastUpdateName, cmdLastUpdateSplit, out lastNameTime, out lastSplitTime);
-                                
-                                if (lastNameTime > lastNameTimePrev || lastSplitTime > lastSplitTimePrev)
+                                bool useLastUpdateMethod = false;
+
+                                if (useLastUpdateMethod)
+                                    GetLastUpdates(cmdLastUpdateName, cmdLastUpdateSplit, out lastNameTime, out lastSplitTime);
+                                else
+                                {
+                                    lastNameTime = DateTime.MinValue;
+                                    lastSplitTime = 0.0;
+                                }
+
+
+                                if (lastNameTime > lastNameTimePrev || lastSplitTime > lastSplitTimePrev || !useLastUpdateMethod)
                                 {
                                     lastNameTimePrev  = lastNameTime;
                                     lastSplitTimePrev = lastSplitTime;
@@ -607,12 +660,23 @@ namespace LiveResults.Client
                                 intime = ConvertFromDay2cs(Convert.ToDouble(reader["intime"]));
 
                             if (time > 0)
+                            {
                                 RelayTeams[teambib].TeamMembers[leg].LegTime = time;
-
+                                if (leg >= 2) // Adde leg time for relay runners at leg 2 and above
+                                {
+                                    var LegTime = new ResultStruct
+                                    {
+                                        ControlCode = 999,
+                                        Time = time
+                                    };
+                                    SplitTimes.Add(LegTime);
+                                }
+                            }
                             RelayTeams[teambib].TeamMembers[leg].LegStatus = status;
 
                             int TeamTime = 0;
                             RelayTeams[teambib].TotalTime = -2;
+                            RelayTeams[teambib].TeamMembers[leg].TotalTime = 0;
                             string TeamStatus = "I";
                             bool TeamOK = true;
                             for (int legs = 1; legs <= leg; legs++)
@@ -620,33 +684,40 @@ namespace LiveResults.Client
                                 if (RelayTeams[teambib].TeamMembers[legs].LegTime > 0)
                                 {
                                     TeamTime += RelayTeams[teambib].TeamMembers[legs].LegTime;
+                                    RelayTeams[teambib].TeamMembers[legs].TotalTime = TeamTime;
 
                                     var SplitTime = new ResultStruct
                                     {
-                                        ControlCode = 999 + 1000 + 10000 * legs,              // Note code 999 for change-over!
+                                        ControlCode = 999 + 1000 + 10000 * legs,           // Note code 999 for change-over!
                                         Time = TeamTime
                                     };
                                     RelayTeams[teambib].SplitTimes.Add(SplitTime);
 
                                     var LegTime = new ResultStruct
                                     {
-                                        ControlCode = 999 + 1000 + +10000 * legs + 100000,  // Note code 999 for change-over!
+                                        ControlCode = 999 + 1000 +10000 * legs + 100000,  // Note code 999 for change-over!
                                         Time = RelayTeams[teambib].TeamMembers[legs].LegTime
                                     };
                                     RelayTeams[teambib].SplitTimes.Add(LegTime);
+
+                                    
                                 }
 
                                 // Accumulated status
                                 if (TeamOK && (RelayTeams[teambib].TeamMembers[legs].LegStatus == "A"))
+                                {
                                     TeamOK = true;
+                                    TeamStatus = "A";
+                                }
                                 else
                                     TeamOK = false;
+                               
                                 if (legs == numlegs && TeamOK)
                                 {
                                     TeamStatus = "A";
                                     status = "A";
                                     RelayTeams[teambib].TotalTime = TeamTime;
-                                    break;
+                                    continue;
                                 }
 
                                 if (RelayTeams[teambib].TeamMembers[legs].LegStatus == "D")
@@ -672,8 +743,18 @@ namespace LiveResults.Client
 
                             if (intime > 0)
                                 time = Math.Max(intime - iStartClass, TeamTime);
-                        }
-                                                
+
+                            if (leg > 1 && RelayTeams[teambib].TeamMembers[leg - 1].TotalTime > 0)
+                            {
+                                var ExchangeTime = new ResultStruct
+                                {
+                                    ControlCode = 0,  // Note code 0 for change-over!
+                                    Time = RelayTeams[teambib].TeamMembers[leg - 1].TotalTime
+                                };
+                                SplitTimes.Add(ExchangeTime);
+                            }
+                        }                 
+                        
                         bool freestart = Convert.ToBoolean(reader["freestart"].ToString());
 
                         // Add split times
@@ -718,18 +799,19 @@ namespace LiveResults.Client
                                 Time = passTime
                             };
                             SplitTimes.Add(SplitTime);
+
                             if (isRelay)
                                 RelayTeams[teambib].SplitTimes.Add(SplitTime);
 
                             if (passLegTime > 0)
                             {
-                                var LegTime = new ResultStruct
+                                var passLegTimeStruct = new ResultStruct
                                 {
                                     ControlCode = iSplitcode + 10000 * leg + 100000,
                                     Time = passLegTime
                                 };
-                                SplitTimes.Add(LegTime);
-                                RelayTeams[teambib].SplitTimes.Add(LegTime);
+                                SplitTimes.Add(passLegTimeStruct);
+                                RelayTeams[teambib].SplitTimes.Add(passLegTimeStruct);
                             }
 
                             if (freestart)
@@ -828,31 +910,29 @@ namespace LiveResults.Client
 
         private static int GetStatusFromCode(ref int time, string status)
         {
-            int rstatus = 10; //  Default: Started
+            int rstatus = 10; //  Default: Entered
             switch (status)
             {
                 case "S": // Started
                     rstatus = 9;
-                    time = -1;
                     break;
                 case "I": // Entered 
                     rstatus = 10;
-                    time = -1;
                     break;
                 case "A": // OK
                     rstatus = 0;
                     break;
                 case "N": // Ikke startet
                     rstatus = 1;
-                    time = -1;
+                    time = -3;
                     break;
                 case "B": // Brutt
                     rstatus = 2;
-                    time = -1;
+                    time = -3;
                     break;
                 case "D": // Disk / mp
                     rstatus = 3;
-                    time = -1;
+                    time = -3;
                     break;
             }
             return rstatus;
