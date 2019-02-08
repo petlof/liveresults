@@ -218,20 +218,15 @@ namespace LiveResults.Client
                     dbs.Add(r["CATALOG_NAME"] as string);
                 }
             }
-            else if (conn is MySql.Data.MySqlClient.MySqlConnection)
+            else if (conn is SqlConnection)
             {
-                IDbCommand cmd = conn.CreateCommand();
-                cmd.CommandText = "SHOW DATABASES";
-                IDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                SqlConnection sqlConn = conn as SqlConnection;
+                DataTable schemas = sqlConn.GetSchema("Databases");
+                foreach (DataRow r in schemas.Rows)
                 {
-                    string db = reader[0] as string;
-                    if (db != "mysql" && db != "information_schema")
-                    {
-                        dbs.Add(db);
-                    }
+                    if (Convert.ToInt32(r["dbid"].ToString()) >= 5)
+                        dbs.Add(r["database_name"] as string);
                 }
-                reader.Close();
             }
             return dbs.ToArray();
         }
@@ -248,8 +243,9 @@ namespace LiveResults.Client
                 case 0:
                     return new OleDbConnection("Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + txtETimingDb.Text + ";");
                 case 1:
-                    return new OleDbConnection("Provider=SQLOLEDB.1;Persist Security Info=False;User ID=" + txtUser.Text + ";Password=" + txtPw.Text + ";Data Source=" + txtHost.Text + "," + txtPort.Text + (schema != null ? ";Initial Catalog=" + schema : ""));
-             }
+                    return new SqlConnection("Data Source=" + txtHost.Text + (txtPort.TextLength > 0 ? "," + txtPort.Text : "") + "; UID=" + txtUser.Text + ";PWD=" + txtPw.Text + (schema != null ? "; Database=" + schema : ""));
+                    //return new OleDbConnection("Provider=SQL Server Native Client 11.0;Data Source=" + txtHost.Text + (txtPort.TextLength>0 ? ";Port=" + txtPort : "") + "; UID=" + txtUser.Text + ";PWD=" + txtPw.Text + (schema != null ? "; Database=" + schema : ""));
+            } 
             return null;
         }
 

@@ -20,7 +20,7 @@ var LiveResults;
             this.runnerStatus = runnerStatus;
             this.showTenthOfSecond = showTenthOfSecond;
             this.updateAutomatically = true;
-            this.updateInterval = 7000;
+            this.updateInterval = 5000;
             this.classUpdateInterval = 60000;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
@@ -123,6 +123,17 @@ var LiveResults;
                     var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100
                         - (this.serverTimeDiff / 10) +
                         (timeZoneDiff * 6000);
+                    var i;
+                    var notRanked = 0;
+                
+                    for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
+                        if (this.curClassSplits[sp].code == "-999") {
+                            {
+                                notRanked = 1;
+                                break;
+                            }
+                        }
+                    }
                     for (var i = 0; i < data.length; i++) {
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
                             if (data[i].start < time) {
@@ -140,7 +151,7 @@ var LiveResults;
                                             }
                                         }
                                     }
-                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + notRanked) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                             }
                         }
@@ -281,6 +292,8 @@ var LiveResults;
                                 res.placeSortable = 999999;
                             if (res.place == "")
                                 res.placeSortable = 9999;
+							if (res.place == "F")
+                                res.placeSortable = 0;
                         });
                     }
                     this.currentTable.fnAddData(data.results, true);
@@ -346,10 +359,23 @@ var LiveResults;
                 if (data.results != null) {
                     var columns = Array();
                     var col = 0;
+                    var i;
                     this.curClassSplits = data.splitcontrols;
-                    var haveSplitControls = data.splitcontrols != null && data.splitcontrols.length > 0;
+                    var ranked = true;
+                    for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
+                        if (this.curClassSplits[sp].code == "-999") {
+                            {
+                                ranked = false;
+                                break;
+                            }
+                        }
+                    }
+                    
+                    // Status of non-ranked classes
+                    var haveSplitControls = (data.splitcontrols != null) && (data.splitcontrols.length > 0) && ranked;
                     columns.push({
                         "sTitle": "#",
+						"sClass": "right",
                         "bSortable": false,
                         "aTargets": [col++],
                         "mDataProp": "place"
@@ -412,7 +438,7 @@ var LiveResults;
                     {
                         $.each(data.splitcontrols, function (key, value)
                         {
-                            if (value.code>0 && value.code<100000)
+                            if (value.code !=0 && value.code<100000) // Code = 0 for exchange, 100000+ for leg times
                             {
                                 columns.push(
                                     {
@@ -430,35 +456,31 @@ var LiveResults;
                                             else
                                             {
                                                 var txt = "";
-                                                var spc = "";
                                                 if ((value.code == 999) && (o.aData.splits["999_place"] != undefined)) // Leg time
                                                 {
-                                                    //if (o.aData.splits["999_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
-                                                    txt += "<span class=\"legtime\">" + _this.formatTime(o.aData.splits[(999)], 0, _this.showTenthOfSecond) +
-                                                        spc + " (" + o.aData.splits["999_place"] + ")";
-                                                    txt += "<br/>+" + _this.formatTime(o.aData.splits["999_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                                                    txt += "<span class=\"legtime\">" + _this.formatTime(o.aData.splits[(999)], 0, _this.showTenthOfSecond)
+                                                        + " (" + o.aData.splits["999_place"] + ") <br/> +"
+                                                        +  _this.formatTime(o.aData.splits["999_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
                                                 }
                                                 else
                                                 {
-                                                    if ((o.aData.splits[(value.code + 100000) + "_place"] != undefined) && (o.aData.splits[value.code + "_place"] != 1))
+                                                    if ((o.aData.splits[(value.code + 100000) + "_place"] != undefined) && (o.aData.splits[value.code + "_place"] != 1)) // Relay control place > 1
                                                     {
-                                                        //if (o.aData.splits[value.code + "_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
-                                                        txt += "<span class=\"\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) +
-                                                            spc + " (" + o.aData.splits[value.code + "_place"] + ")</span>";
+                                                        txt += "<span class=\"\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond)
+                                                            + " (" + o.aData.splits[value.code + "_place"] + ")</span>";
                                                     }
-                                                    else
+                                                    else // Ordinary passing or first place at passing for relay. Drop place if code is negative (unranked)
                                                     {
-                                                        //if (o.aData.splits[value.code + "_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
-                                                        txt += _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond) +
-                                                            spc + " (" + o.aData.splits[value.code + "_place"] + ")";
+                                                        txt += _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond);
+                                                        if (value.code >= 0) 
+                                                            txt += " (" + o.aData.splits[value.code + "_place"] + ")";
                                                     }
-                                                    if (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined)
+                                                    if (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined) // Relay control second line with leg time to passing 
                                                     {
-                                                        //if (o.aData.splits[(value.code + 100000) + "_place"] < 10) spc = "&nbsp&nbsp"; else spc = "";
-                                                        txt += "<br/><span class=\"legtime\">" + _this.formatTime(o.aData.splits[(value.code + 100000)], 0, _this.showTenthOfSecond) +
-                                                            spc + " (" + o.aData.splits[(value.code + 100000) + "_place"] + ")</span>";
-                                                    }
-                                                    else if (o.aData.splits[value.code + "_timeplus"] != undefined)
+                                                        txt += "<br/><span class=\"legtime\">" + _this.formatTime(o.aData.splits[(value.code + 100000)], 0, _this.showTenthOfSecond)
+                                                            + " (" + o.aData.splits[(value.code + 100000) + "_place"] + ")</span>";
+                                                    } // Second line for ordinary passing (drop if code is negative - unranked )
+                                                    else if (o.aData.splits[value.code + "_timeplus"] != undefined && (value.code>=0))
                                                         txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + "</span>"
                                                 }
                                                 return txt;
@@ -482,7 +504,7 @@ var LiveResults;
                         "mDataProp": "result",
                         "fnRender": function (o) {
                             var res = "";
-                            if (o.aData.place == "-" || o.aData.place == "") {
+                            if (o.aData.place == "-" || o.aData.place == "" || o.aData.place == "F") {
                                 res = _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond);
                             }
                             else {
@@ -635,6 +657,8 @@ var LiveResults;
             if (status != 0) {
                 return this.runnerStatus[status];
             }
+            else if (time < 0)
+                return "*"
             else {
                 var minutes;
                 var seconds;
@@ -766,7 +790,7 @@ var LiveResults;
                             if (data[d].splits[splitCode] != "") {
                                 numOthersAtSplit++;
                             }
-                            //insert result 
+                            // insert result 
                             // * before results with - as placemark
                             // * before the first result with worse time at this split 
                             if (data[d].place == "-" || (data[d].splits[splitCode] != "" && data[d].splits[splitCode] > result.splits[splitCode])) {
@@ -785,7 +809,7 @@ var LiveResults;
             }
             if (result.start != "") {
                 for (d = 0; d < data.length; d++) {
-                    if (data[d].place == "-") {
+                    if (data[d].place == "-" || data[d].place == "F") {
                         data.splice(d, 0, result);
                         return;
                     }
@@ -800,17 +824,23 @@ var LiveResults;
             data.push(result);
         };
         AjaxViewer.prototype.resultSorter = function (a, b) {
-            if (a.place != "" && b.place != "") {
+            if (a.place == "F") {
+                return -1;
+            }
+            else if (b.place == "F") {
+                return 1;
+            }
+            else if (a.place != "" && b.place != "") {
                 if (a.status != b.status)
                     return a.status - b.status;
-                else {
+				else {
                     if (a.result == b.result) {
                         if (a.place == "=" && b.place != "=") {
                             return 1;
                         }
                         else if (b.place == "=" && a.place != "=") {
                             return -1;
-                        }
+                        }                 
                         else {
                             return 0;
                         }
@@ -887,9 +917,11 @@ var LiveResults;
                             res.placeSortable = 999999;
                         if (res.place == "")
                             res.placeSortable = 9999;
+						if (res.place == "F")
+                            res.placeSortable = 0;
                     });
                     var columns = Array();
-                    columns.push({ "sTitle": "#", "sClass": "left", "aTargets": [0], "mDataProp": "place" });
+                    columns.push({ "sTitle": "#", "sClass": "right", "aTargets": [0], "mDataProp": "place" });
                     columns.push({ "sTitle": "placeSortable", "bVisible": false, "mDataProp": "placeSortable", "aTargets": [1] });
                     columns.push({ "sTitle": this.resources["_NAME"], "sClass": "left", "aTargets": [2], "mDataProp": "name" });
                     columns.push({ "sTitle": this.resources["_CLUB"], "sClass": "left", "bSortable": false, "aTargets": [3], "mDataProp": "club" });
@@ -919,7 +951,7 @@ var LiveResults;
                     columns.push({
                         "sTitle": this.resources["_CONTROLFINISH"], "sClass": "right", "sType": "numeric", "aDataSort": [col + 1, col, 0], "aTargets": [col], "bUseRendered": false, "mDataProp": "result",
                         "fnRender": function (o) {
-                            if (o.aData.place == "-" || o.aData.place == "") {
+                            if (o.aData.place == "-" || o.aData.place == "" || o.aData.place == "F") {
                                 return _this.formatTime(o.aData.result, o.aData.status);
                             }
                             else {

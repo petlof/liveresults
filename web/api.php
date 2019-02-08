@@ -11,11 +11,11 @@ include_once("templates/emmalang_$lang.php");
 include_once("templates/classEmma.class.php");
 
 
-$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
+$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "", "13" => $_STATUSFINISHED);
 
 header('content-type: application/json; charset='.$CHARSET);
 header('Access-Control-Allow-Origin: *');
-header('cache-control: max-age=5');
+header('cache-control: max-age=3');
 header('pragma: public');
 header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 5));
 
@@ -193,6 +193,10 @@ elseif ($_GET['method'] == 'getclubresults')
 			{
 				$cp = "";
 
+			}
+			elseif ($status == 13)
+			{
+				$cp = "F";
 			}
 			elseif ($status != 0 || $time < 0)
 			{
@@ -390,7 +394,11 @@ elseif ($_GET['method'] == 'getclassresults')
             if (isset($res[$split['code']."_time"]))
               $cursplittime = $res[$split['code']."_time"];
           }
-          else
+          elseif ($raceStatus == 13)
+		  {
+            $results[$key][$split['code']."_place"] = "\"F\"";
+          }
+		  else
           {
             $results[$key][$split['code']."_place"] = "\"-\"";
           }
@@ -422,32 +430,37 @@ elseif ($_GET['method'] == 'getclassresults')
 			{
 				$cp = "";
 
-			if (count($splits) == 0)
-			{
-				$progress = 0;
+				if (count($splits) == 0)
+				{
+					$progress = 0;
+				}
+				else
+				{
+					$passedSplits = 0;
+					$splitCnt = 0;
+					foreach ($splits as $split)
+					{
+						$splitCnt++;
+						if (isset($res[$split['code']."_time"]))
+							$passedSplits = $splitCnt;
+					}
+					$progress = ($passedSplits * 100.0) / (count($splits)+1);
+				}
 			}
-			else
+			elseif ($status == 13)
 			{
-			$passedSplits = 0;
-			$splitCnt = 0;
-			foreach ($splits as $split)
-		      {
-				$splitCnt++;
-				if (isset($res[$split['code']."_time"]))
-				$passedSplits = $splitCnt;
-			}
-			$progress = ($passedSplits * 100.0) / (count($splits)+1);
-        }
+				$cp = "F";
+				$progress = 100;
 			}
 			elseif ($status != 0 || $time < 0)
 			{
 				$cp = "-";
-        $progress = 100;
+				$progress = 100;
 			}
 			elseif ($time == $lastTime)
 			{
 				$cp = "=";
-        $progress = 100;
+				$progress = 100;
 			}
 
 			$timeplus = "";
@@ -455,7 +468,7 @@ elseif ($_GET['method'] == 'getclassresults')
 			if ($time > 0 && $status == 0)
 			{
 				$timeplus = $time-$winnerTime;
-        $progress = 100;
+				$progress = 100;
 			}
 
 			$age = time()-strtotime($res['Changed']);
@@ -493,10 +506,9 @@ elseif ($_GET['method'] == 'getclassresults')
 								$ret .=",$br";
 						if (isset($res[$split['code']."_time"]))
 						{
-              $splitStatus = $status;
-              if ($status == 9 || $status == 10)
-                $splitStatus = 0;
-
+							$splitStatus = $status;
+							if ($status == 9 || $status == 10)
+								$splitStatus = 0;
 							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"].",\"".$split['code']."_timeplus\": ".$res[$split['code']."_timeplus"];
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
 							if ($spage < $hightime)
@@ -596,25 +608,21 @@ function sortByResult($a,$b)
 function formatTime($time,$status,& $RunnerStatus)
 
 {
-
   global $lang;
 
   if ($status != "0")
-
   {
-
     return $RunnerStatus[$status]; //$status;
-
   }
 
+  if ($time < 0)
+  	return "*";
+  else {
    if ($lang == "no" or $lang == "fi")
-
 {
 
   $hours = floor($time/360000);
-
   $minutes = floor(($time-$hours*360000)/6000);
-
   $seconds = floor(($time-$hours*360000 - $minutes*6000)/100);
 
   if ($hours > 0)
@@ -629,21 +637,15 @@ function formatTime($time,$status,& $RunnerStatus)
 }
 
 else
-
 {
 
-
-
-
-
   $minutes = floor($time/6000);
-
   $seconds = floor(($time-$minutes*6000)/100);
 
   return str_pad("".$minutes,2,"0",STR_PAD_LEFT) .":".str_pad("".$seconds,2,"0",STR_PAD_LEFT);
 
 }
-
+}
 }
 
 function urlRawDecode($raw_url_encoded)

@@ -139,17 +139,18 @@ var Resources = {
 };
 
 var runnerStatus = Array();
-runnerStatus[0]= "<?=$_STATUSOK?>";
-runnerStatus[1]= "<?=$_STATUSDNS?>";
-runnerStatus[2]= "<?=$_STATUSDNF?>";
+runnerStatus[0]  = "<?=$_STATUSOK?>";
+runnerStatus[1]  = "<?=$_STATUSDNS?>";
+runnerStatus[2]  = "<?=$_STATUSDNF?>";
 runnerStatus[11] =  "<?=$_STATUSWO?>";
 runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
-runnerStatus[9] = "";
-runnerStatus[3] = "<?=$_STATUSMP?>";
-runnerStatus[4] = "<?=$_STATUSDSQ?>";
-runnerStatus[5] = "<?=$_STATUSOT?>";
-runnerStatus[9] = "";
-runnerStatus[10] = "";
+//runnerStatus[9]  = "";
+runnerStatus[3]  = "<?=$_STATUSMP?>";
+runnerStatus[4]  = "<?=$_STATUSDSQ?>";
+runnerStatus[5]  = "<?=$_STATUSOT?>";
+runnerStatus[9]  = "";
+runnerStatus[10]  = "";
+runnerStatus[13] = "<?=$_STATUSFINISHED?>";
 
 
 $(document).ready(function()

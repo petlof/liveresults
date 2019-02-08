@@ -32,6 +32,7 @@ $_STATUSOK = "OK";
 $_STATUSMP = "disket";
 $_STATUSDSQ= "disket";
 $_STATUSOT=  "over makstid";
+$_STATUSFINISHED=  "fullført";
 
 $_FIRSTPAGECHOOSE = "Velg løp å følge";
 $_FIRSTPAGEARCHIVE = "Arkiv";

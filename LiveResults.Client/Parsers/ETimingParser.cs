@@ -150,18 +150,20 @@ namespace LiveResults.Client
 
                     // *** Set up radiocontrols ***
                     /* ****************************
-                     *  ordinary controls  = code + 1000*nc
-                     *  relay controls     = code + 1000*nc + 10000*leg 
-                     *  ordinary pass time = code + 1000*nc             + 100000
-                     *  relay pass time    = code + 1000*nc + 10000*leg + 100000
-                     *  change-over code   = 999  + 1000    + 10000*leg
-                     *  exchange time code = 0
-                     *  leg time code      = 999
+                     *  Ordinary controls       =  code + 1000*N
+                     *  Pass/leg time           =  code + 1000*N             + 100000
+                     *  Relay controls          =  code + 1000*N + 10000*LEG 
+                     *  Pass/leg time for relay =  code + 1000*N + 10000*LEG + 100000
+                     *  Change-over code        =  999  + 1000   + 10000*LEG
+                     *  Exchange time code      =  0
+                     *  Leg time code           =  999
+                     *  Unranked fin. time code = -999
+                     *  Unranked ord. controls  = -(code + 1000*N)
                      * 
-                     *  nc  = number of occurrence
-                     *  leg = leg number
+                     *  N   = number of occurrence
+                     *  LEG = leg number
                      */
-                     
+
 
                     if (m_createRadioControls)
                     {
@@ -227,7 +229,7 @@ namespace LiveResults.Client
                             {
                                 while (reader.Read())
                                 {
-                                    int cource = 0, numLegs = 0, timingType = 0;
+                                    int cource = 0, numLegs = 0, timingType = 0, sign = 1;
 
                                     string classCode = reader["code"] as string;
                                     if (!string.IsNullOrEmpty(classCode))
@@ -249,14 +251,15 @@ namespace LiveResults.Client
                                     if (reader["timingtype"] != null && reader["timingtype"] != DBNull.Value)
                                         timingType = Convert.ToInt32(reader["timingtype"].ToString());
 
-                                    if (timingType == 1) // Add finish passing for Not-ranked class
+                                    if (timingType == 1 || timingType == 2) // Add neg finish passing for not-ranked class
                                     {
+                                        sign = -1; // Use negative sign for these timing types
                                         intermediates.Add(new IntermediateTime
                                         {
                                             ClassName = className,
                                             IntermediateName = "Tid",
-                                            Position = 998,
-                                            Order = 998
+                                            Position = -999,
+                                            Order = 999
                                         });
                                     }
 
@@ -317,11 +320,12 @@ namespace LiveResults.Client
                                             if (Code < 999)
                                             {                                             
                                                 // Add codes for ordinary classes and leg based classes
+                                                // sign = -1 for unranked classes
                                                 intermediates.Add(new IntermediateTime
                                                 {
                                                     ClassName = classN,
                                                     IntermediateName = radioControl.Description,
-                                                    Position = Code + radioCnt[CodeforCnt] * 1000 + AddforLeg,
+                                                    Position = sign*(Code + radioCnt[CodeforCnt] * 1000 + AddforLeg),
                                                     Order = radioControl.Order
                                                 });
 
@@ -554,12 +558,13 @@ namespace LiveResults.Client
 
             Dictionary<int, RelayTeam> RelayTeams;
             RelayTeams = new Dictionary<int, RelayTeam>();
+            Random rnd = new Random(); // For classes without ranking
 
             using (IDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    int time = 0, runnerID = 0, iStartTime = 0, iStartClass = 0,  bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0;
+                    int time = 0, runnerID = 0, iStartTime = 0, iStartClass = 0,  bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign=1;
                     string famName = "", givName = "", club = "", classN = "", status = "", bibread = "", bibstr="", name = "", shortName="-";
 
                     var SplitTimes = new List<ResultStruct>();
@@ -598,8 +603,9 @@ namespace LiveResults.Client
 
                         if (reader["timingtype"] != null && reader["timingtype"] != DBNull.Value)
                             timingType = Convert.ToInt32(reader["timingtype"].ToString());
-                            // 0=normal, 1=not ranked, 2=not show times
-                        
+                        if (timingType == 1 || timingType == 2)  // 0=normal, 1=not ranked, 2=not show times
+                            sign = -1;
+
                         iStartTime = 0;
                         if (reader["starttime"] != null && reader["starttime"] != DBNull.Value)
                             iStartTime = ConvertFromDay2cs(Convert.ToDouble(reader["starttime"]));
@@ -788,11 +794,15 @@ namespace LiveResults.Client
                             else
                                 passTime = split.passTime - iStartTime;
 
-                            int iSplitcode = split.controlCode + 1000;
+                            // Add split code to list
+                            int iSplitcode = sign*(split.controlCode + 1000);
                             while (lsplitCodes.Contains(iSplitcode))
-                                iSplitcode += 1000;
+                                iSplitcode += sign*1000;
                             lsplitCodes.Add(iSplitcode);
 
+                            // Add split time to SplitTime struct
+                            if (timingType == 2) // Not show times
+                                passTime = -10;
                             var SplitTime = new ResultStruct
                             {
                                 ControlCode = iSplitcode + 10000 * leg,
@@ -821,19 +831,24 @@ namespace LiveResults.Client
                         if (freestart && (calcStartTime > 0) && (Math.Abs(calcStartTime - iStartTime) > 3000))  // Update starttime if deviation more than 30 sec
                             iStartTime = calcStartTime;
 
-                        if (timingType == 1 || timingType == 2) // not ranked or not show times
+                        if (time>0 && (timingType == 1 || timingType == 2)) // Not ranked or not show times
                         {
-                            if (timingType == 1 && time > 0)
+                            if (timingType == 2) // Do not show times
+                                time = -10;
                             {
                                 var FinishTime = new ResultStruct
                                 {
-                                    ControlCode = 998, // Note code used for finish passing
+                                    ControlCode = -999, // Note code used for finish passing
                                     Time = time
                                 };
                                 SplitTimes.Add(FinishTime);
                             }
-                            if (time > 0)
-                                time = 1; // Set 1 as finish time
+
+                            if (status == "A")
+                            {
+                                status = "F";    // Finished
+                                time = runnerID; // Sets a "random", but unique time for each competitor
+                            }
                         }
                     }
                     catch (Exception ee)
@@ -915,9 +930,11 @@ namespace LiveResults.Client
             {
                 case "S": // Started
                     rstatus = 9;
+                    time = -3;
                     break;
                 case "I": // Entered 
                     rstatus = 10;
+                    time = -3;
                     break;
                 case "A": // OK
                     rstatus = 0;
@@ -934,6 +951,10 @@ namespace LiveResults.Client
                     rstatus = 3;
                     time = -3;
                     break;
+                case "F": // Finished (Fullført). For not ranked classes
+                    rstatus = 13;
+                    break;
+
             }
             return rstatus;
         }
