@@ -15,6 +15,7 @@ $currentComp = new Emma($_GET['comp']);
 
 $isSingleClass = isset($_GET['class']);
 $isSingleClub = isset($_GET['club']);
+$setFullView = isset($_GET['fullView']);
 $showPath = true;
 
 if (isset($_GET['showpath']) && $_GET['showpath'] == "false")
@@ -155,7 +156,7 @@ runnerStatus[13] = "<?=$_STATUSFINISHED?>";
 
 $(document).ready(function()
 {
-	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText", runnerStatus);
+	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText","setCompactViewText", runnerStatus);
 	<?php if ($isSingleClass)
 	{?>
 		res.chooseClass('<?=$singleClass?>');
@@ -177,7 +178,10 @@ $(document).ready(function()
 	<?php if ($showTimePrediction){ ?>
 		res.eventTimeZoneDiff = <?=$currentComp->TimeZoneDiff();?>;
 		res.startPredictionUpdate();
-				
+	<?php }?>
+	
+	<?php if ($setFullView){?>
+	res.setCompactView(false);
 	<?php }?>
 });
 
@@ -300,7 +304,8 @@ function changeFontSize(val)
 </td>
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br>
-<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br><br>
+<span id="setCompactViewText"><b>Compact view:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setCompactView(false);"><?=$_OFF?></a></span><br>
+<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br>
 <a href="dok/help.php?lang=<?=$lang?>" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
 </td>
 </tr></table><br>

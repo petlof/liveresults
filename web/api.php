@@ -1,7 +1,7 @@
 <?php
 date_default_timezone_set("Europe/Stockholm");
 $lang = "sv";
-$hightime = 60;
+$hightime = 30;
 
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
@@ -310,7 +310,6 @@ elseif ($_GET['method'] == 'getclassresults')
 		$resultsAsArray = false;
 		$unformattedTimes = false;
 
-		$qualLim  = 12;
 		$firstNonQualifierSet = false;
 
 		if (isset($_GET['resultsAsArray']))
@@ -547,7 +546,13 @@ elseif ($_GET['method'] == 'getclassresults')
 				}
 				
 				// Qualification limit
-				if ($place>$qualLim && $firstNonQualifierSet == false && $_GET['comp'] == "00001")
+				$qualLim = 6;
+				if ($_GET['class'] == "Menn senior" || $_GET['class'] == "Kvinner senior" )
+					$qualLim = 10;
+				if ($_GET['class'] == "Menn junior" || $_GET['class'] == "Kvinner junior" )
+					$qualLim = 8;
+				
+				if ($place>$qualLim && $firstNonQualifierSet == false && $_GET['comp'] == "15070")
 				{						 
 					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
 					$firstNonQualifierSet = true;
@@ -568,11 +573,14 @@ elseif ($_GET['method'] == 'getclassresults')
 		else
 		{
 			echo("{ \"status\": \"OK\",$br \"className\": \"".$class."\",$br \"splitcontrols\": $splitJSON,$br \"results\": [$br$ret$br]");
-			 if ($_GET['comp'] == "11838" || $_GET['comp'] == "12096" || $_GET['comp'] == "12793" || $_GET['comp'] == "12998" || $_GET['comp'] == "00000")
+			if ($_GET['comp'] == "15068")
                         {
                            echo(",$br \"IsMassStartRace\": true");
                         }
-
+			if ( $_GET['comp'] == "15068" || $_GET['comp'] == "15070") 
+                        {
+                           echo(",$br \"ShowTenthOfSecond\": true");
+                        }
 			echo(",$br \"hash\": \"". $hash."\"}");
 		}
 }

@@ -224,7 +224,7 @@ namespace LiveResults.Client
                 DataTable schemas = sqlConn.GetSchema("Databases");
                 foreach (DataRow r in schemas.Rows)
                 {
-                    if (Convert.ToInt32(r["dbid"].ToString()) >= 5)
+                    if (Convert.ToInt32(r["dbid"].ToString()) >= 5) // Drop system databases
                         dbs.Add(r["database_name"] as string);
                 }
             }
@@ -296,7 +296,7 @@ namespace LiveResults.Client
                 while (reader.Read())
                 {
                     string status = reader["status"] as string;
-                    if (!(status == "C")) // Do not add runner with status "avmeldt"
+                    if ((status != "V") && (status != "C")) // Continue if not "free" nor "entered"  
                         eTimingId.Add(Convert.ToInt32(reader["id"].ToString()));
                 }
                 reader.Close();

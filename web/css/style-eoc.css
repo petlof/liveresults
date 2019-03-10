@@ -65,12 +65,20 @@ TR.new_result .plustime {
 }
 
 .legtime {
-    color: #3A5C9C;
+    color: darkblue;
 }
 
 TR.new_result .legtime {
     color: white;
 }
+.besttime {
+    color: red;
+}
+
+TR.new_result .besttime {
+    color: white;
+}
+
 
 /*predicted times*/
 td i {

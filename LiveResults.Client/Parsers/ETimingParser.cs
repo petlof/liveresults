@@ -126,8 +126,6 @@ namespace LiveResults.Client
                     IDbCommand cmdInd    = m_connection.CreateCommand();
                     IDbCommand cmdRelay  = m_connection.CreateCommand();
                     IDbCommand cmdSplits = m_connection.CreateCommand();
-                    IDbCommand cmdLastUpdateName  = m_connection.CreateCommand();
-                    IDbCommand cmdLastUpdateSplit = m_connection.CreateCommand();
                     
                     /*Detect event type*/
                     cmd.CommandText = "SELECT kid FROM arr";
@@ -171,21 +169,26 @@ namespace LiveResults.Client
                         var dlg = OnRadioControl;
                         if (dlg != null)
                         {
-                            // Radio controltype, 4 = normal, 10 = exchange
-                            cmd.CommandText = (@"SELECT code, radiocourceno, radiotype, description, etappe, radiorundenr FROM radiopost");
+                            // radiotype, 2=finish/finish-passing, 4 = normal, 10 = exchange
+                            cmd.CommandText = (@"SELECT code, radiocourceno, radiotype, description, etappe, radiorundenr, live FROM radiopost");
                             var RadioPosts = new Dictionary<int, List<RadioStruct>>();
 
                             using (reader = cmd.ExecuteReader())
                             {
                                 while (reader.Read())
                                 {
-                                    int cource = 0, code = 0, radiotype = 0, leg = 0, order=0;
+                                    int cource = 0, code = 0, radiotype = 0, leg = 0, order = 0;
+                                    bool live = false;
+
+                                    if (reader["live"] != null && reader["live"] != DBNull.Value)
+                                        live = Convert.ToBoolean(reader["live"].ToString());
+                                    if (!live) continue;
 
                                     if (reader["code"] != null && reader["code"] != DBNull.Value)
                                         code = Convert.ToInt32(reader["code"].ToString());
 
                                     if (code > 1000)
-                                        code = code / 100; // Take away last to digits
+                                        code = code / 100; // Take away last to digits if code 1000+
 
                                     if (reader["radiocourceno"] != null && reader["radiocourceno"] != DBNull.Value)
                                         cource = Convert.ToInt32(reader["radiocourceno"].ToString());
@@ -251,9 +254,9 @@ namespace LiveResults.Client
                                     if (reader["timingtype"] != null && reader["timingtype"] != DBNull.Value)
                                         timingType = Convert.ToInt32(reader["timingtype"].ToString());
 
-                                    if (timingType == 1 || timingType == 2) // Add neg finish passing for not-ranked class
-                                    {
-                                        sign = -1; // Use negative sign for these timing types
+                                    if (timingType == 1) // Add neg finish passing for not-ranked class
+                                    {                    // 0 = normal, 1 = not ranked, 2 = not show times
+                                        sign = -1;       // Use negative sign for these timing types
                                         intermediates.Add(new IntermediateTime
                                         {
                                             ClassName = className,
@@ -264,7 +267,7 @@ namespace LiveResults.Client
                                     }
 
                                     // Add exchange and leg times for legs 2 and up
-                                    for (int i = 2; i <= numLegs; i++) // Relay
+                                    for (int i = 2; i <= numLegs; i++) 
                                     {
                                         string classN = className;
                                         if (!classN.EndsWith("-"))
@@ -274,7 +277,7 @@ namespace LiveResults.Client
                                         intermediates.Add(new IntermediateTime
                                         {
                                             ClassName = classN,
-                                            IntermediateName = "Veksling",
+                                            IntermediateName = "Exchange",
                                             Position = 0,
                                             Order = 0
                                         });
@@ -282,17 +285,30 @@ namespace LiveResults.Client
                                         intermediates.Add(new IntermediateTime
                                         {
                                              ClassName = classN,
-                                             IntermediateName = "EtpTid",
+                                             IntermediateName = "Leg",
                                              Position = 999,
                                              Order = 999
                                         });
-                                        
+                                    }
 
+                                    string classAll = className;
+                                    if (!classAll.EndsWith("-"))
+                                        classAll += "-";
+                                    classAll += "All";
+                                    if (numLegs > 0 && m_oneLineRelayRes)
+                                    { // Add leg time for last leg in one-line results
+                                        intermediates.Add(new IntermediateTime
+                                        {
+                                            ClassName = classAll,
+                                            IntermediateName = "Leg",
+                                            Position = 999,
+                                            Order = 999
+                                        });
                                     }
 
 
-                                    if (RadioPosts.ContainsKey(cource))
-                                    {
+                                        if (RadioPosts.ContainsKey(cource))
+                                    {   // Add radio controls to course
                                         Dictionary<int, int> radioCnt = new Dictionary<int, int>();
                                         foreach (var radioControl in RadioPosts[cource])
                                         {
@@ -301,24 +317,22 @@ namespace LiveResults.Client
                                             int CodeforCnt = 0; // Code for counter
                                             int AddforLeg = 0;  // Addition for relay legs
                                             if (numLegs == 0 && (Code == 999 || Code == 0))
-                                                continue;    // Skip if not relay and finish or start code
-                                            if (radioControl.RadioType == 2) // Finish
-                                                continue;
-                                            if (numLegs > 0) // Relay
+                                                continue;       // Skip if not relay and finish or start code
+                                            if (numLegs > 0)    // Relay
                                             {                                                
                                                 if (!classN.EndsWith("-"))
                                                     classN += "-";
                                                 classN += Convert.ToString(radioControl.Leg);
                                                 AddforLeg = 10000 * radioControl.Leg;
                                             }
+                                            
+                                            if (Code < 999 && radioControl.RadioType != 10) // Not 999 and not exchange)
+                                            {
+                                                CodeforCnt = Code + AddforLeg;
+                                                if (!radioCnt.ContainsKey(CodeforCnt))
+                                                    radioCnt.Add(CodeforCnt, 0);
+                                                radioCnt[CodeforCnt]++;
 
-                                            CodeforCnt = Code + AddforLeg;
-                                            if (!radioCnt.ContainsKey(CodeforCnt))
-                                                radioCnt.Add(CodeforCnt, 0);
-                                            radioCnt[CodeforCnt]++;
-
-                                            if (Code < 999)
-                                            {                                             
                                                 // Add codes for ordinary classes and leg based classes
                                                 // sign = -1 for unranked classes
                                                 intermediates.Add(new IntermediateTime
@@ -329,8 +343,8 @@ namespace LiveResults.Client
                                                     Order = radioControl.Order
                                                 });
 
-                                                // Add passing time for relay
-                                                if (numLegs > 0) // Relay
+                                                // Add leg passing time for relay
+                                                if (numLegs > 0) 
                                                 {
                                                     intermediates.Add(new IntermediateTime
                                                     {
@@ -346,16 +360,28 @@ namespace LiveResults.Client
                                             // Add codes for one-line relay classes
                                             if (numLegs > 0 && m_oneLineRelayRes)  
                                             {
-                                                string classAll = className;
-                                                if (!classAll.EndsWith("-"))
-                                                    classAll += "-";
-                                                classAll += "All";
-                                                string Description = Convert.ToString(radioControl.Leg) +") "+ radioControl.Description;
+                                                
+                                                string Description = Convert.ToString(radioControl.Leg) +":"+ radioControl.Description;
+                                                int position = 0;
+                                                if (radioControl.RadioType == 10) // Exchange
+                                                    position = 999 + 1000 + AddforLeg;
+                                                else // Normal radio control
+                                                    position = Code + radioCnt[CodeforCnt] * 1000 + AddforLeg;
+
                                                 intermediates.Add(new IntermediateTime
                                                 {
                                                     ClassName = classAll,
                                                     IntermediateName = Description,
-                                                    Position = Code + radioCnt[CodeforCnt] * 1000 + AddforLeg,
+                                                    Position = position,
+                                                    Order = radioControl.Order
+                                                });
+
+                                                // Passing time
+                                                intermediates.Add(new IntermediateTime
+                                                {
+                                                    ClassName = classAll,
+                                                    IntermediateName = Description + "PassTime",
+                                                    Position = position + 100000,
                                                     Order = radioControl.Order
                                                 });
                                             }
@@ -376,8 +402,6 @@ namespace LiveResults.Client
                     string baseCommandInd;
                     string baseCommandRelay; 
                     string baseSplitCommand;
-                    string lastUpdateName;
-                    string lastUpdateSplit;
 
                     string modulus; // integer_div, //integer_div = "/"; //integer_div = "\\";
                     if (m_MSSQL)
@@ -385,7 +409,7 @@ namespace LiveResults.Client
                     else
                         modulus = "MOD";
                     
-                    baseCommandRelay = string.Format(@"SELECT N.timechanged, N.id, N.startno, N.ename, N.name, N.times, N.intime,
+                    baseCommandRelay = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime,
                             N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2,
                             T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource, 
                             C.firststart AS cfirststart, C.purmin AS cpurmin,
@@ -393,61 +417,32 @@ namespace LiveResults.Client
                             FROM Name N, Class C, Team T, Relay R
                             WHERE N.class=C.code AND T.code=R.lgteam AND N.rank=R.lgstartno AND (N.startno {0} 100)<=C.purmin 
                             ORDER BY N.startno", modulus);
-                    //AND N.timechanged>? 
 
-                    baseCommandInd = string.Format(@"SELECT N.timechanged, N.id, N.startno, N.ename, N.name, N.times, N.intime, 
+                    baseCommandInd = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime, 
                             N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2,
                             T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource
                             FROM Name N, Class C, Team T
-                            WHERE N.class=C.code AND T.code=N.team AND (C.purmin IS NULL OR C.purmin<2) 
-                            ");
-                    //AND N.timechanged>? 
+                            WHERE N.class=C.code AND T.code=N.team AND (C.purmin IS NULL OR C.purmin<2)");
 
-                    baseSplitCommand = string.Format(@"SELECT timechanged, mellomid, iplace, stasjon, mintime, nettotid, mecard 
+                    baseSplitCommand = string.Format(@"SELECT mellomid, iplace, stasjon, mintime, nettotid, timechanged, mecard 
                             FROM mellom 
-                            WHERE stasjon>0 AND stasjon<240 AND iplace>100 AND mecard>0  
-                            ORDER BY timechanged");
+                            WHERE stasjon>0 AND stasjon<250 AND iplace>0 AND mecard>0  
+                            ORDER BY mintime");
 
-                    lastUpdateName  = string.Format(@"SELECT TOP 1 changed     FROM Name   ORDER BY changed     DESC"); 
-                    lastUpdateSplit = string.Format(@"SELECT TOP 1 timechanged FROM mellom ORDER BY timechanged DESC");
-
+                    
                     Dictionary<int, List<SplitRawStruct>> splitList = null;
-
-                    DateTime lastNameTime, lastNameTimePrev;
-                    double lastSplitTime, lastSplitTimePrev;
                     
                     string lastRunner = "";
-
-                    cmdLastUpdateName.CommandText = lastUpdateName;
-                    cmdLastUpdateSplit.CommandText = lastUpdateSplit;
-
-                    GetLastUpdates(cmdLastUpdateName, cmdLastUpdateSplit, out lastNameTimePrev, out lastSplitTimePrev);
-                    //lastDatePrev = Math.Max(lastDateName, lastDateSplit);
-                                       
+                                      
                     cmdSplits.CommandText = baseSplitCommand;
-                    IDbDataParameter paramSplit = cmd.CreateParameter();
-                    paramSplit.ParameterName = "date";
-                    paramSplit.Value = 0.0;
-                    paramSplit.DbType = DbType.Double;
-                    //cmdSplits.Parameters.Add(paramSplit);
                     ParseReaderSplits(cmdSplits, out splitList, out lastRunner);
 
                     cmdInd.CommandText = baseCommandInd;
-                    IDbDataParameter paramInd = cmdInd.CreateParameter();
-                    paramInd.ParameterName = "date";
-                    paramInd.Value = 0.0;
-                    paramInd.DbType = DbType.Double;
-                    //cmdInd.Parameters.Add(paramInd);
                     ParseReader(cmdInd, splitList, false, out lastRunner);
 
                     if (isRelay)
                     {
                         cmdRelay.CommandText = baseCommandRelay;
-                        IDbDataParameter paramRelay = cmdInd.CreateParameter();
-                        paramRelay.ParameterName = "date";
-                        paramRelay.Value = 0.0;
-                        paramRelay.DbType = DbType.Double;
-                        //cmdRelay.Parameters.Add(paramRelay);
                         ParseReader(cmdRelay, splitList, true, out lastRunner);
                     }
 
@@ -456,30 +451,10 @@ namespace LiveResults.Client
                     {
                         try
                         {
-                            if (true)
-                            {
-                                // Check for updates and parse if changes
-                                bool useLastUpdateMethod = false;
-
-                                if (useLastUpdateMethod)
-                                    GetLastUpdates(cmdLastUpdateName, cmdLastUpdateSplit, out lastNameTime, out lastSplitTime);
-                                else
-                                {
-                                    lastNameTime = DateTime.MinValue;
-                                    lastSplitTime = 0.0;
-                                }
-
-
-                                if (lastNameTime > lastNameTimePrev || lastSplitTime > lastSplitTimePrev || !useLastUpdateMethod)
-                                {
-                                    lastNameTimePrev  = lastNameTime;
-                                    lastSplitTimePrev = lastSplitTime;
-                                    ParseReaderSplits(cmdSplits, out splitList, out lastRunner);
-                                    ParseReader(cmdInd, splitList, false, out lastRunner);
-                                    if (isRelay)
-                                        ParseReader(cmdRelay, splitList, true, out lastRunner);
-                                }
-                            }
+                            ParseReaderSplits(cmdSplits, out splitList, out lastRunner);
+                            ParseReader(cmdInd, splitList, false, out lastRunner);
+                            if (isRelay)
+                                ParseReader(cmdRelay, splitList, true, out lastRunner);
                             Thread.Sleep(1000*m_sleepTime);
                         }
                         catch (Exception ee)
@@ -510,46 +485,6 @@ namespace LiveResults.Client
                 }
             }
         }
-
-        private void GetLastUpdates(IDbCommand cmdName, IDbCommand cmdSplit, out DateTime lastNameTime, out double lastSplitTime)
-        {
-            lastNameTime = DateTime.MinValue;
-            using (IDataReader reader = cmdName.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    try
-                    {
-                        if (reader[0] != null && reader[0] != DBNull.Value)
-                        {
-                            lastNameTime = Convert.ToDateTime(reader[0]);
-                        }
-                    }
-                    catch (Exception ee)
-                    {
-                        FireLogMsg("eTiming Parser: " + ee.Message);
-                    }
-                }
-            }
-            lastSplitTime = 0.0;
-            using (IDataReader reader = cmdSplit.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    try
-                    {
-                        if (reader[0] != null && reader[0] != DBNull.Value)
-                        {
-                            lastSplitTime = Convert.ToDouble(reader[0]);
-                        }
-                    }
-                    catch (Exception ee)
-                    {
-                        FireLogMsg("eTiming Parser: " + ee.Message);
-                    }
-                }
-            }
-        }
         
 
         private void ParseReader(IDbCommand cmd, Dictionary<int, List<SplitRawStruct>> splitList, bool isRelay, out string lastRunner)
@@ -576,15 +511,15 @@ namespace LiveResults.Client
                         status = reader["status"] as string;
                         if ((status == "V") || (status == "C")) // Skip if free or not entered  
                             continue;
-                        
-                        club = (reader["tname"] as string);
-                        if (!string.IsNullOrEmpty(club))
-                            club = club.Trim();
 
                         classN = (reader["cclass"] as string);
                         if (!string.IsNullOrEmpty(classN))
                             classN = classN.Trim();
-                        if (classN == "NOCLAS") continue; // Skip runner if in NOCLAS
+                        if (classN == "NOCLAS") continue;   // Skip runner if in NOCLAS
+
+                        club = (reader["tname"] as string);
+                        if (!string.IsNullOrEmpty(club))
+                            club = club.Trim();
 
                         famName = (reader["ename"] as string);
                         if (!string.IsNullOrEmpty(famName))
@@ -622,8 +557,8 @@ namespace LiveResults.Client
                         lastRunner = name;
 
                         if (isRelay)
-                        { //RelayTeams
-                            leg = bib % 100;     // Leg number
+                        {   //RelayTeams
+                            leg = bib % 100;   // Leg number
 
                             if (!RelayTeams.ContainsKey(teambib))
                             {
@@ -668,7 +603,7 @@ namespace LiveResults.Client
                             if (time > 0)
                             {
                                 RelayTeams[teambib].TeamMembers[leg].LegTime = time;
-                                if (leg >= 2) // Adde leg time for relay runners at leg 2 and above
+                                if (leg >= 2) // Add leg time for relay runners at leg 2 and above
                                 {
                                     var LegTime = new ResultStruct
                                     {
@@ -699,9 +634,15 @@ namespace LiveResults.Client
                                     };
                                     RelayTeams[teambib].SplitTimes.Add(SplitTime);
 
+                                    int controlCode = 0;
+                                    if (legs == numlegs)
+                                        controlCode = 999;
+                                    else
+                                        controlCode = 999 + 1000 + 10000 * legs + 100000;
+
                                     var LegTime = new ResultStruct
                                     {
-                                        ControlCode = 999 + 1000 +10000 * legs + 100000,  // Note code 999 for change-over!
+                                        ControlCode = controlCode,  
                                         Time = RelayTeams[teambib].TeamMembers[legs].LegTime
                                     };
                                     RelayTeams[teambib].SplitTimes.Add(LegTime);
@@ -968,20 +909,44 @@ namespace LiveResults.Client
 
                 while (reader.Read())
                 {
-                    int ecard = 0;
+                    int ecard = 0, code = 0, passTime = -2, netTime = -2, changedTime = 0;
+                    double changedTimeD = 0.0;
                     try
                     {
-                        ecard = Convert.ToInt32(reader["mecard"].ToString());
-                        lastRunner = "Ecard no:" + reader["mecard"].ToString();
-                        Double ChangedTimeD = Convert.ToDouble(reader["timechanged"].ToString());
-                        //lastSplitDateTime   = ChangedTimeD;
+                        if (reader["mecard"] != null && reader["mecard"] != DBNull.Value)
+                        {
+                            ecard = Convert.ToInt32(reader["mecard"].ToString());
+                            lastRunner = "Ecard no:" + reader["mecard"].ToString();
+                        }
+                        else
+                            continue;
+
+                        if (reader["iplace"] != null && reader["iplace"] != DBNull.Value)
+                            code = Convert.ToInt32(reader["iplace"].ToString());
+                        if (code > 1000)
+                            code = code / 100; // Take away last to digits if code 1000+
+
+                        if (reader["mintime"] != null && reader["mintime"] != DBNull.Value)
+                            passTime = ConvertFromDay2cs(Convert.ToDouble(reader["mintime"]));
+
+                        if (reader["nettotid"] != null && reader["nettotid"] != DBNull.Value)
+                            netTime = ConvertFromDay2cs(Convert.ToDouble(reader["nettotid"]));
+
+                        if (reader["nettotid"] != null && reader["nettotid"] != DBNull.Value)
+                            netTime = ConvertFromDay2cs(Convert.ToDouble(reader["nettotid"]));
+
+                        if (reader["timechanged"] != null && reader["timechanged"] != DBNull.Value)
+                        {
+                            changedTimeD = Convert.ToDouble(reader["timechanged"].ToString());
+                            changedTime = ConvertFromDay2cs(changedTimeD % 1);
+                        }
 
                         var res = new SplitRawStruct
                         {
-                            controlCode = Convert.ToInt32(reader["stasjon"]),
-                            passTime    = ConvertFromDay2cs(Convert.ToDouble(reader["mintime"])),
-                            netTime     = ConvertFromDay2cs(Convert.ToDouble(reader["nettotid"])),
-                            changedTime = ConvertFromDay2cs(ChangedTimeD % 1)
+                            controlCode = code,
+                            passTime = passTime,
+                            netTime = netTime,
+                            changedTime = changedTime
                         };
 
                         if (!splitList.ContainsKey(ecard))
@@ -1012,21 +977,24 @@ namespace LiveResults.Client
             }
             
             DateTime dt;
-            if (!DateTime.TryParseExact(runTime, "HH:mm:ss.fff", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+            if (!DateTime.TryParseExact(runTime, "mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
             {
-                if (!DateTime.TryParseExact(runTime, "HH:mm:ss.ff", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                if (!DateTime.TryParseExact(runTime, "H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                 {
-                    if (!DateTime.TryParseExact(runTime, "HH:mm:ss.f", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                    if (!DateTime.TryParseExact(runTime, "mm:ss,f", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                     {
-                        if (!DateTime.TryParseExact(runTime, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                        if (!DateTime.TryParseExact(runTime, "H:mm:ss,f", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                         {
-                            if (!DateTime.TryParseExact(runTime, "H:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                            if (!DateTime.TryParseExact(runTime, "mm:ss,ff", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                             {
-                                if (!DateTime.TryParseExact(runTime, "mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
+                                if (!DateTime.TryParseExact(runTime, "H:mm:ss,ff", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                                 {
-                                    if (runTime != "")
+                                    if (!DateTime.TryParseExact(runTime, "HH:mm:ss", CultureInfo.InvariantCulture, DateTimeStyles.None, out dt))
                                     {
-                                        throw new ApplicationException ("Could not parse Time" + runTime);
+                                        if (runTime != "")
+                                        {
+                                            throw new ApplicationException ("Could not parse Time" + runTime);
+                                        }
                                     }
                                 }
                             }
