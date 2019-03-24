@@ -1,7 +1,19 @@
 <?php
 date_default_timezone_set("Europe/Stockholm");
-$lang = "sv";
+$lang = "no";
+$compid   = $_GET['comp'];
 $hightime = 30;
+$refreshTime = 5;
+
+$showTenthsOfSecond = in_array($compid, array("15068", "15070", "15162"));
+$isMassStartRace    = in_array($compid, array("15068","14872"));
+$showQualLim        = in_array($compid, array("15070"));
+
+$qualLim  = 6;
+if ($_GET['class'] == "Menn senior" || $_GET['class'] == "Kvinner senior" )
+	$qualLim = 10;
+if ($_GET['class'] == "Menn junior" || $_GET['class'] == "Kvinner junior" )
+	$qualLim = 8;
 
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
@@ -17,7 +29,7 @@ header('content-type: application/json; charset='.$CHARSET);
 header('Access-Control-Allow-Origin: *');
 header('cache-control: max-age=3');
 header('pragma: public');
-header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + 5));
+header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + $refreshTime));
 
 if (!isset($_GET['method']))
 {
@@ -124,6 +136,52 @@ elseif ($_GET['method'] == 'getlastpassings')
 					\"control\": ".$pass['Control'].",
 					\"controlName\" : \"".$pass['pname']."\",
 					\"time\": \"" .formatTime($pass['Time'],$pass['Status'],$RunnerStatus)."\" }";
+			$first = false;
+		}
+
+		$hash = MD5($ret);
+		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+		{
+			echo("{ \"status\": \"NOT MODIFIED\"}");
+		}
+		else
+		{
+			echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$hash\"}");
+		}
+}
+elseif ($_GET['method'] == 'getradiopassings')
+{
+		$currentComp = new Emma($_GET['comp']);
+		$code = $_GET['code'];
+		$lastPassings = $currentComp->getRadioPassings($code);
+
+		$first = true;
+		$ret = "";
+		foreach ($lastPassings as $pass)
+		{
+			$age = time()-strtotime($pass['Changed']);
+			$modified = $age < $refreshTime ? 1:0;
+
+			if (!$first)
+				$ret .=",$br";
+			$ret .= "{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
+					\"runnerName\": \"".$pass['Name']."\",
+					\"club\": \"".$pass['Club']."\",
+					\"class\": \"".$pass['class']."\",
+					\"control\": ".$pass['Control'].",
+					\"controlName\" : \"".$pass['pname']."\",
+					\"time\": \"" .formatTime($pass['Time'],0,$RunnerStatus)."\" ";
+			
+			if (($pass['class']=="NOCLAS" && $pass['Control']==100))
+			{
+				$ret .= ",$br \"DT_RowClass\": \"error_entry\"";
+			}
+			elseif ($modified)
+			{
+				$ret .= ",$br \"DT_RowClass\": \"new_result\"";
+			}
+
+			$ret .= "$br}";
 			$first = false;
 		}
 
@@ -305,11 +363,11 @@ elseif ($_GET['method'] == 'getclassresults')
 		$ret = "";
 		$first = true;
 		$place = 1;
+		$count = 1;
 		$lastTime = -9999;
 		$winnerTime = 0;
 		$resultsAsArray = false;
 		$unformattedTimes = false;
-
 		$firstNonQualifierSet = false;
 
 		if (isset($_GET['resultsAsArray']))
@@ -416,10 +474,9 @@ elseif ($_GET['method'] == 'getclassresults')
 			$time = $res['Time'];
 
 			if ($first)
-				$winnerTime =$time;
+				$winnerTime = $time;
 
 			$status = $res['Status'];
-			$cp = $place;
 			$progress = 0;
 
 			if ($time == "")
@@ -458,9 +515,15 @@ elseif ($_GET['method'] == 'getclassresults')
 			}
 			elseif ($time == $lastTime)
 			{
-				$cp = "=";
+				$cp = $place;
 				$progress = 100;
 			}
+			else
+			{
+				$place = $count;
+				$cp = $place;
+			}
+
 
 			$timeplus = "";
 
@@ -546,13 +609,8 @@ elseif ($_GET['method'] == 'getclassresults')
 				}
 				
 				// Qualification limit
-				$qualLim = 6;
-				if ($_GET['class'] == "Menn senior" || $_GET['class'] == "Kvinner senior" )
-					$qualLim = 10;
-				if ($_GET['class'] == "Menn junior" || $_GET['class'] == "Kvinner junior" )
-					$qualLim = 8;
 				
-				if ($place>$qualLim && $firstNonQualifierSet == false && $_GET['comp'] == "15070")
+				if ($place>$qualLim && $firstNonQualifierSet == false && $showQualLim)
 				{						 
 					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
 					$firstNonQualifierSet = true;
@@ -561,7 +619,7 @@ elseif ($_GET['method'] == 'getclassresults')
 				$ret .= "$br}";
 			}
 			$first = false;
-			$place++;
+			$count++;
 			$lastTime = $time;
 		}
 
@@ -573,11 +631,11 @@ elseif ($_GET['method'] == 'getclassresults')
 		else
 		{
 			echo("{ \"status\": \"OK\",$br \"className\": \"".$class."\",$br \"splitcontrols\": $splitJSON,$br \"results\": [$br$ret$br]");
-			if ($_GET['comp'] == "15068")
+			if ($isMassStartRace)
                         {
                            echo(",$br \"IsMassStartRace\": true");
                         }
-			if ( $_GET['comp'] == "15068" || $_GET['comp'] == "15070") 
+			if ($showTenthsOfSecond ) 
                         {
                            echo(",$br \"ShowTenthOfSecond\": true");
                         }

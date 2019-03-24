@@ -20,7 +20,7 @@ $_CLUB="Klubb";
 $_NATION = "Land";
 $_TIME="Tid";
 $_NOCLASSCHOSEN="Ingen klasse valgt!";
-$_HELPREDRESULTS="Resultater oppdatert siste to minutter er markert med rødt";
+$_HELPREDRESULTS="Nylig oppdaterte resultater er markert med rødt.";
 $_NOTICE="Merk at resultatene på denne siden ikke er offisielle. For offisielle resultat henvises det til arrangørens hjemmeside.";
 
 $_STATUSDNS = "ikke startet";

@@ -3,7 +3,7 @@ var LiveResults;
     // ReSharper disable once InconsistentNaming
     LiveResults.Instance = null;
     var AjaxViewer = /** @class */ (function () {
-        function AjaxViewer(competitionId, language, classesDiv, lastPassingsDiv, resultsHeaderDiv, resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDayEvent, isSingleClass, setAutomaticUpdateText, setCompactViewText, runnerStatus, showTenthOfSecond) {
+        function AjaxViewer(competitionId, language, classesDiv, lastPassingsDiv, resultsHeaderDiv, resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDayEvent, isSingleClass, setAutomaticUpdateText, setCompactViewText, runnerStatus, showTenthOfSecond, radioPassingsDiv) {
             var _this = this;
             this.competitionId = competitionId;
             this.language = language;
@@ -12,6 +12,7 @@ var LiveResults;
             this.resultsHeaderDiv = resultsHeaderDiv;
             this.resultsControlsDiv = resultsControlsDiv;
             this.resultsDiv = resultsDiv;
+            this.radioPassingsDiv = radioPassingsDiv;
             this.txtResetSorting = txtResetSorting;
             this.resources = resources;
             this.isMultiDayEvent = isMultiDayEvent;
@@ -30,6 +31,7 @@ var LiveResults;
             this.updatePredictedTimeTimer = null;
             this.lastClassListHash = "";
             this.lastPassingsUpdateHash = "";
+            this.lastRadioPassingsUpdateHash = "";
             this.curClassName = "";
             this.lastClassHash = "";
             this.curClassSplits = null;
@@ -143,7 +145,7 @@ var LiveResults;
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
                             if (data[i].start < time) {
                                 if (this.curClassSplits == null || this.curClassSplits.length == 0) {
-                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(4)").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                                 else {
                                     //find next split to reach
@@ -170,6 +172,7 @@ var LiveResults;
         AjaxViewer.prototype.setShowTenth = function (val) {
             this.showTenthOfSecond = val;
         };
+
         //Request data for the last-passings div
         AjaxViewer.prototype.updateLastPassings = function () {
             var _this = this;
@@ -207,7 +210,70 @@ var LiveResults;
                 _this.updateLastPassings();
             }, this.updateInterval);
         };
-        //Check for updateing of class results
+
+        //Request data for the last radio passings div
+        AjaxViewer.prototype.updateRadioPassings = function (code) {
+            var _this = this;
+            if (this.updateAutomatically) {
+                $.ajax({
+                    url: "api.php",
+                    data: "comp=" + this.competitionId + "&method=getradiopassings&code=" + code + "&lang=" + this.language + "&last_hash=" + this.lastRadioPassingsUpdateHash,
+                    success: function (data) { _this.handleUpdateRadioPassings(data); },
+                    error: function () {
+                        _this.radioPassingsUpdateTimer = setTimeout(function () {
+                            _this.updateRadioPassings();
+                        }, _this.updateInterval);
+                    },
+                    dataType: "json"
+                });
+                this.radioPassingsUpdateTimer = setTimeout(function () {
+                    _this.updateRadioPassings(code);
+                }, this.updateInterval);
+            }
+
+        };
+        //Handle response for updating the last radio passings..
+        AjaxViewer.prototype.handleUpdateRadioPassings = function (data) {
+            var _this = this;
+            if (data != null && data.status == "OK") {
+                if (data.passings != null) {
+
+                    if (this.currentTable != null) {
+                        this.currentTable.fnClearTable();
+                        this.currentTable.fnAddData(data.passings, true);
+                    }
+                    else
+                    {
+                    var columns = Array();
+                    var col = 0;
+                  
+                    columns.push({ "sTitle": "Tidsp." , "sClass": "left" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"    });
+                        columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName"  });
+                        columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
+                        columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
+                        columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName" });
+                        columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"        });
+                    
+                    this.currentTable = $('#' + this.radioPassingsDiv).dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false,
+                        "bSort": false,
+                        "bInfo": false,
+                        "bAutoWidth": false,
+                        "aaData": data.passings,
+                        "aaSorting": [[0, "desc"]],
+                        "aoColumnDefs": columns,
+                        "bDestroy": true
+                        });
+
+                    }
+                    this.lastRadioPassingsUpdateHash = data.hash;
+                }
+            }
+        };
+
+       //Check for updateing of class results
         AjaxViewer.prototype.checkForClassUpdate = function () {
             var _this = this;
             if (this.updateAutomatically) {
@@ -440,13 +506,26 @@ var LiveResults;
                                 return "";
                             else
                             {
-                                var txt = _this.formatTime(o.aData.start, 0, false, true);
-                                if ((o.aData.splits != undefined) && (o.aData.splits["0_place"] >= 1))
+                                var txt = "";
+                                if (o.aData.splits != undefined && o.aData.splits["0_place"] >= 1)
 								{
-                                    txt += " (" + o.aData.splits["0_place"] + ")"
-									if (fullView)
-										txt += "<br /><span class=\"plustime\">+" + _this.formatTime(o.aData.splits["0_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+									if (o.aData.splits["0_place"] == 1)
+										txt += "<span class=\"besttime\">" +_this.formatTime(o.aData.start, 0, false, true)+ " (1)<\span>";
+									else if (o.aData.splits["0_place"] > 1)
+										txt += _this.formatTime(o.aData.start, 0, false, true) + " (" + o.aData.splits["0_place"] + ")";
+									else
+										txt += _this.formatTime(o.aData.start, 0, false, true); 
+                                    if (fullView)
+                                    {
+                                        if (o.aData.splits["0_place"] == 1)
+                                            txt += "<br /><span class=\"besttime\">+";
+                                        else
+                                            txt += "<br /><span class=\"plustime\">+";
+                                        txt += _this.formatTime(o.aData.splits["0_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                                    }
 								}
+								else
+									txt += _this.formatTime(o.aData.start, 0, false, true) 
                                 return txt;
                             }
                         }
@@ -493,20 +572,26 @@ var LiveResults;
                                                         txt += " (" + o.aData.splits[value.code + "_place"] + ")</span>";
                                                 }
 												// Second line
-												if (fullView && (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined)) 
-											    // Relay control second line with leg time to passing 
+                                                if (fullView && (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined))
+                                                // Relay control second line with leg time to passing 
                                                 {
-													txt += "<br/><span class="
-													if (o.aData.splits[(value.code + 100000) + "_place"] == 1)
-														txt += "\"besttime\">";
-													else
-														txt += "\"legtime\">";
+                                                    txt += "<br/><span class="
+                                                    if (o.aData.splits[(value.code + 100000) + "_place"] == 1)
+                                                        txt += "\"besttime\">";
+                                                    else
+                                                        txt += "\"legtime\">";
                                                     txt += _this.formatTime(o.aData.splits[(value.code + 100000)], 0, _this.showTenthOfSecond)
                                                         + " (" + o.aData.splits[(value.code + 100000) + "_place"] + ")</span>";
-                                                } 
-                                                else if (o.aData.splits[value.code + "_timeplus"] != undefined && (value.code>0) && fullView && !relay) 
-											    // Second line for ordinary passing (drop if code is negative - unranked )
-                                                    txt += "<br/><span class=\"plustime\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + "</span>"
+                                                }
+                                                else if (o.aData.splits[value.code + "_timeplus"] != undefined && (value.code > 0) && fullView && !relay)
+                                                {
+                                                    // Second line for ordinary passing (drop if code is negative - unranked )
+                                                    if (o.aData.splits[value.code + "_timeplus"] == 0)
+                                                        txt += "<br/><span class=\"besttime\">+";
+                                                    else
+                                                        txt += "<br/><span class=\"plustime\">+"
+                                                    txt += _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                                                }
                                             }
                                             return txt;
                                             
@@ -528,25 +613,28 @@ var LiveResults;
                         "mDataProp": "result",
                         "fnRender": function (o) {
                             var res = "";
-                            if (o.aData.place == "-" || o.aData.place == "" || o.aData.place == "F") {
-                                res = _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond);
-                            }
+                            if (o.aData.place == "-" || o.aData.place == "" || o.aData.place == "F")
+                                res += _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond);
                             else 
 							{
-								if (haveSplitControls && o.aData.place == 1)
-									res += "<span class=\"besttime\">";
+                                if (haveSplitControls && (o.aData.place == 1))
+                                    res += "<span class=\"besttime\">";
 								else
 									res += "<span>";
                                 res += _this.formatTime(o.aData.result, o.aData.status, _this.showTenthOfSecond) + " (" + o.aData.place + ")<\span>";
+                                
                                 if (haveSplitControls && fullView)
 								{
 									if (!relay) 
 									{
-										if (o.aData.status == 0)
-											res += "<br/>" +
-												"<span class=\"plustime\">+" +
-												_this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) +
-												"</span>";
+                                        if (o.aData.status == 0)
+                                        {
+                                            if (o.aData.timeplus == 0)
+                                                res += "<br/><span class=\"besttime\">+";
+                                            else
+                                                res += "<br/><span class=\"plustime\">+";
+                                            res += _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) + "</span>";
+                                        }
 									}
 									else // Relay
 										if ((o.aData.splits["999_place"] != undefined))
@@ -574,12 +662,16 @@ var LiveResults;
                             "aTargets": [col++],
                             "mDataProp": "timeplus",
                             "fnRender": function (o) {
-                                if (o.aData.status != 0)
-                                    return "";
-                                else
-                                    return "<span class=\"plustime\">+" +
-                                        _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) +
-                                            "</span>";
+                                var res = "";
+                                if (o.aData.status == 0)
+                                {
+                                    if (haveSplitControls && (o.aData.timeplus == 0))
+                                        res += "<span class=\"besttime\">+";
+                                    else
+                                        res += "<span class=\"plustime\">+";
+                                    res += _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) + "</span>";
+                                }
+                                return res;
                             }
                         });
                     }
@@ -592,13 +684,22 @@ var LiveResults;
                             "aTargets": [col++],
                             "mDataProp": "timeplus",
                             "fnRender": function (o) {
-                                if (o.aData.status != 0)
-                                    return "";
-                                else
-                                    return "<span class=\"plustime\">+" +
-                                        _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) +
-                                            "</span><br/><span class=\"legtime\">+" +
-									    _this.formatTime(o.aData.splits["999_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+                                var res = "";
+                                if (o.aData.status == 0)
+                                {
+                                    if (o.aData.timeplus == 0)
+                                        res += "<span class=\"besttime\">+";
+                                    else
+                                        res += "<span class=\"plustime\">+";
+                                    res += _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) + "</span><br />";
+                                    if (o.aData.splits["999_timeplus"] == 0)
+                                        res += "<span class=\"besttime\">+";
+                                    else
+                                        res += "<span class=\"legtime\">+";
+                                    res += _this.formatTime(o.aData.splits["999_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
+
+                                }
+                                return res;
                             }
                         });
 						}
@@ -819,7 +920,7 @@ var LiveResults;
                 data[i].virtual_position = i;
             }
         };
-        ///Sorts results by the one that have run longest on the course
+        //Sorts results by the one that have run longest on the course
         AjaxViewer.prototype.sortByDist = function (a, b) {
             return b.progress - a.progress;
         };
@@ -841,6 +942,8 @@ var LiveResults;
                     return -1;
                 if (!a.start && b.start)
                     return 1;
+				if (a.start == b.start)
+					return parseInt(a.name.replace("(",""),10) - parseInt(b.name.replace("(",""),10); 
                 else
                     return a.start - b.start;
             }

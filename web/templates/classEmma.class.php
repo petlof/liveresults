@@ -3,7 +3,8 @@ $CHARSET = 'utf-8';
 class Emma
 {
 
-	public static $db_server = "127.0.0.1";
+	//public static $db_server = "127.0.0.1";
+	public static $db_server = "52.16.131.75";
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
@@ -315,7 +316,9 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 
 		$ret = Array();
 
-		$q = "SELECT Class From runners where TavId = ". $this->m_CompId ." Group By Class";
+		$q = "SELECT Class From runners where TavId = ". $this->m_CompId ."
+		      AND Class NOT LIKE 'NOCLAS'
+		      Group By Class";
 
 		if ($result = mysqli_query($this->m_Conn, $q))
 
@@ -416,7 +419,15 @@ function getAllSplitControls()
 
     $ret = Array();
 
-	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time,results.Status, results.Changed, results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." and runners.class = splitcontrols.classname) where results.TavId =".$this->m_CompId." AND runners.TavId = results.TavId and results.Status <> -1 AND results.Time <> -1 AND results.Status <> 9 and results.Status <> 10 and results.control <> 100 and (results.control = 1000 or splitcontrols.tavid is not null) ORDER BY results.changed desc limit 3";
+	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time,results.Status, results.Changed, 
+	      results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId 
+		  left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." 
+		  and runners.class = splitcontrols.classname) where results.TavId =".$this->m_CompId." 
+		  AND runners.TavId = results.TavId and results.Status <> -1 AND results.Time <> -1 AND results.Status <> 9 
+		  and results.Status <> 10 and results.control <> 100 and (results.control = 1000 or splitcontrols.tavid is not null)
+		  AND results.control <> 999 AND results.control <> 0 AND results.control < 100000
+		  AND runners.class NOT LIKE '%-All' 
+		  ORDER BY results.changed desc limit 3";
 
 		if ($result = mysqli_query($this->m_Conn, $q))
 
@@ -444,6 +455,53 @@ function getAllSplitControls()
 
 		return $ret;
 
+  }
+
+   function getRadioPassings($code)
+  {
+    $ret = Array();
+	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time, results.Status, results.Changed, 
+	      results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId 
+		  left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." 
+		  and runners.class = splitcontrols.classname) 
+		  WHERE results.TavId =".$this->m_CompId." 
+		  AND runners.TavId = results.TavId ";
+    
+	if ($code == 0) // Start
+	{
+		$q .= "AND results.control = 100 AND results.Status = 9 "; //AND results.Status = 9 AND 
+	}
+	elseif ($code == 1000) // Finish
+	{
+		$q .= "AND results.Time <> -1 AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND results.control = 1000 
+               AND runners.class NOT LIKE '%-All' ";
+    }
+	else // Other controls
+	{
+		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND (results.control = 1000 or splitcontrols.tavid is not null) 
+               AND results.control < 100000 AND ABS(results.control)%1000 = ".$code." AND runners.class NOT LIKE '%-All' ";
+    }
+	$q .= "ORDER BY results.changed desc limit 30";
+
+	if ($result = mysqli_query($this->m_Conn, $q))
+	{
+		while ($row = mysqli_fetch_array($result))
+		{
+			$ret[] = $row;
+			if ($this->m_TimeDiff != 0)
+			{
+				$ret[sizeof($ret)-1]["Changed"] = date("Y-m-d H:i:s",strtotime($ret[sizeof($ret)-1]["Changed"])+$this->m_TimeDiff);
+			}
+			if ($code == 0) // Start
+				$ret[sizeof($ret)-1]["pname"] = "Start";
+			if ($code == 1000) // Finish
+				$ret[sizeof($ret)-1]["pname"] = "Finish";
+		}
+		mysqli_free_result($result);
+	}
+	else
+		die(mysqli_error($this->m_Conn));
+	return $ret;
   }
 
 	function getSplitsForClass($className,$split)

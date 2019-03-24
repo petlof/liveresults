@@ -149,17 +149,17 @@ namespace LiveResults.Client
                     // *** Set up radiocontrols ***
                     /* ****************************
                      *  Ordinary controls       =  code + 1000*N
-                     *  Pass/leg time           =  code + 1000*N             + 100000
-                     *  Relay controls          =  code + 1000*N + 10000*LEG 
-                     *  Pass/leg time for relay =  code + 1000*N + 10000*LEG + 100000
-                     *  Change-over code        =  999  + 1000   + 10000*LEG
+                     *  Pass/leg time           =  code + 1000*N           + 100000
+                     *  Relay controls          =  code + 1000*N + 10000*L 
+                     *  Pass/leg time for relay =  code + 1000*N + 10000*L + 100000
+                     *  Change-over code        =  999  + 1000   + 10000*L
                      *  Exchange time code      =  0
                      *  Leg time code           =  999
                      *  Unranked fin. time code = -999
                      *  Unranked ord. controls  = -(code + 1000*N)
                      * 
-                     *  N   = number of occurrence
-                     *  LEG = leg number
+                     *  N = number of occurrence
+                     *  L = leg number
                      */
 
 
@@ -515,7 +515,7 @@ namespace LiveResults.Client
                         classN = (reader["cclass"] as string);
                         if (!string.IsNullOrEmpty(classN))
                             classN = classN.Trim();
-                        if (classN == "NOCLAS") continue;   // Skip runner if in NOCLAS
+                        if (classN == "NOCLAS" ) continue;   // Skip runner if in NOCLAS && status != "S"
 
                         club = (reader["tname"] as string);
                         if (!string.IsNullOrEmpty(club))
@@ -800,6 +800,8 @@ namespace LiveResults.Client
                     int rstatus = GetStatusFromCode(ref time, status);
                     if (rstatus != 999)
                     {
+                        if (rstatus == 9) // Modify starttime if started to force update
+                            iStartTime += 1; 
                         var res = new Result
                         {
                             ID         = runnerID,
@@ -825,7 +827,6 @@ namespace LiveResults.Client
                         int rstatus = GetStatusFromCode(ref Team.Value.TotalTime, Team.Value.TeamStatus);
                         if (rstatus != 999)
                         {
-
                             const int maxLength = 50; // Max lenght of one-line name
                             int numlegs   = Team.Value.TeamMembers.Count;
                             int legLength = maxLength / numlegs;

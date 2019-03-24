@@ -268,10 +268,8 @@ namespace LiveResults.Client
 
         private void wizardPage5_ShowFromNext(object sender, EventArgs e)
         {
-
-
+            StoreSettings();
             IDbConnection conn = null;
-
             try
             {
                 conn = GetDBConnection(lstDB.SelectedItem as string);

@@ -52,6 +52,14 @@ tr.new_result td:last-child {
     border-bottom-right-radius: 15px
 }
 
+tr.error_entry { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white;
+}
+
+tr.error_entry td:last-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 15px
+}
+
 table.dataTable td {
 vertical-align: top;
 }
