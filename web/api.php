@@ -5,15 +5,20 @@ $compid   = $_GET['comp'];
 $hightime = 30;
 $refreshTime = 5;
 
-$showTenthsOfSecond = in_array($compid, array("15068", "15070", "15162"));
-$isMassStartRace    = in_array($compid, array("15068","14872"));
-$showQualLim        = in_array($compid, array("15070"));
+$showTenthsOfSecond = in_array($compid, array("15232","15233","15068","15070","15162"));
+$isMassStartRace    = in_array($compid, array("15233","15068","14872"));
+$showQualLim        = in_array($compid, array("15232","15070"));
 
 $qualLim  = 6;
-if ($_GET['class'] == "Menn senior" || $_GET['class'] == "Kvinner senior" )
-	$qualLim = 10;
-if ($_GET['class'] == "Menn junior" || $_GET['class'] == "Kvinner junior" )
-	$qualLim = 8;
+if (isset($_GET['class']))
+{
+	if ($_GET['class'] == "Menn senior")
+		$qualLim = 7;
+	if ($_GET['class'] == "Menn junior")
+		$qualLim = 10;
+	if ($_GET['class'] == "Kvinner junior" )
+		$qualLim = 9;
+}
 
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
@@ -160,7 +165,7 @@ elseif ($_GET['method'] == 'getradiopassings')
 		foreach ($lastPassings as $pass)
 		{
 			$age = time()-strtotime($pass['Changed']);
-			$modified = $age < $refreshTime ? 1:0;
+			$modified = $age < 2*$refreshTime ? 1:0;
 
 			if (!$first)
 				$ret .=",$br";
@@ -170,7 +175,8 @@ elseif ($_GET['method'] == 'getradiopassings')
 					\"class\": \"".$pass['class']."\",
 					\"control\": ".$pass['Control'].",
 					\"controlName\" : \"".$pass['pname']."\",
-					\"time\": \"" .formatTime($pass['Time'],0,$RunnerStatus)."\" ";
+					\"time\": \"" .formatTime($pass['Time'],0,$RunnerStatus)."\",
+					\"compName\": \"".$pass['compName']."\" ";
 			
 			if (($pass['class']=="NOCLAS" && $pass['Control']==100))
 			{

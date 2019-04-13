@@ -24,6 +24,7 @@ var LiveResults;
             this.updateAutomatically = true;
 			this.compactView = true;
             this.updateInterval = 5000;
+			this.radioUpdateInterval = 5000;
             this.classUpdateInterval = 60000;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
@@ -222,13 +223,13 @@ var LiveResults;
                     error: function () {
                         _this.radioPassingsUpdateTimer = setTimeout(function () {
                             _this.updateRadioPassings();
-                        }, _this.updateInterval);
+                        }, _this.radioUpdateInterval);
                     },
                     dataType: "json"
                 });
                 this.radioPassingsUpdateTimer = setTimeout(function () {
                     _this.updateRadioPassings(code);
-                }, this.updateInterval);
+                }, this.radioUpdateInterval);
             }
 
         };
@@ -244,15 +245,28 @@ var LiveResults;
                     }
                     else
                     {
-                    var columns = Array();
+					var columns = Array();
                     var col = 0;
-                  
-                    columns.push({ "sTitle": "Tidsp." , "sClass": "left" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"    });
-                        columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName"  });
-                        columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
-                        columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
-                        columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName" });
-                        columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"        });
+					columns.push({ "sTitle": "Tidsp." , "sClass": "right" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"});
+                    columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName", 
+							"fnRender": function (o) 
+							{
+								var link = "<a style=\"color:inherit; text-decoration:none\" href=\"https://freidig.idrett.no/o/liveres_helpers/meld.php?" +
+								"lopid="  + "(" + _this.competitionId +") " + o.aData.compName +
+								"&Tidsp=" + o.aData.passtime + 
+								"&Navn="  + o.aData.runnerName + 
+								"&T0="    + o.aData.club + 
+								"&T1="    + o.aData.class +
+								"&T2="    + o.aData.controlName + 
+								"&T3="    + o.aData.time + "\">" + 
+								o.aData.runnerName + "</a>";
+								return link;
+							}
+						     });
+                    columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
+                    columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
+                    columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName"}); 
+                    columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"});
                     
                     this.currentTable = $('#' + this.radioPassingsDiv).dataTable({
                         "bPaginate": false,
@@ -262,7 +276,7 @@ var LiveResults;
                         "bInfo": false,
                         "bAutoWidth": false,
                         "aaData": data.passings,
-                        "aaSorting": [[0, "desc"]],
+                        "aaSorting": [[1, "desc"]],
                         "aoColumnDefs": columns,
                         "bDestroy": true
                         });
@@ -479,7 +493,9 @@ var LiveResults;
 								clubShort = clubShort.replace('Orientering', 'O.');
 								clubShort = clubShort.replace('Orienteering', 'O.');
 								clubShort = clubShort.replace('Skiklubb', 'Sk.');
-							}
+								clubShort = clubShort.replace('og Omegn ', 'O');
+								clubShort = clubShort.replace('Sportklubb', 'Spk.');
+								clubShort = clubShort.replace('Sportsklubb', 'Spk.');							}
                     
                             var link = "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + clubShort + "</a>";
                             if ((haveSplitControls && !unranked && fullView))

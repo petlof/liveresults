@@ -29,6 +29,7 @@ namespace LiveResults.Client
             txtETimingDb.Text = Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData);
             txtSleepTime.Text = "10";
             chkOneLineRelayRes.Checked = false;
+            chkTwoEcards.Checked = false;
             RetreiveSettings();
             chkDeleteEmmaIDs.Checked = false;
             
@@ -328,7 +329,7 @@ namespace LiveResults.Client
             if (comboBox1.SelectedIndex == 1) MSSQL = true;
             
             ETimingParser pars = new ETimingParser(GetDBConnection(lstDB.SelectedItem as string),
-                    (Convert.ToInt32(txtSleepTime.Text)), chkCreateRadioControls.Checked, chkOneLineRelayRes.Checked, MSSQL);
+                    (Convert.ToInt32(txtSleepTime.Text)), chkCreateRadioControls.Checked, chkOneLineRelayRes.Checked, MSSQL, chkTwoEcards.Checked);
 
             monForm.SetParser(pars as IExternalSystemResultParser);
             monForm.CompetitionID = Convert.ToInt32(txtCompID.Text);
@@ -361,6 +362,26 @@ namespace LiveResults.Client
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void checkBox1_CheckedChanged_1(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label9_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label8_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void label12_Click(object sender, EventArgs e)
         {
 
         }

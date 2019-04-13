@@ -17,19 +17,23 @@ namespace LiveResults.Client
         private readonly IDbConnection m_connection;
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
+        public event DeleteIDDelegate OnDeleteID;
         private bool m_createRadioControls;
         private bool m_continue;
         private int  m_sleepTime;
         private bool m_oneLineRelayRes;
         private bool m_MSSQL;
+        private bool m_twoEcards;
 
-        public ETimingParser(IDbConnection conn, int sleepTime, bool recreateRadioControls = true, bool oneLineRelayRes = false,bool MSSQL = false)
+        public ETimingParser(IDbConnection conn, int sleepTime, bool recreateRadioControls = true, bool oneLineRelayRes = false, 
+            bool MSSQL = false, bool twoEcards = false)
         {
             m_connection = conn;
             m_createRadioControls = recreateRadioControls;
             m_sleepTime = sleepTime;
             m_oneLineRelayRes = oneLineRelayRes;
             m_MSSQL = MSSQL;
+            m_twoEcards = twoEcards;
         }
         
         private void FireOnResult(Result newResult)
@@ -43,6 +47,11 @@ namespace LiveResults.Client
         {
             if (OnLogMessage != null)
                 OnLogMessage(msg);
+        }
+        private void FireOnDeleteID(int runnerID)
+        {
+            if (OnDeleteID != null)
+                OnDeleteID(runnerID);
         }
 
         Thread m_monitorThread;
@@ -426,24 +435,25 @@ namespace LiveResults.Client
 
                     baseSplitCommand = string.Format(@"SELECT mellomid, iplace, stasjon, mintime, nettotid, timechanged, mecard 
                             FROM mellom 
-                            WHERE stasjon>0 AND stasjon<250 AND iplace>0 AND mecard>0  
+                            WHERE stasjon>=0 AND stasjon<250 AND iplace>=0 AND mecard>0  
                             ORDER BY mintime");
 
                     
                     Dictionary<int, List<SplitRawStruct>> splitList = null;
-                    
+                    List<int> unknownRunners = new List<int>();
+
                     string lastRunner = "";
                                       
                     cmdSplits.CommandText = baseSplitCommand;
                     ParseReaderSplits(cmdSplits, out splitList, out lastRunner);
 
                     cmdInd.CommandText = baseCommandInd;
-                    ParseReader(cmdInd, splitList, false, out lastRunner);
+                    ParseReader(cmdInd, ref splitList, false, out lastRunner);
 
                     if (isRelay)
                     {
                         cmdRelay.CommandText = baseCommandRelay;
-                        ParseReader(cmdRelay, splitList, true, out lastRunner);
+                        ParseReader(cmdRelay, ref splitList, true, out lastRunner);
                     }
 
                     FireLogMsg("eTiming Monitor thread started");
@@ -452,9 +462,10 @@ namespace LiveResults.Client
                         try
                         {
                             ParseReaderSplits(cmdSplits, out splitList, out lastRunner);
-                            ParseReader(cmdInd, splitList, false, out lastRunner);
+                            ParseReader(cmdInd, ref splitList, false, out lastRunner);
                             if (isRelay)
-                                ParseReader(cmdRelay, splitList, true, out lastRunner);
+                                ParseReader(cmdRelay, ref splitList, true, out lastRunner);
+                            handleUnknowns(splitList, ref unknownRunners);
                             Thread.Sleep(1000*m_sleepTime);
                         }
                         catch (Exception ee)
@@ -487,20 +498,19 @@ namespace LiveResults.Client
         }
         
 
-        private void ParseReader(IDbCommand cmd, Dictionary<int, List<SplitRawStruct>> splitList, bool isRelay, out string lastRunner)
+        private void ParseReader(IDbCommand cmd, ref Dictionary<int, List<SplitRawStruct>> splitList, bool isRelay, out string lastRunner)
         {
             lastRunner = "";
 
             Dictionary<int, RelayTeam> RelayTeams;
             RelayTeams = new Dictionary<int, RelayTeam>();
-            Random rnd = new Random(); // For classes without ranking
 
             using (IDataReader reader = cmd.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    int time = 0, runnerID = 0, iStartTime = 0, iStartClass = 0,  bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign=1;
-                    string famName = "", givName = "", club = "", classN = "", status = "", bibread = "", bibstr="", name = "", shortName="-";
+                    int time = 0, runnerID = 0, iStartTime = 0, iStartClass = 0, bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign = 1;
+                    string famName = "", givName = "", club = "", classN = "", status = "", bibread = "", bibstr = "", name = "", shortName = "-";
 
                     var SplitTimes = new List<ResultStruct>();
 
@@ -515,7 +525,7 @@ namespace LiveResults.Client
                         classN = (reader["cclass"] as string);
                         if (!string.IsNullOrEmpty(classN))
                             classN = classN.Trim();
-                        if (classN == "NOCLAS" ) continue;   // Skip runner if in NOCLAS && status != "S"
+                        if (classN == "NOCLAS") continue;   // Skip runner if in NOCLAS
 
                         club = (reader["tname"] as string);
                         if (!string.IsNullOrEmpty(club))
@@ -523,7 +533,7 @@ namespace LiveResults.Client
 
                         famName = (reader["ename"] as string);
                         if (!string.IsNullOrEmpty(famName))
-                            famName = famName.Trim();                           
+                            famName = famName.Trim();
 
                         givName = (reader["name"] as string);
                         if (!string.IsNullOrEmpty(famName))
@@ -552,7 +562,7 @@ namespace LiveResults.Client
                         }
                         else
                             bibstr = bibread;
-                                                
+
                         name = ((bib > 0) ? "(" + bibstr + ") " : "") + givName + " " + famName;
                         lastRunner = name;
 
@@ -565,7 +575,7 @@ namespace LiveResults.Client
                                 RelayTeams.Add(teambib, new RelayTeam());
                                 RelayTeams[teambib].TeamMembers = new Dictionary<int, RelayLegInfo>();
                                 RelayTeams[teambib].SplitTimes = new List<ResultStruct>();
-                            }                            
+                            }
                             RelayTeams[teambib].TeamBib = teambib;
                             RelayTeams[teambib].ClassName = classN;
                             if (leg == 1)
@@ -581,7 +591,7 @@ namespace LiveResults.Client
                             }
 
                             RelayTeams[teambib].TeamMembers[leg].LegName = shortName;
-                            
+
                             if (!classN.EndsWith("-"))
                                 classN += "-";
                             classN += Convert.ToString(leg);
@@ -642,12 +652,12 @@ namespace LiveResults.Client
 
                                     var LegTime = new ResultStruct
                                     {
-                                        ControlCode = controlCode,  
+                                        ControlCode = controlCode,
                                         Time = RelayTeams[teambib].TeamMembers[legs].LegTime
                                     };
                                     RelayTeams[teambib].SplitTimes.Add(LegTime);
 
-                                    
+
                                 }
 
                                 // Accumulated status
@@ -658,7 +668,7 @@ namespace LiveResults.Client
                                 }
                                 else
                                     TeamOK = false;
-                               
+
                                 if (legs == numlegs && TeamOK)
                                 {
                                     TeamStatus = "A";
@@ -700,8 +710,8 @@ namespace LiveResults.Client
                                 };
                                 SplitTimes.Add(ExchangeTime);
                             }
-                        }                 
-                        
+                        }
+
                         bool freestart = Convert.ToBoolean(reader["freestart"].ToString());
 
                         // Add split times
@@ -712,18 +722,42 @@ namespace LiveResults.Client
                             ecard2 = Convert.ToInt32(reader["ecard2"].ToString());
 
                         var splits = new List<SplitRawStruct>();
+                        var numEcards = 0; // Number of ecards with splits
+                        var numStart = 0;  // Number of ecards with 0 (start) registered
                         if (splitList.ContainsKey(ecard1))
-                            splits = splitList[ecard1];
-                        else if (splitList.ContainsKey(ecard2))
-                            splits = splitList[ecard2];
+                        {
+                            if (splitList[ecard1].Any(s => s.controlCode == 0))
+                                numStart += 1;
+                            splits.AddRange(splitList[ecard1]);
+                            splitList.Remove(ecard1);
+                            numEcards += 1;
+                        }
+                        if (splitList.ContainsKey(ecard2))
+                        {
+                            if (splitList[ecard2].Any(s => s.controlCode == 0))
+                                numStart += 1;
+                            splits.AddRange(splitList[ecard2]);
+                            splitList.Remove(ecard2);
+                            numEcards += 1;
+                        }
+                        if (numEcards > 1)
+                            splits = splits.OrderBy(s => s.passTime).ToList();
 
                         var lsplitCodes = new List<int>();
                         int calcStartTime = -2;
                         foreach (var split in splits)
                         {
+                            if (split.controlCode == 0)
+                            {
+                                if (status == "I") // Change code of only entered runners
+                                    status = "S";
+                                continue;         
+                            }
+                                
+                            if (split.passTime < iStartTime)
+                                continue;         // Neglect passing before starttime
                             int passTime = -2;    // Total time at passing
                             int passLegTime = -2; // Time used on leg at passing
-                            if (split.passTime < iStartTime) continue;   // Neglect passing before starttime
                             if (freestart)
                                 passTime = split.netTime;
                             else if (isRelay)
@@ -736,9 +770,9 @@ namespace LiveResults.Client
                                 passTime = split.passTime - iStartTime;
 
                             // Add split code to list
-                            int iSplitcode = sign*(split.controlCode + 1000);
+                            int iSplitcode = sign * (split.controlCode + 1000);
                             while (lsplitCodes.Contains(iSplitcode))
-                                iSplitcode += sign*1000;
+                                iSplitcode += sign * 1000;
                             lsplitCodes.Add(iSplitcode);
 
                             // Add split time to SplitTime struct
@@ -768,11 +802,13 @@ namespace LiveResults.Client
                             if (freestart)
                                 calcStartTime = split.changedTime - passTime;
                         }
+                        if (m_twoEcards && numEcards < 2 && status == "S")
+                            status = "I"; // Set status to "Entered" if only one eCard at start when 2 required 
 
                         if (freestart && (calcStartTime > 0) && (Math.Abs(calcStartTime - iStartTime) > 3000))  // Update starttime if deviation more than 30 sec
                             iStartTime = calcStartTime;
 
-                        if (time>0 && (timingType == 1 || timingType == 2)) // Not ranked or not show times
+                        if (time > 0 && (timingType == 1 || timingType == 2)) // Not ranked or not show times
                         {
                             if (timingType == 2) // Do not show times
                                 time = -10;
@@ -801,16 +837,16 @@ namespace LiveResults.Client
                     if (rstatus != 999)
                     {
                         if (rstatus == 9) // Modify starttime if started to force update
-                            iStartTime += 1; 
+                            iStartTime += 1;
                         var res = new Result
                         {
-                            ID         = runnerID,
+                            ID = runnerID,
                             RunnerName = name,
                             RunnerClub = club,
-                            Class      = classN,
-                            StartTime  = iStartTime,
-                            Time       = time,
-                            Status     = rstatus,
+                            Class = classN,
+                            StartTime = iStartTime,
+                            Time = time,
+                            Status = rstatus,
                             SplitTimes = SplitTimes
                         };
 
@@ -818,54 +854,90 @@ namespace LiveResults.Client
                     }
                 }
                 reader.Close();
+            }
 
-                // Loop through relay teams and add one-line results
-                if (isRelay && m_oneLineRelayRes)
+            // Loop through relay teams and add one-line results
+            if (isRelay && m_oneLineRelayRes)
+            {
+                foreach (var Team in RelayTeams)
                 {
-                    foreach (var Team in RelayTeams)
+                    int rstatus = GetStatusFromCode(ref Team.Value.TotalTime, Team.Value.TeamStatus);
+                    if (rstatus != 999)
                     {
-                        int rstatus = GetStatusFromCode(ref Team.Value.TotalTime, Team.Value.TeamStatus);
-                        if (rstatus != 999)
+                        const int maxLength = 50; // Max lenght of one-line name
+                        int numlegs   = Team.Value.TeamMembers.Count;
+                        int legLength = maxLength / numlegs;
+                        string name = "", classAll = "";
+                        foreach (var Runner in Team.Value.TeamMembers)
                         {
-                            const int maxLength = 50; // Max lenght of one-line name
-                            int numlegs   = Team.Value.TeamMembers.Count;
-                            int legLength = maxLength / numlegs;
-                            string name = "", classAll = "";
-                            foreach (var Runner in Team.Value.TeamMembers)
-                            {
-                                int numChars = Math.Min(Runner.Value.LegName.Length, legLength);
-                                if (Runner.Key == 1)
-                                    name = "(" + Convert.ToString(Team.Value.TeamBib) + ") " + Runner.Value.LegName.Substring(0,numChars);
-                                else
-                                    name += ", " + Runner.Value.LegName.Substring(0, numChars);
-                            }
-
-                            classAll = Team.Value.ClassName;
-                            if (!classAll.EndsWith("-"))
-                                classAll += "-";
-                            classAll += "All";
-
-                            var res = new Result
-                            {
-                                ID = 100000 + Team.Value.TeamBib,
-                                RunnerName = name,
-                                RunnerClub = Team.Value.TeamName,
-                                Class = classAll,
-                                StartTime = Team.Value.StartTime,
-                                Time = Team.Value.TotalTime,
-                                Status = rstatus,
-                                SplitTimes = Team.Value.SplitTimes
-                            };
-
-                            FireOnResult(res);
+                            int numChars = Math.Min(Runner.Value.LegName.Length, legLength);
+                            if (Runner.Key == 1)
+                                name = "(" + Convert.ToString(Team.Value.TeamBib) + ") " + Runner.Value.LegName.Substring(0,numChars);
+                            else
+                                name += ", " + Runner.Value.LegName.Substring(0, numChars);
                         }
 
+                        classAll = Team.Value.ClassName;
+                        if (!classAll.EndsWith("-"))
+                            classAll += "-";
+                        classAll += "All";
+
+                        var res = new Result
+                        {
+                            ID = 100000 + Team.Value.TeamBib,
+                            RunnerName = name,
+                            RunnerClub = Team.Value.TeamName,
+                            Class = classAll,
+                            StartTime = Team.Value.StartTime,
+                            Time = Team.Value.TotalTime,
+                            Status = rstatus,
+                            SplitTimes = Team.Value.SplitTimes
+                        };
+
+                        FireOnResult(res);
                     }
                 }
             }
+
+            
         }
 
-        private static int GetStatusFromCode(ref int time, string status)
+        private void handleUnknowns(Dictionary<int, List<SplitRawStruct>> splitList, ref List<int> unknownRunnersLast)
+        {
+            // Loop through the remaining entries in the splitList (those linked to runners are removed)
+            List<int> unknownRunners = new List<int>();
+            List<SplitRawStruct> splits;
+            foreach (int ecard in splitList.Keys)
+            {
+                var split = new SplitRawStruct();
+                splits = splitList[ecard];
+                splits = splits.OrderByDescending(s => s.passTime).ToList();
+                split = splits.Find(s => s.controlCode == 0); // Find last pass at start
+
+                if (split.passTime > 0)
+                {
+                    unknownRunners.Add(ecard);
+                    unknownRunnersLast.Remove(ecard);
+                    var res = new Result
+                    {
+                        ID = -ecard,
+                        RunnerName = ecard + " UKJENT BRIKKE START",
+                        RunnerClub = "NOTEAM",
+                        Class = "NOCLAS",
+                        StartTime = split.passTime,
+                        Time = -3,
+                        Status = 9
+                    };
+                    FireOnResult(res);
+                }
+            }
+            foreach (int ecard in unknownRunnersLast) // Delete those that are still in last arrray
+                FireOnDeleteID(-ecard);
+
+            unknownRunnersLast = unknownRunners;  // Set back new list of unknown runners
+        }
+
+    private static int GetStatusFromCode(ref int time, string status)
         {
             int rstatus = 10; //  Default: Entered
             switch (status)

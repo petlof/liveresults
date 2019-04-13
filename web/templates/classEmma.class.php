@@ -459,7 +459,7 @@ function getAllSplitControls()
 
    function getRadioPassings($code)
   {
-    $ret = Array();
+	$ret = Array();
 	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time, results.Status, results.Changed, 
 	      results.Control, splitcontrols.name as pname From results inner join runners on results.DbId = runners.DbId 
 		  left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." 
@@ -481,7 +481,7 @@ function getAllSplitControls()
 		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND (results.control = 1000 or splitcontrols.tavid is not null) 
                AND results.control < 100000 AND ABS(results.control)%1000 = ".$code." AND runners.class NOT LIKE '%-All' ";
     }
-	$q .= "ORDER BY results.changed desc limit 30";
+	$q .= "ORDER BY case when class = 'NOCLAS' then 0 else 1 end, results.changed desc limit 30";
 
 	if ($result = mysqli_query($this->m_Conn, $q))
 	{
@@ -496,6 +496,7 @@ function getAllSplitControls()
 				$ret[sizeof($ret)-1]["pname"] = "Start";
 			if ($code == 1000) // Finish
 				$ret[sizeof($ret)-1]["pname"] = "Finish";
+			$ret[sizeof($ret)-1]["compName"] = $this->m_CompName;
 		}
 		mysqli_free_result($result);
 	}

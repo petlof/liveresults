@@ -188,16 +188,17 @@
     <Compile Include="Parsers\ETimingParser.cs" />
     <Compile Include="Parsers\IofXmlParser.cs" />
     <Compile Include="Parsers\IofXmlV3Parser.cs" />
-    <Compile Include="Parsers\MeOsParser.cs" />
-    <Compile Include="Parsers\TulospalveluParser.cs" />
-    <Compile Include="Parsers\RaceTimerParser.cs" />
-    <Compile Include="Parsers\SSFTimingParser.cs" />
-    <Compile Include="Parsers\OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
     <Compile Include="Parsers\LiveResultater_no_Parser.cs" />
+    <Compile Include="Parsers\MeOsParser.cs" />
+    <Compile Include="Parsers\OlaParser.cs" />
+    <Compile Include="Parsers\OriLiveParser.cs" />
+    <Compile Include="Parsers\RaceTimerParser.cs" />
     <Compile Include="Parsers\RacomFileSetParser.cs" />
-    <Compile Include="SirapInterface.cs" />
+    <Compile Include="Parsers\SSFTimingParser.cs" />
+    <Compile Include="Parsers\TulospalveluParser.cs" />
     <Compile Include="Parsers\WocParser.cs" />
+    <Compile Include="SirapInterface.cs" />
     <Compile Include="FrmMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -225,7 +226,6 @@
     </Compile>
     <Compile Include="Parsers\OSParser.cs" />
     <Compile Include="Parsers\OEParser.cs" />
-    <Compile Include="Parsers\OlaParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <EmbeddedResource Include="FrmETimingMonitor.resx">

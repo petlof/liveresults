@@ -436,6 +436,14 @@ namespace LiveResults.Model
         /// Adds a Runner to this competition
         /// </summary>
         /// <param name="r"></param>
+
+        public void DeleteID(int runnerID)
+        {
+            if (m_runners.ContainsKey(runnerID))
+                RemoveRunner(m_runners[runnerID]);
+        }
+
+
         public void RemoveRunner(Runner r)
         {
             if (m_runners.ContainsKey(r.ID))

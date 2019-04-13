@@ -11,6 +11,9 @@ namespace LiveResults.Client.Parsers
 {
     public class RacomFileSetParser : IExternalSystemResultParser
     {
+        public event DeleteIDDelegate OnDeleteID;
+
+
         private readonly string m_startListFile;
         private readonly string m_splitsFile;
         private readonly string m_finishFile;

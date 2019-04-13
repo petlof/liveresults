@@ -39,14 +39,24 @@ namespace LiveResults.Client
             m_Parser = parser;
             m_Parser.OnLogMessage += new LogMessageDelegate(m_Parser_OnLogMessage);
             m_Parser.OnResult += new ResultDelegate(m_Parser_OnResult);
+            m_Parser.OnDeleteID += new DeleteIDDelegate(m_Parser_OnDeleteID);
             m_Parser.OnRadioControl += (name, code, className, order) =>
             {
                 foreach (EmmaMysqlClient client in m_Clients)
                 {
                     client.SetRadioControl(className, code, name, order);
                 }
-            };
+            }; 
         }
+
+        void m_Parser_OnDeleteID(int runnerID)
+        {
+            foreach (EmmaMysqlClient client in m_Clients)
+            {
+              client.DeleteID(runnerID);
+            }
+        }
+
 
         void m_Parser_OnResult(Result newResult)
         {

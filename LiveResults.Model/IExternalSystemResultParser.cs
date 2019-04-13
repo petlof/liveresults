@@ -6,6 +6,7 @@ namespace LiveResults.Model
         void Start();
         void Stop();
         event ResultDelegate OnResult;
+        event DeleteIDDelegate OnDeleteID;
         event LogMessageDelegate OnLogMessage;
         event RadioControlDelegate OnRadioControl;
     }

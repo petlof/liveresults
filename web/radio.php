@@ -93,7 +93,10 @@ $(document).ready(function()
 
 <table border="0" cellpadding="0" cellspacing="0"><td valign=top>
 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
-<td valign="top"><b>Meldepost, kode: <?= $_GET['code']?></b><br></table>
+<tr><td valign="top"><b><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</b></tr>
+<tr><td valign="top"><b>Meldepost med kode: <?= $_GET['code']?></b><br>
+<td valign="top" align="right"><b>Generell medling: <a href="https://freidig.idrett.no/o/liveres_helpers/meld.php?lopid=(<?=$_GET['comp']?>) <?=$currentComp->CompName()?>&amp;Navn=Generell melding">Send</a></b><br></tr>
+</table>
 <table id="divRadioPassings" ></table>
 </table>
 
