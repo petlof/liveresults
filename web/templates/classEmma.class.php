@@ -476,9 +476,13 @@ function getAllSplitControls()
 		$q .= "AND results.Time <> -1 AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND results.control = 1000 
                AND runners.class NOT LIKE '%-All' ";
     }
+	elseif ($code < 0 ) // All radio controls (not including start and finish)
+		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND splitcontrols.tavid is not null 
+               AND results.control < 100000 AND ABS(results.control)%1000 > 0  AND ABS(results.control)%1000 < 999 AND runners.class NOT LIKE '%-All' ";
+	
 	else // Other controls
 	{
-		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND (results.control = 1000 or splitcontrols.tavid is not null) 
+		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND splitcontrols.tavid is not null 
                AND results.control < 100000 AND ABS(results.control)%1000 = ".$code." AND runners.class NOT LIKE '%-All' ";
     }
 	$q .= "ORDER BY case when class = 'NOCLAS' then 0 else 1 end, results.changed desc limit 30";

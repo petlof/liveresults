@@ -2,11 +2,11 @@
 date_default_timezone_set("Europe/Stockholm");
 $lang = "no";
 $compid   = $_GET['comp'];
-$hightime = 30;
-$refreshTime = 5;
+$hightime = 60;
+$refreshTime = 3;
 
 $showTenthsOfSecond = in_array($compid, array("15232","15233","15068","15070","15162"));
-$isMassStartRace    = in_array($compid, array("15233","15068","14872"));
+$isMassStartRace    = in_array($compid, array("15233","15068","15548"));
 $showQualLim        = in_array($compid, array("15232","15070"));
 
 $qualLim  = 6;
@@ -165,7 +165,7 @@ elseif ($_GET['method'] == 'getradiopassings')
 		foreach ($lastPassings as $pass)
 		{
 			$age = time()-strtotime($pass['Changed']);
-			$modified = $age < 2*$refreshTime ? 1:0;
+			$modified = $age < $hightime ? 1:0;
 
 			if (!$first)
 				$ret .=",$br";

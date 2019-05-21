@@ -88,8 +88,9 @@ el.style.backgroundColor = "";
        <table border="0" cellpadding="0" cellspacing="0" width="800">
              <tr>
                <td>
-                      | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0' alt='Svenska'> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0' alt='Svenska'> Svenska</a>")?>
-			   	   			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0' alt='English'> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0' alt='English'> English</a>")?>
+		    | <?php echo($lang == "no" ? "<img src='images/no.png' border='0' alt='Norsk'> Norsk" : "<a href=\"?lang=no\" style='text-decoration: none'><img src='images/no.png' border='0' alt='Norsk'> Norsk</a>")?>
+            | <?php echo($lang == "sv" ? "<img src='images/se.png' border='0' alt='Svenska'> Svenska" : "<a href=\"?lang=sv\" style='text-decoration: none'><img src='images/se.png' border='0' alt='Svenska'> Svenska</a>")?>
+			| <?php echo($lang == "en" ? "<img src='images/en.png' border='0' alt='English'> English" : "<a href=\"?lang=en\" style='text-decoration: none'><img src='images/en.png' border='0' alt='English'> English</a>")?>
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi</a>")?>
 			| <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Русский'> Русский" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Русский'> Русский</a>")?>
 			| <?php echo($lang == "cz" ? "<img src='images/cz.png' border='0' alt='Česky'> Česky" : "<a href=\"?lang=cz\" style='text-decoration: none'><img src='images/cz.png' border='0' alt='Česky'> Česky</a>")?>
@@ -101,7 +102,7 @@ el.style.backgroundColor = "";
             | <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" : "<a href=\"?lang=es\" style='text-decoration: none'><img src='images/es.png' border='0' alt='Español'> Español</a>")?>
             | <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" : "<a href=\"?lang=pl\" style='text-decoration: none'><img src='images/pl.png' border='0' alt='Polska'> Polska</a>")?>
 			| <?php echo($lang == "pt" ? "<img src='images/pt.png' border='0' alt='Português'> Português" : "<a href=\"?lang=pt\" style='text-decoration: none'><img src='images/pt.png?a' border='0' alt='Português'> Português</a>")?>
-			| <?php echo($lang == "no" ? "<img src='images/no.png' border='0' alt='Norsk'> Norsk" : "<a href=\"?lang=no\" style='text-decoration: none'><img src='images/no.png' border='0' alt='Norsk'> Norsk</a>")?> 
+			 
 
 
 

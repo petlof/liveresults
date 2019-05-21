@@ -256,7 +256,9 @@ function changeFontSize(val)
 <!--- LANGUAGE TABLE --->
 <?php if (!$isSingleClass && !$isSingleClub){?>				
 			<div id="langchooser">
-						| <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
+						| <?php echo($lang == "no" ? "<img src='images/no.png?a' border='0' alt='Norsk'> Norsk" :
+"<a href=\"?lang=no&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/no.png?a' border='0' alt='Norsk'> Norsk</a>")?>
+                        | <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
 "<a href=\"?lang=sv&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' alt='Svenska'> Svenska</a>")?>
 						| <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
 "<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' alt='English'> English</a>")?>
@@ -267,13 +269,13 @@ function changeFontSize(val)
                         | <?php echo($lang == "cz" ? "<img src='images/cz.png' alt='Česky'> Česky" :
 "<a href=\"?lang=cz&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/cz.png' alt='Česky'> Česky</a>")?>
                         | <?php echo($lang == "de" ? "<img src='images/de.png' alt='Deutsch'> Deutsch" :
-"<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>
-						| <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
-"<a href=\"?lang=bg&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/bg.png' alt='български'> български</a>")?>
+"<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>						
 |
 </div>
 <div>
-						| <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
+						| <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
+"<a href=\"?lang=bg&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/bg.png' alt='български'> български</a>")?>
+                        | <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
 "<a href=\"?lang=fr&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fr.png' alt='Français'> Français</a>")?>
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : 
 "<a href=\"?lang=it&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?> 
@@ -285,8 +287,7 @@ function changeFontSize(val)
 "<a href=\"?lang=pl&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pl.png' border='0' alt='Polska'> Polska</a>")?>
 						| <?php echo($lang == "pt" ? "<img src='images/pt.png?a' border='0' alt='Português'> Português" :
 "<a href=\"?lang=pt&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pt.png?a' border='0' alt='Português'> Português</a>")?>
-						| <?php echo($lang == "no" ? "<img src='images/no.png?a' border='0' alt='Norsk'> Norsk" :
-"<a href=\"?lang=no&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/no.png?a' border='0' alt='Norsk'> Norsk</a>")?>
+						
 |
 </div>
 <?php }?>
@@ -296,8 +297,14 @@ function changeFontSize(val)
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
 			<tr>
 			<!--Customized logo -->
-			<!--<td width="161">
-			<img src="images/fin5.png"/></td>-->
+			<?php if(in_array($_GET['comp'], array("15537","15538"))){?>
+			    <td width="80">
+			    <img src="images/NMUltra.png" height="60" /></td>
+			<?php }?>
+			<?php if(in_array($_GET['comp'], array("15548","15653"))){?>
+			    <td width="80">
+			    <img src="images/Freidig60.png" height="60" /></td>
+			<?php }?>
 			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings">
 </div>

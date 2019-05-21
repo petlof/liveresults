@@ -23,7 +23,7 @@ var LiveResults;
             this.showTenthOfSecond = showTenthOfSecond;
             this.updateAutomatically = true;
 			this.compactView = true;
-            this.updateInterval = 5000;
+            this.updateInterval = 10000;
 			this.radioUpdateInterval = 5000;
             this.classUpdateInterval = 60000;
             this.classUpdateTimer = null;
@@ -490,12 +490,16 @@ var LiveResults;
 							var clubShort = o.aData.club;
                             if (param && param.length > 0){
                                 param = param.replace('\'', '\\\'');
+								clubShort = clubShort.replace('Orienterings', 'O.');
 								clubShort = clubShort.replace('Orientering', 'O.');
 								clubShort = clubShort.replace('Orienteering', 'O.');
 								clubShort = clubShort.replace('Skiklubb', 'Sk.');
-								clubShort = clubShort.replace('og Omegn ', 'O');
+								clubShort = clubShort.replace('og Omegn IF', 'OIF');
+								clubShort = clubShort.replace('og omegn', '');
+								clubShort = clubShort.replace(/national team/i,'NT');
 								clubShort = clubShort.replace('Sportklubb', 'Spk.');
-								clubShort = clubShort.replace('Sportsklubb', 'Spk.');							}
+								clubShort = clubShort.replace('Sportsklubb', 'Spk.');
+								}
                     
                             var link = "<a href=\"javascript:LiveResults.Instance.viewClubResults('" + param + "')\">" + clubShort + "</a>";
                             if ((haveSplitControls && !unranked && fullView))
