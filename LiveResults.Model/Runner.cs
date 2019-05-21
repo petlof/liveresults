@@ -115,6 +115,12 @@ namespace LiveResults.Model
         public int RunnerID;
     }
 
+    class DelSplitTime : DbItem
+    {
+        public int RunnerID;
+        public int ControlCode;
+    }
+
     public class Runner : DbItem
     {
         private int m_id;
@@ -291,6 +297,12 @@ namespace LiveResults.Model
                 }
 
             }
+        }
+
+        public void DeleteSplitTime(int controlCode)
+        {
+            if (m_splitTimes.ContainsKey(controlCode))
+                m_splitTimes.Remove(controlCode);
         }
 
         public bool HasResultChanged(int time, int status)

@@ -556,6 +556,26 @@ namespace LiveResults.Model
 
         }
 
+        public void DeleteUnusedSplits(int runnerID, List<int> controlCodes)
+        {
+            if (m_runners.ContainsKey(runnerID))
+            {
+                var r = m_runners[runnerID];
+                foreach (SplitTime splitTime in r.SplitTimes)
+                {
+                    if (!controlCodes.Contains(splitTime.Control))
+                    {
+                        m_itemsToUpdate.Add(new DelSplitTime() {
+                            RunnerID = runnerID,
+                            ControlCode = splitTime.Control
+                        });
+                        r.DeleteSplitTime(splitTime.Control);
+                        FireLogMsg("Runner Split Deleted: [" + r.Name + ", {cn: " + splitTime.Control + "}]");
+                    }
+                }
+            }
+        }
+
         public void MergeRadioControls(RadioControl[] radios)
         {
             if (radios == null)
@@ -862,6 +882,29 @@ namespace LiveResults.Model
                                         m_itemsToUpdate.Add(dr);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not delete runner " + r + " on server due to: " + ee.Message, ee);
+                                    }
+                                    cmd.Parameters.Clear();
+                                }
+                                else if (item is DelSplitTime)
+                                {
+                                    var ds = item as DelSplitTime;
+                                    var r = ds.RunnerID;
+                                    var control = ds.ControlCode;
+                                    cmd.Parameters.Clear();
+                                    cmd.Parameters.AddWithValue("?compid", m_compID);
+                                    cmd.Parameters.AddWithValue("?id", r);
+                                    cmd.Parameters.AddWithValue("?control", control);
+                                    cmd.CommandText = "delete from results where tavid= ?compid and dbid= ?id and control= ?control";
+                                    try
+                                    {
+                                        cmd.ExecuteNonQuery();
+                                    }
+                                    catch (Exception ee)
+                                    {
+                                        //Move failing item last
+                                        m_itemsToUpdate.Add(ds);
+                                        m_itemsToUpdate.RemoveAt(0);
+                                        throw new ApplicationException("Could not delete split from runner " + r + " on server due to: " + ee.Message, ee);
                                     }
                                     cmd.Parameters.Clear();
                                 }

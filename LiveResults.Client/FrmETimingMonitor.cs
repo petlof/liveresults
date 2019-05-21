@@ -77,10 +77,14 @@ namespace LiveResults.Client
 
                 if (newResult.SplitTimes != null)
                 {
+                    var controlCodes = new List<int>();
+                    
                     foreach (ResultStruct str in newResult.SplitTimes)
                     {
                         client.SetRunnerSplit(newResult.ID, str.ControlCode, str.Time);
+                        controlCodes.Add(str.ControlCode);
                     }
+                    client.DeleteUnusedSplits(newResult.ID, controlCodes);
                 }
             }
         }

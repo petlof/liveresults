@@ -71,6 +71,7 @@ namespace LiveResults.Client
         public struct SplitRawStruct
         {
             public int controlCode;
+            public int station;
             public int passTime;
             public int netTime;
             public int changedTime;
@@ -278,7 +279,7 @@ namespace LiveResults.Client
                                     // Add exchange and leg times for legs 2 and up
                                     for (int i = 2; i <= numLegs; i++) 
                                     {
-                                        string classN = className;
+                                        string classN = " " + className;
                                         if (!classN.EndsWith("-"))
                                                 classN += "-";
                                         classN += Convert.ToString(i);
@@ -300,7 +301,7 @@ namespace LiveResults.Client
                                         });
                                     }
 
-                                    string classAll = className;
+                                    string classAll = " " + className;
                                     if (!classAll.EndsWith("-"))
                                         classAll += "-";
                                     classAll += "All";
@@ -328,7 +329,8 @@ namespace LiveResults.Client
                                             if (numLegs == 0 && (Code == 999 || Code == 0))
                                                 continue;       // Skip if not relay and finish or start code
                                             if (numLegs > 0)    // Relay
-                                            {                                                
+                                            {
+                                                classN = " " + classN;
                                                 if (!classN.EndsWith("-"))
                                                     classN += "-";
                                                 classN += Convert.ToString(radioControl.Leg);
@@ -419,7 +421,7 @@ namespace LiveResults.Client
                         modulus = "MOD";
                     
                     baseCommandRelay = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime,
-                            N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2,
+                            N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2, N.ecard3, N.ecard4,
                             T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource, 
                             C.firststart AS cfirststart, C.purmin AS cpurmin,
                             R.lgstartno, R.teamno, R.lgclass, R.lgtotaltime, R.lglegno, R.lgstatus, R.lgteam  
@@ -428,14 +430,14 @@ namespace LiveResults.Client
                             ORDER BY N.startno", modulus);
 
                     baseCommandInd = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime, 
-                            N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2,
+                            N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2, N.ecard3, N.ecard4,
                             T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource
                             FROM Name N, Class C, Team T
                             WHERE N.class=C.code AND T.code=N.team AND (C.purmin IS NULL OR C.purmin<2)");
 
                     baseSplitCommand = string.Format(@"SELECT mellomid, iplace, stasjon, mintime, nettotid, timechanged, mecard 
                             FROM mellom 
-                            WHERE stasjon>=0 AND stasjon<250 AND iplace>=0 AND mecard>0  
+                            WHERE stasjon>=0 AND stasjon<250 AND mecard>0  
                             ORDER BY mintime");
 
                     
@@ -568,6 +570,7 @@ namespace LiveResults.Client
 
                         if (isRelay)
                         {   //RelayTeams
+                            classN = " " + classN;
                             leg = bib % 100;   // Leg number
 
                             if (!RelayTeams.ContainsKey(teambib))
@@ -715,11 +718,15 @@ namespace LiveResults.Client
                         bool freestart = Convert.ToBoolean(reader["freestart"].ToString());
 
                         // Add split times
-                        int ecard1 = 0, ecard2 = 0;
+                        int ecard1 = 0, ecard2 = 0, ecard3 = 0, ecard4 = 0;
                         if (reader["ecard"] != null && reader["ecard"] != DBNull.Value)
                             ecard1 = Convert.ToInt32(reader["ecard"].ToString());
                         if (reader["ecard2"] != null && reader["ecard2"] != DBNull.Value)
                             ecard2 = Convert.ToInt32(reader["ecard2"].ToString());
+                        if (reader["ecard3"] != null && reader["ecard3"] != DBNull.Value)
+                            ecard3 = Convert.ToInt32(reader["ecard3"].ToString());
+                        if (reader["ecard4"] != null && reader["ecard4"] != DBNull.Value)
+                            ecard4 = Convert.ToInt32(reader["ecard4"].ToString());
 
                         var splits = new List<SplitRawStruct>();
                         var numEcards = 0; // Number of ecards with splits
@@ -740,11 +747,23 @@ namespace LiveResults.Client
                             splitList.Remove(ecard2);
                             numEcards += 1;
                         }
+                        if (splitList.ContainsKey(ecard3))
+                        {
+                            splits.AddRange(splitList[ecard3]);
+                            splitList.Remove(ecard3);
+                        }
+                        if (splitList.ContainsKey(ecard4))
+                        {
+                            splits.AddRange(splitList[ecard4]);
+                            splitList.Remove(ecard4);
+                        }
                         if (numEcards > 1)
                             splits = splits.OrderBy(s => s.passTime).ToList();
 
                         var lsplitCodes = new List<int>();
                         int calcStartTime = -2;
+                        int iSplitcode = 0;
+                        int lastSplitTime = -1;
                         foreach (var split in splits)
                         {
                             if (split.controlCode == 0)
@@ -756,21 +775,32 @@ namespace LiveResults.Client
                                 
                             if (split.passTime < iStartTime)
                                 continue;         // Neglect passing before starttime
+                            if (split.passTime - lastSplitTime < 3000)
+                                continue;         // Neglect passing less than 3 s from last
+
                             int passTime = -2;    // Total time at passing
                             int passLegTime = -2; // Time used on leg at passing
                             if (freestart)
                                 passTime = split.netTime;
                             else if (isRelay)
                             {
-                                passTime = split.passTime - iStartClass;   // Absolute pass time
-                                if (leg > 1)                               // Leg based pass time
-                                    passLegTime = split.passTime - Math.Max(iStartTime, iStartClass); // In case ind. start time not set
+                                passTime = split.passTime - iStartClass;     // Absolute pass time
+                                //if (leg > 1)                               // Leg based pass time
+                                passLegTime = split.passTime - Math.Max(iStartTime, iStartClass); // In case ind. start time not set
                             }
                             else
                                 passTime = split.passTime - iStartTime;
+                            if (passTime < 3000)  // Neglect pass times less than 3 s from start
+                                continue;
+                            lastSplitTime = split.passTime;
+
 
                             // Add split code to list
-                            int iSplitcode = sign * (split.controlCode + 1000);
+                            if (split.controlCode > 0)
+                                iSplitcode = sign * (split.controlCode + 1000);
+                            else
+                                iSplitcode = sign * (split.station + 1000);
+
                             while (lsplitCodes.Contains(iSplitcode))
                                 iSplitcode += sign * 1000;
                             lsplitCodes.Add(iSplitcode);
@@ -795,7 +825,8 @@ namespace LiveResults.Client
                                     ControlCode = iSplitcode + 10000 * leg + 100000,
                                     Time = passLegTime
                                 };
-                                SplitTimes.Add(passLegTimeStruct);
+                                if (leg > 1)
+                                    SplitTimes.Add(passLegTimeStruct);
                                 RelayTeams[teambib].SplitTimes.Add(passLegTimeStruct);
                             }
 
@@ -830,7 +861,7 @@ namespace LiveResults.Client
                     }
                     catch (Exception ee)
                     {
-                        FireLogMsg("eTiming Parser: " + ee.Message);
+                        FireLogMsg("eTiming Parser. Runner ID:" + runnerID + " Error: " + ee.Message);
                     }
 
                     int rstatus = GetStatusFromCode(ref time, status);
@@ -982,7 +1013,7 @@ namespace LiveResults.Client
 
                 while (reader.Read())
                 {
-                    int ecard = 0, code = 0, passTime = -2, netTime = -2, changedTime = 0;
+                    int ecard = 0, code = 0, station = 0, passTime = -2, netTime = -2, changedTime = 0;
                     double changedTimeD = 0.0;
                     try
                     {
@@ -993,6 +1024,9 @@ namespace LiveResults.Client
                         }
                         else
                             continue;
+
+                        if (reader["stasjon"] != null && reader["stasjon"] != DBNull.Value)
+                            station = Convert.ToInt32(reader["stasjon"].ToString());
 
                         if (reader["iplace"] != null && reader["iplace"] != DBNull.Value)
                             code = Convert.ToInt32(reader["iplace"].ToString());
@@ -1017,6 +1051,7 @@ namespace LiveResults.Client
                         var res = new SplitRawStruct
                         {
                             controlCode = code,
+                            station = station,
                             passTime = passTime,
                             netTime = netTime,
                             changedTime = changedTime
