@@ -264,9 +264,9 @@ namespace LiveResults.Client
                                     if (reader["timingtype"] != null && reader["timingtype"] != DBNull.Value)
                                         timingType = Convert.ToInt32(reader["timingtype"].ToString());
 
+                                    if (timingType == 1 || timingType == 2) // 0 = normal, 1 = not ranked, 2 = not show times
+                                        sign = -1; // Use negative sign for these timing types
                                     if (timingType == 1) // Add neg finish passing for not-ranked class
-                                    {                    // 0 = normal, 1 = not ranked, 2 = not show times
-                                        sign = -1;       // Use negative sign for these timing types
                                         intermediates.Add(new IntermediateTime
                                         {
                                             ClassName = className,
@@ -274,7 +274,6 @@ namespace LiveResults.Client
                                             Position = -999,
                                             Order = 999
                                         });
-                                    }
 
                                     // Add exchange and leg times for legs 2 and up
                                     for (int i = 2; i <= numLegs; i++) 
@@ -371,7 +370,6 @@ namespace LiveResults.Client
                                             // Add codes for one-line relay classes
                                             if (numLegs > 0 && m_oneLineRelayRes)  
                                             {
-                                                
                                                 string Description = Convert.ToString(radioControl.Leg) +":"+ radioControl.Description;
                                                 int position = 0;
                                                 if (radioControl.RadioType == 10) // Exchange
@@ -770,6 +768,8 @@ namespace LiveResults.Client
                             {
                                 if (status == "I") // Change code of only entered runners
                                     status = "S";
+                                if (freestart)
+                                    calcStartTime = split.passTime;
                                 continue;         
                             }
                                 
@@ -830,10 +830,10 @@ namespace LiveResults.Client
                                 RelayTeams[teambib].SplitTimes.Add(passLegTimeStruct);
                             }
 
-                            if (freestart)
-                                calcStartTime = split.changedTime - passTime;
+                            if (freestart && calcStartTime<0)
+                                calcStartTime = split.changedTime - split.netTime;
                         }
-                        if (m_twoEcards && numEcards < 2 && status == "S")
+                        if (m_twoEcards && numEcards < 2 && (status == "S"))
                             status = "I"; // Set status to "Entered" if only one eCard at start when 2 required 
 
                         if (freestart && (calcStartTime > 0) && (Math.Abs(calcStartTime - iStartTime) > 3000))  // Update starttime if deviation more than 30 sec
@@ -843,10 +843,11 @@ namespace LiveResults.Client
                         {
                             if (timingType == 2) // Do not show times
                                 time = -10;
+                            else // Not ranked
                             {
                                 var FinishTime = new ResultStruct
                                 {
-                                    ControlCode = -999, // Note code used for finish passing
+                                    ControlCode = -999, // Code used for finish passing
                                     Time = time
                                 };
                                 SplitTimes.Add(FinishTime);
@@ -867,8 +868,10 @@ namespace LiveResults.Client
                     int rstatus = GetStatusFromCode(ref time, status);
                     if (rstatus != 999)
                     {
-                        if (rstatus == 9) // Modify starttime if started to force update
+                        
+                        if (rstatus == 9 || rstatus == 1)    // Modify starttime if "started" or "DNS" to force update with new status
                             iStartTime += 1;
+
                         var res = new Result
                         {
                             ID = runnerID,
@@ -1027,11 +1030,15 @@ namespace LiveResults.Client
 
                         if (reader["stasjon"] != null && reader["stasjon"] != DBNull.Value)
                             station = Convert.ToInt32(reader["stasjon"].ToString());
-
-                        if (reader["iplace"] != null && reader["iplace"] != DBNull.Value)
-                            code = Convert.ToInt32(reader["iplace"].ToString());
-                        if (code > 1000)
-                            code = code / 100; // Take away last to digits if code 1000+
+                        if (station == 0)
+                            code = 0;
+                        else
+                        {
+                            if (reader["iplace"] != null && reader["iplace"] != DBNull.Value)
+                                code = Convert.ToInt32(reader["iplace"].ToString());
+                            if (code > 1000)
+                                code = code / 100; // Take away last to digits if code 1000+
+                        }
 
                         if (reader["mintime"] != null && reader["mintime"] != DBNull.Value)
                             passTime = ConvertFromDay2cs(Convert.ToDouble(reader["mintime"]));
@@ -1117,9 +1124,9 @@ namespace LiveResults.Client
         
         private static int ConvertFromDay2cs(double timeD)
         {
-            int timems;
-            timems = Convert.ToInt32(100.0 * 86400.0 * timeD);
-            return timems;
+            int timecs;
+            timecs = Convert.ToInt32(100.0 * 86400.0 * timeD);
+            return timecs;
         }
 
 

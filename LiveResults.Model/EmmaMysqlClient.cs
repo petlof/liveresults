@@ -853,7 +853,7 @@ namespace LiveResults.Model
                                     }
                                     catch (Exception ee)
                                     {
-                                        //Move failing runner last
+                                        //Move failing radio control
                                         m_itemsToUpdate.Add(r);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not delete radiocontrol " + r.ControlName + ", " + r.ClassName + ", " + r.Code + " to server due to: " + ee.Message, ee);
@@ -878,7 +878,7 @@ namespace LiveResults.Model
                                     }
                                     catch (Exception ee)
                                     {
-                                        //Move failing runner last
+                                        //Move failing item last
                                         m_itemsToUpdate.Add(dr);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not delete runner " + r + " on server due to: " + ee.Message, ee);
@@ -922,7 +922,6 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid) VALUES (?compid,?name,?club,?class,0,?id)";
 
-
                                         try
                                         {
                                             cmd.ExecuteNonQuery();
@@ -964,10 +963,18 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?time", r.Time);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
                                         cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(?compid,?id,1000,?time,?status,Now())";
-                                        cmd.ExecuteNonQuery();
-                                        cmd.Parameters.Clear();
-
-                                        FireLogMsg("Runner " + r.Name + "s result updated in DB");
+                                        try
+                                        {
+                                            cmd.ExecuteNonQuery();
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            // Move failing runner last
+                                            m_itemsToUpdate.Add(r);
+                                            m_itemsToUpdate.RemoveAt(0);
+                                            throw new ApplicationException(
+                                                "Could not update result for runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
+                                        }
                                         r.ResultUpdated = false;
                                     }
                                     if (r.StartTimeUpdated)
@@ -978,9 +985,18 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?starttime", r.StartTime);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
                                         cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(?compid,?id,100,?starttime,?status,Now())";
-                                        cmd.ExecuteNonQuery();
-                                        cmd.Parameters.Clear();
-                                        FireLogMsg("Runner " + r.Name + "s starttime updated in DB");
+                                        try
+                                        {
+                                            cmd.ExecuteNonQuery();
+                                        }
+                                        catch (Exception ee)
+                                        {
+                                            // Move failing runner last
+                                            m_itemsToUpdate.Add(r);
+                                            m_itemsToUpdate.RemoveAt(0);
+                                            throw new ApplicationException(
+                                                "Could not update starttime for runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
+                                        }
                                         r.StartTimeUpdated = false;
                                     }
                                     if (r.HasUpdatedSplitTimes())
@@ -998,11 +1014,20 @@ namespace LiveResults.Model
                                             cmd.Parameters["?time"].Value = t.Time;
                                             cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
                                                               ",0,Now())";
-                                            cmd.ExecuteNonQuery();
+                                            try
+                                            {
+                                                cmd.ExecuteNonQuery();
+                                            }
+                                            catch (Exception ee)
+                                            {
+                                                // Move failing r last
+                                                m_itemsToUpdate.Add(r);
+                                                m_itemsToUpdate.RemoveAt(0);
+                                                throw new ApplicationException(
+                                                    "Could not update split time for runner " + r.Name + " splittime{" + t.Control + "} to server due to: " + ee.Message, ee);
+                                            }
                                             t.Updated = false;
-                                            FireLogMsg("Runner " + r.Name + " splittime{" + t.Control + "} updated in DB");
                                         }
-                                        cmd.Parameters.Clear();
                                     }
                                 }
 
