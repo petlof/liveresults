@@ -469,23 +469,33 @@ function getAllSplitControls()
     
 	if ($code == 0) // Start
 	{
-		$q .= "AND results.control = 100 AND results.Status = 9 "; //AND results.Status = 9 AND 
+		$currTime = (date('H')*3600 + date('i')*60 + date('s') + $this->m_TimeDiff)*100;
+		$preTime  = 3.25*60*100;
+		$postTime = 0.25*60*100;
+		$q .= "AND ((results.control = 100 AND results.status = 9)
+		       OR (results.control = 100 AND results.status = 10 
+		       AND ((results.time-".$currTime.") < ".$preTime .") AND ((".$currTime."-results.time) < ".$postTime.")))			  
+			   ORDER BY CASE WHEN class = 'NOCLAS' THEN 0 ELSE 1 END,
+			            CASE WHEN results.status = 10 THEN results.time ELSE results.changed END DESC 
+			   limit 50";		   
 	}
 	elseif ($code == 1000) // Finish
 	{
 		$q .= "AND results.Time <> -1 AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND results.control = 1000 
-               AND runners.class NOT LIKE '%-All' ";
+               AND runners.class NOT LIKE '%-All' 
+			   ORDER BY results.changed desc limit 30";
     }
 	elseif ($code < 0 ) // All radio controls (not including start and finish)
 		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND splitcontrols.tavid is not null 
-               AND results.control < 100000 AND ABS(results.control)%1000 > 0  AND ABS(results.control)%1000 < 999 AND runners.class NOT LIKE '%-All' ";
+               AND results.control < 100000 AND ABS(results.control)%1000 > 0  AND ABS(results.control)%1000 < 999 AND runners.class NOT LIKE '%-All' 
+			   ORDER BY results.changed desc limit 30";
 	
 	else // Other controls
 	{
 		$q .= "AND results.Time <> -1  AND results.Status <> -1 AND results.Status <> 9 AND results.Status <> 10 AND splitcontrols.tavid is not null 
-               AND results.control < 100000 AND ABS(results.control)%1000 = ".$code." AND runners.class NOT LIKE '%-All' ";
+               AND results.control < 100000 AND ABS(results.control)%1000 = ".$code." AND runners.class NOT LIKE '%-All' 
+			   ORDER BY results.changed desc limit 30";
     }
-	$q .= "ORDER BY case when class = 'NOCLAS' then 0 else 1 end, results.changed desc limit 30";
 
 	if ($result = mysqli_query($this->m_Conn, $q))
 	{
@@ -501,6 +511,7 @@ function getAllSplitControls()
 			if ($code == 1000) // Finish
 				$ret[sizeof($ret)-1]["pname"] = "Finish";
 			$ret[sizeof($ret)-1]["compName"] = $this->m_CompName;
+			
 		}
 		mysqli_free_result($result);
 	}

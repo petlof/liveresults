@@ -52,13 +52,30 @@ tr.new_result td:last-child {
     border-bottom-right-radius: 15px
 }
 
-tr.error_entry { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white;
+tr.OK_entry { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white;
 }
 
-tr.error_entry td:last-child {
+tr.OK_entry td:last-child {
     border-top-right-radius: 0px;
     border-bottom-right-radius: 15px
 }
+
+tr.start_entry { color: black; background-color: #FFFF00 !important; border-bottom: 1px solid white;
+}
+
+tr.start_entry td:last-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 15px
+}
+tr.start_entrynew { color: black; background-color: #FFFF00 !important; border-bottom: 1px solid white; border-top: 3px dashed grey;
+}
+
+tr.start_entrynew td:last-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 15px
+}
+
+
 
 table.dataTable td {
 vertical-align: top;

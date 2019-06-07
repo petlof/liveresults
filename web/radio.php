@@ -53,8 +53,8 @@ else
 
 <?php }?>
 <script language="javascript" type="text/javascript" src="js/NoSleep.min.js"></script>
+<script type="text/javascript" src="//w.24timezones.com/l.js" async></script>
 <script language="javascript" type="text/javascript">
-
 var noSleep = new NoSleep();
 
 function enableNoSleep() {
@@ -73,6 +73,20 @@ $(document).ready(function()
 	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,"false","true","setAutomaticUpdateText","setCompactViewText", runnerStatus, "true","divRadioPassings");
     res.updateRadioPassings(<?= $_GET['code']?>);
 	
+    var clockElement = document.getElementById( "clock" );
+	
+    function updateClock ( clock ) 
+	{
+		var currTime = new Date();
+		var preTime = new Date(currTime.valueOf()+3*60*1000);
+		var HTMLstring = "";
+		if (<?= $_GET['code']?>==0){ HTMLstring = " Opprop: " + preTime.toLocaleTimeString('en-GB') + "&nbsp;"}
+		//HTMLstring += currTime.toLocaleTimeString();
+		
+
+		clock.innerHTML = HTMLstring;
+	}
+    setInterval(function () {updateClock( clockElement );}, 1000);
 });
 
 
@@ -90,12 +104,17 @@ $(document).ready(function()
 	else
 	{
 	?>
-
 <table border="0" cellpadding="0" cellspacing="0"><td valign=top>
 <table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
-<tr><td valign="top"><b><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</b></tr>
+<tr><td valign="top"><b><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</b><td align="right"><b>GPS tid: </b><iframe src="https://freesecure.timeanddate.com/clock/i6ryyd5b/n2601/tlno10/fs11/fcfff/tct/pct/ftb/th1" frameborder="0" width="47" height="11" allowTransparency="true"></iframe>
+</b><br></tr>
+<?php if ($_GET['code']==0) {
+	?>
+	<tr><td><td align="right"><b><span id="clock"></span></b></tr>
+	<?php 
+	}?>
 <tr><td valign="top"><b>Meldepost med kode: <?= $_GET['code']?></b><br>
-<td valign="top" align="right"><b>Generell medling: <a href="https://freidig.idrett.no/o/liveres_helpers/meld.php?lopid=(<?=$_GET['comp']?>) <?=$currentComp->CompName()?>&amp;Navn=Generell melding">Send</a></b><br></tr>
+<td valign="top" align="right"><b>Generell medling: <a href="https://freidig.idrett.no/o/liveres_helpers/meld.php?lopid=(<?=$_GET['comp']?>) <?=$currentComp->CompName()?>&amp;Navn=Generell melding">Send</a>&nbsp;</b><br></tr>
 </table>
 <table id="divRadioPassings" ></table>
 </table>

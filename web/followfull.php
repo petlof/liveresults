@@ -301,7 +301,7 @@ function changeFontSize(val)
 			    <td width="80">
 			    <img src="images/NMUltra.png" height="60" /></td>
 			<?php }?>
-			<?php if(in_array($_GET['comp'], array("15548","15653"))){?>
+			<?php if(in_array($_GET['comp'], array("15548","15653","15806"))){?>
 			    <td width="80">
 			    <img src="images/Freidig60.png" height="60" /></td>
 			<?php }?>

@@ -574,14 +574,14 @@ var LiveResults;
                                             {
                                                 var txt = "";
 												// First line
-                                                if ((!fullView || relay) && (o.aData.splits[value.code + "_place"] != 1) && !unranked) 
+                                                if ((!fullView || relay) && (o.aData.splits[value.code + "_place"] != 1) && !unranked && (value.code > 0)) 
 											    // Compact view or relay view, all but first place
                                                 {
                                                     txt += "<span>+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond)
                                                         + "</span> (" + o.aData.splits[value.code + "_place"] + ")";
                                                 }
                                                 else 
-											    // Ordinary passing or first place at passing for relay. Drop place if code is negative (unranked)
+											    // Ordinary passing or first place at passing for relay (drop place if code is negative - unranked)
                                                 {
 													if (o.aData.splits[value.code + "_place"] == 1)
 														txt += "<span class=\"besttime\">";
@@ -603,9 +603,9 @@ var LiveResults;
                                                     txt += _this.formatTime(o.aData.splits[(value.code + 100000)], 0, _this.showTenthOfSecond)
                                                         + " (" + o.aData.splits[(value.code + 100000) + "_place"] + ")</span>";
                                                 }
-                                                else if (o.aData.splits[value.code + "_timeplus"] != undefined && (value.code > 0) && fullView && !relay)
+                                                else if ((o.aData.splits[value.code + "_timeplus"] != undefined) && fullView && !relay && (value.code > 0))
+												// Second line for ordinary passing (drop if code is negative - unranked)
                                                 {
-                                                    // Second line for ordinary passing (drop if code is negative - unranked )
                                                     if (o.aData.splits[value.code + "_timeplus"] == 0)
                                                         txt += "<br/><span class=\"besttime\">+";
                                                     else

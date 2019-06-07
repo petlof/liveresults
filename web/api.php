@@ -162,33 +162,60 @@ elseif ($_GET['method'] == 'getradiopassings')
 
 		$first = true;
 		$ret = "";
+		$laststatus = 0;
+		$lasttime = 0;
 		foreach ($lastPassings as $pass)
 		{
 			$age = time()-strtotime($pass['Changed']);
 			$modified = $age < $hightime ? 1:0;
+			
+			$status = $pass['Status'];
+			$time   = $pass['Time'];
 
 			if (!$first)
 				$ret .=",$br";
+			
 			$ret .= "{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
 					\"runnerName\": \"".$pass['Name']."\",
 					\"club\": \"".$pass['Club']."\",
 					\"class\": \"".$pass['class']."\",
 					\"control\": ".$pass['Control'].",
 					\"controlName\" : \"".$pass['pname']."\",
-					\"time\": \"" .formatTime($pass['Time'],0,$RunnerStatus)."\",
+					\"time\": \"" .formatTime($time,0,$RunnerStatus)."\",
 					\"compName\": \"".$pass['compName']."\" ";
 			
-			if (($pass['class']=="NOCLAS" && $pass['Control']==100))
+			if ($pass['Control']==100)	
 			{
-				$ret .= ",$br \"DT_RowClass\": \"error_entry\"";
+				if ($pass['class']=="NOCLAS")
+				{
+					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
+				}
+				elseif (($lasttime - $time > 5900) && ($status == 10)) 
+				{
+					$ret .= ",$br \"DT_RowClass\": \"start_entrynew\"";
+				}
+				elseif ($status == 10)
+				{
+					$ret .= ",$br \"DT_RowClass\": \"start_entry\"";
+				}
+				elseif ($modified)
+				{
+					$ret .= ",$br \"DT_RowClass\": \"OK_entry\"";
+				}
+				elseif ($laststatus == 10) 
+				{
+					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
+				}
 			}
-			elseif ($modified)
+			elseif ($modified) // New result, all but start 
 			{
 				$ret .= ",$br \"DT_RowClass\": \"new_result\"";
 			}
-
+			
 			$ret .= "$br}";
 			$first = false;
+			$laststatus = $status;
+			$lasttime = $time;
 		}
 
 		$hash = MD5($ret);
