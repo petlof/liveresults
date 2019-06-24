@@ -138,19 +138,21 @@ namespace LiveResults.Client
                     IDbCommand cmdSplits = m_connection.CreateCommand();
                     
                     /*Detect event type*/
-                    cmd.CommandText = "SELECT kid FROM arr";
+                    cmd.CommandText = "SELECT kid, sub FROM arr";
                     var reader = cmd.ExecuteReader();
                     bool isRelay = false;
+                    int day = 1;
                     while (reader.Read())
                     {
                         if (reader[0] != null && reader[0] != DBNull.Value)
                         {
-                            int kid = Convert.ToInt16(reader[0]);
+                            int kid = Convert.ToInt16(reader["kid"]);
                             FireLogMsg("Event type is " + kid);
                             if (kid == 3)
                             {
                                 isRelay = true;
                             }
+                            day = Convert.ToInt16(reader["sub"]);
                         }
                     }
                     reader.Close();
@@ -180,19 +182,23 @@ namespace LiveResults.Client
                         if (dlg != null)
                         {
                             // radiotype, 2=finish/finish-passing, 4 = normal, 10 = exchange
-                            cmd.CommandText = (@"SELECT code, radiocourceno, radiotype, description, etappe, radiorundenr, live FROM radiopost");
+                            cmd.CommandText = (@"SELECT code, radiocourceno, radiotype, description, etappe, radiorundenr, live, radioday FROM radiopost");
                             var RadioPosts = new Dictionary<int, List<RadioStruct>>();
 
                             using (reader = cmd.ExecuteReader())
                             {
                                 while (reader.Read())
                                 {
-                                    int cource = 0, code = 0, radiotype = 0, leg = 0, order = 0;
+                                    int cource = 0, code = 0, radiotype = 0, leg = 0, order = 0, radioday = 0;
                                     bool live = false;
 
                                     if (reader["live"] != null && reader["live"] != DBNull.Value)
                                         live = Convert.ToBoolean(reader["live"].ToString());
                                     if (!live) continue;
+
+                                    if(reader["radioday"] != null && reader["radioday"] != DBNull.Value)
+                                        radioday = Convert.ToInt32(reader["radioday"].ToString());
+                                    if (radioday!=day) continue;
 
                                     if (reader["code"] != null && reader["code"] != DBNull.Value)
                                         code = Convert.ToInt32(reader["code"].ToString());
@@ -235,7 +241,7 @@ namespace LiveResults.Client
                             }
 
                             // Class table
-                            cmd.CommandText = @"SELECT code, cource, class, purmin, timingtype FROM class";
+                            cmd.CommandText = @"SELECT code, cource, class, purmin, timingtype, cheaseing FROM class";
                             var classTable = new Dictionary<string,ClassStruct>();
                             
                             using (reader = cmd.ExecuteReader())
@@ -243,6 +249,8 @@ namespace LiveResults.Client
                                 while (reader.Read())
                                 {
                                     int cource = 0, numLegs = 0, timingType = 0, sign = 1;
+
+                                    bool chaseStart = Convert.ToBoolean(reader["cheaseing"].ToString());
 
                                     string classCode = reader["code"] as string;
                                     if (!string.IsNullOrEmpty(classCode))
@@ -275,6 +283,26 @@ namespace LiveResults.Client
                                             Order = 999
                                         });
 
+                                    
+                                    // Add starttime and leg times for chase start
+                                    if (chaseStart)
+                                    {
+                                        intermediates.Add(new IntermediateTime
+                                        {
+                                            ClassName = className,
+                                            IntermediateName = "Start",
+                                            Position = 0,
+                                            Order = 0
+                                        });
+
+                                        intermediates.Add(new IntermediateTime
+                                        {
+                                            ClassName = className,
+                                            IntermediateName = "Leg",
+                                            Position = 999,
+                                            Order = 999
+                                        });
+                                    }
                                     // Add exchange and leg times for legs 2 and up
                                     for (int i = 2; i <= numLegs; i++) 
                                     {
@@ -353,8 +381,8 @@ namespace LiveResults.Client
                                                     Order = radioControl.Order
                                                 });
 
-                                                // Add leg passing time for relay
-                                                if (numLegs > 0) 
+                                                // Add leg passing time for relay and chase start
+                                                if (numLegs > 0 || chaseStart) 
                                                 {
                                                     intermediates.Add(new IntermediateTime
                                                     {
@@ -427,9 +455,9 @@ namespace LiveResults.Client
                             WHERE N.class=C.code AND T.code=R.lgteam AND N.rank=R.lgstartno AND (N.startno {0} 100)<=C.purmin 
                             ORDER BY N.startno", modulus);
 
-                    baseCommandInd = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime, 
+                    baseCommandInd = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime, N.totaltime,
                             N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2, N.ecard3, N.ecard4,
-                            T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource
+                            T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource, C.cheaseing
                             FROM Name N, Class C, Team T
                             WHERE N.class=C.code AND T.code=N.team AND (C.purmin IS NULL OR C.purmin<2)");
 
@@ -509,9 +537,9 @@ namespace LiveResults.Client
             {
                 while (reader.Read())
                 {
-                    int time = 0, runnerID = 0, iStartTime = 0, iStartClass = 0, bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign = 1;
+                    int time = 0, totalTime = 0, runnerID = 0, iStartTime = 0, iStartClass = 0, bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign = 1;
                     string famName = "", givName = "", club = "", classN = "", status = "", bibread = "", bibstr = "", name = "", shortName = "-";
-
+                    bool chaseStart = false, freeStart = false;
                     var SplitTimes = new List<ResultStruct>();
 
                     try
@@ -545,6 +573,14 @@ namespace LiveResults.Client
                         time = -2;
                         if (reader["times"] != null && reader["times"] != DBNull.Value)
                             time = GetRunTime((reader["times"].ToString()).Trim());
+
+                        totalTime = 0;
+                        if (reader["totaltime"] != null && reader["totaltime"] != DBNull.Value)
+                            totalTime = ConvertFromDay2cs(Convert.ToDouble(reader["totaltime"]));
+
+                        chaseStart = Convert.ToBoolean(reader["cheaseing"].ToString());
+
+                        freeStart = Convert.ToBoolean(reader["freestart"].ToString());
 
                         if (reader["timingtype"] != null && reader["timingtype"] != DBNull.Value)
                             timingType = Convert.ToInt32(reader["timingtype"].ToString());
@@ -713,7 +749,31 @@ namespace LiveResults.Client
                             }
                         }
 
-                        bool freestart = Convert.ToBoolean(reader["freestart"].ToString());
+                        if (chaseStart)
+                        {
+                            // Set starttime split to get starting order based on total time
+                            var totalTimeStart = new ResultStruct
+                            {
+                                ControlCode = 0,  // Note code 0 for change-over!
+                                Time = totalTime
+                            };
+                            SplitTimes.Add(totalTimeStart);
+
+                            // Add time as leg time and add totalTime to time for finished runners
+                            if (time > 0)
+                            {
+                                var LegTime = new ResultStruct
+                                {
+                                    ControlCode = 999,
+                                    Time = time
+                                };
+                                SplitTimes.Add(LegTime);
+                                time += totalTime;
+                            }
+                            // Set status for runners without total time to not classified NC
+                            if (totalTime<=0 && (status == "S" || status == "I" || status == "A"))
+                                status = "NC";
+                        }
 
                         // Add split times
                         int ecard1 = 0, ecard2 = 0, ecard3 = 0, ecard4 = 0;
@@ -768,7 +828,7 @@ namespace LiveResults.Client
                             {
                                 if (status == "I") // Change code of only entered runners
                                     status = "S";
-                                if (freestart)
+                                if (freeStart)
                                     calcStartTime = split.passTime;
                                 continue;         
                             }
@@ -780,13 +840,18 @@ namespace LiveResults.Client
 
                             int passTime = -2;    // Total time at passing
                             int passLegTime = -2; // Time used on leg at passing
-                            if (freestart)
+                            if (freeStart)
                                 passTime = split.netTime;
                             else if (isRelay)
                             {
                                 passTime = split.passTime - iStartClass;     // Absolute pass time
                                 //if (leg > 1)                               // Leg based pass time
                                 passLegTime = split.passTime - Math.Max(iStartTime, iStartClass); // In case ind. start time not set
+                            }
+                            else if (chaseStart)
+                            {
+                                passTime    = split.passTime - iStartTime + totalTime;  
+                                passLegTime = split.passTime - iStartTime; 
                             }
                             else
                                 passTime = split.passTime - iStartTime;
@@ -825,18 +890,19 @@ namespace LiveResults.Client
                                     ControlCode = iSplitcode + 10000 * leg + 100000,
                                     Time = passLegTime
                                 };
-                                if (leg > 1)
+                                if (leg > 1 || chaseStart)
                                     SplitTimes.Add(passLegTimeStruct);
-                                RelayTeams[teambib].SplitTimes.Add(passLegTimeStruct);
+                                if (isRelay)
+                                    RelayTeams[teambib].SplitTimes.Add(passLegTimeStruct);
                             }
 
-                            if (freestart && calcStartTime<0)
+                            if (freeStart && calcStartTime<0)
                                 calcStartTime = split.changedTime - split.netTime;
                         }
                         if (m_twoEcards && numEcards < 2 && (status == "S"))
                             status = "I"; // Set status to "Entered" if only one eCard at start when 2 required 
 
-                        if (freestart && (calcStartTime > 0) && (Math.Abs(calcStartTime - iStartTime) > 3000))  // Update starttime if deviation more than 30 sec
+                        if (freeStart && (calcStartTime > 0) && (Math.Abs(calcStartTime - iStartTime) > 3000))  // Update starttime if deviation more than 30 sec
                             iStartTime = calcStartTime;
 
                         if (time > 0 && (timingType == 1 || timingType == 2)) // Not ranked or not show times
@@ -999,10 +1065,13 @@ namespace LiveResults.Client
                     rstatus = 3;
                     time = -3;
                     break;
+                case "NC": // Not classified
+                    rstatus = 6;
+                    time = -3;
+                    break;
                 case "F": // Finished (Fullført). For not ranked classes
                     rstatus = 13;
                     break;
-
             }
             return rstatus;
         }
