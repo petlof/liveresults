@@ -5,6 +5,8 @@ var LiveResults;
     var AjaxViewer = /** @class */ (function () {
         function AjaxViewer(competitionId, language, classesDiv, lastPassingsDiv, resultsHeaderDiv, resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDayEvent, isSingleClass, setAutomaticUpdateText, setCompactViewText, runnerStatus, showTenthOfSecond, radioPassingsDiv) {
             var _this = this;
+			var massStartRaces = [15952];
+			this.curClassIsMassStart = massStartRaces.includes(competitionId);
             this.competitionId = competitionId;
             this.language = language;
             this.classesDiv = classesDiv;
@@ -36,12 +38,12 @@ var LiveResults;
             this.curClassName = "";
             this.lastClassHash = "";
             this.curClassSplits = null;
-            this.curClassIsMassStart = false;
             this.curClubName = "";
             this.lastClubHash = "";
             this.currentTable = null;
             this.serverTimeDiff = null;
             this.eventTimeZoneDiff = 0;
+			this.EmmaApiUrl = "https://liveresultat.orientering.se/api.php";
             LiveResults.Instance = this;
             $(window).hashchange(function () {
                 if (window.location.hash) {
@@ -80,7 +82,7 @@ var LiveResults;
             var _this = this;
             if (this.updateAutomatically) {
                 $.ajax({
-                    url: "api.php",
+                    url: this.EmmaApiUrl,
                     data: "comp=" + this.competitionId + "&method=getclasses&last_hash=" + this.lastClassListHash,
                     success: function (data) {
                         _this.handleUpdateClassListResponse(data);
@@ -118,7 +120,8 @@ var LiveResults;
             }, this.classUpdateInterval);
         };
         AjaxViewer.prototype.updatePredictedTimes = function () {
-            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff && this.updateAutomatically) {
+            if (this.currentTable != null && this.curClassName != null && this.updateAutomatically) // && this.serverTimeDiff
+			{
                 try {
                     var data = this.currentTable.fnGetData();
                     var dt = new Date();
@@ -126,8 +129,8 @@ var LiveResults;
                     var eventZoneOffset = ((dt.dst() ? 2 : 1) + this.eventTimeZoneDiff) * 60;
                     var timeZoneDiff = eventZoneOffset - currentTimeZoneOffset;
                     var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100
-                        - (this.serverTimeDiff / 10) +
-                        (timeZoneDiff * 6000);
+                        // - (this.serverTimeDiff / 10) +
+                        + (timeZoneDiff * 6000);
                     var i;
                     var extraCol = 0;
 					
@@ -184,7 +187,7 @@ var LiveResults;
             var _this = this;
             if (this.updateAutomatically) {
                 $.ajax({
-                    url: "api.php",
+                    url: this.EmmaApiUrl,
                     data: "comp=" + this.competitionId + "&method=getlastpassings&lang=" + this.language + "&last_hash=" + this.lastPassingsUpdateHash,
                     success: function (data) { _this.handleUpdateLastPassings(data); },
                     error: function () {
@@ -298,7 +301,7 @@ var LiveResults;
             if (this.updateAutomatically) {
                 if (this.currentTable != null) {
                     $.ajax({
-                        url: "api.php",
+                        url: this.EmmaApiUrl,
                         data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(this.curClassName) + "&last_hash=" + this.lastClassHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                         success: function (data, status, resp) {
                             try {
@@ -349,7 +352,7 @@ var LiveResults;
             if (this.updateAutomatically) {
                 if (this.currentTable != null) {
                     $.ajax({
-                        url: "api.php",
+                        url: this.EmmaApiUrl,
                         data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(this.curClubName) + "&last_hash=" + this.lastClubHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                         success: function (data) {
                             _this.handleUpdateClubResults(data);
@@ -410,7 +413,7 @@ var LiveResults;
             this.curClubName = null;
             $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
             $.ajax({
-                url: "api.php",
+                url: this.EmmaApiUrl,
                 data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(className) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                 success: function (data, status, resp) {
                     try {
@@ -515,9 +518,9 @@ var LiveResults;
                         }
                     });
                     
-					this.curClassIsMassStart = false;
-                    if (data.IsMassStartRace)
-                        this.curClassIsMassStart = data.IsMassStartRace;
+					//this.curClassIsMassStart = false;
+                    //if (data.IsMassStartRace)
+                    //    this.curClassIsMassStart = data.IsMassStartRace;
                     this.updateResultVirtualPosition(data.results);
                     columns.push({
                         "sTitle": this.resources["_START"],
@@ -1097,7 +1100,7 @@ var LiveResults;
             this.curClassName = null;
             $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
             $.ajax({
-                url: "api.php",
+                url: this.EmmaApiUrl,
                 data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(clubName) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                 success: function (data) {
                     _this.updateClubResults(data);

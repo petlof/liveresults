@@ -29,7 +29,7 @@ if ($isSingleClub)
 	$singleClub = utf8_decode(rawurldecode($_GET['club']));
 
 $showLastPassings = !($isSingleClass || $isSingleClub) || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
-$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
+$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "", "6" => $_STATUSNC);
 
 $showTimePrediction = true;
 
@@ -119,6 +119,7 @@ var Resources = {
 	_STATUSMP: "<?=$_STATUSMP ?>",
 	_STATUSDSQ: "<?=$_STATUSDSQ?>",
 	_STATUSOT: "<?=$_STATUSOT?>",
+	_STATUSNC: "<?=$_STATUSNC?>",
 	_FIRSTPAGECHOOSE: "<?=$_FIRSTPAGECHOOSE ?>",
 	_FIRSTPAGEARCHIVE: "<?=$_FIRSTPAGEARCHIVE?>",
 	_LOADINGRESULTS: "<?=$_LOADINGRESULTS ?>",
@@ -143,14 +144,14 @@ var runnerStatus = Array();
 runnerStatus[0]  = "<?=$_STATUSOK?>";
 runnerStatus[1]  = "<?=$_STATUSDNS?>";
 runnerStatus[2]  = "<?=$_STATUSDNF?>";
-runnerStatus[11] =  "<?=$_STATUSWO?>";
-runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
-//runnerStatus[9]  = "";
 runnerStatus[3]  = "<?=$_STATUSMP?>";
 runnerStatus[4]  = "<?=$_STATUSDSQ?>";
 runnerStatus[5]  = "<?=$_STATUSOT?>";
+runnerStatus[6]  = "<?=$_STATUSNC?>";
 runnerStatus[9]  = "";
 runnerStatus[10]  = "";
+runnerStatus[11] =  "<?=$_STATUSWO?>";
+runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
 runnerStatus[13] = "<?=$_STATUSFINISHED?>";
 
 
@@ -211,9 +212,8 @@ function changeFontSize(val)
              <tr>
                <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
                <td>|</td>
-				<td><a href="https://liveresults.github.io/documentation/" target="_blank"><?=$_FORORGANIZERS?></a></td>
-               <td>|</td>
-               <td><a href="https://liveresults.github.io/documentation/#developer" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
+				<td><a href="https://liveol.larsendahl.se/" target="_blank">LiveOL result app</a></td>
+               </tr>
        </table>
      </td>
   </tr>
@@ -297,13 +297,17 @@ function changeFontSize(val)
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
 			<tr>
 			<!--Customized logo -->
-			<?php if(in_array($_GET['comp'], array("15537","15538"))){?>
-			    <td width="80">
-			    <img src="images/NMUltra.png" height="60" /></td>
+			<?php if(in_array($_GET['comp'], array("15821","15822","15823"))){?>
+			    <td width="60">
+			    <img src="images/SG19.PNG" height="60" /></td>
 			<?php }?>
-			<?php if(in_array($_GET['comp'], array("15548","15653","15806"))){?>
-			    <td width="80">
+			<?php if(in_array($_GET['comp'], array("15849","15850"))){?>
+			    <td width="60">
 			    <img src="images/Freidig60.png" height="60" /></td>
+			<?php }?>
+			<?php if(in_array($_GET['comp'], array("15950","15951","15952"))){?>
+			    <td width="60">
+			    <img src="images/OF.png" height="60" /></td>
 			<?php }?>
 			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings">

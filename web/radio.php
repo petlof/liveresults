@@ -73,20 +73,21 @@ $(document).ready(function()
 	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,"false","true","setAutomaticUpdateText","setCompactViewText", runnerStatus, "true","divRadioPassings");
     res.updateRadioPassings(<?= $_GET['code']?>);
 	
-    var clockElement = document.getElementById( "clock" );
+	if (<?= $_GET['code']?>==0){ 
+		var clockElement = document.getElementById( "clock" );
 	
-    function updateClock ( clock ) 
-	{
-		var currTime = new Date();
-		var preTime = new Date(currTime.valueOf()+3*60*1000);
-		var HTMLstring = "";
-		if (<?= $_GET['code']?>==0){ HTMLstring = " Opprop: " + preTime.toLocaleTimeString('en-GB') + "&nbsp;"}
+		function updateClock ( clock ) 
+		{
+			var currTime = new Date();
+			var preTime = new Date(currTime.valueOf()+3*60*1000);
+			var HTMLstring = " Opprop: " + preTime.toLocaleTimeString('en-GB') + "&nbsp;"
+			clock.innerHTML = HTMLstring;
+			}
 		//HTMLstring += currTime.toLocaleTimeString();
 		
-
-		clock.innerHTML = HTMLstring;
+		
+		setInterval(function () {updateClock( clockElement );}, 1000);
 	}
-    setInterval(function () {updateClock( clockElement );}, 1000);
 });
 
 

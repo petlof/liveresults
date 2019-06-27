@@ -24,6 +24,7 @@ namespace LiveResults.Client
         private bool m_oneLineRelayRes;
         private bool m_MSSQL;
         private bool m_twoEcards;
+        private int day;
 
         public ETimingParser(IDbConnection conn, int sleepTime, bool recreateRadioControls = true, bool oneLineRelayRes = false, 
             bool MSSQL = false, bool twoEcards = false)
@@ -141,7 +142,7 @@ namespace LiveResults.Client
                     cmd.CommandText = "SELECT kid, sub FROM arr";
                     var reader = cmd.ExecuteReader();
                     bool isRelay = false;
-                    int day = 1;
+                    day = 1;
                     while (reader.Read())
                     {
                         if (reader[0] != null && reader[0] != DBNull.Value)
@@ -182,23 +183,20 @@ namespace LiveResults.Client
                         if (dlg != null)
                         {
                             // radiotype, 2=finish/finish-passing, 4 = normal, 10 = exchange
-                            cmd.CommandText = (@"SELECT code, radiocourceno, radiotype, description, etappe, radiorundenr, live, radioday FROM radiopost");
+                            cmd.CommandText = string.Format(@"SELECT code, radiocourceno, radiotype, description, etappe, radiorundenr, live 
+                                               FROM radiopost WHERE radioday={0}",day);
                             var RadioPosts = new Dictionary<int, List<RadioStruct>>();
 
                             using (reader = cmd.ExecuteReader())
                             {
                                 while (reader.Read())
                                 {
-                                    int cource = 0, code = 0, radiotype = 0, leg = 0, order = 0, radioday = 0;
+                                    int cource = 0, code = 0, radiotype = 0, leg = 0, order = 0;
                                     bool live = false;
 
                                     if (reader["live"] != null && reader["live"] != DBNull.Value)
                                         live = Convert.ToBoolean(reader["live"].ToString());
                                     if (!live) continue;
-
-                                    if(reader["radioday"] != null && reader["radioday"] != DBNull.Value)
-                                        radioday = Convert.ToInt32(reader["radioday"].ToString());
-                                    if (radioday!=day) continue;
 
                                     if (reader["code"] != null && reader["code"] != DBNull.Value)
                                         code = Convert.ToInt32(reader["code"].ToString());
@@ -456,15 +454,15 @@ namespace LiveResults.Client
                             ORDER BY N.startno", modulus);
 
                     baseCommandInd = string.Format(@"SELECT N.id, N.startno, N.ename, N.name, N.times, N.intime, N.totaltime,
-                            N.place, N.status, N.cource, N.starttime, N.ecard, N.ecard2, N.ecard3, N.ecard4,
+                            N.place, N.status, N.cource, N.starttime, N.races, N.ecard, N.ecard2, N.ecard3, N.ecard4,
                             T.name AS tname, C.class AS cclass, C.timingtype, C.freestart, C.cource AS ccource, C.cheaseing
                             FROM Name N, Class C, Team T
                             WHERE N.class=C.code AND T.code=N.team AND (C.purmin IS NULL OR C.purmin<2)");
 
                     baseSplitCommand = string.Format(@"SELECT mellomid, iplace, stasjon, mintime, nettotid, timechanged, mecard 
                             FROM mellom 
-                            WHERE stasjon>=0 AND stasjon<250 AND mecard>0  
-                            ORDER BY mintime");
+                            WHERE stasjon>=0 AND stasjon<250 AND mecard>0 AND day={0}
+                            ORDER BY mintime",day);
 
                     
                     Dictionary<int, List<SplitRawStruct>> splitList = null;
@@ -537,7 +535,7 @@ namespace LiveResults.Client
             {
                 while (reader.Read())
                 {
-                    int time = 0, totalTime = 0, runnerID = 0, iStartTime = 0, iStartClass = 0, bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign = 1;
+                    int time = 0, runnerID = 0, iStartTime = 0, iStartClass = 0, totalTime = 0, bib = 0, teambib = 0, leg = 0, numlegs = 0, intime = -1, timingType = 0, sign = 1;
                     string famName = "", givName = "", club = "", classN = "", status = "", bibread = "", bibstr = "", name = "", shortName = "-";
                     bool chaseStart = false, freeStart = false;
                     var SplitTimes = new List<ResultStruct>();
@@ -574,11 +572,10 @@ namespace LiveResults.Client
                         if (reader["times"] != null && reader["times"] != DBNull.Value)
                             time = GetRunTime((reader["times"].ToString()).Trim());
 
-                        totalTime = 0;
-                        if (reader["totaltime"] != null && reader["totaltime"] != DBNull.Value)
-                            totalTime = ConvertFromDay2cs(Convert.ToDouble(reader["totaltime"]));
-
-                        chaseStart = Convert.ToBoolean(reader["cheaseing"].ToString());
+                        if (isRelay)
+                            chaseStart = false;
+                        else
+                            chaseStart = Convert.ToBoolean(reader["cheaseing"].ToString());
 
                         freeStart = Convert.ToBoolean(reader["freestart"].ToString());
 
@@ -751,6 +748,14 @@ namespace LiveResults.Client
 
                         if (chaseStart)
                         {
+                            int races = 0;
+
+                            if (reader["totaltime"] != null && reader["totaltime"] != DBNull.Value)
+                                totalTime = ConvertFromDay2cs(Convert.ToDouble(reader["totaltime"]));
+
+                            if (reader["races"] != null && reader["races"] != DBNull.Value)
+                                races = Convert.ToInt16(reader["races"]);
+
                             // Set starttime split to get starting order based on total time
                             var totalTimeStart = new ResultStruct
                             {
@@ -771,7 +776,7 @@ namespace LiveResults.Client
                                 time += totalTime;
                             }
                             // Set status for runners without total time to not classified NC
-                            if (totalTime<=0 && (status == "S" || status == "I" || status == "A"))
+                            if ((day-races)>1 && (status == "S" || status == "I" || status == "A"))
                                 status = "NC";
                         }
 

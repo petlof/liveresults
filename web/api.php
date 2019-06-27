@@ -3,10 +3,10 @@ date_default_timezone_set("Europe/Stockholm");
 $lang = "no";
 $compid   = $_GET['comp'];
 $hightime = 60;
-$refreshTime = 3;
+$refreshTime = 15;
 
 $showTenthsOfSecond = in_array($compid, array("15232","15233","15068","15070","15162"));
-$isMassStartRace    = in_array($compid, array("15233","15068","15548"));
+$isMassStartRace    = in_array($compid, array("15952"));
 $showQualLim        = in_array($compid, array("15232","15070"));
 
 $qualLim  = 6;
@@ -32,7 +32,7 @@ $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUS
 
 header('content-type: application/json; charset='.$CHARSET);
 header('Access-Control-Allow-Origin: *');
-header('cache-control: max-age=3');
+header('cache-control: max-age=15');
 header('pragma: public');
 header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + $refreshTime));
 
