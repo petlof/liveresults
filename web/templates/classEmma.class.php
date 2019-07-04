@@ -349,7 +349,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 function getAllSplitControls()
 {
 	$ret = Array();
-	$q = "SELECT code, name, classname, corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder";
+	$q = "SELECT code, name, classname, corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder asc, code desc";
 	if ($result = mysqli_query($this->m_Conn, $q))
 	{
 		while($tmp = mysqli_fetch_array($result))
@@ -375,7 +375,7 @@ function getAllSplitControls()
 
     $q = "SELECT Control from results, runners where results.TavID = ". $this->m_CompId . " and runners.TavID = " . $this->m_CompId . " and results.dbid = runners.dbid and runners.class = '" . mysqli_real_escape_string($this->m_Conn, $className) ."' and results.Control != 1000 Group by Control";
 
-    $q = "SELECT code, name from splitcontrols where tavid = " .$this->m_CompId. " and classname = '" . mysqli_real_escape_string($this->m_Conn, $className) ."' order by corder";
+    $q = "SELECT code, name from splitcontrols where tavid = " .$this->m_CompId. " and classname = '" . mysqli_real_escape_string($this->m_Conn, $className) ."' order by corder asc, code desc";
 
     if ($result = mysqli_query($this->m_Conn, $q))
 
@@ -424,7 +424,7 @@ function getAllSplitControls()
 		  left join splitcontrols on (splitcontrols.code = results.Control and splitcontrols.tavid=".$this->m_CompId." 
 		  and runners.class = splitcontrols.classname) where results.TavId =".$this->m_CompId." 
 		  AND runners.TavId = results.TavId and results.Status <> -1 AND results.Time <> -1 AND results.Status <> 9 
-		  and results.Status <> 10 and results.control <> 100 and (results.control = 1000 or splitcontrols.tavid is not null)
+		  and results.Status <> 10  and results.Status <> 6 and results.control <> 100 and (results.control = 1000 or splitcontrols.tavid is not null)
 		  AND results.control <> 999 AND results.control <> 0 AND results.control < 100000
 		  AND runners.class NOT LIKE '%-All' 
 		  ORDER BY results.changed desc limit 3";
@@ -457,7 +457,7 @@ function getAllSplitControls()
 
   }
 
-   function getRadioPassings($code)
+   function getRadioPassings($code,$calltime)
   {
 	$ret = Array();
 	$q = "SELECT runners.Name, runners.class, runners.Club, results.Time, results.Status, results.Changed, 
@@ -470,7 +470,7 @@ function getAllSplitControls()
 	if ($code == 0) // Start
 	{
 		$currTime = (date('H')*3600 + date('i')*60 + date('s') + $this->m_TimeDiff)*100;
-		$preTime  = 3.25*60*100;
+		$preTime  = ($calltime+0.25)*60*100;
 		$postTime = 0.25*60*100;
 		$q .= "AND ((results.control = 100 AND results.status = 9)
 		       OR (results.control = 100 AND results.status = 10 

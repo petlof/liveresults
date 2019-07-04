@@ -24,7 +24,7 @@ var LiveResults;
             this.updateAutomatically = true;
 			this.compactView = true;
             this.updateInterval = 15000;
-			this.radioUpdateInterval = 15000;
+			this.radioUpdateInterval = 5000;
             this.classUpdateInterval = 60000;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
@@ -218,12 +218,13 @@ var LiveResults;
         };
 
         //Request data for the last radio passings div
-        AjaxViewer.prototype.updateRadioPassings = function (code) {
+        AjaxViewer.prototype.updateRadioPassings = function (code,calltime) {
             var _this = this;
             if (this.updateAutomatically) {
                 $.ajax({
-                    url: "api.php",
-                    data: "comp=" + this.competitionId + "&method=getradiopassings&code=" + code + "&lang=" + this.language + "&last_hash=" + this.lastRadioPassingsUpdateHash,
+                    url: "radioapi.php",
+                    data: "comp=" + this.competitionId + "&method=getradiopassings&code=" + code + "&calltime=" + calltime +
+					      "&lang=" + this.language + "&last_hash=" + this.lastRadioPassingsUpdateHash,
                     success: function (data) { _this.handleUpdateRadioPassings(data); },
                     error: function () {
                         _this.radioPassingsUpdateTimer = setTimeout(function () {
@@ -233,7 +234,7 @@ var LiveResults;
                     dataType: "json"
                 });
                 this.radioPassingsUpdateTimer = setTimeout(function () {
-                    _this.updateRadioPassings(code);
+                    _this.updateRadioPassings(code,calltime);
                 }, this.radioUpdateInterval);
             }
 
