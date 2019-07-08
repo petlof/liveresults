@@ -87,6 +87,13 @@ namespace LiveResults.Client.Parsers
 
         private void ReadAndApplyFINFile(string finFile, Dictionary<int,Runner> siToRunner , Encoding enc)
         {
+            if (!System.IO.File.Exists(finFile))
+            {
+                if (OnLogMessage != null)
+                    OnLogMessage("Read FIN file - file not found");
+                return;
+            }
+
             using (var sr = new StreamReader(finFile, enc))
             {
                 string tmp;
@@ -246,6 +253,12 @@ namespace LiveResults.Client.Parsers
 
         private void ReadStartList(DateTime zeroTime, string startlistFile, List<Runner> ret, Dictionary<int, Runner> siToRunner, Encoding enc)
         {
+            if (!System.IO.File.Exists(startlistFile))
+            {
+                if (OnLogMessage != null)
+                    OnLogMessage("Read StartList - file not found");
+                return;
+            }
             using (var sr = new StreamReader(startlistFile, enc))
             {
                 string tmp;
