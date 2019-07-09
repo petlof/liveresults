@@ -264,49 +264,62 @@ namespace LiveResults.Client.Parsers
                 string tmp;
                 while ((tmp = sr.ReadLine()) != null)
                 {
-                    string stnr = tmp.Substring(0, 5).Trim();
-                    string sinr = tmp.Substring(6, 8).Trim();
-                    string className = tmp.Substring(15, 7).Trim();
-                    string name = tmp.Substring(31, 23).Trim();
-                    string start = tmp.Substring(54).Trim();
-                    string club = tmp.Substring(23, 3);
-
-                    if (string.IsNullOrEmpty(stnr))
+                    if (tmp.Length != 65)
                     {
                         if (OnLogMessage != null)
-                            OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
-                        continue;
+                            OnLogMessage("Incorrect start line size ! (lenght is " + tmp.Length + ")");
                     }
-                    int leg = 0;
-                    if (m_isRelay)
-                        leg = int.Parse(className.Split(' ').Last());
-                    int dbId = m_isRelay ? leg*100000+int.Parse(stnr) : int.Parse(stnr);
-
-                    var r = new RacomRunner(int.Parse(stnr), dbId, name, club, className, m_isRelay ? (int?)leg : null);
-
-                    if (m_isRelay)
+                    try
                     {
-                        r.ClassWithoutLeg = className.Substring(0, className.LastIndexOf(' '));
-                        if (!string.IsNullOrEmpty(r.ClassWithoutLeg))
-                            r.ClassWithoutLeg = r.ClassWithoutLeg.Trim();
+                        string stnr = tmp.Substring(0, 5).Trim();
+                        string sinr = tmp.Substring(6, 8).Trim();
+                        string className = tmp.Substring(15, 7).Trim();
+                        string name = tmp.Substring(31, 23).Trim();
+                        string start = tmp.Substring(54).Trim();
+                        string club = tmp.Substring(23, 3);
 
-                        r.Class = r.ClassWithoutLeg + " " + leg;
+                        if (string.IsNullOrEmpty(stnr))
+                        {
+                            if (OnLogMessage != null)
+                                OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
+                            continue;
+                        }
+                        int leg = 0;
+                        if (m_isRelay)
+                            leg = int.Parse(className.Split(' ').Last());
+                        int dbId = m_isRelay ? leg * 100000 + int.Parse(stnr) : int.Parse(stnr);
+
+                        var r = new RacomRunner(int.Parse(stnr), dbId, name, club, className, m_isRelay ? (int?)leg : null);
+
+                        if (m_isRelay)
+                        {
+                            r.ClassWithoutLeg = className.Substring(0, className.LastIndexOf(' '));
+                            if (!string.IsNullOrEmpty(r.ClassWithoutLeg))
+                                r.ClassWithoutLeg = r.ClassWithoutLeg.Trim();
+
+                            r.Class = r.ClassWithoutLeg + " " + leg;
+                        }
+
+
+                        var startTime = zeroTime.AddSeconds(parseTime(start));
+                        r.SetStartTime(startTime.Hour * 360000 + startTime.Minute * 6000 + startTime.Second * 100 + startTime.Millisecond / 10);
+                        r.SetResult(-9, 9);
+
+                        ret.Add(r);
+                        if (!siToRunner.ContainsKey(int.Parse(sinr)))
+                        {
+                            siToRunner.Add(int.Parse(sinr), r);
+                        }
+                        else
+                        {
+                            if (OnLogMessage != null)
+                                OnLogMessage("Duplicate SI-NO: " + sinr + ", skipping " + name);
+                        }
                     }
-                    
-
-                    var startTime = zeroTime.AddSeconds(parseTime(start));
-                    r.SetStartTime(startTime.Hour*360000 + startTime.Minute*6000 + startTime.Second*100 + startTime.Millisecond/10);
-                    r.SetResult(-9, 9);
-
-                    ret.Add(r);
-                    if (!siToRunner.ContainsKey(int.Parse(sinr)))
-                    {
-                        siToRunner.Add(int.Parse(sinr), r);
-                    }
-                    else
+                    catch (System.Exception ex)
                     {
                         if (OnLogMessage != null)
-                            OnLogMessage("Duplicate SI-NO: " + sinr + ", skipping " + name);
+                            OnLogMessage("Parsing start list error on line : " + tmp);
                     }
                 }
             }
