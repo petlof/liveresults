@@ -147,12 +147,16 @@ namespace LiveResults.Client
                     {
                         if (reader[0] != null && reader[0] != DBNull.Value)
                         {
+                            string eventType;
                             int kid = Convert.ToInt16(reader["kid"]);
-                            FireLogMsg("Event type is " + kid);
-                            if (kid == 3)
+                            if (kid == 3 || kid == 6)
                             {
                                 isRelay = true;
+                                eventType = " (Relay)";
                             }
+                            else
+                                eventType = " (Individual)";
+                            FireLogMsg("Event type: " + kid + eventType);
                             day = Convert.ToInt16(reader["sub"]);
                         }
                     }
@@ -330,6 +334,7 @@ namespace LiveResults.Client
                                     if (!classAll.EndsWith("-"))
                                         classAll += "-";
                                     classAll += "All";
+
                                     if (numLegs > 0 && m_oneLineRelayRes)
                                     { // Add leg time for last leg in one-line results
                                         intermediates.Add(new IntermediateTime
@@ -351,10 +356,12 @@ namespace LiveResults.Client
                                             int Code = radioControl.Code;
                                             int CodeforCnt = 0; // Code for counter
                                             int AddforLeg = 0;  // Addition for relay legs
+                                            int nStep = 1;      // Multiplicator used in relay order      
                                             if (numLegs == 0 && (Code == 999 || Code == 0))
                                                 continue;       // Skip if not relay and finish or start code
                                             if (numLegs > 0)    // Relay
                                             {
+                                                nStep = 2;
                                                 classN = " " + classN;
                                                 if (!classN.EndsWith("-"))
                                                     classN += "-";
@@ -376,18 +383,18 @@ namespace LiveResults.Client
                                                     ClassName = classN,
                                                     IntermediateName = radioControl.Description,
                                                     Position = sign*(Code + radioCnt[CodeforCnt] * 1000 + AddforLeg),
-                                                    Order = radioControl.Order
+                                                    Order = nStep*radioControl.Order
                                                 });
 
                                                 // Add leg passing time for relay and chase start
-                                                if (numLegs > 0 || chaseStart) 
+                                                if (((numLegs > 0) && (radioControl.Leg > 1)) || chaseStart) 
                                                 {
                                                     intermediates.Add(new IntermediateTime
                                                     {
                                                         ClassName = classN,
                                                         IntermediateName = radioControl.Description + "PassTime",
                                                         Position = Code + radioCnt[CodeforCnt] * 1000 + AddforLeg + 100000,
-                                                        Order = radioControl.Order
+                                                        Order = nStep * radioControl.Order - 1 // Sort this before "normal intermediate time
                                                     });
                                                 }
 
@@ -408,7 +415,7 @@ namespace LiveResults.Client
                                                     ClassName = classAll,
                                                     IntermediateName = Description,
                                                     Position = position,
-                                                    Order = radioControl.Order
+                                                    Order = 2*radioControl.Order
                                                 });
 
                                                 // Passing time
@@ -417,7 +424,7 @@ namespace LiveResults.Client
                                                     ClassName = classAll,
                                                     IntermediateName = Description + "PassTime",
                                                     Position = position + 100000,
-                                                    Order = radioControl.Order
+                                                    Order = 2*radioControl.Order - 1
                                                 });
                                             }
                                         }

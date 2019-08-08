@@ -153,6 +153,14 @@ namespace LiveResults.Client
                         Value = (c as CheckBox).Checked.ToString()
                     });
                 }
+                if (c is ListBox)
+                {
+                    setts.Add(new Setting
+                    {
+                        Key = (c as ListBox).Name,
+                        Value = (c as ListBox).SelectedIndex.ToString()
+                    });
+                }
 
                 extractControlValues(c.Controls, setts);
             }
@@ -385,5 +393,7 @@ namespace LiveResults.Client
         {
 
         }
+
+        
     }
 }

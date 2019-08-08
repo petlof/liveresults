@@ -30,26 +30,8 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewETimingComp));
             this.wizard1 = new Gui.Wizard.Wizard();
-            this.wizardPage5 = new Gui.Wizard.WizardPage();
-            this.chkTwoEcards = new System.Windows.Forms.CheckBox();
-            this.chkOneLineRelayRes = new System.Windows.Forms.CheckBox();
-            this.label14 = new System.Windows.Forms.Label();
-            this.txtCompDate = new System.Windows.Forms.TextBox();
-            this.label13 = new System.Windows.Forms.Label();
-            this.txtOrgName = new System.Windows.Forms.TextBox();
-            this.label7 = new System.Windows.Forms.Label();
-            this.chkDeleteEmmaIDs = new System.Windows.Forms.CheckBox();
-            this.label12 = new System.Windows.Forms.Label();
-            this.txtSleepTime = new System.Windows.Forms.TextBox();
-            this.chkCreateRadioControls = new System.Windows.Forms.CheckBox();
-            this.txtCompName = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtCompID = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
-            this.wizardPage2 = new Gui.Wizard.WizardPage();
-            this.lstDB = new System.Windows.Forms.ListBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.wizardPage1 = new Gui.Wizard.WizardPage();
+            this.label15 = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.button1 = new System.Windows.Forms.Button();
             this.txtETimingDb = new System.Windows.Forms.TextBox();
@@ -64,19 +46,38 @@
             this.label2 = new System.Windows.Forms.Label();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.wizardPage5 = new Gui.Wizard.WizardPage();
+            this.txtSleepTime = new System.Windows.Forms.TextBox();
             this.label8 = new System.Windows.Forms.Label();
+            this.chkTwoEcards = new System.Windows.Forms.CheckBox();
+            this.chkOneLineRelayRes = new System.Windows.Forms.CheckBox();
+            this.label14 = new System.Windows.Forms.Label();
+            this.txtCompDate = new System.Windows.Forms.TextBox();
+            this.label13 = new System.Windows.Forms.Label();
+            this.txtOrgName = new System.Windows.Forms.TextBox();
+            this.label7 = new System.Windows.Forms.Label();
+            this.chkDeleteEmmaIDs = new System.Windows.Forms.CheckBox();
+            this.label12 = new System.Windows.Forms.Label();
+            this.chkCreateRadioControls = new System.Windows.Forms.CheckBox();
+            this.txtCompName = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtCompID = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
+            this.wizardPage2 = new Gui.Wizard.WizardPage();
+            this.lstDB = new System.Windows.Forms.ListBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.wizard1.SuspendLayout();
-            this.wizardPage5.SuspendLayout();
-            this.wizardPage2.SuspendLayout();
             this.wizardPage1.SuspendLayout();
             this.panel1.SuspendLayout();
+            this.wizardPage5.SuspendLayout();
+            this.wizardPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // wizard1
             // 
+            this.wizard1.Controls.Add(this.wizardPage1);
             this.wizard1.Controls.Add(this.wizardPage5);
             this.wizard1.Controls.Add(this.wizardPage2);
-            this.wizard1.Controls.Add(this.wizardPage1);
             this.wizard1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizard1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.wizard1.Location = new System.Drawing.Point(0, 0);
@@ -88,207 +89,9 @@
             this.wizard1.Size = new System.Drawing.Size(506, 277);
             this.wizard1.TabIndex = 0;
             // 
-            // wizardPage5
-            // 
-            this.wizardPage5.Controls.Add(this.txtSleepTime);
-            this.wizardPage5.Controls.Add(this.label8);
-            this.wizardPage5.Controls.Add(this.chkTwoEcards);
-            this.wizardPage5.Controls.Add(this.chkOneLineRelayRes);
-            this.wizardPage5.Controls.Add(this.label14);
-            this.wizardPage5.Controls.Add(this.txtCompDate);
-            this.wizardPage5.Controls.Add(this.label13);
-            this.wizardPage5.Controls.Add(this.txtOrgName);
-            this.wizardPage5.Controls.Add(this.label7);
-            this.wizardPage5.Controls.Add(this.chkDeleteEmmaIDs);
-            this.wizardPage5.Controls.Add(this.label12);
-            this.wizardPage5.Controls.Add(this.chkCreateRadioControls);
-            this.wizardPage5.Controls.Add(this.txtCompName);
-            this.wizardPage5.Controls.Add(this.label10);
-            this.wizardPage5.Controls.Add(this.txtCompID);
-            this.wizardPage5.Controls.Add(this.label9);
-            this.wizardPage5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage5.IsFinishPage = false;
-            this.wizardPage5.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage5.Name = "wizardPage5";
-            this.wizardPage5.Size = new System.Drawing.Size(506, 229);
-            this.wizardPage5.TabIndex = 5;
-            this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
-            this.wizardPage5.ShowFromNext += new System.EventHandler(this.wizardPage5_ShowFromNext);
-            // 
-            // chkTwoEcards
-            // 
-            this.chkTwoEcards.AutoSize = true;
-            this.chkTwoEcards.Location = new System.Drawing.Point(12, 172);
-            this.chkTwoEcards.Name = "chkTwoEcards";
-            this.chkTwoEcards.Size = new System.Drawing.Size(222, 17);
-            this.chkTwoEcards.TabIndex = 14;
-            this.chkTwoEcards.Text = "Require two ecards to set status Started";
-            this.chkTwoEcards.UseVisualStyleBackColor = true;
-            this.chkTwoEcards.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
-            // 
-            // chkOneLineRelayRes
-            // 
-            this.chkOneLineRelayRes.AutoSize = true;
-            this.chkOneLineRelayRes.Location = new System.Drawing.Point(12, 126);
-            this.chkOneLineRelayRes.Name = "chkOneLineRelayRes";
-            this.chkOneLineRelayRes.Size = new System.Drawing.Size(208, 17);
-            this.chkOneLineRelayRes.TabIndex = 13;
-            this.chkOneLineRelayRes.Text = "Make one-line results for relay classes";
-            this.chkOneLineRelayRes.UseVisualStyleBackColor = true;
-            this.chkOneLineRelayRes.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
-            // 
-            // label14
-            // 
-            this.label14.AutoSize = true;
-            this.label14.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label14.Location = new System.Drawing.Point(338, 9);
-            this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(132, 13);
-            this.label14.TabIndex = 12;
-            this.label14.Text = "eTiming database info";
-            // 
-            // txtCompDate
-            // 
-            this.txtCompDate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtCompDate.Location = new System.Drawing.Point(319, 33);
-            this.txtCompDate.Name = "txtCompDate";
-            this.txtCompDate.ReadOnly = true;
-            this.txtCompDate.Size = new System.Drawing.Size(175, 21);
-            this.txtCompDate.TabIndex = 11;
-            // 
-            // label13
-            // 
-            this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(287, 35);
-            this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(30, 13);
-            this.label13.TabIndex = 10;
-            this.label13.Text = "Date";
-            // 
-            // txtOrgName
-            // 
-            this.txtOrgName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtOrgName.Location = new System.Drawing.Point(319, 58);
-            this.txtOrgName.Name = "txtOrgName";
-            this.txtOrgName.ReadOnly = true;
-            this.txtOrgName.Size = new System.Drawing.Size(175, 21);
-            this.txtOrgName.TabIndex = 9;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(263, 60);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(54, 13);
-            this.label7.TabIndex = 8;
-            this.label7.Text = "Organizer";
-            // 
-            // chkDeleteEmmaIDs
-            // 
-            this.chkDeleteEmmaIDs.AutoSize = true;
-            this.chkDeleteEmmaIDs.Location = new System.Drawing.Point(12, 149);
-            this.chkDeleteEmmaIDs.Name = "chkDeleteEmmaIDs";
-            this.chkDeleteEmmaIDs.Size = new System.Drawing.Size(194, 17);
-            this.chkDeleteEmmaIDs.TabIndex = 7;
-            this.chkDeleteEmmaIDs.Text = "Delete unused IDs on Emma server";
-            this.chkDeleteEmmaIDs.UseVisualStyleBackColor = true;
-            // 
-            // label12
-            // 
-            this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(12, 60);
-            this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(147, 13);
-            this.label12.TabIndex = 6;
-            this.label12.Text = "Sleep time between scans [s]";
-            this.label12.Click += new System.EventHandler(this.label12_Click);
-            // 
-            // txtSleepTime
-            // 
-            this.txtSleepTime.Location = new System.Drawing.Point(160, 57);
-            this.txtSleepTime.Name = "txtSleepTime";
-            this.txtSleepTime.Size = new System.Drawing.Size(81, 21);
-            this.txtSleepTime.TabIndex = 5;
-            // 
-            // chkCreateRadioControls
-            // 
-            this.chkCreateRadioControls.AutoSize = true;
-            this.chkCreateRadioControls.Checked = true;
-            this.chkCreateRadioControls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCreateRadioControls.Location = new System.Drawing.Point(12, 103);
-            this.chkCreateRadioControls.Name = "chkCreateRadioControls";
-            this.chkCreateRadioControls.Size = new System.Drawing.Size(124, 17);
-            this.chkCreateRadioControls.TabIndex = 4;
-            this.chkCreateRadioControls.Text = "Create radiocontrols";
-            this.chkCreateRadioControls.UseVisualStyleBackColor = true;
-            // 
-            // txtCompName
-            // 
-            this.txtCompName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtCompName.Location = new System.Drawing.Point(319, 84);
-            this.txtCompName.Name = "txtCompName";
-            this.txtCompName.ReadOnly = true;
-            this.txtCompName.Size = new System.Drawing.Size(175, 21);
-            this.txtCompName.TabIndex = 3;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(253, 86);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(64, 13);
-            this.label10.TabIndex = 2;
-            this.label10.Text = "Event name";
-            // 
-            // txtCompID
-            // 
-            this.txtCompID.Location = new System.Drawing.Point(160, 32);
-            this.txtCompID.Name = "txtCompID";
-            this.txtCompID.Size = new System.Drawing.Size(81, 21);
-            this.txtCompID.TabIndex = 1;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 35);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(76, 13);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "Competiton ID";
-            this.label9.Click += new System.EventHandler(this.label9_Click);
-            // 
-            // wizardPage2
-            // 
-            this.wizardPage2.Controls.Add(this.lstDB);
-            this.wizardPage2.Controls.Add(this.label6);
-            this.wizardPage2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage2.IsFinishPage = false;
-            this.wizardPage2.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage2.Name = "wizardPage2";
-            this.wizardPage2.Size = new System.Drawing.Size(506, 229);
-            this.wizardPage2.TabIndex = 2;
-            this.wizardPage2.ShowFromBack += new System.EventHandler(this.wizardPage2_ShowFromBack);
-            this.wizardPage2.ShowFromNext += new System.EventHandler(this.wizardPage2_ShowFromNext);
-            // 
-            // lstDB
-            // 
-            this.lstDB.FormattingEnabled = true;
-            this.lstDB.Location = new System.Drawing.Point(13, 26);
-            this.lstDB.Name = "lstDB";
-            this.lstDB.Size = new System.Drawing.Size(218, 82);
-            this.lstDB.TabIndex = 1;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 9);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(53, 13);
-            this.label6.TabIndex = 0;
-            this.label6.Text = "Database";
-            // 
             // wizardPage1
             // 
+            this.wizardPage1.Controls.Add(this.label15);
             this.wizardPage1.Controls.Add(this.panel1);
             this.wizardPage1.Controls.Add(this.txtPw);
             this.wizardPage1.Controls.Add(this.label5);
@@ -306,6 +109,15 @@
             this.wizardPage1.Name = "wizardPage1";
             this.wizardPage1.Size = new System.Drawing.Size(506, 229);
             this.wizardPage1.TabIndex = 1;
+            // 
+            // label15
+            // 
+            this.label15.AutoSize = true;
+            this.label15.Location = new System.Drawing.Point(12, 216);
+            this.label15.Name = "label15";
+            this.label15.Size = new System.Drawing.Size(82, 13);
+            this.label15.TabIndex = 10;
+            this.label15.Text = "ver 08.08.2019";
             // 
             // panel1
             // 
@@ -429,6 +241,40 @@
             this.label1.TabIndex = 0;
             this.label1.Text = "Type of eTiming server";
             // 
+            // wizardPage5
+            // 
+            this.wizardPage5.Controls.Add(this.txtSleepTime);
+            this.wizardPage5.Controls.Add(this.label8);
+            this.wizardPage5.Controls.Add(this.chkTwoEcards);
+            this.wizardPage5.Controls.Add(this.chkOneLineRelayRes);
+            this.wizardPage5.Controls.Add(this.label14);
+            this.wizardPage5.Controls.Add(this.txtCompDate);
+            this.wizardPage5.Controls.Add(this.label13);
+            this.wizardPage5.Controls.Add(this.txtOrgName);
+            this.wizardPage5.Controls.Add(this.label7);
+            this.wizardPage5.Controls.Add(this.chkDeleteEmmaIDs);
+            this.wizardPage5.Controls.Add(this.label12);
+            this.wizardPage5.Controls.Add(this.chkCreateRadioControls);
+            this.wizardPage5.Controls.Add(this.txtCompName);
+            this.wizardPage5.Controls.Add(this.label10);
+            this.wizardPage5.Controls.Add(this.txtCompID);
+            this.wizardPage5.Controls.Add(this.label9);
+            this.wizardPage5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage5.IsFinishPage = false;
+            this.wizardPage5.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage5.Name = "wizardPage5";
+            this.wizardPage5.Size = new System.Drawing.Size(506, 229);
+            this.wizardPage5.TabIndex = 5;
+            this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
+            this.wizardPage5.ShowFromNext += new System.EventHandler(this.wizardPage5_ShowFromNext);
+            // 
+            // txtSleepTime
+            // 
+            this.txtSleepTime.Location = new System.Drawing.Point(160, 57);
+            this.txtSleepTime.Name = "txtSleepTime";
+            this.txtSleepTime.Size = new System.Drawing.Size(81, 21);
+            this.txtSleepTime.TabIndex = 5;
+            // 
             // label8
             // 
             this.label8.AutoSize = true;
@@ -440,6 +286,171 @@
             this.label8.Text = "Options for live event";
             this.label8.Click += new System.EventHandler(this.label8_Click);
             // 
+            // chkTwoEcards
+            // 
+            this.chkTwoEcards.AutoSize = true;
+            this.chkTwoEcards.Location = new System.Drawing.Point(12, 172);
+            this.chkTwoEcards.Name = "chkTwoEcards";
+            this.chkTwoEcards.Size = new System.Drawing.Size(222, 17);
+            this.chkTwoEcards.TabIndex = 14;
+            this.chkTwoEcards.Text = "Require two ecards to set status Started";
+            this.chkTwoEcards.UseVisualStyleBackColor = true;
+            this.chkTwoEcards.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged_1);
+            // 
+            // chkOneLineRelayRes
+            // 
+            this.chkOneLineRelayRes.AutoSize = true;
+            this.chkOneLineRelayRes.Location = new System.Drawing.Point(12, 126);
+            this.chkOneLineRelayRes.Name = "chkOneLineRelayRes";
+            this.chkOneLineRelayRes.Size = new System.Drawing.Size(208, 17);
+            this.chkOneLineRelayRes.TabIndex = 13;
+            this.chkOneLineRelayRes.Text = "Make one-line results for relay classes";
+            this.chkOneLineRelayRes.UseVisualStyleBackColor = true;
+            this.chkOneLineRelayRes.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            // 
+            // label14
+            // 
+            this.label14.AutoSize = true;
+            this.label14.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label14.Location = new System.Drawing.Point(338, 9);
+            this.label14.Name = "label14";
+            this.label14.Size = new System.Drawing.Size(132, 13);
+            this.label14.TabIndex = 12;
+            this.label14.Text = "eTiming database info";
+            // 
+            // txtCompDate
+            // 
+            this.txtCompDate.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtCompDate.Location = new System.Drawing.Point(319, 33);
+            this.txtCompDate.Name = "txtCompDate";
+            this.txtCompDate.ReadOnly = true;
+            this.txtCompDate.Size = new System.Drawing.Size(175, 21);
+            this.txtCompDate.TabIndex = 11;
+            // 
+            // label13
+            // 
+            this.label13.AutoSize = true;
+            this.label13.Location = new System.Drawing.Point(287, 35);
+            this.label13.Name = "label13";
+            this.label13.Size = new System.Drawing.Size(30, 13);
+            this.label13.TabIndex = 10;
+            this.label13.Text = "Date";
+            // 
+            // txtOrgName
+            // 
+            this.txtOrgName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtOrgName.Location = new System.Drawing.Point(319, 58);
+            this.txtOrgName.Name = "txtOrgName";
+            this.txtOrgName.ReadOnly = true;
+            this.txtOrgName.Size = new System.Drawing.Size(175, 21);
+            this.txtOrgName.TabIndex = 9;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(263, 60);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(54, 13);
+            this.label7.TabIndex = 8;
+            this.label7.Text = "Organizer";
+            // 
+            // chkDeleteEmmaIDs
+            // 
+            this.chkDeleteEmmaIDs.AutoSize = true;
+            this.chkDeleteEmmaIDs.Location = new System.Drawing.Point(12, 149);
+            this.chkDeleteEmmaIDs.Name = "chkDeleteEmmaIDs";
+            this.chkDeleteEmmaIDs.Size = new System.Drawing.Size(194, 17);
+            this.chkDeleteEmmaIDs.TabIndex = 7;
+            this.chkDeleteEmmaIDs.Text = "Delete unused IDs on Emma server";
+            this.chkDeleteEmmaIDs.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Location = new System.Drawing.Point(12, 60);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(147, 13);
+            this.label12.TabIndex = 6;
+            this.label12.Text = "Sleep time between scans [s]";
+            this.label12.Click += new System.EventHandler(this.label12_Click);
+            // 
+            // chkCreateRadioControls
+            // 
+            this.chkCreateRadioControls.AutoSize = true;
+            this.chkCreateRadioControls.Checked = true;
+            this.chkCreateRadioControls.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkCreateRadioControls.Location = new System.Drawing.Point(12, 103);
+            this.chkCreateRadioControls.Name = "chkCreateRadioControls";
+            this.chkCreateRadioControls.Size = new System.Drawing.Size(124, 17);
+            this.chkCreateRadioControls.TabIndex = 4;
+            this.chkCreateRadioControls.Text = "Create radiocontrols";
+            this.chkCreateRadioControls.UseVisualStyleBackColor = true;
+            // 
+            // txtCompName
+            // 
+            this.txtCompName.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtCompName.Location = new System.Drawing.Point(319, 84);
+            this.txtCompName.Name = "txtCompName";
+            this.txtCompName.ReadOnly = true;
+            this.txtCompName.Size = new System.Drawing.Size(175, 21);
+            this.txtCompName.TabIndex = 3;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(253, 86);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(64, 13);
+            this.label10.TabIndex = 2;
+            this.label10.Text = "Event name";
+            // 
+            // txtCompID
+            // 
+            this.txtCompID.Location = new System.Drawing.Point(160, 32);
+            this.txtCompID.Name = "txtCompID";
+            this.txtCompID.Size = new System.Drawing.Size(81, 21);
+            this.txtCompID.TabIndex = 1;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 35);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(76, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "Competiton ID";
+            this.label9.Click += new System.EventHandler(this.label9_Click);
+            // 
+            // wizardPage2
+            // 
+            this.wizardPage2.Controls.Add(this.lstDB);
+            this.wizardPage2.Controls.Add(this.label6);
+            this.wizardPage2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage2.IsFinishPage = false;
+            this.wizardPage2.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage2.Name = "wizardPage2";
+            this.wizardPage2.Size = new System.Drawing.Size(506, 229);
+            this.wizardPage2.TabIndex = 2;
+            this.wizardPage2.ShowFromBack += new System.EventHandler(this.wizardPage2_ShowFromBack);
+            this.wizardPage2.ShowFromNext += new System.EventHandler(this.wizardPage2_ShowFromNext);
+            // 
+            // lstDB
+            // 
+            this.lstDB.FormattingEnabled = true;
+            this.lstDB.Location = new System.Drawing.Point(13, 26);
+            this.lstDB.Name = "lstDB";
+            this.lstDB.Size = new System.Drawing.Size(218, 82);
+            this.lstDB.TabIndex = 1;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(12, 9);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(53, 13);
+            this.label6.TabIndex = 0;
+            this.label6.Text = "Database";
+            // 
             // NewETimingComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -450,14 +461,14 @@
             this.Name = "NewETimingComp";
             this.Text = "New eTiming connection";
             this.wizard1.ResumeLayout(false);
-            this.wizardPage5.ResumeLayout(false);
-            this.wizardPage5.PerformLayout();
-            this.wizardPage2.ResumeLayout(false);
-            this.wizardPage2.PerformLayout();
             this.wizardPage1.ResumeLayout(false);
             this.wizardPage1.PerformLayout();
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
+            this.wizardPage5.ResumeLayout(false);
+            this.wizardPage5.PerformLayout();
+            this.wizardPage2.ResumeLayout(false);
+            this.wizardPage2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -500,5 +511,6 @@
         public System.Windows.Forms.CheckBox chkOneLineRelayRes;
         public System.Windows.Forms.CheckBox chkTwoEcards;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label15;
     }
 }
