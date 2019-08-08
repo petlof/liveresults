@@ -12,6 +12,7 @@ include_once("templates/classEmma.class.php");
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $currentComp = new Emma($_GET['comp']);
+$currentCompNo = $_GET['comp'];
 
 $isSingleClass = isset($_GET['class']);
 $isSingleClub = isset($_GET['club']);
@@ -158,8 +159,7 @@ runnerStatus[13] = "<?=$_STATUSFINISHED?>";
 $(document).ready(function()
 {
 	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText","setCompactViewText", runnerStatus);
-	<?php if ($isSingleClass)
-	{?>
+	<?php if ($isSingleClass){?>
 		res.chooseClass('<?=$singleClass?>');
 	<?php }
 	else if ($isSingleClub)
@@ -172,8 +172,8 @@ $(document).ready(function()
 		res.updateClassList();
 	<?php }?>
 
-<?php if ($showLastPassings){?>
-	res.updateLastPassings();
+    <?php if ($showLastPassings){?>
+		res.updateLastPassings();
 	<?php }?>
 
 	<?php if ($showTimePrediction){ ?>
@@ -182,8 +182,19 @@ $(document).ready(function()
 	<?php }?>
 	
 	<?php if ($setFullView){?>
-	res.setCompactView(false);
+		res.setCompactView(false);
 	<?php }?>
+	
+	// Mass start race
+	<?php if(in_array($currentCompNo, array(15233,15952))){?>
+		res.curClassIsMassStart = true;
+	<?php }?>
+	
+	// Show tenth of seconds
+	<?php if(in_array($currentCompNo, array(15232,15233,15068,15070,15162))){?>
+		res.setShowTenth(true);
+	<?php }?>
+		
 });
 
 

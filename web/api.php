@@ -1,17 +1,17 @@
 <?php
 date_default_timezone_set("Europe/Stockholm");
-$lang = "no";
 $compid   = $_GET['comp'];
 $hightime = 60;
-$refreshTime = 15;
+$refreshTime = 10;
 
-$showTenthsOfSecond = in_array($compid, array("15232","15233","15068","15070","15162"));
-$isMassStartRace    = in_array($compid, array("15952"));
-$showQualLim        = in_array($compid, array("15232","15070"));
+$lang = "no";
+if (isset($_GET['lang']))
+	$lang = $_GET['lang'];
 
-$qualLim  = 6;
-if (isset($_GET['class']))
+$qualLim  = 0;
+if (in_array($compid, array(15232,15070)))
 {
+	$qualLim  = 6;
 	if ($_GET['class'] == "Menn senior")
 		$qualLim = 7;
 	if ($_GET['class'] == "Menn junior")
@@ -19,10 +19,7 @@ if (isset($_GET['class']))
 	if ($_GET['class'] == "Kvinner junior" )
 		$qualLim = 9;
 }
-
-if (isset($_GET['lang']))
- $lang = $_GET['lang'];
-
+	
 include_once("templates/emmalang_en.php");
 include_once("templates/emmalang_$lang.php");
 include_once("templates/classEmma.class.php");
@@ -32,8 +29,7 @@ $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUS
 
 header('content-type: application/json; charset='.$CHARSET);
 header('Access-Control-Allow-Origin: *');
-header('cache-control: max-age=15');
-header('pragma: public');
+header('cache-control: max-age=10');
 header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + $refreshTime));
 
 if (!isset($_GET['method']))
@@ -642,8 +638,7 @@ elseif ($_GET['method'] == 'getclassresults')
 				}
 				
 				// Qualification limit
-				
-				if ($place>$qualLim && $firstNonQualifierSet == false && $showQualLim)
+				if ($place>$qualLim && $firstNonQualifierSet == false && $qualLim>0)
 				{						 
 					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
 					$firstNonQualifierSet = true;
@@ -664,14 +659,6 @@ elseif ($_GET['method'] == 'getclassresults')
 		else
 		{
 			echo("{ \"status\": \"OK\",$br \"className\": \"".$class."\",$br \"splitcontrols\": $splitJSON,$br \"results\": [$br$ret$br]");
-			if ($isMassStartRace)
-                        {
-                           echo(",$br \"IsMassStartRace\": true");
-                        }
-			if ($showTenthsOfSecond ) 
-                        {
-                           echo(",$br \"ShowTenthOfSecond\": true");
-                        }
 			echo(",$br \"hash\": \"". $hash."\"}");
 		}
 }

@@ -349,7 +349,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
 function getAllSplitControls()
 {
 	$ret = Array();
-	$q = "SELECT code, name, classname, corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder asc, code desc";
+	$q = "SELECT code, name, classname, corder from splitcontrols where tavid = " .$this->m_CompId. " order by corder";
 	if ($result = mysqli_query($this->m_Conn, $q))
 	{
 		while($tmp = mysqli_fetch_array($result))
