@@ -699,40 +699,6 @@ namespace LiveResults.Model
                         }
                         UpdateRunnerTimes(runner);
                     }
-
-                    /*Detect runners that are removed*/
-                    /*duplicateCounter = new Dictionary<string, int>();
-                    foreach (var existingRunner in existingClass)
-                    {
-                        string duplValue = (existingRunner.Name + ":" + existingRunner.Club).ToLower();
-                        if (!duplicateCounter.ContainsKey(duplValue))
-                        {
-                            duplicateCounter.Add(duplValue, 0);
-                        }
-
-                        duplicateCounter[duplValue]++;
-                        int findInstance = duplicateCounter[duplValue];
-                        bool exists = false;
-                        int instNum = 0;
-                        foreach (var runner in classGroup)
-                        {
-                            if (string.Compare(existingRunner.Name, runner.Name, StringComparison.InvariantCultureIgnoreCase) == 0 &&
-                                string.Compare(existingRunner.Club, runner.Club, StringComparison.InvariantCultureIgnoreCase) == 0)
-                            {
-                                 instNum++;
-                                 if (instNum == findInstance)
-                                 {
-                                     exists = true;
-                                     break;
-                                 }
-                            }
-                        }
-                        if (!exists)
-                        {
-                            //Remove runner
-                            RemoveRunner(existingRunner);
-                        }
-                    }*/
                 }
                 else
                 {

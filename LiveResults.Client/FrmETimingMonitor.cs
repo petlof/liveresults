@@ -75,17 +75,16 @@ namespace LiveResults.Client
                     client.SetRunnerResult(newResult.ID, newResult.Time, newResult.Status);
                 }
 
+                var controlCodes = new List<int>();
                 if (newResult.SplitTimes != null)
                 {
-                    var controlCodes = new List<int>();
-                    
                     foreach (ResultStruct str in newResult.SplitTimes)
                     {
-                        client.SetRunnerSplit(newResult.ID, str.ControlCode, str.Time);
-                        controlCodes.Add(str.ControlCode);
+                         client.SetRunnerSplit(newResult.ID, str.ControlCode, str.Time);
+                         controlCodes.Add(str.ControlCode);
                     }
-                    client.DeleteUnusedSplits(newResult.ID, controlCodes);
                 }
+                client.DeleteUnusedSplits(newResult.ID, controlCodes);
             }
         }
 
