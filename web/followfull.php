@@ -186,7 +186,7 @@ $(document).ready(function()
 	<?php }?>
 	
 	// Mass start race
-	<?php if(in_array($currentCompNo, array(15233,15952))){?>
+	<?php if(in_array($currentCompNo, array(14872, 15233,15952, 16197))){?>
 		res.curClassIsMassStart = true;
 	<?php }?>
 	
@@ -230,33 +230,19 @@ function changeFontSize(val)
   </tr>
 <?php }?>
 <!-- End SUB MENU -->
-
   <tr>
-
     <td class="searchmenu" colspan="2" style="" valign=top>
-
        <table border="0" cellpadding="0" cellspacing="0">
-
              <tr>
-
                <td valign=top>
-
 			<?php if (!isset($_GET['comp']))
-
 			{
-
 			?>
-
 				<h1 class="categoriesheader">Ett fel uppstod? Har du valt tävling?</h1>
-
 			<?php
-
 			}
-
 			else
-
 			{
-
 			?>
 
 <?php if (!$showPath) {?>
@@ -320,10 +306,13 @@ function changeFontSize(val)
 			    <td width="60">
 			    <img src="images/OF.png" height="60" /></td>
 			<?php }?>
+			<?php if(in_array($_GET['comp'], array("16235","16241"))){?>
+			    <td width="60">
+			    <img src="images/SB-O.png" height="60" /></td>
+			<?php }?>
 			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
-<div id="divLastPassings">
-</div>
-</td>
+<div id="divLastPassings"></div></td>
+
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br>
 <span id="setCompactViewText"><b>Compact view:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setCompactView(false);"><?=$_OFF?></a></span><br>
@@ -334,38 +323,32 @@ function changeFontSize(val)
 <?php }?>
 
 <!--- RESULT TABLE --->
-			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-
-			<tr>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr> 
 <?php if (!$isSingleClass && !$isSingleClub){?>
-			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
-
-<div id="divClasses">
-</div>
-</td>
+<td valign="top" width=70 valign="top" style="padding-right: 5px; "><b style="background: #555556; color:#FFF; padding: 4px 10px; border-radius: 0 0 10px 0; "><?=$_CHOOSECLASS?></b><br><br>
+    <div id="divClasses">
+	</div></td>
 <?php }?>
 
 
-
-			<td valign="top">
-		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
+<td valign="top">
+<div class="whitelinks" style="background: #555556; padding: 4px 10px; color: white; border-radius: 0 0 10px 0; margin-top: -3px">
+<span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span>
+<span  style="margin-left: 10px; float: right;"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()"> <?=$_OPENINNEWWINDOW?></a> <?php }?> <span id="txtResetSorting"></span></span></div>
 <table id="divResults" width="100%">
 <tbody>
 <tr><td></td></tr>
 </tbody>
 </table><br><br>
-
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
+</td>
+</tr>
+</table>
+<?php }?>
 
 </td>
 
-			</tr>
-
-			</table>
-
-			<?php }?>
-
-		</td>
 <td valign="top" style="padding: 20px">
 <div id="twitterfeed">
 <?php
@@ -403,19 +386,10 @@ function removeTwitter()
 			</table>
 </td>
 <?php }?>
-
-	     </tr>
-
-	</table>
-
-
-
-     </td>
-
-  </tr>
-
-
-
+</tr>
+</table>
+</td>
+</tr>
 </table>
 
 <p align="left">&copy;2012-, Liveresults (https://liveresults.github.io/documentation/), <?=$_NOTICE?></p>

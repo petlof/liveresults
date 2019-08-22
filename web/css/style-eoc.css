@@ -10,7 +10,8 @@ body.iframed {margin-left:0px; margin-right:0px; font-size:68.75%; font-family: 
 
 table {font-size:1em;}
 td{font-family: arial, helvetica, verdana, geneva, sans-serif; font-size:1em; line-height: 1.4em; white-space: nowrap;}
-th { white-space: normal;}
+th{white-space: normal;}
+tr{border-top: hidden;}
 
 a:link {font-size:1em; color:#F1592A;}
 a:visited {font-size:1em; color:#F1592A;}
@@ -42,15 +43,26 @@ td.submenu table tr td a:hover {text-decoration: underline; color: #F1592A;}
 
 td.searchmenu { padding-left: 5px;}
 
-tr.new_result {  color: white; background-color: #F1592A !important;font-weight: bold;  border-bottom: 1px solid white; }
+tr.new_result {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: none} /* font-weight: bold; */
 tr.new_result a {color: white;}
 tr.new_result td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
-tr.new_result td.sorting_1 { background-color: #F9B7A4 !important;  border-bottom: 1px solid white;}
-
+tr.new_result td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
 tr.new_result td:last-child {
     border-top-right-radius: 0px;
     border-bottom-right-radius: 15px
 }
+tr.new_result .plustime { color: white;}
+
+/* New first nonqualifier */
+tr.new_fnq {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: 3px dashed grey;} /* font-weight: bold; */
+tr.new_fnq a {color: white;}
+tr.new_fnq td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
+tr.new_fnq td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
+tr.new_fnq td:last-child {
+    border-top-right-radius: 0px;
+    border-bottom-right-radius: 15px
+}
+tr.new_fnq .plustime {color: white;}
 
 tr.OK_entry { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white;
 }
@@ -85,9 +97,6 @@ vertical-align: top;
  color: #666;
 }
 
-TR.new_result .plustime {
- color: white;
-}
 
 .legtime {
     color: grey;
@@ -165,3 +174,49 @@ td.menuchosen a:hover {text-decoration: none; color:#C0D6FF;}
 .categories{background: #F4F8FD; border:1px solid #ABC9EF;}
 .categoriesheader{color:#FFA02B; font-size:1.27em; font-weight:bold;}
 
+
+/*-------------------------------*/
+/*---       Tooltip           ---*/
+/*-------------------------------*/
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 50px;
+  background-color: #555555;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 120%;
+  left: -5%;
+  /* top: -5px;
+  left: 110%;
+    
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.tooltip .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 100%;
+  left: 50%; /* To the left of the tooltip */
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 0.9;
+}

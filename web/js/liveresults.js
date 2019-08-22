@@ -43,8 +43,8 @@ var LiveResults;
             this.currentTable = null;
             this.serverTimeDiff = 1;
             this.eventTimeZoneDiff = 0;
-            this.apiURL = "https://www.freidig.idrett.no/o/liveres/api.php";
-            this.radioURL = "https://www.freidig.idrett.no/o/liveres/radioapi.php";
+            this.apiURL = "//www.freidig.idrett.no/o/liveres/api.php";
+            this.radioURL = "//www.freidig.idrett.no/o/liveres/radioapi.php";
             LiveResults.Instance = this;
             $(window).hashchange(function () {
                 if (window.location.hash) {
@@ -99,13 +99,29 @@ var LiveResults;
         };
         AjaxViewer.prototype.handleUpdateClassListResponse = function (data) {
             var _this = this;
-            if (data != null && data.status == "OK") {
-                if (!data.classes || !$.isArray(data.classes) || data.classes.length == 0) {
+            if (data != null && data.status == "OK")
+			{
+                if (!data.classes || !$.isArray(data.classes) || data.classes.length == 0)
                     $('#resultsHeader').html("<b>" + this.resources["_NOCLASSESYET"] + "</b>");
-                }
-                if (data.classes != null) {
-                    var str = "<nowrap>";
-                    $.each(data.classes, function (key, value) {
+                if (data.classes != null)
+				{
+					var classes = data.classes;
+					classes.sort(function(a, b)
+					{
+						var x  = a.className.replace(' 9',' 09');
+						x  = x.replace('Dir','Z');
+						x  = x.replace('DIR','Z');
+						x  = x.replace('N-åpen','A');
+						var y  = b.className.replace(' 9',' 09');
+						y  = y.replace('Dir','Z');
+						y  = y.replace('DIR','Z');
+						y  = y.replace('N-åpen','A');
+						if (x < y) {return -1;}
+						if (x > y) {return 1;}
+						return 0;
+					});
+					var str = "<nowrap>";
+                    $.each(classes, function (key, value) {
                         var param = value.className;
                         if (param && param.length > 0)
                             param = param.replace('\'', '\\\'');
@@ -123,25 +139,42 @@ var LiveResults;
 		
 		// Update best split times
 		AjaxViewer.prototype.updateClassSplitsBest = function (data) {
-            if (data != null && data.status == "OK" && data.results != null) {
+			if (data != null && data.status == "OK" && data.results != null) {
 				var classSplits = data.splitcontrols;
+				var classSplitsBest = Array(classSplits.length+1).fill(0);
+				var relay = (classSplits.length>0 && classSplits[0].code == "0"); 
+				// Best finish time
+				for (var i = 0; i< data.results.length; i++)
+				{
+					if(data.results[i].place != undefined && data.results[i].place == 1)
+					{
+						if (relay)
+							classSplitsBest[classSplits.length] = data.results[i].start + data.results[i].splits[classSplits[classSplits.length-1].code];
+						else
+							classSplitsBest[classSplits.length] = parseInt(data.results[i].result);
+						break;
+					}
+				}
 				if (classSplits.length > 0)
 				{
-					var classSplitsBest = Array(classSplits.length+1).fill(0);
+					
+			        // Best split times
 					for (var sp = 0; sp < classSplits.length; sp++)
 					{
 						for (var i = 0; i< data.results.length ; i++)
 						{
-							if(data.results[i].splits[classSplits[sp].code + "_place"] != undefined)
-								if(data.results[i].splits[classSplits[sp].code + "_place"] == 1)
-								{
+							if(data.results[i].splits[classSplits[sp].code + "_place"] != undefined && data.results[i].splits[classSplits[sp].code + "_place"] == 1)
+							{
+								if (relay && sp>0) // If relay store pass time stamp instead of used time. Using leg time and start time
+									classSplitsBest[sp] = data.results[i].start + data.results[i].splits[classSplits[sp-1].code];
+								else
 									classSplitsBest[sp] = data.results[i].splits[classSplits[sp].code];
-									break;
-								}
+								break;
+							}
 						}
 					}
-					this.curClassSplitsBests = classSplitsBest;
 				}
+				this.curClassSplitsBests = classSplitsBest;
 			}
 		};
 		
@@ -154,11 +187,10 @@ var LiveResults;
                     var currentTimeZoneOffset = -1 * new Date().getTimezoneOffset();
                     var eventZoneOffset = ((dt.dst() ? 2 : 1) + this.eventTimeZoneDiff) * 60;
                     var timeZoneDiff = eventZoneOffset - currentTimeZoneOffset;
-                    var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100
-                        - (this.serverTimeDiff / 10) +
-                        (timeZoneDiff * 6000);
+                    var time = 100*Math.round((dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) - (this.serverTimeDiff / 1000) + (timeZoneDiff * 60));
                     var i;
                     var extraCol = 0;
+					var numSplits = 0;
 					
 					var haveSplitControls = (this.curClassSplits != null) && (this.curClassSplits.length > 0);
                     var relay = (haveSplitControls && (this.curClassSplits[0].code == "0"));
@@ -175,43 +207,73 @@ var LiveResults;
                     }
 					if (this.compactView)
 						extraCol = 1;
+					if (relay)
+						numSplits = this.curClassSplits.length/2-1;
+					else
+						numSplits = this.curClassSplits.length;
+					var timeDiff = 0;
+					var timeDiffCol = 0;
+					var timeDiffStr = "";
                     for (var i = 0; i < data.length; i++) {
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
 							var elapsedTime = time - data[i].start;
+							var elapsedTimeStr = "";
+							if (relay && !this.compactView)
+							   elapsedTimeStr += "<br/>";
+							 elapsedTimeStr += "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
                             if (elapsedTime>=0) {
-                                if (this.curClassSplits == null || this.curClassSplits.length == 0) {
-                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html("<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>");
+                                if (this.curClassSplits == null || this.curClassSplits.length == 0) // No split controls
+								{
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html(elapsedTimeStr);
+									if (!unranked && this.curClassSplitsBests[0]>0)
+									{
+										timeDiff = elapsedTime - this.curClassSplitsBests[0]; 
+										timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
+										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 5 + ")").html(timeDiffStr);
+									}
                                 }
-                                else {
-                                    //Find next split to reach
+                                else 
+								{
+									//Find next split to reach
                                     var nextSplit = 0;
+                                    var nextSplitRef = 0;
                                     for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
                                         if (data[i].splits[this.curClassSplits[sp].code] != "") {
                                             {
 												if (relay)
+												{
 													nextSplit = sp/2;
-												else
+													nextSplitRef = sp + 2;
+													}
+													
+											      else
+											      {
 													nextSplit = sp + 1;
+													nextSplitRef = sp + 1;
+													}
                                                 break;
                                             }
                                         }
                                     }
-									
-									var elapsedTimeStr = "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
-									if (!relay && !unranked && nextSplit<this.curClassSplits.length)
+									if (!unranked)
 									{
-										if (this.curClassSplitsBests[nextSplit]==0)
-										   $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html("<i>(...) <\i>");
-										   else
-										   {
-										
-										var timeDiff = elapsedTime - this.curClassSplitsBests[nextSplit];
-										
-										var sign = ( timeDiff<0 ? "-" : "+"); 
-										var timeDiffStr = "<i>(" + sign + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
-										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html(timeDiffStr);
+										if (this.curClassSplitsBests[nextSplitRef]==0 && nextSplit<numSplits)
+										   $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html("<i>(...)<\i>");
+										else
+										{
+											if (relay)
+												timeDiff = time - this.curClassSplitsBests[nextSplitRef]; 
+											else
+												timeDiff = elapsedTime - this.curClassSplitsBests[nextSplitRef]; 
+											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
+											
+											if (nextSplit<numSplits)
+												timeDiffCol = 3 + nextSplit + extraCol;
+											else 
+												timeDiffCol = 4 + nextSplit + extraCol;
+											$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html(timeDiffStr);
 										}
-										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + this.curClassSplits.length + extraCol) + ")").html(elapsedTimeStr);
+										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").html(elapsedTimeStr);
 									}
 									else
 										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html(elapsedTimeStr);
@@ -389,7 +451,9 @@ var LiveResults;
                     this.updateResultVirtualPosition(data.results);
                     this.currentTable.fnClearTable();
                     this.currentTable.fnAddData(data.results, true);
+					this.updatePredictedTimes();
                     this.lastClassHash = data.hash;
+
                 }
             }
             this.resUpdateTimeout = setTimeout(function () {
@@ -477,6 +541,7 @@ var LiveResults;
                     catch (e) {
                     }
                     _this.updateClassResults(data);
+			_this.updatePredictedTimes();
                 },
                 dataType: "json"
             });
@@ -569,9 +634,6 @@ var LiveResults;
                         }
                     });
                     
-					//this.curClassIsMassStart = false;
-                    //if (data.IsMassStartRace)
-                    //    this.curClassIsMassStart = data.IsMassStartRace;
                     this.updateResultVirtualPosition(data.results);
                     columns.push({
                         "sTitle": this.resources["_START"],
@@ -637,8 +699,7 @@ var LiveResults;
                                                 if ((!fullView || relay) && (o.aData.splits[value.code + "_place"] != 1) && !unranked && (value.code > 0)) 
 											    // Compact view or relay view, all but first place
                                                 {
-                                                    txt += "<span>+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond)
-                                                        + "</span> (" + o.aData.splits[value.code + "_place"] + ")";
+                                                    txt += "<div class=\"tooltip\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + " (" + o.aData.splits[value.code + "_place"] + ")<span class=\"tooltiptext\">" + _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond) + "</span></div>";
                                                 }
                                                 else 
 											    // Ordinary passing or first place at passing for relay (drop place if code is negative - unranked)
@@ -964,7 +1025,7 @@ var LiveResults;
             var firstFinishedIdx = -1;
             for (i = 0; i < data.length; i++) {
                 if (data[i].place != "") {
-                    firstFinishedIdx = i;
+					firstFinishedIdx = i;
                     break;
                 }
             }
@@ -1005,12 +1066,18 @@ var LiveResults;
         AjaxViewer.prototype.sortByDistAndSplitPlace = function (a, b) {
             var sortStatusA = a.status;
             var sortStatusB = b.status;
-            if (sortStatusA == 9 || sortStatusA == 10)
+            if (sortStatusA == 9 || sortStatusA == 10 || sortStatusA == 13 )
                 sortStatusA = 0;
-            if (sortStatusB == 9 || sortStatusB == 10)
+            if (sortStatusB == 9 || sortStatusB == 10 || sortStatusB == 13 )
                 sortStatusB = 0;
-            if (sortStatusA != sortStatusB)
-                return sortStatusA - sortStatusB;
+            if (sortStatusA != sortStatusB) {
+				if (sortStatusA == 0)
+					return -1
+				else if (sortStatusB == 0)
+					return 1
+				else
+					return sortStatusB - sortStatusA;
+			}
             if (a.progress == 100 && b.progress == 100)
                 return a.result - b.result;
             if (a.progress == 0 && b.progress == 0) {
@@ -1068,7 +1135,7 @@ var LiveResults;
             }
             if (result.start != "") {
                 for (d = 0; d < data.length; d++) {
-                    if (data[d].place == "-" || data[d].place == "F") {
+                    if (data[d].place == "-") {
                         data.splice(d, 0, result);
                         return;
                     }
@@ -1083,20 +1150,22 @@ var LiveResults;
             data.push(result);
         };
         AjaxViewer.prototype.resultSorter = function (a, b) {
-            if (a.place == "F") {
-                return -1;
+            var aStatus = a.status;
+			var bStatus = b.status;
+			if (a.place == "F") {
+				aStatus = 0;
             }
             else if (b.place == "F") {
-                return 1;
+                bStatus = 0;
             }
-            else if (a.place != "" && b.place != "") {
-                if (a.status != b.status)
-					if(a.status == 0)
+            if (a.place != "" && b.place != "") {
+                if (aStatus != bStatus)
+					if(aStatus == 0)
 						return -1
-					else if (b.status == 0)
+					else if (bStatus == 0)
 						return 1
 					else
-						return b.status - a.status;
+						return bStatus - aStatus;
 				else {
                     if (a.result == b.result) {
                         if (a.place == "=" && b.place != "=") {

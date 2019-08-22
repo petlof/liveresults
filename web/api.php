@@ -29,8 +29,8 @@ $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUS
 
 header('content-type: application/json; charset='.$CHARSET);
 header('Access-Control-Allow-Origin: *');
-header('cache-control: max-age=10');
-header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + $refreshTime));
+header('cache-control: max-age='+ ($refreshTime-1));
+header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T', time() + ($refreshTime-1)));
 
 if (!isset($_GET['method']))
 {
@@ -624,24 +624,19 @@ elseif ($_GET['method'] == 'getclassresults')
 				{
 					$ret .= ",$br \"start\": \"\"";
 				}
-
-				$rowClass="";
-				if ($modified)
-				{
-					$rowClass="new_result";
-					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
-				}
-
-				if (strlen($rowClass) > 0)
-				{
-					 $ret .= ",$br \"DT_RowClass\": \"$rowClass\"";
-				}
 				
-				// Qualification limit
+				// Qualification limit and new results
 				if ($place>$qualLim && $firstNonQualifierSet == false && $qualLim>0)
-				{						 
-					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
+				{	
 					$firstNonQualifierSet = true;
+					if ($modified)
+						$ret .= ",$br \"DT_RowClass\": \"new_fnq\"";
+					else
+						$ret .= ",$br \"DT_RowClass\": \"firstnonqualifier\"";
+				}
+				else if ($modified)
+				{
+					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
 				}
 
 				$ret .= "$br}";
