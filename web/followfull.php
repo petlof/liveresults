@@ -181,12 +181,13 @@ $(document).ready(function()
 		res.startPredictionUpdate();
 	<?php }?>
 	
-	<?php if ($setFullView){?>
+	// Set full view
+	<?php if ($setFullView || in_array($currentCompNo, array(16284))){?>
 		res.setCompactView(false);
 	<?php }?>
 	
 	// Mass start race
-	<?php if(in_array($currentCompNo, array(14872, 15233,15952, 16197))){?>
+	<?php if(in_array($currentCompNo, array(14872, 15233,15952, 16197, 16284))){?>
 		res.curClassIsMassStart = true;
 	<?php }?>
 	
@@ -306,7 +307,7 @@ function changeFontSize(val)
 			    <td width="60">
 			    <img src="images/OF.png" height="60" /></td>
 			<?php }?>
-			<?php if(in_array($_GET['comp'], array("16235","16241"))){?>
+			<?php if(in_array($_GET['comp'], array("16235","16241","16284"))){?>
 			    <td width="60">
 			    <img src="images/SB-O.png" height="60" /></td>
 			<?php }?>
@@ -321,9 +322,11 @@ function changeFontSize(val)
 </td>
 </tr></table><br>
 <?php }?>
+</td>
+</table>
 
 <!--- RESULT TABLE --->
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<table border="0" cellpadding="0" cellspacing="0">
 <tr> 
 <?php if (!$isSingleClass && !$isSingleClub){?>
 <td valign="top" width=70 valign="top" style="padding-right: 5px; "><b style="background: #555556; color:#FFF; padding: 4px 10px; border-radius: 0 0 10px 0; "><?=$_CHOOSECLASS?></b><br><br>
@@ -347,7 +350,7 @@ function changeFontSize(val)
 </table>
 <?php }?>
 
-</td>
+
 
 <td valign="top" style="padding: 20px">
 <div id="twitterfeed">
@@ -387,7 +390,6 @@ function removeTwitter()
 </td>
 <?php }?>
 </tr>
-</table>
 </td>
 </tr>
 </table>

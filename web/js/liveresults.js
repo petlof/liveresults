@@ -108,25 +108,69 @@ var LiveResults;
 					var classes = data.classes;
 					classes.sort(function(a, b)
 					{
-						var x  = a.className.replace(' 9',' 09');
-						x  = x.replace('Dir','Z');
-						x  = x.replace('DIR','Z');
-						x  = x.replace('N-åpen','A');
-						var y  = b.className.replace(' 9',' 09');
-						y  = y.replace('Dir','Z');
-						y  = y.replace('DIR','Z');
-						y  = y.replace('N-åpen','A');
-						if (x < y) {return -1;}
-						if (x > y) {return 1;}
+						var x  = [a.className, b.className];
+						for (var i=0; i<2; i++)
+						{
+							x[i] = x[i].replace(/(^|[^\d])(\d)([^\d])/,'$100$2$3');      // Add 00 ahead of single digits
+							x[i] = x[i].replace(/(^|[^\d])(\d)(\d)([^\d])/,'$10$2$3$4'); // Add 0 ahead of double digits
+							x[i] = x[i].replace(' ','');
+							x[i] = x[i].replace(/n-åpen/i,'X');
+							x[i] = x[i].replace(/utv/i,'Y');
+							x[i] = x[i].replace(/dir/i,'Z');
+							x[i] = x[i].replace(/open/i,'Z');
+						}
+						if (x[0] < x[1]) {return -1;}
+						if (x[0] > x[1]) {return 1;}
 						return 0;
 					});
 					var str = "<nowrap>";
-                    $.each(classes, function (key, value) {
-                        var param = value.className;
-                        if (param && param.length > 0)
-                            param = param.replace('\'', '\\\'');
-                        str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + value.className + "</a><br/>";
-                    });
+					var nClass = classes.length;
+					
+					var relayNext = false;
+					var leg = 0;
+					for (var i=0; i<nClass; i++)
+					{
+						var relay = relayNext;
+						var className = classes[i].className;
+						param = className.replace('\'', '\\\'');
+						if (className && className.length > 0)
+						{
+							var classNameClean = className.replace(/-\d$/,'');
+							classNameClean = classNameClean.replace(/-All$/,'');
+							if (i<(nClass-1))
+							{
+								var classNameCleanNext = classes[i+1].className.replace(/-\d$/,'');
+								classNameCleanNext = classNameCleanNext.replace(/-All$/,'');
+								if (classNameClean == classNameCleanNext) // Relay trigger
+								{
+									if (!relay) // First class in relay
+									{
+										str += "<b>" + classNameClean + "</b><br/>&nbsp";
+										leg = 0;
+									}
+									relay = true;
+									relayNext = true;
+								}
+								else
+									relayNext = false;	
+							}
+							if (relay)
+							{
+								var legText = "";
+								leg += 1;
+								// var relayLeg = className.replace(classNameClean,'Etappe');
+								if (className.replace(classNameClean,'') == "-All")
+									legText = "<font size=\"+1\">&#" + (9398) +"</font>"
+								else
+								    legText = "<font size=\"+1\">&#" + (10111+leg) +"</font>"; 
+								str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\" style=\"text-decoration: none\"> " + legText + "</a>";
+								if (!relayNext)
+									str += "<br/>";
+							}	
+							else	
+								str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + className + "</a><br/>";
+						}
+                    };
                     str += "</nowrap>";
                     $("#" + this.classesDiv).html(str);
                     this.lastClassListHash = data.hash;
@@ -220,7 +264,7 @@ var LiveResults;
 							var elapsedTimeStr = "";
 							if (relay && !this.compactView)
 							   elapsedTimeStr += "<br/>";
-							 elapsedTimeStr += "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
+							elapsedTimeStr += "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
                             if (elapsedTime>=0) {
                                 if (this.curClassSplits == null || this.curClassSplits.length == 0) // No split controls
 								{
@@ -257,8 +301,11 @@ var LiveResults;
                                     }
 									if (!unranked)
 									{
-										if (this.curClassSplitsBests[nextSplitRef]==0 && nextSplit<numSplits)
-										   $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html("<i>(...)<\i>");
+										timeDiffCol = 3 + nextSplit + extraCol;
+										if (nextSplit==numSplits) // Approach finish
+											timeDiffCol += 1;
+										if (this.curClassSplitsBests[nextSplitRef]==0)
+										   $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html("<i>(...)<\i>");
 										else
 										{
 											if (relay)
@@ -266,16 +313,11 @@ var LiveResults;
 											else
 												timeDiff = elapsedTime - this.curClassSplitsBests[nextSplitRef]; 
 											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
-											
-											if (nextSplit<numSplits)
-												timeDiffCol = 3 + nextSplit + extraCol;
-											else 
-												timeDiffCol = 4 + nextSplit + extraCol;
 											$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html(timeDiffStr);
 										}
 										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").html(elapsedTimeStr);
 									}
-									else
+									else // unranked
 										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html(elapsedTimeStr);
                                 }
                             }
@@ -513,7 +555,9 @@ var LiveResults;
             }, this.updateInterval);
         };
         AjaxViewer.prototype.chooseClass = function (className) {
-            var _this = this;
+             if (className.length == 0)
+				return;
+			var _this = this;
             if (this.currentTable != null) {
                 try {
                     this.currentTable.fnDestroy();
