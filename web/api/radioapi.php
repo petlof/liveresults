@@ -9,9 +9,9 @@ $refreshTime = 5;
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
 
-include_once("templates/emmalang_en.php");
-include_once("templates/emmalang_$lang.php");
-include_once("templates/classEmma.class.php");
+include_once("../templates/emmalang_en.php");
+include_once("../templates/emmalang_$lang.php");
+include_once("../templates/classEmma.class.php");
 
 
 $RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "", "13" => $_STATUSFINISHED);

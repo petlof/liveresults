@@ -43,8 +43,8 @@ var LiveResults;
             this.currentTable = null;
             this.serverTimeDiff = 1;
             this.eventTimeZoneDiff = 0;
-            this.apiURL = "//www.freidig.idrett.no/o/liveres/api.php";
-            this.radioURL = "//www.freidig.idrett.no/o/liveres/radioapi.php";
+            this.apiURL = "//api.freidig.idrett.no/api.php";
+            this.radioURL = "//api.freidig.idrett.no/radioapi.php";
             LiveResults.Instance = this;
             $(window).hashchange(function () {
                 if (window.location.hash) {
@@ -111,13 +111,13 @@ var LiveResults;
 						var x  = [a.className, b.className];
 						for (var i=0; i<2; i++)
 						{
-							x[i] = x[i].replace(/(^|[^\d])(\d)([^\d])/,'$100$2$3');      // Add 00 ahead of single digits
-							x[i] = x[i].replace(/(^|[^\d])(\d)(\d)([^\d])/,'$10$2$3$4'); // Add 0 ahead of double digits
+							x[i] = x[i].replace(/(^|[^\d])(\d)($|[^\d])/,'$100$2$3');      // Add 00 ahead of single digits
+							x[i] = x[i].replace(/(^|[^\d])(\d)(\d)($|[^\d])/,'$10$2$3$4'); // Add 0 ahead of double digits
 							x[i] = x[i].replace(' ','');
-							x[i] = x[i].replace(/n-åpen/i,'X');
-							x[i] = x[i].replace(/utv/i,'Y');
-							x[i] = x[i].replace(/dir/i,'Z');
-							x[i] = x[i].replace(/open/i,'Z');
+							x[i] = x[i].replace(/n-åpen/i,'x');
+							x[i] = x[i].replace(/utv/i,'y');
+							x[i] = x[i].replace(/dir/i,'z');
+							x[i] = x[i].replace(/open/i,'z');
 						}
 						if (x[0] < x[1]) {return -1;}
 						if (x[0] > x[1]) {return 1;}
@@ -185,37 +185,43 @@ var LiveResults;
 		AjaxViewer.prototype.updateClassSplitsBest = function (data) {
 			if (data != null && data.status == "OK" && data.results != null) {
 				var classSplits = data.splitcontrols;
-				var classSplitsBest = Array(classSplits.length+1).fill(0);
+				var classSplitsBest = new Array(classSplits.length+1);
+				for (var i = 0; i < classSplitsBest.length; i++) {
+					classSplitsBest[i] = new Array(1).fill(0);
+				}
 				var relay = (classSplits.length>0 && classSplits[0].code == "0"); 
-				// Best finish time
+				// Fill in finish times
+				var j = 0;
 				for (var i = 0; i< data.results.length; i++)
 				{
-					if(data.results[i].place != undefined && data.results[i].place == 1)
+					if(data.results[i].place != undefined && data.results[i].place >0 )
 					{
 						if (relay)
-							classSplitsBest[classSplits.length] = data.results[i].start + data.results[i].splits[classSplits[classSplits.length-1].code];
+							classSplitsBest[classSplits.length][j] = data.results[i].start + data.results[i].splits[classSplits[classSplits.length-1].code];
 						else
-							classSplitsBest[classSplits.length] = parseInt(data.results[i].result);
-						break;
+							classSplitsBest[classSplits.length][j] = parseInt(data.results[i].result);
+						j++;
 					}
 				}
+				classSplitsBest[classSplits.length].sort(function (a, b) {  return a - b;  });			
 				if (classSplits.length > 0)
 				{
-					
-			        // Best split times
+			        // Fill in split times
 					for (var sp = 0; sp < classSplits.length; sp++)
 					{
+						j = 0;
 						for (var i = 0; i< data.results.length ; i++)
 						{
-							if(data.results[i].splits[classSplits[sp].code + "_place"] != undefined && data.results[i].splits[classSplits[sp].code + "_place"] == 1)
+							if(data.results[i].splits[classSplits[sp].code + "_place"] != undefined && data.results[i].splits[classSplits[sp].code + "_place"] > 0)
 							{
 								if (relay && sp>0) // If relay store pass time stamp instead of used time. Using leg time and start time
-									classSplitsBest[sp] = data.results[i].start + data.results[i].splits[classSplits[sp-1].code];
+									classSplitsBest[sp][j]  = data.results[i].start + data.results[i].splits[classSplits[sp-1].code];
 								else
-									classSplitsBest[sp] = data.results[i].splits[classSplits[sp].code];
-								break;
+									classSplitsBest[sp][j]  = data.results[i].splits[classSplits[sp].code];
+								j++;
 							}
 						}
+						classSplitsBest[sp].sort(function (a, b) {  return a - b;  });
 					}
 				}
 				this.curClassSplitsBests = classSplitsBest;
@@ -262,19 +268,27 @@ var LiveResults;
                         if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
 							var elapsedTime = time - data[i].start;
 							var elapsedTimeStr = "";
+							var rankStr = "";
 							if (relay && !this.compactView)
 							   elapsedTimeStr += "<br/>";
 							elapsedTimeStr += "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
                             if (elapsedTime>=0) {
                                 if (this.curClassSplits == null || this.curClassSplits.length == 0) // No split controls
 								{
-                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html(elapsedTimeStr);
-									if (!unranked && this.curClassSplitsBests[0]>0)
+									
+									if (!unranked)
 									{
-										timeDiff = elapsedTime - this.curClassSplitsBests[0]; 
-										timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
+										if (this.curClassSplitsBests[0][0]>0)
+										{
+											rankStr = "<i> (" + this.findRank(this.curClassSplitsBests[0],elapsedTime) + ")</i>";
+											timeDiff = elapsedTime - this.curClassSplitsBests[0][0]; 
+											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
+										}
+										else
+											timeDiffStr = "<i>(...)<\i>";
 										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 5 + ")").html(timeDiffStr);
 									}
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html((elapsedTimeStr + rankStr));
                                 }
                                 else 
 								{
@@ -304,15 +318,25 @@ var LiveResults;
 										timeDiffCol = 3 + nextSplit + extraCol;
 										if (nextSplit==numSplits) // Approach finish
 											timeDiffCol += 1;
-										if (this.curClassSplitsBests[nextSplitRef]==0)
+										if (this.curClassSplitsBests[nextSplitRef][0]==0)
 										   $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html("<i>(...)<\i>");
 										else
 										{
 											if (relay)
-												timeDiff = time - this.curClassSplitsBests[nextSplitRef]; 
+											{
+												timeDiff = time - this.curClassSplitsBests[nextSplitRef][0];
+												rankStr = "<i> (" + this.findRank(this.curClassSplitsBests[nextSplitRef],time) + ")</i>";											
+											}
 											else
-												timeDiff = elapsedTime - this.curClassSplitsBests[nextSplitRef]; 
+											{
+												timeDiff = elapsedTime - this.curClassSplitsBests[nextSplitRef][0];
+												rankStr = " (" + this.findRank(this.curClassSplitsBests[nextSplitRef],elapsedTime) + ")";
+											}
 											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
+											if (nextSplit==numSplits)
+												elapsedTimeStr += rankStr;
+											else
+												timeDiffStr += rankStr; 
 											$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html(timeDiffStr);
 										}
 										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").html(elapsedTimeStr);
@@ -323,11 +347,22 @@ var LiveResults;
                             }
                         }
                     }
-                }
+                } 
                 catch (e) {
                 }
             }
         };
+		
+		//Find rank number
+        AjaxViewer.prototype.findRank = function (array, val) {
+			var rank = 1;
+			for(var i=0; i<array.length; i++)
+				if (array[i] < val)
+					rank++;
+				else
+					break;
+			return rank;
+		};
 
         //Set wether to display tenth of a second in results
         AjaxViewer.prototype.setShowTenth = function (val) {
