@@ -35,58 +35,86 @@ if ($_GET['method'] == 'getradiopassings')
 		$currentComp = new Emma($_GET['comp']);
 		$code = $_GET['code'];
 		$calltime = $_GET['calltime'];
-		$lastPassings = $currentComp->getRadioPassings($code,$calltime);
+		
+		if (isset($_GET['last_hash']))
+			$lastUpdate = $_GET['last_hash']; // Use last hash to contain last update time
+		else
+			$lastUpdate = "";
+		if ($lastUpdate == "")
+			$maxNum = 10; 
+		else
+			$maxNum = 30; 
+
+		$lastPassings = $currentComp->getRadioPassings($code,$calltime,$lastUpdate,$maxNum);
 
 		$first = true;
+		$num = 0;
 		$ret = "";
 		$laststatus = 0;
 		$lasttime = 0;
+		$changedTime = "";
 		foreach ($lastPassings as $pass)
 		{
+			$num += 1;
 			$age = time()-strtotime($pass['Changed']);
 			$modified = $age < $hightime ? 1:0;
 			
 			$status = $pass['Status'];
 			$time   = $pass['Time'];
-
-			if (!$first)
-				$ret .=",$br";
 			
+			if($first)
+				$changedTime = $pass['changedRaw'];
+			else
+				$ret .=",$br";
 			$ret .= "{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
 					\"runnerName\": \"".$pass['Name']."\",
 					\"club\": \"".$pass['Club']."\",
 					\"class\": \"".$pass['class']."\",
 					\"control\": ".$pass['Control'].",
 					\"controlName\" : \"".$pass['pname']."\",
-					\"time\": \"" .formatTime($time,0,$RunnerStatus)."\",
-					\"compName\": \"".$pass['compName']."\" ";
-			
+					\"time\": \"" .formatTime($time,$status,$RunnerStatus)."\", 
+					\"compName\": \"".$pass['compName']."\"";
+			// eller 0 for status? Funker ikke påa start, code =0 
 			if ($pass['Control']==100)	
 			{
 				if ($pass['class']=="NOCLAS")
 				{
-					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
+					$ret .= ",$br \"DT_RowClass\": \"red_row\"";
 				}
 				elseif (($lasttime - $time > 5900) && ($status == 10)) 
 				{
-					$ret .= ",$br \"DT_RowClass\": \"start_entrynew\"";
+					$ret .= ",$br \"DT_RowClass\": \"yellow_row_new\"";
 				}
 				elseif ($status == 10)
 				{
-					$ret .= ",$br \"DT_RowClass\": \"start_entry\"";
+					$ret .= ",$br \"DT_RowClass\": \"yellow_row\"";
 				}
 				elseif ($modified)
 				{
-					$ret .= ",$br \"DT_RowClass\": \"OK_entry\"";
+					$ret .= ",$br \"DT_RowClass\": \"green_row\"";
 				}
 				elseif ($laststatus == 10) 
 				{
-					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
+					$ret .= ",$br \"DT_RowClass\": \"firstnonqualifier\"";
 				}
 			}
-			elseif ($modified) // New result, all but start 
-			{
-				$ret .= ",$br \"DT_RowClass\": \"new_result\"";
+			else // New result, all but start. Use hash as last updated time
+			{	
+				if (($status == 0) || ($status == 9) || ($status == 10))
+				{
+					$rankTime = $currentComp->getRankForSplitInClass($pass['class'],$pass['Control'],$time);
+					$rank = $rankTime['rank']+1;
+					if ($rank>1)
+						$timeDiff = $time-$rankTime['bestTime'];
+					else
+						$timeDiff = 0;
+				}
+				else
+				{
+					$rank = -1;
+					$timeDiff = -1;
+				}
+				$ret .= ",\"rank\": ".$rank.",\"timeDiff\": ".$timeDiff;
 			}
 			
 			$ret .= "$br}";
@@ -94,15 +122,21 @@ if ($_GET['method'] == 'getradiopassings')
 			$laststatus = $status;
 			$lasttime = $time;
 		}
-
-		$hash = MD5($ret);
-		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+				
+		if ($code == 0)
 		{
-			echo("{ \"status\": \"NOT MODIFIED\"}");
+			$hash = MD5($ret);
+			if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+				echo("{ \"status\": \"NOT MODIFIED\"}");
+			else
+			echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$hash\"}");
 		}
 		else
 		{
-			echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$hash\"}");
+			if ($num == 0)
+				echo("{ \"status\": \"NOT MODIFIED\"}");
+			else
+				echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$changedTime\"}");
 		}
 }
 else
@@ -113,14 +147,12 @@ else
 	echo("{ \"status\": \"ERR\", \"message\": \"No method given\"}");
 }
 
-
-
 function formatTime($time,$status,& $RunnerStatus)
 
 {
   global $lang;
 
-  if ($status != "0")
+  if (($status != "0") && ($status != "9") && ($status != "10"))
   {
     return $RunnerStatus[$status]; //$status;
   }

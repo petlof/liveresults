@@ -26,6 +26,8 @@ var LiveResults;
             this.updateInterval = 10000;
 			this.radioUpdateInterval = 5000;
             this.classUpdateInterval = 60000;
+			this.radioHighTime = 60;
+			this.highTime = 60;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
             this.resUpdateTimeout = null;
@@ -43,6 +45,7 @@ var LiveResults;
             this.currentTable = null;
             this.serverTimeDiff = 1;
             this.eventTimeZoneDiff = 0;
+			this.radioData = null;
             this.apiURL = "//api.freidig.idrett.no/api.php";
             this.radioURL = "//api.freidig.idrett.no/radioapi.php";
             LiveResults.Instance = this;
@@ -238,6 +241,7 @@ var LiveResults;
                     var eventZoneOffset = ((dt.dst() ? 2 : 1) + this.eventTimeZoneDiff) * 60;
                     var timeZoneDiff = eventZoneOffset - currentTimeZoneOffset;
                     var time = 100*Math.round((dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) - (this.serverTimeDiff / 1000) + (timeZoneDiff * 60));
+					var timeServer = (dt - this.serverTimeDiff)/1000 + timeZoneDiff*60;
                     var i;
                     var extraCol = 0;
 					var numSplits = 0;
@@ -257,30 +261,108 @@ var LiveResults;
                     }
 					if (this.compactView)
 						extraCol = 1;
-					if (relay)
+					
+					if (this.curClassSplits == null)
+						numSplits = 0;
+					else if (relay)
 						numSplits = this.curClassSplits.length/2-1;
 					else
 						numSplits = this.curClassSplits.length;
+					
 					var timeDiff = 0;
 					var timeDiffCol = 0;
 					var timeDiffStr = "";
-                    for (var i = 0; i < data.length; i++) {
-                        if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
+					var highlight = false;
+					var age = 0;
+
+                    for (var i = 0; i < data.length; i++) 
+					{
+						// Single-result classes. Highlight whole line
+						if (numSplits==0 || (unranked && numSplits==1) )
+						{
+							highlight = false;
+							if (data[i].changed != "")
+							{ 
+								age = timeServer - data[i].changed;
+								highlight = (age < this.highTime);
+							}
+							if (highlight)
+								$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ")").addClass('red_row');
+							else
+							    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ")").removeClass('red_row');
+
+						}
+						else // Classes with split times
+						{
+							var splitRef = 0;
+							var colNum = 0;
+							// Highlight split times
+							for (var sp = 0; sp < numSplits; sp++)
+							{
+								if (relay)
+									splitRef = sp*2+1;
+								else
+									splitRef = sp;
+								colNum = 3 + extraCol + sp;
+								highlight = false;
+								if (data[i].splits[this.curClassSplits[splitRef].code + "_changed"] != "")
+								{
+									age = timeServer - data[i].splits[this.curClassSplits[splitRef].code + "_changed"];
+									highlight = (age < this.highTime);
+								}
+								if (highlight)
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + colNum + ")").addClass('red_cell');
+								else
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + colNum  + ")").removeClass('red_cell');		
+							}
+							// Highlight finish-time
+							highlight = false;
+							if (data[i].changed != "")
+							{ 
+								age = timeServer - data[i].changed;
+								highlight = (age < this.highTime);
+							}
+							if (highlight)
+							{
+								if (this.compactView || relay)
+								{
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").addClass('red_cell_sqr');
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4 + numSplits + extraCol) + ")").addClass('red_cell');
+								}
+								else
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").addClass('red_cell');
+							}
+							else
+							{	
+								if (this.compactView || relay)
+								{
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").removeClass('red_cell_sqr');
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4 + numSplits + extraCol) + ")").removeClass('red_cell');
+								}
+								else
+									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").removeClass('red_cell');
+							}
+						}
+						
+						// Update predicted times
+						if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
 							var elapsedTime = time - data[i].start;
 							var elapsedTimeStr = "";
 							var rankStr = "";
+							var rank;
 							if (relay && !this.compactView)
 							   elapsedTimeStr += "<br/>";
 							elapsedTimeStr += "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
                             if (elapsedTime>=0) {
                                 if (this.curClassSplits == null || this.curClassSplits.length == 0) // No split controls
 								{
-									
 									if (!unranked)
 									{
 										if (this.curClassSplitsBests[0][0]>0)
 										{
-											rankStr = "<i> (" + this.findRank(this.curClassSplitsBests[0],elapsedTime) + ")</i>";
+											rank = this.findRank(this.curClassSplitsBests[0],elapsedTime);
+											if (rank > 1)
+												rankStr = "<i> (" + rank + ")</i>";
 											timeDiff = elapsedTime - this.curClassSplitsBests[0][0]; 
 											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
 										}
@@ -325,13 +407,15 @@ var LiveResults;
 											if (relay)
 											{
 												timeDiff = time - this.curClassSplitsBests[nextSplitRef][0];
-												rankStr = "<i> (" + this.findRank(this.curClassSplitsBests[nextSplitRef],time) + ")</i>";											
+												rank = this.findRank(this.curClassSplitsBests[nextSplitRef],time);
 											}
 											else
 											{
 												timeDiff = elapsedTime - this.curClassSplitsBests[nextSplitRef][0];
-												rankStr = " (" + this.findRank(this.curClassSplitsBests[nextSplitRef],elapsedTime) + ")";
+												rank = this.findRank(this.curClassSplitsBests[nextSplitRef],elapsedTime);
 											}
+											if (rank > 1)
+												rankStr = "<i> (" + rank + ")</i>";											
 											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
 											if (nextSplit==numSplits)
 												elapsedTimeStr += rankStr;
@@ -431,56 +515,103 @@ var LiveResults;
         };
         //Handle response for updating the last radio passings..
         AjaxViewer.prototype.handleUpdateRadioPassings = function (data) {
+			const maxLines = 30;
             var _this = this;
-            if (data != null && data.status == "OK") {
+            // Insert data from query
+			if (data != null && data.status == "OK") {
                 if (data.passings != null) {
-
-                    if (this.currentTable != null) {
-                        this.currentTable.fnClearTable();
-                        this.currentTable.fnAddData(data.passings, true);
-                    }
-                    else
-                    {
-					var columns = Array();
-                    var col = 0;
-					columns.push({ "sTitle": "Tidsp." , "sClass": "right" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"});
-                    columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName", 
-							"fnRender": function (o) 
-							{
-								var link = "<a style=\"color:inherit; text-decoration:none\" href=\"https://freidig.idrett.no/o/liveres_helpers/meld.php?" +
-								"lopid="  + "(" + _this.competitionId +") " + o.aData.compName +
-								"&Tidsp=" + o.aData.passtime + 
-								"&Navn="  + o.aData.runnerName + 
-								"&T0="    + o.aData.club + 
-								"&T1="    + o.aData.class +
-								"&T2="    + o.aData.controlName + 
-								"&T3="    + o.aData.time + "\">" + 
-								o.aData.runnerName + "</a>";
-								return link;
-							}
-						     });
-                    columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
-                    columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
-                    columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName"}); 
-                    columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"});
-                    
-                    this.currentTable = $('#' + this.radioPassingsDiv).dataTable({
-                        "bPaginate": false,
-                        "bLengthChange": false,
-                        "bFilter": false,
-                        "bSort": false,
-                        "bInfo": false,
-                        "bAutoWidth": false,
-                        "aaData": data.passings,
-                        "aaSorting": [[1, "desc"]],
-                        "aoColumnDefs": columns,
-                        "bDestroy": true
-                        });
-
-                    }
-                    this.lastRadioPassingsUpdateHash = data.hash;
-                }
-            }
+					if (this.radioData == null || data.passings[0].control == 100)
+						this.radioData = data.passings;
+					else
+						Array.prototype.unshift.apply(this.radioData, data.passings);
+					while (this.radioData.length > maxLines)
+					{
+						this.radioData.pop();
+					}
+				}
+				this.lastRadioPassingsUpdateHash = data.hash;
+			}			
+			// Modify data-table
+			if (this.radioData != null && this.radioData[0].control != 100)
+			{
+				var dt = new Date();
+				var time = dt.getSeconds() + 60 * dt.getMinutes() + 3600 * dt.getHours();
+				$.each(this.radioData, function (idx, passing) {
+					var hms = passing.passtime.split(':'); 
+					var passTime = (+hms[0]) * 60 * 60 + (+hms[1]) * 60 + (+hms[2]); 
+					var age = time - passTime;
+					if (age >= 0 && age <= _this.radioHighTime)
+						if (passing.rank == 1)
+							passing.DT_RowClass = "yellow_row";
+						else
+							passing.DT_RowClass = "red_row";
+					else
+						passing.DT_RowClass = "";
+            });
+			}
+			
+			
+			if (this.currentTable != null) {
+				this.currentTable.fnClearTable();
+				this.currentTable.fnAddData(this.radioData, true);
+			}
+			else
+			{
+			var columns = Array();
+			var col = 0;
+			columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName"}); 
+			columns.push({ "sTitle": "Tidsp." , "sClass": "right" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"});
+			columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName", 
+					"fnRender": function (o) 
+					{
+						var link = "<a style=\"color:inherit; text-decoration:none\" href=\"https://freidig.idrett.no/o/liveres_helpers/meld.php?" +
+						"lopid="  + "(" + _this.competitionId +") " + o.aData.compName +
+						"&Tidsp=" + o.aData.passtime + 
+						"&Navn="  + o.aData.runnerName + 
+						"&T0="    + o.aData.club + 
+						"&T1="    + o.aData.class +
+						"&T2="    + o.aData.controlName + 
+						"&T3="    + o.aData.time + "\">" + 
+						o.aData.runnerName + "</a>";
+						return link;
+					}
+					 });
+			columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
+			columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
+			if (this.radioData[0].rank != null)
+			{
+				columns.push({ "sTitle": "Pl.", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "rank",
+					"fnRender": function (o) {
+						var res = "";
+						if (o.aData.rank >= 0)
+							res += o.aData.rank;
+						return res;
+					}});
+			}
+			columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"});
+			if (this.radioData[0].timeDiff != null)
+			{
+				columns.push({ "sTitle": "Diff", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "timeDiff",
+					"fnRender": function (o) {
+						var res = "";
+						if (o.aData.timeDiff >= 0)
+							res += "+" + _this.formatTime(o.aData.timeDiff, 0, _this.showTenthOfSecond);
+						return res;
+					}});
+			}
+			this.currentTable = $('#' + this.radioPassingsDiv).dataTable({
+				"bPaginate": false,
+				"bLengthChange": false,
+				"bFilter": false,
+				"bSort": false,
+				"bInfo": false,
+				"bAutoWidth": false,
+				"aaData": this.radioData,
+				"aaSorting": [[1, "desc"]],
+				"aoColumnDefs": columns,
+				"bDestroy": true
+				});
+			}
         };
 
        //Check for updating of class results 
@@ -523,7 +654,8 @@ var LiveResults;
         AjaxViewer.prototype.handleUpdateClassResults = function (data) {
             var _this = this;
             if (data.status == "OK") {
-                if (this.currentTable != null) {
+                if (this.currentTable != null)
+				{	
 					this.updateClassSplitsBest(data);
                     this.updateResultVirtualPosition(data.results);
                     this.currentTable.fnClearTable();
@@ -620,7 +752,7 @@ var LiveResults;
                     catch (e) {
                     }
                     _this.updateClassResults(data);
-			_this.updatePredictedTimes();
+					_this.updatePredictedTimes();
                 },
                 dataType: "json"
             });

@@ -180,7 +180,7 @@ runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
 $(document).ready(function()
 {
 
-	$.ajax({url: "api.php",
+	$.ajax({url: "api.freidig.idrett.no/api.php",
 			data: "comp=" + <?= $_GET['comp']?> + "&method=getclasses",
             success: function (data) {
 						handleGetClasses(data,<?= $_GET['comp']?>,<?= $_GET['first']?>,<?= $_GET['last']?>); 

@@ -25,14 +25,9 @@ h1{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 h2{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 h3{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 
-#divClasses {
-font-size: 1.1em;
-line-height: 1.4em;
-}
+#divClasses {font-size: 1.1em; line-height: 1.4em;}
 
-.firstnonqualifier {
-    border-top: 3px dashed grey;
-}
+.firstnonqualifier {border-top: 3px dashed grey;}
 
 /* Submenu classes */
 /*td.submenu{background: #3A5C9C; border-left:1px solid #ABC9EF; border-right:1px solid #ABC9EF;}*/
@@ -43,85 +38,53 @@ td.submenu table tr td a:hover {text-decoration: underline; color: #F1592A;}
 
 td.searchmenu { padding-left: 5px;}
 
-tr.new_result {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: none} /* font-weight: bold; */
-tr.new_result a {color: white;}
-tr.new_result td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
-tr.new_result td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
-tr.new_result td:last-child {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 15px
-}
-tr.new_result .plustime { color: white;}
+tr.red_row {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: none} /* font-weight: bold; */
+tr.red_row a {color: white;}
+tr.red_row td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
+tr.red_row td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
+tr.red_row td:last-child { border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+tr.red_row .plustime { color: white;}
+tr.red_row .besttime { color: white;}
+tr.red_row .legtime {color: white;}
+tr.red_row td i { color: white;}
+
+/* Red cell for singel cell marking of new result */
+.red_cell {color: white; background-color: #F1592A !important;  border-bottom-right-radius: 10px}
+.red_cell .plustime { color: white}
+.red_cell .legtime  { color: white}
+.red_cell .besttime { color: white}
+.red_cell_sqr {color: white; background-color: #F1592A !important;  border-bottom-right-radius: 0px}
+.red_cell_sqr .plustime { color: white}
+.red_cell_sqr .legtime  { color: white}
+.red_cell_sqr .besttime { color: white}
 
 /* New first nonqualifier */
 tr.new_fnq {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: 3px dashed grey;} /* font-weight: bold; */
 tr.new_fnq a {color: white;}
 tr.new_fnq td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
 tr.new_fnq td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
-tr.new_fnq td:last-child {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 15px
-}
+tr.new_fnq td:last-child { border-top-right-radius: 0px; border-bottom-right-radius: 10px}
 tr.new_fnq .plustime {color: white;}
 
-tr.OK_entry { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white;
-}
+/* Green row for OK at start */
+tr.green_row { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white; }
+tr.green_row td:last-child {border-top-right-radius: 0px; border-bottom-right-radius: 10px}
 
-tr.OK_entry td:last-child {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 15px
-}
+/* Yellow row for OK at start */
+tr.yellow_row { color: black; background-color: #FFFF00 !important; font-weight: bold; border-bottom: 1px solid white; }
+tr.yellow_row td:last-child {border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+tr.yellow_row_new { color: black; background-color: #FFFF00 !important; font-weight: bold; border-bottom: 1px solid white; border-top: 3px dashed grey;}
+tr.yellow_row_new td:last-child {border-top-right-radius: 0px; border-bottom-right-radius: 10px}
 
-tr.start_entry { color: black; background-color: #FFFF00 !important; border-bottom: 1px solid white;
-}
+table.dataTable td {vertical-align: top;}
 
-tr.start_entry td:last-child {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 15px
-}
-tr.start_entrynew { color: black; background-color: #FFFF00 !important; border-bottom: 1px solid white; border-top: 3px dashed grey;
-}
-
-tr.start_entrynew td:last-child {
-    border-top-right-radius: 0px;
-    border-bottom-right-radius: 15px
-}
-
-
-
-table.dataTable td {
-vertical-align: top;
-}
-
-.plustime {
- color: #666;
-}
-
-
-.legtime {
-    color: grey;
-}
-
-TR.new_result .legtime {
-    color: white;
-}
-.besttime {
-    color: red;
-}
-
-TR.new_result .besttime {
-    color: white;
-}
-
+.plustime {color: grey;}
+.legtime {color: grey;}
+.besttime {color: red;}
 
 /*predicted times*/
-td i {
-    color: gray;
-}
+td i { color: gray;}
 
-tr.new_result td i {
-    color: white;
-}
 
 #langchooser { vertical-align: middle; line-height:21px;}
 #langchooser img {  border: 1px solid #AAAAAA; vertical-align: middle; height: 10px}

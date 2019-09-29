@@ -13,6 +13,7 @@ header('Content-Type: text/html; charset='.$CHARSET);
 
 $currentComp = new Emma($_GET['comp']);
 $currentCompNo = $_GET['comp'];
+$orgainzer = $currentComp->Organizer();
 
 $isSingleClass = isset($_GET['class']);
 $isSingleClub = isset($_GET['club']);
@@ -187,7 +188,7 @@ $(document).ready(function()
 	<?php }?>
 	
 	// Mass start race
-	<?php if(in_array($currentCompNo, array(14872, 15233,15952, 16197, 16284))){?>
+	<?php if(in_array($currentCompNo, array(14872, 15233,15952, 16197, 16284, 16544))){?>
 		res.curClassIsMassStart = true;
 	<?php }?>
 	
@@ -222,7 +223,7 @@ function changeFontSize(val)
     <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
              <tr>
-               <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
+               <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?>, <?=$currentComp->Organizer()?> [<?=$currentComp->CompDate()?>]</td>
                <td>|</td>
 				<td><a href="https://liveol.larsendahl.se/" target="_blank">LiveOL result app</a></td>
                </tr>
@@ -298,18 +299,21 @@ function changeFontSize(val)
 			<?php if(in_array($_GET['comp'], array("15821","15822","15823"))){?>
 			    <td width="60">
 			    <img src="images/SG19.PNG" height="60" /></td>
-			<?php }?>
-			<?php if(in_array($_GET['comp'], array("15849","15850"))){?>
-			    <td width="60">
-			    <img src="images/Freidig60.png" height="60" /></td>
-			<?php }?>
-			<?php if(in_array($_GET['comp'], array("15950","15951","15952"))){?>
+			<?php } elseif(in_array($_GET['comp'], array("15950","15951","15952"))){?>
 			    <td width="60">
 			    <img src="images/OF.png" height="60" /></td>
-			<?php }?>
-			<?php if(in_array($_GET['comp'], array("16235","16241","16284"))){?>
+			<?php } elseif(in_array($_GET['comp'], array("16235","16241","16284"))){?>
 			    <td width="60">
 			    <img src="images/SB-O.png" height="60" /></td>
+			<?php } elseif(in_array($_GET['comp'], array("16432"))){?>
+			    <td width="210">
+			    <img src="images/u-lop.png" height="60" /></td>
+			<?php } elseif($orgainzer=="Freidig"){?>
+			    <td width="60">
+			    <img src="images/Freidig60.png" height="60" /></td>
+			<?php } elseif($orgainzer=="Byåsen IL"){?>
+			    <td width="60">
+			    <img src="images/BIL.png" height="60" /></td>
 			<?php }?>
 			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
 <div id="divLastPassings"></div></td>
@@ -394,9 +398,7 @@ function removeTwitter()
 </tr>
 </table>
 
-<p align="left">&copy;2012-, Liveresults (https://liveresults.github.io/documentation/), <?=$_NOTICE?></p>
-
-
+<p align="left">&copy;2012-, Liveresults (https://liveresults.github.io/documentation/, Source code: https://github.com/palkitt/liveresults), <?=$_NOTICE?></p>
 
 </div>
 

@@ -1,14 +1,14 @@
 ﻿<?php
 date_default_timezone_set("Europe/Oslo");
 
-include_once("./templates/emmalang_no.php");
-	include_once("./templates/classEmma.class.php");
+include_once("templates/emmalang_no.php");
+include_once("templates/classEmma.class.php");
    $lang = "no";
    if (isset($_GET['lang']) && $_GET['lang'] != "")
    {
 	$lang = $_GET['lang'];
    }
-include_once("./templates/emmalang_$lang.php");
+include_once("templates/emmalang_$lang.php");
 
 header('Content-Type: text/html; charset='.$CHARSET);
 

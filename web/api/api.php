@@ -150,80 +150,7 @@ elseif ($_GET['method'] == 'getlastpassings')
 			echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$hash\"}");
 		}
 }
-elseif ($_GET['method'] == 'getradiopassings')
-{
-		$currentComp = new Emma($_GET['comp']);
-		$code = $_GET['code'];
-		$lastPassings = $currentComp->getRadioPassings($code);
 
-		$first = true;
-		$ret = "";
-		$laststatus = 0;
-		$lasttime = 0;
-		foreach ($lastPassings as $pass)
-		{
-			$age = time()-strtotime($pass['Changed']);
-			$modified = $age < $hightime ? 1:0;
-			
-			$status = $pass['Status'];
-			$time   = $pass['Time'];
-
-			if (!$first)
-				$ret .=",$br";
-			
-			$ret .= "{\"passtime\": \"".date("H:i:s",strtotime($pass['Changed']))."\",
-					\"runnerName\": \"".$pass['Name']."\",
-					\"club\": \"".$pass['Club']."\",
-					\"class\": \"".$pass['class']."\",
-					\"control\": ".$pass['Control'].",
-					\"controlName\" : \"".$pass['pname']."\",
-					\"time\": \"" .formatTime($time,0,$RunnerStatus)."\",
-					\"compName\": \"".$pass['compName']."\" ";
-			
-			if ($pass['Control']==100)	
-			{
-				if ($pass['class']=="NOCLAS")
-				{
-					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
-				}
-				elseif (($lasttime - $time > 5900) && ($status == 10)) 
-				{
-					$ret .= ",$br \"DT_RowClass\": \"start_entrynew\"";
-				}
-				elseif ($status == 10)
-				{
-					$ret .= ",$br \"DT_RowClass\": \"start_entry\"";
-				}
-				elseif ($modified)
-				{
-					$ret .= ",$br \"DT_RowClass\": \"OK_entry\"";
-				}
-				elseif ($laststatus == 10) 
-				{
-					$ret .= ",$br \"DT_RowClass\": \" firstnonqualifier\"";
-				}
-			}
-			elseif ($modified) // New result, all but start 
-			{
-				$ret .= ",$br \"DT_RowClass\": \"new_result\"";
-			}
-			
-			$ret .= "$br}";
-			$first = false;
-			$laststatus = $status;
-			$lasttime = $time;
-		}
-
-		$hash = MD5($ret);
-		if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
-		{
-			echo("{ \"status\": \"NOT MODIFIED\"}");
-		}
-		else
-		{
-			echo("{ \"status\": \"OK\", $br\"passings\" : [$br$ret$br],$br \"hash\": \"$hash\"}");
-		}
-}
 elseif ($_GET['method'] == 'getclasses')
 {
 
@@ -319,7 +246,7 @@ elseif ($_GET['method'] == 'getclubresults')
 
 			if ($modified)
 			{
-				$ret .= ",$br \"DT_RowClass\": \"new_result\"";
+				$ret .= ",$br \"DT_RowClass\": \"red_row\"";
 			}
 
 			$ret .= "$br}";
@@ -585,7 +512,12 @@ elseif ($_GET['method'] == 'getclassresults')
 			}
 			else
 			{
-				$ret .= "{\"place\": \"$cp\",$br \"name\": \"".$res['Name']."\",$br \"club\": \"".str_replace("\"","'",$res['Club'])."\",$br \"result\": \"".$time."\",$br \"status\" : ".$status.",$br \"timeplus\": \"$timeplus\",$br \"progress\": $progress $tot";
+				if ($res['Changed']>0)
+					$changed = strtotime($res['Changed']);
+				else
+					$changed = "0";
+				
+				$ret .= "{\"place\": \"$cp\",$br \"name\": \"".$res['Name']."\",$br \"club\": \"".str_replace("\"","'",$res['Club'])."\",$br \"result\": \"".$time."\",$br \"status\" : ".$status.",$br \"timeplus\": \"$timeplus\",$br \"changed\": $changed,$br \"progress\": $progress $tot"; 
 
 				if (count($splits) > 0)
 				{
@@ -600,7 +532,12 @@ elseif ($_GET['method'] == 'getclassresults')
 							$splitStatus = $status;
 							if ($status == 9 || $status == 10)
 								$splitStatus = 0;
-							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"] .",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"].",\"".$split['code']."_timeplus\": ".$res[$split['code']."_timeplus"];
+							
+							if ($res[$split['code'].'_changed']>0)
+								$changed = strtotime($res[$split['code'].'_changed']);
+							else
+								$changed = "0";
+							$ret .= "\"".$split['code']."\": ".$res[$split['code']."_time"].",\"".$split['code']."_status\": ".$splitStatus.",\"".$split['code']."_place\": ".$res[$split['code']."_place"].",\"".$split['code']."_timeplus\": ".$res[$split['code']."_timeplus"].",\"".$split['code']."_changed\": $changed";
 							$spage = time()-strtotime($res[$split['code'].'_changed']);
 							if ($spage < $hightime)
 								$modified = true;
@@ -636,7 +573,8 @@ elseif ($_GET['method'] == 'getclassresults')
 				}
 				else if ($modified)
 				{
-					$ret .= ",$br \"DT_RowClass\": \"new_result\"";
+					$ret .= "";
+					// $ret .= ",$br \"DT_RowClass\": \"red_row\"";
 				}
 
 				$ret .= "$br}";
