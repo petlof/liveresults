@@ -5,6 +5,8 @@ var LiveResults;
     var AjaxViewer = /** @class */ (function () {
         function AjaxViewer(competitionId, language, classesDiv, lastPassingsDiv, resultsHeaderDiv, resultsControlsDiv, resultsDiv, txtResetSorting, resources, isMultiDayEvent, isSingleClass, setAutomaticUpdateText, setCompactViewText, runnerStatus, showTenthOfSecond, radioPassingsDiv) {
             var _this = this;
+			var massStartRaces = [15952];
+			this.curClassIsMassStart = massStartRaces.includes(competitionId);
             this.competitionId = competitionId;
             this.language = language;
             this.classesDiv = classesDiv;
@@ -20,14 +22,12 @@ var LiveResults;
             this.setAutomaticUpdateText = setAutomaticUpdateText;
 			this.setCompactViewText = setCompactViewText;
             this.runnerStatus = runnerStatus;
-            this.showTenthOfSecond = false;
+            this.showTenthOfSecond = showTenthOfSecond;
             this.updateAutomatically = true;
 			this.compactView = true;
-            this.updateInterval = 10000;
-			this.radioUpdateInterval = 5000;
+            this.updateInterval = 15000;
+			this.radioUpdateInterval = 15000;
             this.classUpdateInterval = 60000;
-			this.radioHighTime = 60;
-			this.highTime = 60;
             this.classUpdateTimer = null;
             this.passingsUpdateTimer = null;
             this.resUpdateTimeout = null;
@@ -38,16 +38,12 @@ var LiveResults;
             this.curClassName = "";
             this.lastClassHash = "";
             this.curClassSplits = null;
-			this.curClassSplitsBest = null;
-            this.curClassIsMassStart = false;
             this.curClubName = "";
             this.lastClubHash = "";
             this.currentTable = null;
-            this.serverTimeDiff = 1;
+            this.serverTimeDiff = null;
             this.eventTimeZoneDiff = 0;
-			this.radioData = null;
-            this.apiURL = "//api.freidig.idrett.no/api.php";
-            this.radioURL = "//api.freidig.idrett.no/radioapi.php";
+			this.EmmaApiUrl = "https://liveresultat.orientering.se/api.php";
             LiveResults.Instance = this;
             $(window).hashchange(function () {
                 if (window.location.hash) {
@@ -81,12 +77,12 @@ var LiveResults;
             return check;
         };
         
-        // Update the classlist
+        ///Update the classlist
         AjaxViewer.prototype.updateClassList = function () {
             var _this = this;
             if (this.updateAutomatically) {
                 $.ajax({
-                    url: this.apiURL,
+                    url: this.EmmaApiUrl,
                     data: "comp=" + this.competitionId + "&method=getclasses&last_hash=" + this.lastClassListHash,
                     success: function (data) {
                         _this.handleUpdateClassListResponse(data);
@@ -102,78 +98,18 @@ var LiveResults;
         };
         AjaxViewer.prototype.handleUpdateClassListResponse = function (data) {
             var _this = this;
-            if (data != null && data.status == "OK")
-			{
-                if (!data.classes || !$.isArray(data.classes) || data.classes.length == 0)
+            if (data != null && data.status == "OK") {
+                if (!data.classes || !$.isArray(data.classes) || data.classes.length == 0) {
                     $('#resultsHeader').html("<b>" + this.resources["_NOCLASSESYET"] + "</b>");
-                if (data.classes != null)
-				{
-					var classes = data.classes;
-					classes.sort(function(a, b)
-					{
-						var x  = [a.className, b.className];
-						for (var i=0; i<2; i++)
-						{
-							x[i] = x[i].replace(/(^|[^\d])(\d)($|[^\d])/,'$100$2$3');      // Add 00 ahead of single digits
-							x[i] = x[i].replace(/(^|[^\d])(\d)(\d)($|[^\d])/,'$10$2$3$4'); // Add 0 ahead of double digits
-							x[i] = x[i].replace(' ','');
-							x[i] = x[i].replace(/n-åpen/i,'x');
-							x[i] = x[i].replace(/utv/i,'y');
-							x[i] = x[i].replace(/dir/i,'z');
-							x[i] = x[i].replace(/open/i,'z');
-						}
-						if (x[0] < x[1]) {return -1;}
-						if (x[0] > x[1]) {return 1;}
-						return 0;
-					});
-					var str = "<nowrap>";
-					var nClass = classes.length;
-					
-					var relayNext = false;
-					var leg = 0;
-					for (var i=0; i<nClass; i++)
-					{
-						var relay = relayNext;
-						var className = classes[i].className;
-						param = className.replace('\'', '\\\'');
-						if (className && className.length > 0)
-						{
-							var classNameClean = className.replace(/-\d$/,'');
-							classNameClean = classNameClean.replace(/-All$/,'');
-							if (i<(nClass-1))
-							{
-								var classNameCleanNext = classes[i+1].className.replace(/-\d$/,'');
-								classNameCleanNext = classNameCleanNext.replace(/-All$/,'');
-								if (classNameClean == classNameCleanNext) // Relay trigger
-								{
-									if (!relay) // First class in relay
-									{
-										str += "<b>" + classNameClean + "</b><br/>&nbsp";
-										leg = 0;
-									}
-									relay = true;
-									relayNext = true;
-								}
-								else
-									relayNext = false;	
-							}
-							if (relay)
-							{
-								var legText = "";
-								leg += 1;
-								// var relayLeg = className.replace(classNameClean,'Etappe');
-								if (className.replace(classNameClean,'') == "-All")
-									legText = "<font size=\"+1\">&#" + (9398) +"</font>"
-								else
-								    legText = "<font size=\"+1\">&#" + (10111+leg) +"</font>"; 
-								str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\" style=\"text-decoration: none\"> " + legText + "</a>";
-								if (!relayNext)
-									str += "<br/>";
-							}	
-							else	
-								str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + className + "</a><br/>";
-						}
-                    };
+                }
+                if (data.classes != null) {
+                    var str = "<nowrap>";
+                    $.each(data.classes, function (key, value) {
+                        var param = value.className;
+                        if (param && param.length > 0)
+                            param = param.replace('\'', '\\\'');
+                        str += "<a href=\"javascript:LiveResults.Instance.chooseClass('" + param + "')\">" + value.className + "</a><br/>";
+                    });
                     str += "</nowrap>";
                     $("#" + this.classesDiv).html(str);
                     this.lastClassListHash = data.hash;
@@ -183,272 +119,65 @@ var LiveResults;
                 _this.updateClassList();
             }, this.classUpdateInterval);
         };
-		
-		// Update best split times
-		AjaxViewer.prototype.updateClassSplitsBest = function (data) {
-			if (data != null && data.status == "OK" && data.results != null) {
-				var classSplits = data.splitcontrols;
-				var classSplitsBest = new Array(classSplits.length+1);
-				for (var i = 0; i < classSplitsBest.length; i++) {
-					classSplitsBest[i] = new Array(1).fill(0);
-				}
-				var relay = (classSplits.length>0 && classSplits[0].code == "0"); 
-				// Fill in finish times
-				var j = 0;
-				for (var i = 0; i< data.results.length; i++)
-				{
-					if(data.results[i].place != undefined && data.results[i].place >0 )
-					{
-						if (relay)
-							classSplitsBest[classSplits.length][j] = data.results[i].start + data.results[i].splits[classSplits[classSplits.length-1].code];
-						else
-							classSplitsBest[classSplits.length][j] = parseInt(data.results[i].result);
-						j++;
-					}
-				}
-				classSplitsBest[classSplits.length].sort(function (a, b) {  return a - b;  });			
-				if (classSplits.length > 0)
-				{
-			        // Fill in split times
-					for (var sp = 0; sp < classSplits.length; sp++)
-					{
-						j = 0;
-						for (var i = 0; i< data.results.length ; i++)
-						{
-							if(data.results[i].splits[classSplits[sp].code + "_place"] != undefined && data.results[i].splits[classSplits[sp].code + "_place"] > 0)
-							{
-								if (relay && sp>0) // If relay store pass time stamp instead of used time. Using leg time and start time
-									classSplitsBest[sp][j]  = data.results[i].start + data.results[i].splits[classSplits[sp-1].code];
-								else
-									classSplitsBest[sp][j]  = data.results[i].splits[classSplits[sp].code];
-								j++;
-							}
-						}
-						classSplitsBest[sp].sort(function (a, b) {  return a - b;  });
-					}
-				}
-				this.curClassSplitsBests = classSplitsBest;
-			}
-		};
-		
-		// Updated predicted times
-		AjaxViewer.prototype.updatePredictedTimes = function () {
-            if (this.currentTable != null && this.curClassName != null && this.serverTimeDiff && this.updateAutomatically) {
+        AjaxViewer.prototype.updatePredictedTimes = function () {
+            if (this.currentTable != null && this.curClassName != null && this.updateAutomatically) // && this.serverTimeDiff
+			{
                 try {
                     var data = this.currentTable.fnGetData();
                     var dt = new Date();
                     var currentTimeZoneOffset = -1 * new Date().getTimezoneOffset();
                     var eventZoneOffset = ((dt.dst() ? 2 : 1) + this.eventTimeZoneDiff) * 60;
                     var timeZoneDiff = eventZoneOffset - currentTimeZoneOffset;
-                    var time = 100*Math.round((dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) - (this.serverTimeDiff / 1000) + (timeZoneDiff * 60));
-					var timeServer = (dt - this.serverTimeDiff)/1000 + timeZoneDiff*60;
+                    var time = (dt.getSeconds() + (60 * dt.getMinutes()) + (60 * 60 * dt.getHours())) * 100
+                        // - (this.serverTimeDiff / 10) +
+                        + (timeZoneDiff * 6000);
                     var i;
                     var extraCol = 0;
-					var numSplits = 0;
 					
 					var haveSplitControls = (this.curClassSplits != null) && (this.curClassSplits.length > 0);
-                    var relay = (haveSplitControls && (this.curClassSplits[0].code == "0"));
-					var unranked = false;
+                    var relay = (haveSplitControls && (this.curClassSplits[0].code == "0"));					
                 
                     for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
                         if (this.curClassSplits[sp].code == "-999") { // If not sorted
                             {
                                 extraCol = 1;
-								unranked = true;
                                 break;
                             }
                         }
                     }
 					if (this.compactView)
 						extraCol = 1;
-					
-					if (this.curClassSplits == null)
-						numSplits = 0;
-					else if (relay)
-						numSplits = this.curClassSplits.length/2-1;
-					else
-						numSplits = this.curClassSplits.length;
-					
-					var timeDiff = 0;
-					var timeDiffCol = 0;
-					var timeDiffStr = "";
-					var highlight = false;
-					var age = 0;
-
-                    for (var i = 0; i < data.length; i++) 
-					{
-						// Single-result classes. Highlight whole line
-						if (numSplits==0 || (unranked && numSplits==1) )
-						{
-							highlight = false;
-							if (data[i].changed != "")
-							{ 
-								age = timeServer - data[i].changed;
-								highlight = (age < this.highTime);
-							}
-							if (highlight)
-								$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ")").addClass('red_row');
-							else
-							    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ")").removeClass('red_row');
-
-						}
-						else // Classes with split times
-						{
-							var splitRef = 0;
-							var colNum = 0;
-							// Highlight split times
-							for (var sp = 0; sp < numSplits; sp++)
-							{
-								if (relay)
-									splitRef = sp*2+1;
-								else
-									splitRef = sp;
-								colNum = 3 + extraCol + sp;
-								highlight = false;
-								if (data[i].splits[this.curClassSplits[splitRef].code + "_changed"] != "")
-								{
-									age = timeServer - data[i].splits[this.curClassSplits[splitRef].code + "_changed"];
-									highlight = (age < this.highTime);
-								}
-								if (highlight)
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + colNum + ")").addClass('red_cell');
-								else
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + colNum  + ")").removeClass('red_cell');		
-							}
-							// Highlight finish-time
-							highlight = false;
-							if (data[i].changed != "")
-							{ 
-								age = timeServer - data[i].changed;
-								highlight = (age < this.highTime);
-							}
-							if (highlight)
-							{
-								if (this.compactView || relay)
-								{
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").addClass('red_cell_sqr');
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4 + numSplits + extraCol) + ")").addClass('red_cell');
-								}
-								else
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").addClass('red_cell');
-							}
-							else
-							{	
-								if (this.compactView || relay)
-								{
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").removeClass('red_cell_sqr');
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (4 + numSplits + extraCol) + ")").removeClass('red_cell');
-								}
-								else
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").removeClass('red_cell');
-							}
-						}
-						
-						// Update predicted times
-						if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
-							var elapsedTime = time - data[i].start;
-							var elapsedTimeStr = "";
-							var rankStr = "";
-							var rank;
-							if (relay && !this.compactView)
-							   elapsedTimeStr += "<br/>";
-							elapsedTimeStr += "<i>(" + this.formatTime(elapsedTime, 0, false) + ")</i>";
-                            if (elapsedTime>=0) {
-                                if (this.curClassSplits == null || this.curClassSplits.length == 0) // No split controls
-								{
-									if (!unranked)
-									{
-										if (this.curClassSplitsBests[0][0]>0)
-										{
-											rank = this.findRank(this.curClassSplitsBests[0],elapsedTime);
-											if (rank > 1)
-												rankStr = "<i> (" + rank + ")</i>";
-											timeDiff = elapsedTime - this.curClassSplitsBests[0][0]; 
-											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
-										}
-										else
-											timeDiffStr = "<i>(...)<\i>";
-										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 5 + ")").html(timeDiffStr);
-									}
-									$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html((elapsedTimeStr + rankStr));
+                    for (var i = 0; i < data.length; i++) {
+                        if ((data[i].status == 10 || data[i].status == 9) && data[i].place == "" && data[i].start != "") {
+                            if (data[i].start < time) {
+                                if (this.curClassSplits == null || this.curClassSplits.length == 0) {
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + 4 + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
-                                else 
-								{
-									//Find next split to reach
+                                else {
+                                    //find next split to reach
                                     var nextSplit = 0;
-                                    var nextSplitRef = 0;
                                     for (var sp = this.curClassSplits.length - 1; sp >= 0; sp--) {
                                         if (data[i].splits[this.curClassSplits[sp].code] != "") {
                                             {
 												if (relay)
-												{
 													nextSplit = sp/2;
-													nextSplitRef = sp + 2;
-													}
-													
-											      else
-											      {
+												else
 													nextSplit = sp + 1;
-													nextSplitRef = sp + 1;
-													}
                                                 break;
                                             }
                                         }
                                     }
-									if (!unranked)
-									{
-										timeDiffCol = 3 + nextSplit + extraCol;
-										if (nextSplit==numSplits) // Approach finish
-											timeDiffCol += 1;
-										if (this.curClassSplitsBests[nextSplitRef][0]==0)
-										   $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html("<i>(...)<\i>");
-										else
-										{
-											if (relay)
-											{
-												timeDiff = time - this.curClassSplitsBests[nextSplitRef][0];
-												rank = this.findRank(this.curClassSplitsBests[nextSplitRef],time);
-											}
-											else
-											{
-												timeDiff = elapsedTime - this.curClassSplitsBests[nextSplitRef][0];
-												rank = this.findRank(this.curClassSplitsBests[nextSplitRef],elapsedTime);
-											}
-											if (rank > 1)
-												rankStr = "<i> (" + rank + ")</i>";											
-											timeDiffStr = "<i>(" + (timeDiff<0 ? "-" : "+") + this.formatTime(Math.abs(timeDiff), 0, false) + ")</i>";
-											if (nextSplit==numSplits)
-												elapsedTimeStr += rankStr;
-											else
-												timeDiffStr += rankStr; 
-											$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + timeDiffCol + ")").html(timeDiffStr);
-										}
-										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + numSplits + extraCol) + ")").html(elapsedTimeStr);
-									}
-									else // unranked
-										$("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html(elapsedTimeStr);
+                                    $("#" + this.resultsDiv + " tr:eq(" + (data[i].curDrawIndex + 1) + ") td:eq(" + (3 + nextSplit + extraCol) + ")").html("<i>(" + this.formatTime(time - data[i].start, 0, false) + ")</i>");
                                 }
                             }
                         }
                     }
-                } 
+                }
                 catch (e) {
                 }
             }
         };
-		
-		//Find rank number
-        AjaxViewer.prototype.findRank = function (array, val) {
-			var rank = 1;
-			for(var i=0; i<array.length; i++)
-				if (array[i] < val)
-					rank++;
-				else
-					break;
-			return rank;
-		};
-
-        //Set wether to display tenth of a second in results
+        //Set wether to display tenthofasecond in results
         AjaxViewer.prototype.setShowTenth = function (val) {
             this.showTenthOfSecond = val;
         };
@@ -458,7 +187,7 @@ var LiveResults;
             var _this = this;
             if (this.updateAutomatically) {
                 $.ajax({
-                    url: this.apiURL,
+                    url: this.EmmaApiUrl,
                     data: "comp=" + this.competitionId + "&method=getlastpassings&lang=" + this.language + "&last_hash=" + this.lastPassingsUpdateHash,
                     success: function (data) { _this.handleUpdateLastPassings(data); },
                     error: function () {
@@ -492,13 +221,12 @@ var LiveResults;
         };
 
         //Request data for the last radio passings div
-        AjaxViewer.prototype.updateRadioPassings = function (code,calltime) {
+        AjaxViewer.prototype.updateRadioPassings = function (code) {
             var _this = this;
             if (this.updateAutomatically) {
                 $.ajax({
-                    url: this.radioURL,
-                    data: "comp=" + this.competitionId + "&method=getradiopassings&code=" + code + "&calltime=" + calltime +
-					      "&lang=" + this.language + "&last_hash=" + this.lastRadioPassingsUpdateHash,
+                    url: "api.php",
+                    data: "comp=" + this.competitionId + "&method=getradiopassings&code=" + code + "&lang=" + this.language + "&last_hash=" + this.lastRadioPassingsUpdateHash,
                     success: function (data) { _this.handleUpdateRadioPassings(data); },
                     error: function () {
                         _this.radioPassingsUpdateTimer = setTimeout(function () {
@@ -508,119 +236,72 @@ var LiveResults;
                     dataType: "json"
                 });
                 this.radioPassingsUpdateTimer = setTimeout(function () {
-                    _this.updateRadioPassings(code,calltime);
+                    _this.updateRadioPassings(code);
                 }, this.radioUpdateInterval);
             }
 
         };
         //Handle response for updating the last radio passings..
         AjaxViewer.prototype.handleUpdateRadioPassings = function (data) {
-			const maxLines = 30;
             var _this = this;
-            // Insert data from query
-			if (data != null && data.status == "OK") {
+            if (data != null && data.status == "OK") {
                 if (data.passings != null) {
-					if (this.radioData == null || data.passings[0].control == 100)
-						this.radioData = data.passings;
-					else
-						Array.prototype.unshift.apply(this.radioData, data.passings);
-					while (this.radioData.length > maxLines)
-					{
-						this.radioData.pop();
-					}
-				}
-				this.lastRadioPassingsUpdateHash = data.hash;
-			}			
-			// Modify data-table
-			if (this.radioData != null && this.radioData[0].control != 100)
-			{
-				var dt = new Date();
-				var time = dt.getSeconds() + 60 * dt.getMinutes() + 3600 * dt.getHours();
-				$.each(this.radioData, function (idx, passing) {
-					var hms = passing.passtime.split(':'); 
-					var passTime = (+hms[0]) * 60 * 60 + (+hms[1]) * 60 + (+hms[2]); 
-					var age = time - passTime;
-					if (age >= 0 && age <= _this.radioHighTime)
-						if (passing.rank == 1)
-							passing.DT_RowClass = "yellow_row";
-						else
-							passing.DT_RowClass = "red_row";
-					else
-						passing.DT_RowClass = "";
-            });
-			}
-			
-			
-			if (this.currentTable != null) {
-				this.currentTable.fnClearTable();
-				this.currentTable.fnAddData(this.radioData, true);
-			}
-			else
-			{
-			var columns = Array();
-			var col = 0;
-			columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName"}); 
-			columns.push({ "sTitle": "Tidsp." , "sClass": "right" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"});
-			columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName", 
-					"fnRender": function (o) 
-					{
-						var link = "<a style=\"color:inherit; text-decoration:none\" href=\"https://freidig.idrett.no/o/liveres_helpers/meld.php?" +
-						"lopid="  + "(" + _this.competitionId +") " + o.aData.compName +
-						"&Tidsp=" + o.aData.passtime + 
-						"&Navn="  + o.aData.runnerName + 
-						"&T0="    + o.aData.club + 
-						"&T1="    + o.aData.class +
-						"&T2="    + o.aData.controlName + 
-						"&T3="    + o.aData.time + "\">" + 
-						o.aData.runnerName + "</a>";
-						return link;
-					}
-					 });
-			columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
-			columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
-			if (this.radioData[0].rank != null)
-			{
-				columns.push({ "sTitle": "Pl.", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "rank",
-					"fnRender": function (o) {
-						var res = "";
-						if (o.aData.rank >= 0)
-							res += o.aData.rank;
-						return res;
-					}});
-			}
-			columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"});
-			if (this.radioData[0].timeDiff != null)
-			{
-				columns.push({ "sTitle": "Diff", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "timeDiff",
-					"fnRender": function (o) {
-						var res = "";
-						if (o.aData.timeDiff >= 0)
-							res += "+" + _this.formatTime(o.aData.timeDiff, 0, _this.showTenthOfSecond);
-						return res;
-					}});
-			}
-			this.currentTable = $('#' + this.radioPassingsDiv).dataTable({
-				"bPaginate": false,
-				"bLengthChange": false,
-				"bFilter": false,
-				"bSort": false,
-				"bInfo": false,
-				"bAutoWidth": false,
-				"aaData": this.radioData,
-				"aaSorting": [[1, "desc"]],
-				"aoColumnDefs": columns,
-				"bDestroy": true
-				});
-			}
+
+                    if (this.currentTable != null) {
+                        this.currentTable.fnClearTable();
+                        this.currentTable.fnAddData(data.passings, true);
+                    }
+                    else
+                    {
+					var columns = Array();
+                    var col = 0;
+					columns.push({ "sTitle": "Tidsp." , "sClass": "right" , "bSortable": false, "aTargets": [col++], "mDataProp": "passtime"});
+                    columns.push({ "sTitle": "Navn", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "runnerName", 
+							"fnRender": function (o) 
+							{
+								var link = "<a style=\"color:inherit; text-decoration:none\" href=\"https://freidig.idrett.no/o/liveres_helpers/meld.php?" +
+								"lopid="  + "(" + _this.competitionId +") " + o.aData.compName +
+								"&Tidsp=" + o.aData.passtime + 
+								"&Navn="  + o.aData.runnerName + 
+								"&T0="    + o.aData.club + 
+								"&T1="    + o.aData.class +
+								"&T2="    + o.aData.controlName + 
+								"&T3="    + o.aData.time + "\">" + 
+								o.aData.runnerName + "</a>";
+								return link;
+							}
+						     });
+                    columns.push({ "sTitle": "Klubb", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "club" });
+                    columns.push({ "sTitle": "Klasse", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "class" });
+                    columns.push({ "sTitle": "Post", "sClass": "left", "bSortable": false, "aTargets": [col++], "mDataProp": "controlName"}); 
+                    columns.push({ "sTitle": "Tid", "sClass": "right", "bSortable": false, "aTargets": [col++], "mDataProp": "time"});
+                    
+                    this.currentTable = $('#' + this.radioPassingsDiv).dataTable({
+                        "bPaginate": false,
+                        "bLengthChange": false,
+                        "bFilter": false,
+                        "bSort": false,
+                        "bInfo": false,
+                        "bAutoWidth": false,
+                        "aaData": data.passings,
+                        "aaSorting": [[1, "desc"]],
+                        "aoColumnDefs": columns,
+                        "bDestroy": true
+                        });
+
+                    }
+                    this.lastRadioPassingsUpdateHash = data.hash;
+                }
+            }
         };
 
-       //Check for updating of class results 
+       //Check for updateing of class results
         AjaxViewer.prototype.checkForClassUpdate = function () {
             var _this = this;
             if (this.updateAutomatically) {
                 if (this.currentTable != null) {
                     $.ajax({
-                        url: this.apiURL,
+                        url: this.EmmaApiUrl,
                         data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(this.curClassName) + "&last_hash=" + this.lastClassHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                         success: function (data, status, resp) {
                             try {
@@ -654,15 +335,11 @@ var LiveResults;
         AjaxViewer.prototype.handleUpdateClassResults = function (data) {
             var _this = this;
             if (data.status == "OK") {
-                if (this.currentTable != null)
-				{	
-					this.updateClassSplitsBest(data);
+                if (this.currentTable != null) {
                     this.updateResultVirtualPosition(data.results);
                     this.currentTable.fnClearTable();
                     this.currentTable.fnAddData(data.results, true);
-					this.updatePredictedTimes();
                     this.lastClassHash = data.hash;
-
                 }
             }
             this.resUpdateTimeout = setTimeout(function () {
@@ -675,7 +352,7 @@ var LiveResults;
             if (this.updateAutomatically) {
                 if (this.currentTable != null) {
                     $.ajax({
-                        url: this.apiURL,
+                        url: this.EmmaApiUrl,
                         data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(this.curClubName) + "&last_hash=" + this.lastClubHash + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                         success: function (data) {
                             _this.handleUpdateClubResults(data);
@@ -722,9 +399,7 @@ var LiveResults;
             }, this.updateInterval);
         };
         AjaxViewer.prototype.chooseClass = function (className) {
-             if (className.length == 0)
-				return;
-			var _this = this;
+            var _this = this;
             if (this.currentTable != null) {
                 try {
                     this.currentTable.fnDestroy();
@@ -735,10 +410,10 @@ var LiveResults;
             clearTimeout(this.resUpdateTimeout);
             $('#divResults').html('');
             this.curClassName = className;
-            this.curClubName = null; 
+            this.curClubName = null;
             $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
             $.ajax({
-                url: this.apiURL,
+                url: this.EmmaApiUrl,
                 data: "comp=" + this.competitionId + "&method=getclassresults&unformattedTimes=true&class=" + encodeURIComponent(className) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                 success: function (data, status, resp) {
                     try {
@@ -752,7 +427,6 @@ var LiveResults;
                     catch (e) {
                     }
                     _this.updateClassResults(data);
-					_this.updatePredictedTimes();
                 },
                 dataType: "json"
             });
@@ -777,9 +451,8 @@ var LiveResults;
                 }
                 $('#' + this.txtResetSorting).html("");
                 if (data.results != null) {
-                    //if (data.ShowTenthOfSecond)
-                    //    this.showTenthOfSecond = data.ShowTenthOfSecond;
-				    this.updateClassSplitsBest(data);
+                    if (data.ShowTenthOfSecond)
+                        this.showTenthOfSecond = data.ShowTenthOfSecond;
                     var columns = Array();
                     var col = 0;
                     var i;
@@ -845,6 +518,9 @@ var LiveResults;
                         }
                     });
                     
+					//this.curClassIsMassStart = false;
+                    //if (data.IsMassStartRace)
+                    //    this.curClassIsMassStart = data.IsMassStartRace;
                     this.updateResultVirtualPosition(data.results);
                     columns.push({
                         "sTitle": this.resources["_START"],
@@ -873,7 +549,7 @@ var LiveResults;
                                         if (o.aData.splits["0_place"] == 1)
                                             txt += "<br /><span class=\"besttime\">+";
                                         else
-                                            txt += "<br /><span>+";
+                                            txt += "<br /><span class=\"plustime\">+";
                                         txt += _this.formatTime(o.aData.splits["0_timeplus"], 0, _this.showTenthOfSecond) + "</span>";
                                     }
 								}
@@ -888,7 +564,7 @@ var LiveResults;
                     {
                         $.each(data.splitcontrols, function (key, value)
                         {
-						if (value.code != 0 && value.code != 999 && !(relay && value.code>100000)) // Code = 0 for exchange, 999 for leg time, 100000+ for leg passing
+                            if (value.code != 0 && value.code != 999 & value.code<100000) // Code = 0 for exchange, 999 for leg time, 100000+ for leg passing
                             {
                                 columns.push(
                                     {
@@ -910,7 +586,8 @@ var LiveResults;
                                                 if ((!fullView || relay) && (o.aData.splits[value.code + "_place"] != 1) && !unranked && (value.code > 0)) 
 											    // Compact view or relay view, all but first place
                                                 {
-                                                    txt += "<div class=\"tooltip\">+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond) + " (" + o.aData.splits[value.code + "_place"] + ")<span class=\"tooltiptext\">" + _this.formatTime(o.aData.splits[value.code], 0, _this.showTenthOfSecond) + "</span></div>";
+                                                    txt += "<span>+" + _this.formatTime(o.aData.splits[value.code + "_timeplus"], 0, _this.showTenthOfSecond)
+                                                        + "</span> (" + o.aData.splits[value.code + "_place"] + ")";
                                                 }
                                                 else 
 											    // Ordinary passing or first place at passing for relay (drop place if code is negative - unranked)
@@ -924,7 +601,7 @@ var LiveResults;
                                                         txt += " (" + o.aData.splits[value.code + "_place"] + ")</span>";
                                                 }
 												// Second line
-                                                if (fullView && relay && (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined))
+                                                if (fullView && (o.aData.splits[(value.code + 100000) + "_timeplus"] != undefined))
                                                 // Relay control second line with leg time to passing 
                                                 {
                                                     txt += "<br/><span class="
@@ -1026,7 +703,7 @@ var LiveResults;
 					else
 						if (relay && fullView){
 							columns.push({
-                            "sTitle": "Tot<br/><span class=\"legtime\">Etp</span>",
+                            "sTitle": "<span class=\"plustime\">Tot</span><br/><span class=\"legtime\">Etp</span>",
                             "sClass": "right",
                             "bSortable": false,
                             "aTargets": [col++],
@@ -1038,7 +715,7 @@ var LiveResults;
                                     if (o.aData.timeplus == 0)
                                         res += "<span class=\"besttime\">+";
                                     else
-                                        res += "<span>+";
+                                        res += "<span class=\"plustime\">+";
                                     res += _this.formatTime(o.aData.timeplus, o.aData.status, _this.showTenthOfSecond) + "</span><br />";
                                     if (o.aData.splits["999_timeplus"] == 0)
                                         res += "<span class=\"besttime\">+";
@@ -1236,7 +913,7 @@ var LiveResults;
             var firstFinishedIdx = -1;
             for (i = 0; i < data.length; i++) {
                 if (data[i].place != "") {
-					firstFinishedIdx = i;
+                    firstFinishedIdx = i;
                     break;
                 }
             }
@@ -1277,18 +954,12 @@ var LiveResults;
         AjaxViewer.prototype.sortByDistAndSplitPlace = function (a, b) {
             var sortStatusA = a.status;
             var sortStatusB = b.status;
-            if (sortStatusA == 9 || sortStatusA == 10 || sortStatusA == 13 )
+            if (sortStatusA == 9 || sortStatusA == 10)
                 sortStatusA = 0;
-            if (sortStatusB == 9 || sortStatusB == 10 || sortStatusB == 13 )
+            if (sortStatusB == 9 || sortStatusB == 10)
                 sortStatusB = 0;
-            if (sortStatusA != sortStatusB) {
-				if (sortStatusA == 0)
-					return -1
-				else if (sortStatusB == 0)
-					return 1
-				else
-					return sortStatusB - sortStatusA;
-			}
+            if (sortStatusA != sortStatusB)
+                return sortStatusA - sortStatusB;
             if (a.progress == 100 && b.progress == 100)
                 return a.result - b.result;
             if (a.progress == 0 && b.progress == 0) {
@@ -1346,7 +1017,7 @@ var LiveResults;
             }
             if (result.start != "") {
                 for (d = 0; d < data.length; d++) {
-                    if (data[d].place == "-") {
+                    if (data[d].place == "-" || data[d].place == "F") {
                         data.splice(d, 0, result);
                         return;
                     }
@@ -1361,22 +1032,20 @@ var LiveResults;
             data.push(result);
         };
         AjaxViewer.prototype.resultSorter = function (a, b) {
-            var aStatus = a.status;
-			var bStatus = b.status;
-			if (a.place == "F") {
-				aStatus = 0;
+            if (a.place == "F") {
+                return -1;
             }
             else if (b.place == "F") {
-                bStatus = 0;
+                return 1;
             }
-            if (a.place != "" && b.place != "") {
-                if (aStatus != bStatus)
-					if(aStatus == 0)
+            else if (a.place != "" && b.place != "") {
+                if (a.status != b.status)
+					if(a.status == 0)
 						return -1
-					else if (bStatus == 0)
+					else if (b.status == 0)
 						return 1
 					else
-						return bStatus - aStatus;
+						return b.status - a.status;
 				else {
                     if (a.result == b.result) {
                         if (a.place == "=" && b.place != "=") {
@@ -1431,7 +1100,7 @@ var LiveResults;
             this.curClassName = null;
             $('#resultsHeader').html(this.resources["_LOADINGRESULTS"]);
             $.ajax({
-                url: this.apiURL,
+                url: this.EmmaApiUrl,
                 data: "comp=" + this.competitionId + "&method=getclubresults&unformattedTimes=true&club=" + encodeURIComponent(clubName) + (this.isMultiDayEvent ? "&includetotal=true" : ""),
                 success: function (data) {
                     _this.updateClubResults(data);

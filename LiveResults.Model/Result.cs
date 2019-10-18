@@ -3,6 +3,7 @@
 namespace LiveResults.Model
 {
     public delegate void ResultDelegate(Result newResult);
+    public delegate void DeleteIDDelegate(int runnerID);
     public delegate void RadioControlDelegate(string controlName, int controlCode, string className, int order);
 
     public class Result

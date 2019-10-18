@@ -61,7 +61,7 @@
     <DefineConstants>TRACE;DEBUG;_CASPARCG1_</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <PlatformTarget>AnyCPU</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -72,6 +72,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <CodeAnalysisRuleSet>AllRules.ruleset</CodeAnalysisRuleSet>
+    <PlatformTarget>x86</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'DebugOLA|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -148,6 +149,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrmETimingMonitor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FrmETimingMonitor.designer.cs">
+      <DependentUpon>FrmETimingMonitor.cs</DependentUpon>
+    </Compile>
     <Compile Include="FrmNewRacomComp.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -159,6 +166,12 @@
     </Compile>
     <Compile Include="FrmReSimulateEvent.Designer.cs">
       <DependentUpon>FrmReSimulateEvent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="NewETimingComp.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="NewETimingComp.designer.cs">
+      <DependentUpon>NewETimingComp.cs</DependentUpon>
     </Compile>
     <Compile Include="NewMeosComp.cs">
       <SubType>Form</SubType>
@@ -172,18 +185,20 @@
     <Compile Include="NewSSFTimingComp.Designer.cs">
       <DependentUpon>NewSSFTimingComp.cs</DependentUpon>
     </Compile>
+    <Compile Include="Parsers\ETimingParser.cs" />
     <Compile Include="Parsers\IofXmlParser.cs" />
     <Compile Include="Parsers\IofXmlV3Parser.cs" />
-    <Compile Include="Parsers\MeOsParser.cs" />
-    <Compile Include="Parsers\TulospalveluParser.cs" />
-    <Compile Include="Parsers\RaceTimerParser.cs" />
-    <Compile Include="Parsers\SSFTimingParser.cs" />
-    <Compile Include="Parsers\OriLiveParser.cs" />
     <Compile Include="Parsers\IOFXmlV2Parser.cs" />
     <Compile Include="Parsers\LiveResultater_no_Parser.cs" />
+    <Compile Include="Parsers\MeOsParser.cs" />
+    <Compile Include="Parsers\OlaParser.cs" />
+    <Compile Include="Parsers\OriLiveParser.cs" />
+    <Compile Include="Parsers\RaceTimerParser.cs" />
     <Compile Include="Parsers\RacomFileSetParser.cs" />
-    <Compile Include="SirapInterface.cs" />
+    <Compile Include="Parsers\SSFTimingParser.cs" />
+    <Compile Include="Parsers\TulospalveluParser.cs" />
     <Compile Include="Parsers\WocParser.cs" />
+    <Compile Include="SirapInterface.cs" />
     <Compile Include="FrmMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -211,9 +226,11 @@
     </Compile>
     <Compile Include="Parsers\OSParser.cs" />
     <Compile Include="Parsers\OEParser.cs" />
-    <Compile Include="Parsers\OlaParser.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="FrmETimingMonitor.resx">
+      <DependentUpon>FrmETimingMonitor.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="FrmMonitor.resx">
       <SubType>Designer</SubType>
       <DependentUpon>FrmMonitor.cs</DependentUpon>
@@ -227,6 +244,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="FrmReSimulateEvent.resx">
       <DependentUpon>FrmReSimulateEvent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="NewETimingComp.resx">
+      <DependentUpon>NewETimingComp.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="NewMeosComp.resx">
       <DependentUpon>NewMeosComp.cs</DependentUpon>
@@ -364,6 +384,8 @@
     <None Include="Resources\iof_logohead.png" />
     <None Include="Resources\iof_logohead1.png" />
     <None Include="Resources\ssftiming.png" />
+    <Content Include="Resources\emit.ico" />
+    <Content Include="Resources\emitE.png" />
     <Content Include="Wizard\Wizard.bmp" />
     <Content Include="Wizard\wizBigOnlineFolder.gif" />
   </ItemGroup>

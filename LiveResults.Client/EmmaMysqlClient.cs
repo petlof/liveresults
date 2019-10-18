@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Web.UI.Design;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
@@ -9,32 +10,20 @@ using System.Text;
 using System.Threading;
 using System.Linq;
 
-namespace LiveResults.Model
+namespace LiveResults.Client
 {
     public delegate void LogMessageDelegate(string msg);
 
-
+   
     public class EmmaMysqlClient : IDisposable
     {
-        public delegate void ResultChangedDelegate(Runner runner, int position);
-        public event ResultChangedDelegate ResultChanged;
 
-        void FireResultChanged(Runner r, int position)
-        {
-            ResultChanged?.Invoke(r, position);
-        }
-
-
-        private static readonly Dictionary<int,Dictionary<string,int>> m_compsSourceToIdMapping =
-            new Dictionary<int, Dictionary<string, int>>();
+        private static readonly Dictionary<int,Dictionary<string,int>> m_compsSourceToIdMapping = 
+            new Dictionary<int, Dictionary<string, int>>(); 
         private static readonly Dictionary<int,int> m_compsNextGeneratedId = new Dictionary<int, int>();
-
-        private static readonly Dictionary<int,int[]> m_runnerPreviousDaysTotalTime = new Dictionary<int, int[]>();
-        
         public string organizer;
         public DateTime compDate;
         public string compName;
-
         public static int GetIdForSourceIdInCompetition(int compId, string sourceId)
         {
             if (!m_compsSourceToIdMapping.ContainsKey(compId))
@@ -130,7 +119,7 @@ namespace LiveResults.Model
         public event LogMessageDelegate OnLogMessage;
         private MySqlConnection m_connection;
         private readonly string m_connStr;
-        private int m_compID;
+        private readonly int m_compID;
         private readonly Dictionary<int,Runner> m_runners;
         private readonly Dictionary<string, RadioControl[]> m_classRadioControls;
         private readonly List<DbItem> m_itemsToUpdate;
@@ -149,13 +138,6 @@ namespace LiveResults.Model
             m_compID = competitionID;
         }
 
-
-        public void SetCompetitionId(int compId)
-        {
-            m_compID = compId;
-        }
-
-
         private void ResetUpdated()
         {
             foreach (Runner r in m_runners.Values)
@@ -166,38 +148,13 @@ namespace LiveResults.Model
             }
         }
 
-
-        public RadioControl[] GetAllRadioControls()
-        {
-            Dictionary<int, RadioControl> radios = new Dictionary<int, RadioControl>();
-            foreach (var kvp in m_classRadioControls)
-            {
-                foreach (var radioControl in kvp.Value)
-                {
-                    if (!radios.ContainsKey(radioControl.Code))
-                    {
-                        radios.Add(radioControl.Code, radioControl);
-                    }
-                }
-
-            }
-            return radios.Values.ToArray();
-        }
-
-        public RadioControl[] GetRadioControlsForClass(string className)
-        {
-            return m_classRadioControls.ContainsKey(className) ? m_classRadioControls[className] : null;
-
-        }
-
-
+       
         private void FireLogMsg(string msg)
         {
             if (OnLogMessage != null)
                 OnLogMessage(msg);
         }
 
-          
         public Runner GetRunner(int dbId)
         {
             if (!IsRunnerAdded(dbId))
@@ -205,35 +162,12 @@ namespace LiveResults.Model
             return m_runners[dbId];
         }
 
-
-        public string[] GetClasses()
-        {
-            Dictionary<string,string> classes = new Dictionary<string, string>();
-            foreach (var r in m_runners)
-            {
-                if (!classes.ContainsKey(r.Value.Class))
-                    classes.Add(r.Value.Class,"");
-            }
-
-            return classes.Keys.ToArray();
-        }
-
-        public Runner[] GetAllRunners()
-        {
-            return m_runners.Values.ToArray();
-        }
-
-        public Runner[] GetRunnersInClass(string className)
-        {
-            return m_runners.Values.Where(x => x.Class == className).ToArray();
-        }
-
-
         private bool m_continue;
         private bool m_currentlyBuffering;
         private Thread m_mainTh;
 
-        
+ 
+
         public void Start()
         {
             FireLogMsg("Buffering existing results..");
@@ -305,26 +239,28 @@ namespace LiveResults.Model
                 reader = cmd.ExecuteReader();
                 reader.Read();
 
-                organizer = reader[("organizer")] as string;
-                compName = reader[("compName")] as string;
-                compDate = Convert.ToDateTime(reader[("compDate")]);
+                organizer    = reader[("organizer")] as string;
+                compName     = reader[("compName")] as string;
+                compDate     = Convert.ToDateTime(reader[("compDate")]);
+                
+
                 reader.Close();
 
                 cmd.CommandText = "select runners.dbid,control,time,name,club,class,status from runners, results where results.dbid = runners.dbid and results.tavid = " + m_compID + " and runners.tavid = " + m_compID;
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
-                    var dbid = Convert.ToInt32(reader["dbid"]);
-                    var control = Convert.ToInt32(reader["control"]);
-                    var time = Convert.ToInt32(reader["time"]);
+                    var dbid     = Convert.ToInt32(reader["dbid"]);
+                    var control  = Convert.ToInt32(reader["control"]);
+                    var time     = Convert.ToInt32(reader["time"]);
                     var sourceId = idToAliasDictionary.ContainsKey(dbid) ? idToAliasDictionary[dbid] : null;
                     if (!IsRunnerAdded(dbid))
                     {
-                        var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string, sourceId);
+                        var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string, sourceId as string);
                         AddRunner(r);
                         numRunners++;
                     }
-                    switch (control)
+                switch (control)
                     {
                         case 1000:
                             SetRunnerResult(dbid, time, Convert.ToInt32(reader["status"]));
@@ -339,7 +275,7 @@ namespace LiveResults.Model
                             SetRunnerSplit(dbid, control, time);
                             break;
                     }
-
+                    
                 }
                 reader.Close();
                 cmd.Dispose();
@@ -358,7 +294,7 @@ namespace LiveResults.Model
                 m_currentlyBuffering = false;
                 FireLogMsg("Done - Buffered " + m_runners.Count + " existing runners and " + numResults +" existing results from server");
             }
-
+            
             m_continue = true;
             m_mainTh = new Thread(Run);
             m_mainTh.Name = "Main MYSQL Thread [" + m_connection.DataSource + "]";
@@ -370,13 +306,13 @@ namespace LiveResults.Model
             }
         }
 
-        public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId)
+        public bool UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId)
         {
             if (m_runners.ContainsKey(id))
             {
                 var cur = m_runners[id];
                 if (cur == null)
-                    return;
+                    return false;
                 bool isUpdated = false;
                 if (cur.Name != name)
                 {
@@ -412,7 +348,9 @@ namespace LiveResults.Model
                         FireLogMsg("Runnerinfo changed [" + cur.Name + "]");
                     }
                 }
+                return true;
             }
+            else return false; // Not existing
         }
 
         /// <summary>
@@ -433,17 +371,9 @@ namespace LiveResults.Model
         }
 
         /// <summary>
-        /// Adds a Runner to this competition
+        /// Delete a runner from this competition
         /// </summary>
         /// <param name="r"></param>
-
-        public void DeleteID(int runnerID)
-        {
-            if (m_runners.ContainsKey(runnerID))
-                RemoveRunner(m_runners[runnerID]);
-        }
-
-
         public void RemoveRunner(Runner r)
         {
             if (m_runners.ContainsKey(r.ID))
@@ -459,14 +389,6 @@ namespace LiveResults.Model
 
         public void SetRadioControl(string className, int code, string controlName, int order)
         {
-            if (!m_classRadioControls.ContainsKey(className))
-                m_classRadioControls.Add(className, new RadioControl[0]);
-
-            var radios = new List<RadioControl>();
-            radios.AddRange(m_classRadioControls[className]);
-            radios.Add(new RadioControl { ClassName = className, Code = code, ControlName = controlName, Order = order });
-            m_classRadioControls[className] = radios.ToArray();
-            //m_classRadioControls.Add(className,new RadioControl[] { );
             m_itemsToUpdate.Add(new RadioControl
             {
                 ClassName = className,
@@ -513,7 +435,6 @@ namespace LiveResults.Model
                 m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
-                    FireResultChanged(r, 1000);
                     FireLogMsg("Runner result changed: [" + r.Name + ", " + r.Time + "]");
                 }
             }
@@ -531,7 +452,6 @@ namespace LiveResults.Model
                 m_itemsToUpdate.Add(r);
                 if (!m_currentlyBuffering)
                 {
-                    FireResultChanged(r, controlcode);
                     FireLogMsg("Runner Split Changes: [" + r.Name + ", {cn: " + controlcode + ", t: " + time + "}]");
                 }
             }
@@ -554,26 +474,6 @@ namespace LiveResults.Model
                 }
             }
 
-        }
-
-        public void DeleteUnusedSplits(int runnerID, List<int> controlCodes)
-        {
-            if (m_runners.ContainsKey(runnerID))
-            {
-                var r = m_runners[runnerID];
-                foreach (SplitTime splitTime in r.SplitTimes)
-                {
-                    if (!controlCodes.Contains(splitTime.Control))
-                    {
-                        m_itemsToUpdate.Add(new DelSplitTime() {
-                            RunnerID = runnerID,
-                            ControlCode = splitTime.Control
-                        });
-                        r.DeleteSplitTime(splitTime.Control);
-                        FireLogMsg("Runner Split Deleted: [" + r.Name + ", {cn: " + splitTime.Control + "}]");
-                    }
-                }
-            }
         }
 
         public void MergeRadioControls(RadioControl[] radios)
@@ -651,81 +551,57 @@ namespace LiveResults.Model
             if (runners == null)
                 return;
 
-            var existingClassGroups = m_runners.Values.GroupBy(x => x.Class, StringComparer.OrdinalIgnoreCase).ToDictionary(x => x.Key, x => x.ToArray(), StringComparer.OrdinalIgnoreCase);
-            foreach (var classGroup in runners.GroupBy(x => x.Class))
+            // Update or add runner
+            foreach (var runner in runners)
             {
-                if (existingClassGroups.ContainsKey(classGroup.Key))
+                //if (m_runners.ContainsKey(runner.ID))
+                //{
+                bool updated = UpdateRunnerInfo(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
+                //}
+                //else
+                if (!updated)
                 {
-                    var existingClass = existingClassGroups[classGroup.Key];
-                    var duplicateCounter = new Dictionary<string, int>();
-                    foreach (var runner in classGroup)
-                    {
-                        string duplValue = (runner.Name + ":" + runner.Club).ToLower();
-                        if (!duplicateCounter.ContainsKey(duplValue))
-                        {
-                            duplicateCounter.Add(duplValue, 0);
-                        }
-                        duplicateCounter[duplValue]++;
-                        int findInstance = duplicateCounter[duplValue];
-
-                        /*Find existing*/
-                        Runner currentRunner = null;
-                        int instNum = 0;
-                        foreach (var existingRunner in existingClass)
-                        {
-
-                            if (string.Compare(existingRunner.Name,runner.Name, StringComparison.InvariantCultureIgnoreCase) == 0 &&
-                                string.Compare(existingRunner.Club,runner.Club, StringComparison.InvariantCultureIgnoreCase) == 0)
-                            {
-                                instNum++;
-                                if (instNum == findInstance)
-                                {
-                                    currentRunner = existingRunner;
-                                    break;
-                                }
-                            }
-                        }
-                        if (currentRunner != null)
-                        {
-                            runner.ID = currentRunner.ID;
-                            UpdateRunnerInfo(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
-                        }
-                        else
-                        {
-                            //New runner
-                            runner.ID = m_nextInternalId++;
-                            var newRunner = new Runner(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
-                            AddRunner(newRunner);
-                        }
-                        UpdateRunnerTimes(runner);
-                    }
+                    var newRunner = new Runner(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
+                    AddRunner(newRunner);
                 }
-                else
+                UpdateRunnerTimes(runner);
+            }
+
+
+            // Check if existing runners has been removed in XML file
+            if (m_runners.Count > runners.Length) // More runners in DB than in XML file
+            {
+                var existingRunners = m_runners.Values;
+                foreach (var existingRunner in existingRunners.ToList())
                 {
-                    //new class, add all
-                    foreach (var runner in classGroup)
+                    bool exists = false;
+                    foreach (var runner in runners)
                     {
-                        runner.ID = m_nextInternalId++;
-                        var newRunner = new Runner(runner.ID,runner.Name, runner.Club, runner.Class, runner.SourceId);
-                        AddRunner(newRunner);
-                        UpdateRunnerTimes(runner);
+                        if (existingRunner.ID == runner.ID)
+                        {
+                            exists = true;
+                            break;
+                        }
+                    }
+                    if (!exists)
+                    {
+                        RemoveRunner(existingRunner);
                     }
                 }
             }
         }
-              
 
         public void DeleteUnusedRunners(List<int> usedIds)
         {
             if (usedIds == null)
                 return;
-
+           
             var dbRunners = m_runners.Values;
-            foreach (var dbRunner in dbRunners.ToList())
-            {
-                if (!usedIds.Contains(dbRunner.ID))
-                    RemoveRunner(dbRunner);
-            }
+                foreach (var dbRunner in dbRunners.ToList())
+                {
+                    if (!usedIds.Contains(dbRunner.ID))
+                        RemoveRunner(dbRunner);
+                }
         }
 
         private void UpdateRunnerTimes(Runner runner)
@@ -753,27 +629,17 @@ namespace LiveResults.Model
 
         private void Run()
         {
-            bool runOffline = ConfigurationManager.AppSettings["runoffline"] == "true";
             while (m_continue)
             {
                 try
                 {
-                    if (!runOffline)
-                    {
-                        m_connection = new MySqlConnection(m_connStr);
-                        m_connection.Open();
-                        SetCodePage(m_connection);
-                    }
+                    m_connection = new MySqlConnection(m_connStr);
+                    m_connection.Open();
+                    SetCodePage(m_connection);
                     while (m_continue)
                     {
                         if (m_itemsToUpdate.Count > 0)
                         {
-                            if (runOffline)
-                            {
-                                m_itemsToUpdate.RemoveAt(0);
-                                continue;
-                            }
-
                             using (MySqlCommand cmd = m_connection.CreateCommand())
                             {
                                 var item = m_itemsToUpdate[0];
@@ -819,7 +685,7 @@ namespace LiveResults.Model
                                     }
                                     catch (Exception ee)
                                     {
-                                        //Move failing radio control
+                                        //Move failing runner last
                                         m_itemsToUpdate.Add(r);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not delete radiocontrol " + r.ControlName + ", " + r.ClassName + ", " + r.Code + " to server due to: " + ee.Message, ee);
@@ -844,33 +710,10 @@ namespace LiveResults.Model
                                     }
                                     catch (Exception ee)
                                     {
-                                        //Move failing item last
+                                        //Move failing runner last
                                         m_itemsToUpdate.Add(dr);
                                         m_itemsToUpdate.RemoveAt(0);
                                         throw new ApplicationException("Could not delete runner " + r + " on server due to: " + ee.Message, ee);
-                                    }
-                                    cmd.Parameters.Clear();
-                                }
-                                else if (item is DelSplitTime)
-                                {
-                                    var ds = item as DelSplitTime;
-                                    var r = ds.RunnerID;
-                                    var control = ds.ControlCode;
-                                    cmd.Parameters.Clear();
-                                    cmd.Parameters.AddWithValue("?compid", m_compID);
-                                    cmd.Parameters.AddWithValue("?id", r);
-                                    cmd.Parameters.AddWithValue("?control", control);
-                                    cmd.CommandText = "delete from results where tavid= ?compid and dbid= ?id and control= ?control";
-                                    try
-                                    {
-                                        cmd.ExecuteNonQuery();
-                                    }
-                                    catch (Exception ee)
-                                    {
-                                        //Move failing item last
-                                        m_itemsToUpdate.Add(ds);
-                                        m_itemsToUpdate.RemoveAt(0);
-                                        throw new ApplicationException("Could not delete split from runner " + r + " on server due to: " + ee.Message, ee);
                                     }
                                     cmd.Parameters.Clear();
                                 }
@@ -887,6 +730,7 @@ namespace LiveResults.Model
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid) VALUES (?compid,?name,?club,?class,0,?id)";
+                                       
 
                                         try
                                         {
@@ -929,18 +773,10 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?time", r.Time);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
                                         cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(?compid,?id,1000,?time,?status,Now())";
-                                        try
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                        catch (Exception ee)
-                                        {
-                                            // Move failing runner last
-                                            m_itemsToUpdate.Add(r);
-                                            m_itemsToUpdate.RemoveAt(0);
-                                            throw new ApplicationException(
-                                                "Could not update result for runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
-                                        }
+                                        cmd.ExecuteNonQuery();
+                                        cmd.Parameters.Clear();
+
+                                        FireLogMsg("Runner " + r.Name + "s result updated in DB");
                                         r.ResultUpdated = false;
                                     }
                                     if (r.StartTimeUpdated)
@@ -951,18 +787,9 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?starttime", r.StartTime);
                                         cmd.Parameters.AddWithValue("?status", r.Status);
                                         cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(?compid,?id,100,?starttime,?status,Now())";
-                                        try
-                                        {
-                                            cmd.ExecuteNonQuery();
-                                        }
-                                        catch (Exception ee)
-                                        {
-                                            // Move failing runner last
-                                            m_itemsToUpdate.Add(r);
-                                            m_itemsToUpdate.RemoveAt(0);
-                                            throw new ApplicationException(
-                                                "Could not update starttime for runner " + r.Name + ", " + r.Club + ", " + r.Class + " to server due to: " + ee.Message, ee);
-                                        }
+                                        cmd.ExecuteNonQuery();
+                                        cmd.Parameters.Clear();
+                                        FireLogMsg("Runner " + r.Name + "s starttime updated in DB");
                                         r.StartTimeUpdated = false;
                                     }
                                     if (r.HasUpdatedSplitTimes())
@@ -980,20 +807,11 @@ namespace LiveResults.Model
                                             cmd.Parameters["?time"].Value = t.Time;
                                             cmd.CommandText = "REPLACE INTO results (tavid,dbid,control,time,status,changed) VALUES(" + m_compID + "," + r.ID + "," + t.Control + "," + t.Time +
                                                               ",0,Now())";
-                                            try
-                                            {
-                                                cmd.ExecuteNonQuery();
-                                            }
-                                            catch (Exception ee)
-                                            {
-                                                // Move failing r last
-                                                m_itemsToUpdate.Add(r);
-                                                m_itemsToUpdate.RemoveAt(0);
-                                                throw new ApplicationException(
-                                                    "Could not update split time for runner " + r.Name + " splittime{" + t.Control + "} to server due to: " + ee.Message, ee);
-                                            }
+                                            cmd.ExecuteNonQuery();
                                             t.Updated = false;
+                                            FireLogMsg("Runner " + r.Name + " splittime{" + t.Control + "} updated in DB");
                                         }
+                                        cmd.Parameters.Clear();
                                     }
                                 }
 

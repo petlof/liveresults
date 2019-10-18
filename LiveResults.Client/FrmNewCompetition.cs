@@ -46,6 +46,12 @@ namespace LiveResults.Client
             lblInfo.Text = "Export liveresults from RaCom special fileset format";
         }
 
+        private void button6_MouseEnter(object sender, EventArgs e)
+        {
+            lblInfo.Text = "Export liveresults from eTiming (BETA)";
+        }
+
+
         private void btn_MouseLeave(object sender, EventArgs e)
         {
             lblInfo.Text = "";
@@ -220,5 +226,14 @@ namespace LiveResults.Client
             NewMeosComp frm = new NewMeosComp();
             frm.ShowDialog(this);
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            NewETimingComp cmp = new NewETimingComp();
+            cmp.ShowDialog(this);
+        }
+
+
+       
     }
 }

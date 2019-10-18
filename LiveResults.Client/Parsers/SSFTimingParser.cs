@@ -12,10 +12,13 @@ namespace LiveResults.Client
     
     public class SSFTimingParser : IExternalSystemResultParser
     {
+        
         private readonly IDbConnection m_connection;
         private readonly int m_eventID;
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
+        public event DeleteIDDelegate OnDeleteID;
+
         private bool m_createRadioControls;
         private bool m_continue;
         private bool m_useTenth = false;

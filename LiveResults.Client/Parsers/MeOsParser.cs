@@ -21,6 +21,7 @@ namespace LiveResults.Client
         private readonly bool m_recreateRadioControls;
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
+        public event DeleteIDDelegate OnDeleteID;
         private bool m_isRelay = false;
         private bool m_continue;
         

@@ -10,10 +10,11 @@ table.dataTable {
 	border-collapse: collapse;
 }
 
+
 table.dataTable thead th {
-	padding: 3px 18px 3px 10px;
-	cursor: pointer;
-	*cursor: hand;
+    padding: 3px 18px 3px 10px;
+    cursor: pointer;
+    *cursor: hand;
 }
 
 table.dataTable tfoot th {
@@ -28,6 +29,24 @@ table.dataTable td.center,
 table.dataTable td.dataTables_empty {
 	text-align: center;
 }
+
+td.right {
+    text-align: right;
+}
+
+table.dataTable th.right {
+        text-align: right;
+    }
+
+td.left {
+    text-align: left;
+}
+
+table.dataTable th.left {
+    text-align: left;
+}
+
+
 
 table.dataTable tr.odd { background-color: #DFDFDF; }
 table.dataTable tr.even { background-color: white; }
@@ -257,4 +276,3 @@ table.dataTable th:active {
 	*margin-top: -1px;
 	-webkit-overflow-scrolling: touch;
 }
-

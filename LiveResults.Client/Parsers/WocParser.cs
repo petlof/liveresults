@@ -14,6 +14,8 @@ namespace LiveResults.Client
     {
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
+        public event DeleteIDDelegate OnDeleteID;
+
 
         private bool m_Continue = false;
         string[] urls;

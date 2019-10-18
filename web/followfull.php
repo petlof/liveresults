@@ -1,6 +1,6 @@
 <?php
-date_default_timezone_set("Europe/Stockholm");
-$lang = "sv";
+date_default_timezone_set("Europe/Oslo");
+$lang = "no";
 
 if (isset($_GET['lang']))
  $lang = $_GET['lang'];
@@ -12,9 +12,12 @@ include_once("templates/classEmma.class.php");
 header('Content-Type: text/html; charset='.$CHARSET);
 
 $currentComp = new Emma($_GET['comp']);
+$currentCompNo = $_GET['comp'];
+$orgainzer = $currentComp->Organizer();
 
 $isSingleClass = isset($_GET['class']);
 $isSingleClub = isset($_GET['club']);
+$setFullView = isset($_GET['fullView']);
 $showPath = true;
 
 if (isset($_GET['showpath']) && $_GET['showpath'] == "false")
@@ -28,7 +31,7 @@ if ($isSingleClub)
 	$singleClub = utf8_decode(rawurldecode($_GET['club']));
 
 $showLastPassings = !($isSingleClass || $isSingleClub) || (isset($_GET['showLastPassings']) && $_GET['showLastPassings'] == "true");
-$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "");
+$RunnerStatus = Array("1" =>  $_STATUSDNS, "2" => $_STATUSDNF, "11" =>  $_STATUSWO, "12" => $_STATUSMOVEDUP, "9" => $_STATUSNOTSTARTED,"0" => $_STATUSOK, "3" => $_STATUSMP, "4" => $_STATUSDSQ, "5" => $_STATUSOT, "9" => "", "10" => "", "6" => $_STATUSNC);
 
 $showTimePrediction = true;
 
@@ -46,7 +49,7 @@ echo("<?xml version=\"1.0\" encoding=\"$CHARSET\" ?>\n");
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="theme-color" content="#555556">
-<link rel="stylesheet" type="text/css" href="css/style-eoc.css">
+<link rel="stylesheet" type="text/css" href="css/style-eoc.css?as">
 <link rel="stylesheet" type="text/css" href="css/ui-darkness/jquery-ui-1.8.19.custom.css">
 <link rel="stylesheet" type="text/css" href="css/jquery.dataTables_themeroller-eoc.css">
 <script type="text/javascript">
@@ -58,7 +61,8 @@ window.mobilecheck = function() {
 </script>
 
 <?php
-$debug = isset($_GET['debug']) && $_GET["debug"] == "true";
+//$debug = isset($_GET['debug']) && $_GET["debug"] == "true";
+$debug = true;
 if ($debug)
 {
 ?>
@@ -66,12 +70,15 @@ if ($debug)
 <script language="javascript" type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.dataTables.min.js"></script>
 <script language="javascript" type="text/javascript" src="js/jquery.ba-hashchange.min.js"></script>
-<script language="javascript" type="text/javascript" src="js/LiveResults.debug.js?rnd=<?=time()?>"></script>
+<script language="javascript" type="text/javascript" src="js/liveresults.js"></script> 
+<!-- <script language="javascript" type="text/javascript" src="js/LiveResults.debug.js?rnd=<?=time()?>"></script>
+-->
 <?php }
 else
 {?>
 <!-- RELEASE-->
 <script language="javascript" type="text/javascript" src="js/liveresults.min.20170627.js"></script>
+
 <?php }?>
 <script language="javascript" type="text/javascript" src="js/NoSleep.min.js"></script>
 <script language="javascript" type="text/javascript">
@@ -114,6 +121,7 @@ var Resources = {
 	_STATUSMP: "<?=$_STATUSMP ?>",
 	_STATUSDSQ: "<?=$_STATUSDSQ?>",
 	_STATUSOT: "<?=$_STATUSOT?>",
+	_STATUSNC: "<?=$_STATUSNC?>",
 	_FIRSTPAGECHOOSE: "<?=$_FIRSTPAGECHOOSE ?>",
 	_FIRSTPAGEARCHIVE: "<?=$_FIRSTPAGEARCHIVE?>",
 	_LOADINGRESULTS: "<?=$_LOADINGRESULTS ?>",
@@ -135,24 +143,24 @@ var Resources = {
 };
 
 var runnerStatus = Array();
-runnerStatus[0]= "<?=$_STATUSOK?>";
-runnerStatus[1]= "<?=$_STATUSDNS?>";
-runnerStatus[2]= "<?=$_STATUSDNF?>";
+runnerStatus[0]  = "<?=$_STATUSOK?>";
+runnerStatus[1]  = "<?=$_STATUSDNS?>";
+runnerStatus[2]  = "<?=$_STATUSDNF?>";
+runnerStatus[3]  = "<?=$_STATUSMP?>";
+runnerStatus[4]  = "<?=$_STATUSDSQ?>";
+runnerStatus[5]  = "<?=$_STATUSOT?>";
+runnerStatus[6]  = "<?=$_STATUSNC?>";
+runnerStatus[9]  = "";
+runnerStatus[10]  = "";
 runnerStatus[11] =  "<?=$_STATUSWO?>";
 runnerStatus[12] = "<?=$_STATUSMOVEDUP?>";
-runnerStatus[9] = "";
-runnerStatus[3] = "<?=$_STATUSMP?>";
-runnerStatus[4] = "<?=$_STATUSDSQ?>";
-runnerStatus[5] = "<?=$_STATUSOT?>";
-runnerStatus[9] = "";
-runnerStatus[10] = "";
+runnerStatus[13] = "<?=$_STATUSFINISHED?>";
 
 
 $(document).ready(function()
 {
-	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText", runnerStatus);
-	<?php if ($isSingleClass)
-	{?>
+	res = new LiveResults.AjaxViewer(<?= $_GET['comp']?>,"<?= $lang?>","divClasses","divLastPassings","resultsHeader","resultsControls","divResults","txtResetSorting",Resources,<?= ($currentComp->IsMultiDayEvent() ? "true" : "false")?>,<?= (($isSingleClass || $isSingleClub) ? "true": "false")?>,"setAutomaticUpdateText","setCompactViewText", runnerStatus);
+	<?php if ($isSingleClass){?>
 		res.chooseClass('<?=$singleClass?>');
 	<?php }
 	else if ($isSingleClub)
@@ -165,15 +173,30 @@ $(document).ready(function()
 		res.updateClassList();
 	<?php }?>
 
-<?php if ($showLastPassings){?>
-	res.updateLastPassings();
+    <?php if ($showLastPassings){?>
+		res.updateLastPassings();
 	<?php }?>
 
 	<?php if ($showTimePrediction){ ?>
 		res.eventTimeZoneDiff = <?=$currentComp->TimeZoneDiff();?>;
 		res.startPredictionUpdate();
-				
 	<?php }?>
+	
+	// Set full view
+	<?php if ($setFullView || in_array($currentCompNo, array(16284))){?>
+		res.setCompactView(false);
+	<?php }?>
+	
+	// Mass start race
+	<?php if(in_array($currentCompNo, array(14872, 15233,15952, 16197, 16284, 16544))){?>
+		res.curClassIsMassStart = true;
+	<?php }?>
+	
+	// Show tenth of seconds
+	<?php if(in_array($currentCompNo, array(15232,15233,15068,15070,15162))){?>
+		res.setShowTenth(true);
+	<?php }?>
+		
 });
 
 
@@ -200,53 +223,43 @@ function changeFontSize(val)
     <td class="submenu" colspan="2">
        <table border="0" cellpadding="0" cellspacing="1" style="font-size: 14px">
              <tr>
-               <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</td>
+               <td><a href="index.php?lang=<?=$lang?>&amp;"><?=$_CHOOSECMP?></a> >> <?=$currentComp->CompName()?>, <?=$currentComp->Organizer()?> [<?=$currentComp->CompDate()?>]</td>
                <td>|</td>
-				<td><a href="https://liveresults.github.io/documentation/" target="_blank"><?=$_FORORGANIZERS?></a></td>
-               <td>|</td>
-               <td><a href="https://liveresults.github.io/documentation/#developer" target="_blank"><?=$_FORDEVELOPERS?></a></td>             </tr>
+				<td><a href="https://liveol.larsendahl.se/" target="_blank">LiveOL result app</a></td>
+               </tr>
        </table>
      </td>
   </tr>
 <?php }?>
 <!-- End SUB MENU -->
-
   <tr>
-
     <td class="searchmenu" colspan="2" style="" valign=top>
-
        <table border="0" cellpadding="0" cellspacing="0">
-
              <tr>
-
                <td valign=top>
-
 			<?php if (!isset($_GET['comp']))
-
 			{
-
 			?>
-
 				<h1 class="categoriesheader">Ett fel uppstod? Har du valt tävling?</h1>
-
 			<?php
-
 			}
-
 			else
-
 			{
-
 			?>
 
 <?php if (!$showPath) {?>
 <h1 class="categoriesheader" style="margin-bottom: 4px; color: black"><?=$currentComp->CompName()?> [<?=$currentComp->CompDate()?>]</h1>
 <?php }?>
-<?php if (!$isSingleClass && !$isSingleClub) {?>
+
+
+<!--- LANGUAGE TABLE --->
+<?php if (!$isSingleClass && !$isSingleClub){?>				
 			<div id="langchooser">
-| <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
+						| <?php echo($lang == "no" ? "<img src='images/no.png?a' border='0' alt='Norsk'> Norsk" :
+"<a href=\"?lang=no&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/no.png?a' border='0' alt='Norsk'> Norsk</a>")?>
+                        | <?php echo($lang == "sv" ? "<img src='images/se.png' alt='Svenska'> Svenska" :
 "<a href=\"?lang=sv&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/se.png' alt='Svenska'> Svenska</a>")?>
-                                                        | <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
+						| <?php echo($lang == "en" ? "<img src='images/en.png' alt='English'> English" :
 "<a href=\"?lang=en&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/en.png' alt='English'> English</a>")?>
                         | <?php echo($lang == "fi" ? "<img src='images/fi.png' alt='Suomeksi'> Suomeksi" :
 "<a href=\"?lang=fi&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fi.png'  alt='Suomeksi'> Suomeksi</a>")?>
@@ -255,76 +268,94 @@ function changeFontSize(val)
                         | <?php echo($lang == "cz" ? "<img src='images/cz.png' alt='Česky'> Česky" :
 "<a href=\"?lang=cz&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/cz.png' alt='Česky'> Česky</a>")?>
                         | <?php echo($lang == "de" ? "<img src='images/de.png' alt='Deutsch'> Deutsch" :
-"<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>
- | <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
+"<a href=\"?lang=de&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/de.png' alt='Deutsch'> Deutsch</a>")?>						
+|
+</div>
+<div>
+						| <?php echo($lang == "bg" ? "<img src='images/bg.png' alt='български'> български" :
 "<a href=\"?lang=bg&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/bg.png' alt='български'> български</a>")?>
-						| <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
+                        | <?php echo($lang == "fr" ? "<img src='images/fr.png' alt='Français'> Français" :
 "<a href=\"?lang=fr&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/fr.png' alt='Français'> Français</a>")?>
                         | <?php echo($lang == "it" ? "<img src='images/it.png' border='0' alt='Italiano'> Italiano" : 
 "<a href=\"?lang=it&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/it.png' border='0' alt='Italiano'> Italiano</a>")?> 
                         | <?php echo($lang == "hu" ? "<img src='images/hu.png' border='0' alt='Magyar'> Magyar" : 
 "<a href=\"?lang=hu&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/hu.png' border='0' alt='Magyar'> Magyar</a>")?> 
-
- | <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" :
+						| <?php echo($lang == "es" ? "<img src='images/es.png' border='0' alt='Español'> Español" :
 "<a href=\"?lang=es&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/es.png' border='0' alt='Español'> Español</a>")?>
- | <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" :
+						| <?php echo($lang == "pl" ? "<img src='images/pl.png' border='0' alt='Polska'> Polska" :
 "<a href=\"?lang=pl&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pl.png' border='0' alt='Polska'> Polska</a>")?>
- | <?php echo($lang == "pt" ? "<img src='images/pt.png?a' border='0' alt='Português'> Português" :
+						| <?php echo($lang == "pt" ? "<img src='images/pt.png?a' border='0' alt='Português'> Português" :
 "<a href=\"?lang=pt&amp;comp=".$_GET['comp']."\" style='text-decoration: none'><img src='images/pt.png?a' border='0' alt='Português'> Português</a>")?>
-
+						
 |
-
 </div>
 <?php }?>
+
+<!--- PASSING TABLE --->
 <?php if($showLastPassings){?>
 			<table border="0" cellpadding="0" cellspacing="0" width="100%" style="background-color:#555556; color:#FFF; padding: 10px; margin-top: 3px;border-radius: 5px">
 			<tr>
 			<!--Customized logo -->
-			<!--<td width="161">
-			<img src="images/fin5.png"/></td>-->
+			<?php if(in_array($_GET['comp'], array("15821","15822","15823"))){?>
+			    <td width="60">
+			    <img src="images/SG19.PNG" height="60" /></td>
+			<?php } elseif(in_array($_GET['comp'], array("15950","15951","15952"))){?>
+			    <td width="60">
+			    <img src="images/OF.png" height="60" /></td>
+			<?php } elseif(in_array($_GET['comp'], array("16235","16241","16284"))){?>
+			    <td width="60">
+			    <img src="images/SB-O.png" height="60" /></td>
+			<?php } elseif(in_array($_GET['comp'], array("16432"))){?>
+			    <td width="210">
+			    <img src="images/u-lop.png" height="60" /></td>
+			<?php } elseif($orgainzer=="Freidig"){?>
+			    <td width="60">
+			    <img src="images/Freidig60.png" height="60" /></td>
+			<?php } elseif($orgainzer=="Byåsen IL"){?>
+			    <td width="60">
+			    <img src="images/BIL.png" height="60" /></td>
+			<?php }?>
 			<td valign="top"><b><?=$_LASTPASSINGS?></b><br>
-<div id="divLastPassings">
-</div>
-</td>
+<div id="divLastPassings"></div></td>
+
 <td valign="top" style="padding-left: 5px; width: 200px; text-align:right">
 <span id="setAutomaticUpdateText"><b><?=$_AUTOUPDATE?>:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setAutomaticUpdate(false);"><?=$_OFF?></a></span><br>
-<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br><br>
+<span id="setCompactViewText"><b>Compact view:</b> <?=$_ON?> | <a href="javascript:LiveResults.Instance.setCompactView(false);"><?=$_OFF?></a></span><br>
+<b><?=$_TEXTSIZE?>:</b> <a href="javascript:changeFontSize(1);"><?=$_LARGER?></a> | <a href="javascript:changeFontSize(-1);"><?=$_SMALLER?></a><br>
 <a href="dok/help.php?lang=<?=$lang?>" target="_blank"><?=$_INSTRUCTIONSHELP?></a>
 </td>
 </tr></table><br>
 <?php }?>
-			<table border="0" cellpadding="0" cellspacing="0" width="100%">
-
-			<tr>
-<?php if (!$isSingleClass && !$isSingleClub){?>
-			<td width=70 valign="top" style="padding-right: 5px"><b><?=$_CHOOSECLASS?></b><br>
-
-<div id="divClasses">
-</div>
 </td>
+</table>
+
+<!--- RESULT TABLE --->
+<table border="0" cellpadding="0" cellspacing="0">
+<tr> 
+<?php if (!$isSingleClass && !$isSingleClub){?>
+<td valign="top" width=70 valign="top" style="padding-right: 5px; "><b style="background: #555556; color:#FFF; padding: 4px 10px; border-radius: 0 0 10px 0; "><?=$_CHOOSECLASS?></b><br><br>
+    <div id="divClasses">
+	</div></td>
 <?php }?>
 
 
-
-			<td valign="top">
-		<div><span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span><span style="margin-left: 10px"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()" style="text-decoration: none"><img class="eI" style="vertical-align: middle" src="images/cleardot.gif" alt="<?=$_OPENINNEWWINDOW?>" border="0" title="<?=$_OPENINNEWWINDOW?>"> <?=$_OPENINNEWWINDOW?></a> <?php }?><span id="txtResetSorting"></span></span></div>
+<td valign="top">
+<div class="whitelinks" style="background: #555556; padding: 4px 10px; color: white; border-radius: 0 0 10px 0; margin-top: -3px">
+<span id="resultsHeader" style="font-size: 14px"><b><?=$_NOCLASSCHOSEN?></b></span>
+<span  style="margin-left: 10px; float: right;"><?php if (!$isSingleClass) {?><a href="javascript:LiveResults.Instance.newWin()"> <?=$_OPENINNEWWINDOW?></a> <?php }?> <span id="txtResetSorting"></span></span></div>
 <table id="divResults" width="100%">
 <tbody>
 <tr><td></td></tr>
 </tbody>
 </table><br><br>
-
 <font color="AAAAAA">* <?=$_HELPREDRESULTS?></font>
-
 </td>
+</tr>
+</table>
+<?php }?>
 
-			</tr>
 
-			</table>
 
-			<?php }?>
-
-		</td>
 <td valign="top" style="padding: 20px">
 <div id="twitterfeed">
 <?php
@@ -362,24 +393,12 @@ function removeTwitter()
 			</table>
 </td>
 <?php }?>
-
-	     </tr>
-
-	</table>
-
-
-
-     </td>
-
-  </tr>
-
-
-
+</tr>
+</td>
+</tr>
 </table>
 
-<p align="left">&copy;2012-, Liveresults (https://liveresults.github.io/documentation/), <?=$_NOTICE?></p>
-
-
+<p align="left">&copy;2012-, Liveresults (https://liveresults.github.io/documentation/, Source code: https://github.com/palkitt/liveresults), <?=$_NOTICE?></p>
 
 </div>
 
