@@ -372,10 +372,6 @@
       <Project>{4FED5F49-C953-4E6E-ADC4-8156E17D2AF0}</Project>
       <Name>H2Sharp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\LiveResults.CasparClient\LiveResults.CasparClient.csproj">
-      <Project>{ab05a898-690a-41b6-9f90-b8669eedd976}</Project>
-      <Name>LiveResults.CasparClient</Name>
-    </ProjectReference>
     <ProjectReference Include="..\LiveResults.Model\LiveResults.Model.csproj">
       <Project>{90078189-7b0a-4c17-bcda-b1f9e564fc5e}</Project>
       <Name>LiveResults.Model</Name>

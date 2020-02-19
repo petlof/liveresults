@@ -59,11 +59,15 @@ namespace LiveResults.Client
             m_continue = false;
         }
 
+        public bool IsInChangeDetectionLoop { get; set; }
+
         private void Run()
         {
+            
             string splitsPaths = ConfigurationManager.AppSettings["splitspath"];
             while (m_continue)
             {
+                IsInChangeDetectionLoop = false;
                 try
                 {
                     if (m_connection.State != ConnectionState.Open)
@@ -523,6 +527,8 @@ namespace LiveResults.Client
                                 }
                             }
                             reader.Close();
+
+                            IsInChangeDetectionLoop = true;
 
                             Thread.Sleep(1000);
                         }

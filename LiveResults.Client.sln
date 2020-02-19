@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.40629.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Client", "LiveResults.Client\LiveResults.Client.csproj", "{8738FAFC-E55D-40F8-ACF4-C70DF5DB9B0A}"
 EndProject
@@ -57,11 +57,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "css", "css", "{505B00D3-748
 		web\css\style-eoc.css = web\css\style-eoc.css
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResultsWeb_Angular", "LiveResultsWeb_Angular\LiveResultsWeb_Angular.csproj", "{C1463B2E-DF52-41F6-B822-004D334DE612}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UdpSirapTest", "UdpSirapTest\UdpSirapTest.csproj", "{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.CasparClient", "LiveResults.CasparClient\LiveResults.CasparClient.csproj", "{AB05A898-690A-41B6-9F90-B8669EEDD976}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LiveResults.Model", "LiveResults.Model\LiveResults.Model.csproj", "{90078189-7B0A-4C17-BCDA-B1F9E564FC5E}"
 EndProject
@@ -125,21 +121,6 @@ Global
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{4B6FA38E-237C-4780-9357-864F07F2A676}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.Release|Any CPU.Build.0 = Release|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
-		{C1463B2E-DF52-41F6-B822-004D334DE612}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
@@ -155,22 +136,6 @@ Global
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
 		{0A4BBE94-BABB-48AA-BF32-6D82CC206EF9}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugOE|Any CPU.Build.0 = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugOLA|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugOLA|Any CPU.Build.0 = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugOS|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugOS|Any CPU.Build.0 = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugSIT|Any CPU.ActiveCfg = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.DebugSIT|Any CPU.Build.0 = Debug|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.Release|Any CPU.Build.0 = Release|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.ReleaseOLA|Any CPU.ActiveCfg = Release|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.ReleaseOLA|Any CPU.Build.0 = Release|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.ReleaseOS|Any CPU.ActiveCfg = Release|Any CPU
-		{AB05A898-690A-41B6-9F90-B8669EEDD976}.ReleaseOS|Any CPU.Build.0 = Release|Any CPU
 		{90078189-7B0A-4C17-BCDA-B1F9E564FC5E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{90078189-7B0A-4C17-BCDA-B1F9E564FC5E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{90078189-7B0A-4C17-BCDA-B1F9E564FC5E}.DebugOE|Any CPU.ActiveCfg = Debug|Any CPU
@@ -197,6 +162,9 @@ Global
 		{3D301984-98EF-45C8-A0A0-781E18D3B3AD} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 		{74A7CDE3-9723-46AC-9778-371B12392E46} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
 		{505B00D3-748C-4B8E-9356-6C0D5FD861BA} = {A0323DA7-D3AF-4CB1-B37B-AFCAF9278516}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {166EE5C1-65E3-458C-B0B2-CF3926DD52D5}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = LiveResults.Client.vsmdi
