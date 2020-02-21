@@ -36,6 +36,7 @@ $_STATUSOK = "Passed";
 $_STATUSMP = "mp";
 $_STATUSDSQ= "disq";
 $_STATUSOT="ot";
+$_STATUSNC="ms";
 
 
 

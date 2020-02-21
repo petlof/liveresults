@@ -1,14 +1,17 @@
+
 /*------------------------------*/
 /* --- GENERAL TAGS CLASSES --- */
 /*------------------------------*/
 
-body {background-color: #ffffff; margin-top:5px; margin-left:5px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
+body {background-color: #ffffff; margin: 0; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
 
 /* html documents within iframes */
 body.iframed {margin-left:0px; margin-right:0px; font-size:68.75%; font-family: arial, helvetica, verdana, geneva, sans-serif;}
 
 table {font-size:1em;}
 td{font-family: arial, helvetica, verdana, geneva, sans-serif; font-size:1em; line-height: 1.4em; white-space: nowrap;}
+th{white-space: normal;}
+tr{border-top: hidden;}
 
 a:link {font-size:1em; color:#F1592A;}
 a:visited {font-size:1em; color:#F1592A;}
@@ -22,27 +25,66 @@ h1{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 h2{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 h3{font-size:1em; font-weight:normal; margin-bottom: 0px;}
 
+#divClasses {font-size: 1.1em; line-height: 1.4em;}
+
+.firstnonqualifier {border-top: 3px dashed grey;}
+
 /* Submenu classes */
 /*td.submenu{background: #3A5C9C; border-left:1px solid #ABC9EF; border-right:1px solid #ABC9EF;}*/
-td.submenu{background: #dddddd;}
-td.submenu table tr td {background: #dddddd; color:#000000; padding:3px 9px 3px 9px; font-weight:bold;}
-td.submenu table tr td a:link, td.submenu table tr td a:visited {color: #000000; text-decoration: none;}
-td.submenu table tr td a:hover {text-decoration: underline; color:#0000FF;}
+td.submenu{background: #555556;}
+td.submenu table tr td {color:#DDDDDD; padding:3px 9px 3px 9px; font-weight:bold;}
+td.submenu table tr td a:link, td.submenu table tr td a:visited {color: #FFF; text-decoration: none;}
+td.submenu table tr td a:hover {text-decoration: underline; color: #F1592A;}
 
+td.searchmenu { padding-left: 5px;}
 
-tr.new_result { background-color: #F9B7A4 !important;font-weight: bold;  border-bottom: 1px solid white; }
-tr.new_result a {color: black;}
-tr.new_result td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
-tr.new_result td.sorting_1 { background-color: #F9B7A4 !important;  border-bottom: 1px solid white;}
+tr.red_row {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: none} /* font-weight: bold; */
+tr.red_row a {color: white;}
+tr.red_row td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
+tr.red_row td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
+tr.red_row td:last-child { border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+tr.red_row .plustime { color: white;}
+tr.red_row .besttime { color: white;}
+tr.red_row .legtime {color: white;}
+tr.red_row td i { color: white;}
+
+/* Red cell for singel cell marking of new result */
+.red_cell {color: white; background-color: #F1592A !important;  border-bottom-right-radius: 10px}
+.red_cell .plustime { color: white}
+.red_cell .legtime  { color: white}
+.red_cell .besttime { color: white}
+.red_cell_sqr {color: white; background-color: #F1592A !important;  border-bottom-right-radius: 0px}
+.red_cell_sqr .plustime { color: white}
+.red_cell_sqr .legtime  { color: white}
+.red_cell_sqr .besttime { color: white}
+
+/* New first nonqualifier */
+tr.new_fnq {  color: white; background-color: #F1592A !important;  border-bottom: 1px solid white; border-top: 3px dashed grey;} /* font-weight: bold; */
+tr.new_fnq a {color: white;}
+tr.new_fnq td.sorting_2 { background-color: #F9B7A4 !important; border-bottom: 1px solid white; }
+tr.new_fnq td.sorting_1 { background-color: #F9B7A4 !important; border-bottom: 1px solid white;}
+tr.new_fnq td:last-child { border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+tr.new_fnq .plustime {color: white;}
+
+/* Green row for OK at start */
+tr.green_row { color: black; background-color: #00FF00 !important;  font-weight: bold; border-bottom: 1px solid white; }
+tr.green_row td:last-child {border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+
+/* Yellow row for OK at start */
+tr.yellow_row { color: black; background-color: #FFFF00 !important; font-weight: bold; border-bottom: 1px solid white; }
+tr.yellow_row td:last-child {border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+tr.yellow_row_new { color: black; background-color: #FFFF00 !important; font-weight: bold; border-bottom: 1px solid white; border-top: 3px dashed grey;}
+tr.yellow_row_new td:last-child {border-top-right-radius: 0px; border-bottom-right-radius: 10px}
+
+table.dataTable td {vertical-align: top;}
+
+.plustime {color: grey;}
+.legtime {color: grey;}
+.besttime {color: red;}
 
 /*predicted times*/
-td i {
-    color: gray;
-}
+td i { color: gray;}
 
-tr.new_result td i {
-    color: black;
-}
 
 #langchooser { vertical-align: middle; line-height:21px;}
 #langchooser img {  border: 1px solid #AAAAAA; vertical-align: middle; height: 10px}
@@ -95,3 +137,49 @@ td.menuchosen a:hover {text-decoration: none; color:#C0D6FF;}
 .categories{background: #F4F8FD; border:1px solid #ABC9EF;}
 .categoriesheader{color:#FFA02B; font-size:1.27em; font-weight:bold;}
 
+
+/*-------------------------------*/
+/*---       Tooltip           ---*/
+/*-------------------------------*/
+
+
+.tooltip {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip .tooltiptext {
+  visibility: hidden;
+  width: 50px;
+  background-color: #555555;
+  color: white;
+  text-align: center;
+  border-radius: 5px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 120%;
+  left: -5%;
+  /* top: -5px;
+  left: 110%;
+    
+  /* Fade in tooltip - takes 1 second to go from 0% to 100% opac: */
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.tooltip .tooltiptext::after {
+  content: " ";
+  position: absolute;
+  top: 100%;
+  left: 50%; /* To the left of the tooltip */
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: #555555 transparent transparent transparent;
+}
+
+.tooltip:hover .tooltiptext {
+  visibility: visible;
+  opacity: 0.9;
+}

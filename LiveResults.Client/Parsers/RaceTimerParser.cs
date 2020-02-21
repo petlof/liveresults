@@ -17,6 +17,8 @@ namespace LiveResults.Client.Parsers
     {
         public event ResultDelegate OnResult;
         public event LogMessageDelegate OnLogMessage;
+        public event DeleteIDDelegate OnDeleteID;
+
 
         private bool m_continue;
         readonly string[] m_urls;

@@ -63,6 +63,10 @@ $_STATUSDSQ= "disq";
 
 $_STATUSOT="ot";
 
+$_STATUSFINISHED ="finished";
+
+$_STATUSNC ="not count";
+
 
 
 $_FIRSTPAGECHOOSE = "Choose competition to follow";

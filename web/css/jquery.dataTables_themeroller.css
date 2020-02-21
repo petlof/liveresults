@@ -24,6 +24,11 @@ table.dataTable td {
 	padding: 3px 10px;
 }
 
+td.right {
+        text-align: right;
+}
+
+
 table.dataTable td.center,
 table.dataTable td.dataTables_empty {
 	text-align: center;
@@ -257,4 +262,3 @@ table.dataTable th:active {
 	*margin-top: -1px;
 	-webkit-overflow-scrolling: touch;
 }
-

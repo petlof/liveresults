@@ -46,6 +46,12 @@ namespace LiveResults.Client
             lblInfo.Text = "Export liveresults from RaCom special fileset format";
         }
 
+        private void button6_MouseEnter(object sender, EventArgs e)
+        {
+            lblInfo.Text = "Export liveresults from eTiming (BETA)";
+        }
+
+
         private void btn_MouseLeave(object sender, EventArgs e)
         {
             lblInfo.Text = "";
@@ -121,7 +127,7 @@ namespace LiveResults.Client
             {
                 FrmMonitor monForm = new FrmMonitor();
                 monForm.SetParser(new RacomFileSetParser(newRacomComp.txtStartlist.Text, newRacomComp.txtRawSplits.Text, newRacomComp.txtRaceFile.Text,
-                    newRacomComp.txtDSQFile.Text, newRacomComp.txtRadioControls.Text, newRacomComp.dtZeroTime.Value, newRacomComp.checkBox1.Checked));
+                    newRacomComp.txtRadioControls.Text, newRacomComp.dtZeroTime.Value, newRacomComp.checkBox1.Checked));
                 monForm.CompetitionID = int.Parse(newRacomComp.txtCompID.Text);
                 monForm.ShowDialog(this);
             }
@@ -220,5 +226,14 @@ namespace LiveResults.Client
             NewMeosComp frm = new NewMeosComp();
             frm.ShowDialog(this);
         }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            NewETimingComp cmp = new NewETimingComp();
+            cmp.ShowDialog(this);
+        }
+
+
+       
     }
 }

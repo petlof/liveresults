@@ -11,10 +11,12 @@ namespace LiveResults.Client.Parsers
 {
     public class RacomFileSetParser : IExternalSystemResultParser
     {
+        public event DeleteIDDelegate OnDeleteID;
+
+
         private readonly string m_startListFile;
         private readonly string m_splitsFile;
         private readonly string m_finishFile;
-        private readonly string m_dsqFile;
         private readonly string m_radioDefinitionFile;
         private readonly DateTime m_zeroTime;
         private readonly bool m_isRelay;
@@ -22,12 +24,11 @@ namespace LiveResults.Client.Parsers
         {
         }
 
-        public RacomFileSetParser(string startlistFile, string splitsFile, string finishFile, string dsqFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay)
+        public RacomFileSetParser(string startlistFile, string splitsFile, string finishFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay)
         {
             m_startListFile = startlistFile;
             m_splitsFile = splitsFile;
             m_finishFile = finishFile;
-            m_dsqFile = dsqFile;
             m_radioDefinitionFile = radioDefinitionFile;
             m_zeroTime = zeroTime;
             m_isRelay = isRelay;
@@ -48,7 +49,7 @@ namespace LiveResults.Client.Parsers
 
 
 
-        public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile, string dsqFile)
+        public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile)
         {
             var ret = new List<Runner>();
             var siToRunner = new Dictionary<int, Runner>();
@@ -56,14 +57,13 @@ namespace LiveResults.Client.Parsers
             ReadStartList(zeroTime, startlistFile, ret, siToRunner,enc);
             //ReadAndApplyRaceFile(raceFile, ret, enc);
             ReadAndApplyFINFile(finFile, siToRunner, enc);
-            ApplyDsqFile(dsqFile, siToRunner,enc);
             ReadAndApplySplitsFile(splitsFile, siToRunner,enc);
 
             if (m_isRelay)
             {
                 foreach (var classCategory in ret.GroupBy(x => (x as RacomRunner).ClassWithoutLeg))
                 {
-                    /*Update runners for teams accoring to status on earlier legs*/
+                    /*Update runners for teams according to status on earlier legs*/
                     foreach (var team in classCategory.GroupBy(x => (x as RacomRunner).BibNo))
                     {
                         var runners = new List<Runner>(team).OrderBy(x => (x as RacomRunner).LegNo).ToList();
@@ -87,6 +87,13 @@ namespace LiveResults.Client.Parsers
 
         private void ReadAndApplyFINFile(string finFile, Dictionary<int,Runner> siToRunner , Encoding enc)
         {
+            if (!System.IO.File.Exists(finFile))
+            {
+                if (OnLogMessage != null)
+                    OnLogMessage("Read FIN file - file not found");
+                return;
+            }
+
             using (var sr = new StreamReader(finFile, enc))
             {
                 string tmp;
@@ -223,77 +230,75 @@ namespace LiveResults.Client.Parsers
             return punches;
         }
 
-        private static void ApplyDsqFile(string dsqFile, Dictionary<int, Runner> siToRunner, Encoding enc)
-        {
-            if (!System.IO.File.Exists(dsqFile))
-                return;
-            using (var sr = new StreamReader(dsqFile, enc))
-            {
-                string tmp;
-                while ((tmp = sr.ReadLine()) != null)
-                {
-                    if (!string.IsNullOrEmpty(tmp) && !string.IsNullOrEmpty(tmp.Trim()))
-                    {
-                        var si = tmp.Trim();
-                        if (siToRunner.ContainsKey(int.Parse(si)))
-                        {
-                            siToRunner[int.Parse(si)].SetResultStatus(4);
-                        }
-                    }
-                }
-            }
-        }
-
         private void ReadStartList(DateTime zeroTime, string startlistFile, List<Runner> ret, Dictionary<int, Runner> siToRunner, Encoding enc)
         {
+            if (!System.IO.File.Exists(startlistFile))
+            {
+                if (OnLogMessage != null)
+                    OnLogMessage("Read StartList - file not found");
+                return;
+            }
             using (var sr = new StreamReader(startlistFile, enc))
             {
                 string tmp;
                 while ((tmp = sr.ReadLine()) != null)
                 {
-                    string stnr = tmp.Substring(0, 5).Trim();
-                    string sinr = tmp.Substring(6, 8).Trim();
-                    string className = tmp.Substring(15, 7).Trim();
-                    string name = tmp.Substring(31, 23).Trim();
-                    string start = tmp.Substring(54).Trim();
-                    string club = tmp.Substring(23, 3);
-
-                    if (string.IsNullOrEmpty(stnr))
+                    if (tmp.Length != 65)
                     {
                         if (OnLogMessage != null)
-                            OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
-                        continue;
+                            OnLogMessage("Incorrect start line size ! (lenght is " + tmp.Length + ")");
                     }
-                    int leg = 0;
-                    if (m_isRelay)
-                        leg = int.Parse(className.Split(' ').Last());
-                    int dbId = m_isRelay ? leg*100000+int.Parse(stnr) : int.Parse(stnr);
-
-                    var r = new RacomRunner(int.Parse(stnr), dbId, name, club, className, m_isRelay ? (int?)leg : null);
-
-                    if (m_isRelay)
+                    try
                     {
-                        r.ClassWithoutLeg = className.Substring(0, className.LastIndexOf(' '));
-                        if (!string.IsNullOrEmpty(r.ClassWithoutLeg))
-                            r.ClassWithoutLeg = r.ClassWithoutLeg.Trim();
+                        string stnr = tmp.Substring(0, 5).Trim();
+                        string sinr = tmp.Substring(6, 8).Trim();
+                        string className = tmp.Substring(15, 7).Trim();
+                        string name = tmp.Substring(31, 23).Trim();
+                        string start = tmp.Substring(54).Trim();
+                        string club = tmp.Substring(23, 3);
 
-                        r.Class = r.ClassWithoutLeg + " " + leg;
+                        if (string.IsNullOrEmpty(stnr))
+                        {
+                            if (OnLogMessage != null)
+                                OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
+                            continue;
+                        }
+                        int leg = 0;
+                        if (m_isRelay)
+                            leg = int.Parse(className.Split(' ').Last());
+                        int dbId = m_isRelay ? leg * 100000 + int.Parse(stnr) : int.Parse(stnr);
+
+                        var r = new RacomRunner(int.Parse(stnr), dbId, name, club, className, m_isRelay ? (int?)leg : null);
+
+                        if (m_isRelay)
+                        {
+                            r.ClassWithoutLeg = className.Substring(0, className.LastIndexOf(' '));
+                            if (!string.IsNullOrEmpty(r.ClassWithoutLeg))
+                                r.ClassWithoutLeg = r.ClassWithoutLeg.Trim();
+
+                            r.Class = r.ClassWithoutLeg + " " + leg;
+                        }
+
+
+                        var startTime = zeroTime.AddSeconds(parseTime(start));
+                        r.SetStartTime(startTime.Hour * 360000 + startTime.Minute * 6000 + startTime.Second * 100 + startTime.Millisecond / 10);
+                        r.SetResult(-9, 9);
+
+                        ret.Add(r);
+                        if (!siToRunner.ContainsKey(int.Parse(sinr)))
+                        {
+                            siToRunner.Add(int.Parse(sinr), r);
+                        }
+                        else
+                        {
+                            if (OnLogMessage != null)
+                                OnLogMessage("Duplicate SI-NO: " + sinr + ", skipping " + name);
+                        }
                     }
-                    
-
-                    var startTime = zeroTime.AddSeconds(parseTime(start));
-                    r.SetStartTime(startTime.Hour*360000 + startTime.Minute*6000 + startTime.Second*100 + startTime.Millisecond/10);
-                    r.SetResult(-9, 9);
-
-                    ret.Add(r);
-                    if (!siToRunner.ContainsKey(int.Parse(sinr)))
-                    {
-                        siToRunner.Add(int.Parse(sinr), r);
-                    }
-                    else
+                    catch (System.Exception ex)
                     {
                         if (OnLogMessage != null)
-                            OnLogMessage("Duplicate SI-NO: " + sinr + ", skipping " + name);
+                            OnLogMessage("Parsing start list error on line : " + tmp);
                     }
                 }
             }
@@ -420,7 +425,7 @@ namespace LiveResults.Client.Parsers
                     {
 
                     
-                    var runners = ParseFiles(m_zeroTime, m_startListFile, m_splitsFile, m_finishFile, m_dsqFile);
+                    var runners = ParseFiles(m_zeroTime, m_startListFile, m_splitsFile, m_finishFile);
                     if (OnResult != null)
                     {
                         foreach (var r in runners)
