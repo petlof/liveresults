@@ -58,17 +58,7 @@ namespace System.Data.H2
         {
             org.h2.tools.Backup.execute(zipFileName, directory, db, quiet);
         }
-        /// <summary>
-        /// Restores a H2 database by extracting the database files from a .zip file.
-        /// </summary>
-        /// <param name="zipFileName">the name of the backup file</param>
-        /// <param name="directory">the directory name</param>
-        /// <param name="db">the database name (null for all databases)</param>
-        /// <param name="quiet">don't print progress information</param>
-        public static void Restore(String zipFileName, String directory, String db, bool quiet)
-        {
-            org.h2.tools.Restore.execute(zipFileName, directory, db, quiet);
-        }
+       
         /// <summary>
         /// Changes the password for a database. The passwords must be supplied as char arrays and are cleaned in this method. 
         /// </summary>
@@ -92,18 +82,6 @@ namespace System.Data.H2
         {
             org.h2.tools.Recover.execute(dir, db);
         }
-        /// <summary>
-        /// Executes the SQL commands in a script file against a database. 
-        /// </summary>
-        /// <param name="url">the database URL</param>
-        /// <param name="user">the user name</param>
-        /// <param name="password">the password</param>
-        /// <param name="fileName">the script file</param>
-        /// <param name="charsetName">the character set name or null for UTF-8</param>
-        /// <param name="continueOnError">if execution should be continued if an error occurs</param>
-        public static void RunScript(String url, String user, String password, String fileName, String charsetName, bool continueOnError)
-        {
-            org.h2.tools.RunScript.execute(url, user, password, fileName, charsetName, continueOnError);
-        }
+       
     }
 }

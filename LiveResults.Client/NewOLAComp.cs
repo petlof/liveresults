@@ -253,7 +253,7 @@ namespace LiveResults.Client
             switch (comboBox1.SelectedIndex)
             {
                 case 0:
-                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","") + ";AUTO_SERVER=TRUE", "root", "");
+                    return new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db","").Replace(".mv.db","") + ";AUTO_SERVER=TRUE", "root", "");
                 case 1:
                     return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : "") + ";charset=utf8;ConnectionTimeout=30");
                 case 2:
@@ -292,7 +292,7 @@ namespace LiveResults.Client
                     if (ee.Message.ToUpper().Contains("ENOUGH RIGHTS"))
                     {
                         conn.Close();
-                        conn = new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db", "") + ";AUTO_SERVER=TRUE", "root", "");
+                        conn = new H2Connection("jdbc:h2://" + txtOlaDb.Text.Replace(".h2.db", "").Replace(".mv.db","") + ";AUTO_SERVER=TRUE", "root", "");
                         try
                         {
                             conn.Open();

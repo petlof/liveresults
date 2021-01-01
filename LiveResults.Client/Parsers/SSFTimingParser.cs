@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Data;
 using System.Globalization;
 using System.Threading;
@@ -102,10 +103,11 @@ namespace LiveResults.Client
                         var dlg = OnRadioControl;
                         if (dlg != null)
                         {
+                            bool filterInternet = ConfigurationManager.AppSettings["internetSplitsOnly"] != "false";
                             cmd.CommandText =
                                 "select dbclass.Name as className, dbITimeInfo.Name as intermediateName, dbITimeInfo.Ipos, dbITimeInfo.Leg from dbclass, dbITimeInfo where dbclass.RaceId = " +
                                 m_eventID + " and dbITimeInfo.RaceID = " + m_eventID + " and dbITimeInfo.Course = dbclass.course  " +
-                                " and dbiTimeInfo.PresInternet = 'Ja' order by dbclass.Name, ipos";
+                                " " + (filterInternet ? " and dbiTimeInfo.PresInternet ='Ja'" : "") +" order by dbclass.Name, ipos";
 
                             Dictionary<string, int> classMaxLeg = new Dictionary<string, int>();
                             List<IntermediateTime> intermediates = new List<IntermediateTime>();
@@ -139,6 +141,16 @@ namespace LiveResults.Client
                                     }
                                     if (!string.IsNullOrEmpty(intermediateName))
                                         intermediateName = intermediateName.Trim();
+
+                                    if (intermediateName.Contains("-CN"))
+                                    {
+                                        int idxFrom = intermediateName.IndexOf("-CN");
+                                        int idxTo = intermediateName.IndexOf("-", idxFrom + 1);
+                                        intermediateName =
+                                            intermediateName.Replace(
+                                                intermediateName.Substring(idxFrom, idxTo - idxFrom+1), "-");
+                                    }
+
                                     int position = Convert.ToInt32(reader["Ipos"]);
 
                                     if (isRelay)
@@ -362,7 +374,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                 {
                     int time = 0, runnerID = 0, iStartTime = 0;
                     string famName = "", fName = "", club = "", classN = "", status = "";
-
+                    string bibNumber = reader["startno"].ToString();
                     try
                     {
                        runnerID = Convert.ToInt32(reader["startno"].ToString());
@@ -447,7 +459,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                         var res = new Result
                         {
                             ID = runnerID,
-                            RunnerName = fName + " " + famName,
+                            RunnerName = "(" + bibNumber + ") " + fName + " " + famName,
                             RunnerClub = club,
                             Class = classN,
                             StartTime = iStartTime,
@@ -498,6 +510,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                     int time = -2;
                     int status = 0;
                     var splits = new List<ResultStruct>();
+                    string bibNumber = reader["startno"].ToString();
                     try
                     {
                         runnerID = Convert.ToInt32(reader["startno"].ToString());
@@ -505,7 +518,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                         famName = (reader["lastname"] as string).Trim();
                         fName = (reader["firstname"] as string).Trim();
                         lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
-
+                        
                         club = (reader["teamname"] as string).Trim();
                         classN = (reader["classname"] as string).Trim();
 
@@ -564,7 +577,7 @@ and dbclass.classid = dbName.classid", m_eventID);
 
                     var res = new Result{
                         ID = runnerID,
-                        RunnerName = fName + " " + famName,
+                        RunnerName = "(" + bibNumber + ") "+ fName + " " + famName,
                         RunnerClub = club,
                         Class = classN,
                         StartTime = 0,
