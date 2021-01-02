@@ -98,9 +98,9 @@
             this.Resultfile.AutoSize = true;
             this.Resultfile.Location = new System.Drawing.Point(12, 87);
             this.Resultfile.Name = "Resultfile";
-            this.Resultfile.Size = new System.Drawing.Size(49, 13);
+            this.Resultfile.Size = new System.Drawing.Size(112, 13);
             this.Resultfile.TabIndex = 4;
-            this.Resultfile.Text = "Race file";
+            this.Resultfile.Text = "Race file (Finish times)";
             // 
             // txtRadioControls
             // 
@@ -116,9 +116,10 @@
             this.label4.AutoSize = true;
             this.label4.Location = new System.Drawing.Point(12, 126);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(116, 13);
+            this.label4.Size = new System.Drawing.Size(464, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Intermediate control file";
+            this.label4.Text = "Intermediate control file (<XYZ>.splitcodes.txt && need also <XYZ>.splitnames.txt" +
+    " in same directory)";
             // 
             // button1
             // 
@@ -156,9 +157,9 @@
             this.label5.AutoSize = true;
             this.label5.Location = new System.Drawing.Point(12, 165);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 13);
+            this.label5.Size = new System.Drawing.Size(180, 13);
             this.label5.TabIndex = 12;
-            this.label5.Text = "CompetitionID";
+            this.label5.Text = "CompetitionID (Emma web server ID)";
             // 
             // label6
             // 
@@ -236,7 +237,7 @@
             this.Controls.Add(this.txtStartlist);
             this.Controls.Add(this.label1);
             this.Name = "FrmNewRacomComp";
-            this.Text = "FrmNewRacomComp";
+            this.Text = "New Racom Connection";
             this.ResumeLayout(false);
             this.PerformLayout();
 
