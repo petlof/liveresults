@@ -35,7 +35,6 @@ namespace LiveResults.Client
                         txtRawSplits.Text = s.RawSplitsFile;
                         txtRadioControls.Text = s.RadioControlFile;
                         txtRaceFile.Text = s.RaceFile;
-                        txtDSQFile.Text = s.DSQFile;
                         txtCompID.Text = s.CompetitionID;
                         dtZeroTime.Value = s.zeroTime;
                         checkBox1.Checked = s.IsRelay;
@@ -73,7 +72,6 @@ namespace LiveResults.Client
                 var s = new Settings{
                     StartlistFile = txtStartlist.Text,
                     CompetitionID = txtCompID.Text,
-                    DSQFile = txtDSQFile.Text,
                     RaceFile = txtRaceFile.Text,
                     RadioControlFile = txtRadioControls.Text,
                     RawSplitsFile = txtRawSplits.Text
@@ -98,7 +96,6 @@ namespace LiveResults.Client
             public DateTime zeroTime { get; set; }
             public string StartlistFile { get; set; }
             public string RaceFile { get; set; }
-            public string DSQFile { get; set; }
             public string RawSplitsFile { get; set; }
             public string RadioControlFile { get; set; }
             public string CompetitionID { get; set; }

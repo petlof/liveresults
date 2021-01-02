@@ -34,8 +34,6 @@
             this.label2 = new System.Windows.Forms.Label();
             this.txtRaceFile = new System.Windows.Forms.TextBox();
             this.Resultfile = new System.Windows.Forms.Label();
-            this.txtDSQFile = new System.Windows.Forms.TextBox();
-            this.label3 = new System.Windows.Forms.Label();
             this.txtRadioControls = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.button1 = new System.Windows.Forms.Button();
@@ -100,33 +98,15 @@
             this.Resultfile.AutoSize = true;
             this.Resultfile.Location = new System.Drawing.Point(12, 87);
             this.Resultfile.Name = "Resultfile";
-            this.Resultfile.Size = new System.Drawing.Size(49, 13);
+            this.Resultfile.Size = new System.Drawing.Size(112, 13);
             this.Resultfile.TabIndex = 4;
-            this.Resultfile.Text = "Race file";
-            // 
-            // txtDSQFile
-            // 
-            this.txtDSQFile.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtDSQFile.Location = new System.Drawing.Point(15, 142);
-            this.txtDSQFile.Name = "txtDSQFile";
-            this.txtDSQFile.Size = new System.Drawing.Size(538, 20);
-            this.txtDSQFile.TabIndex = 7;
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(12, 126);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(49, 13);
-            this.label3.TabIndex = 6;
-            this.label3.Text = "DSQ File";
+            this.Resultfile.Text = "Race file (Finish times)";
             // 
             // txtRadioControls
             // 
             this.txtRadioControls.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtRadioControls.Location = new System.Drawing.Point(15, 181);
+            this.txtRadioControls.Location = new System.Drawing.Point(15, 142);
             this.txtRadioControls.Name = "txtRadioControls";
             this.txtRadioControls.Size = new System.Drawing.Size(538, 20);
             this.txtRadioControls.TabIndex = 9;
@@ -134,17 +114,18 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(12, 165);
+            this.label4.Location = new System.Drawing.Point(12, 126);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(113, 13);
+            this.label4.Size = new System.Drawing.Size(464, 13);
             this.label4.TabIndex = 8;
-            this.label4.Text = "Intermediatecontrol file";
+            this.label4.Text = "Intermediate control file (<XYZ>.splitcodes.txt && need also <XYZ>.splitnames.txt" +
+    " in same directory)";
             // 
             // button1
             // 
             this.button1.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button1.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.button1.Location = new System.Drawing.Point(397, 304);
+            this.button1.Location = new System.Drawing.Point(397, 269);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(75, 23);
             this.button1.TabIndex = 10;
@@ -155,7 +136,7 @@
             // 
             this.button2.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.button2.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.button2.Location = new System.Drawing.Point(478, 304);
+            this.button2.Location = new System.Drawing.Point(478, 269);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(75, 23);
             this.button2.TabIndex = 11;
@@ -166,7 +147,7 @@
             // 
             this.txtCompID.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.txtCompID.Location = new System.Drawing.Point(15, 220);
+            this.txtCompID.Location = new System.Drawing.Point(15, 181);
             this.txtCompID.Name = "txtCompID";
             this.txtCompID.Size = new System.Drawing.Size(538, 20);
             this.txtCompID.TabIndex = 13;
@@ -174,16 +155,16 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(12, 204);
+            this.label5.Location = new System.Drawing.Point(12, 165);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(73, 13);
+            this.label5.Size = new System.Drawing.Size(180, 13);
             this.label5.TabIndex = 12;
-            this.label5.Text = "CompetitionID";
+            this.label5.Text = "CompetitionID (Emma web server ID)";
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(12, 243);
+            this.label6.Location = new System.Drawing.Point(12, 204);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(48, 13);
             this.label6.TabIndex = 14;
@@ -193,7 +174,7 @@
             // 
             this.dtZeroTime.CustomFormat = "yyyy-MM-dd HH:mm:ss";
             this.dtZeroTime.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
-            this.dtZeroTime.Location = new System.Drawing.Point(15, 259);
+            this.dtZeroTime.Location = new System.Drawing.Point(15, 220);
             this.dtZeroTime.Name = "dtZeroTime";
             this.dtZeroTime.Size = new System.Drawing.Size(236, 20);
             this.dtZeroTime.TabIndex = 15;
@@ -201,7 +182,7 @@
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(15, 286);
+            this.checkBox1.Location = new System.Drawing.Point(15, 246);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(61, 17);
             this.checkBox1.TabIndex = 16;
@@ -210,7 +191,7 @@
             // 
             // btn_loadsetting
             // 
-            this.btn_loadsetting.Location = new System.Drawing.Point(82, 304);
+            this.btn_loadsetting.Location = new System.Drawing.Point(12, 269);
             this.btn_loadsetting.Name = "btn_loadsetting";
             this.btn_loadsetting.Size = new System.Drawing.Size(124, 23);
             this.btn_loadsetting.TabIndex = 18;
@@ -225,7 +206,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(212, 304);
+            this.button3.Location = new System.Drawing.Point(142, 269);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(120, 23);
             this.button3.TabIndex = 19;
@@ -237,7 +218,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(565, 339);
+            this.ClientSize = new System.Drawing.Size(565, 304);
             this.Controls.Add(this.button3);
             this.Controls.Add(this.btn_loadsetting);
             this.Controls.Add(this.checkBox1);
@@ -249,8 +230,6 @@
             this.Controls.Add(this.button1);
             this.Controls.Add(this.txtRadioControls);
             this.Controls.Add(this.label4);
-            this.Controls.Add(this.txtDSQFile);
-            this.Controls.Add(this.label3);
             this.Controls.Add(this.txtRaceFile);
             this.Controls.Add(this.Resultfile);
             this.Controls.Add(this.txtRawSplits);
@@ -258,7 +237,7 @@
             this.Controls.Add(this.txtStartlist);
             this.Controls.Add(this.label1);
             this.Name = "FrmNewRacomComp";
-            this.Text = "FrmNewRacomComp";
+            this.Text = "New Racom Connection";
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -269,7 +248,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label Resultfile;
-        private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button2;
@@ -277,7 +255,6 @@
         internal System.Windows.Forms.TextBox txtStartlist;
         internal System.Windows.Forms.TextBox txtRawSplits;
         internal System.Windows.Forms.TextBox txtRaceFile;
-        internal System.Windows.Forms.TextBox txtDSQFile;
         internal System.Windows.Forms.TextBox txtRadioControls;
         internal System.Windows.Forms.TextBox txtCompID;
         private System.Windows.Forms.Label label6;
