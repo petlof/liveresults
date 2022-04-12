@@ -20,12 +20,14 @@ namespace LiveResults.Client
         private bool m_createRadioControls;
         private bool m_continue;
         private bool m_useTenth = false;
-
-        public SSFTimingParser(IDbConnection conn, int eventID, bool recreateRadioControls = true)
+        private bool m_anynomousSplits = false;
+        int baseNum = 30000;
+        public SSFTimingParser(IDbConnection conn, int eventID, bool recreateRadioControls = true, bool anynomousSplits=false)
         {
             m_connection = conn;
             m_eventID = eventID;
             m_createRadioControls = recreateRadioControls;
+            m_anynomousSplits = anynomousSplits;
         }
 
 
@@ -149,6 +151,11 @@ namespace LiveResults.Client
                                         intermediateName =
                                             intermediateName.Replace(
                                                 intermediateName.Substring(idxFrom, idxTo - idxFrom+1), "-");
+                                    }
+
+                                    if (m_anynomousSplits)
+                                    {
+                                        intermediateName = "Split #" + (intermediates.Where(x=>x.ClassName== className).Count() + 1);
                                     }
 
                                     int position = Convert.ToInt32(reader["Ipos"]);
@@ -378,7 +385,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                     try
                     {
                        runnerID = Convert.ToInt32(reader["startno"].ToString());
-
+                        if (baseNum > 0)
+                            runnerID = baseNum + runnerID;
                         famName = (reader["lastname"] as string).Trim();
                         fName = (reader["firstname"] as string).Trim();
                         lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
@@ -489,7 +497,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                     break;
                 case "DNF":
                     time = -3;
-                    rstatus = 3;
+                    rstatus = 2;
                     break;
                 case "DSQ":
                     time = -4;
@@ -514,7 +522,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                     try
                     {
                         runnerID = Convert.ToInt32(reader["startno"].ToString());
-
+                        if (baseNum > 0)
+                            runnerID = baseNum + runnerID;
                         famName = (reader["lastname"] as string).Trim();
                         fName = (reader["firstname"] as string).Trim();
                         lastRunner = (string.IsNullOrEmpty(fName) ? "" : (fName + " ")) + famName;
