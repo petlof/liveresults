@@ -293,17 +293,18 @@ namespace LiveResults.Model
 
                 
 
-                cmd.CommandText = "select runners.dbid,control,time,name,club,class,status from runners, results where results.dbid = runners.dbid and results.tavid = " + m_compID + " and runners.tavid = " + m_compID;
+                cmd.CommandText = "select runners.dbid,control,time,name,club,class,status,bib from runners, results where results.dbid = runners.dbid and results.tavid = " + m_compID + " and runners.tavid = " + m_compID;
                 reader = cmd.ExecuteReader();
                 while (reader.Read())
                 {
                     var dbid = Convert.ToInt32(reader["dbid"]);
                     var control = Convert.ToInt32(reader["control"]);
                     var time = Convert.ToInt32(reader["time"]);
+                    var bib = reader["bib"] as string;
                     var sourceId = idToAliasDictionary.ContainsKey(dbid) ? idToAliasDictionary[dbid] : null;
                     if (!IsRunnerAdded(dbid))
                     {
-                        var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string, sourceId);
+                        var r = new Runner(dbid, reader["name"] as string, reader["club"] as string, reader["class"] as string, sourceId, bib);
                         AddRunner(r);
                         numRunners++;
                     }
@@ -383,7 +384,7 @@ namespace LiveResults.Model
             }
         }*/
 
-        public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId)
+        public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId, string bib)
         {
             if (m_runners.ContainsKey(id))
             {
@@ -406,6 +407,12 @@ namespace LiveResults.Model
                     cur.Club = club;
                     isUpdated = true;
                 }
+                if (cur.Bib != bib)
+                {
+                    cur.Bib = bib;
+                    isUpdated = true;
+                }
+
                 if (string.IsNullOrEmpty(sourceId))
                     sourceId = null;
                 if (string.IsNullOrEmpty(cur.SourceId))
@@ -620,11 +627,11 @@ namespace LiveResults.Model
             {
                 if (!IsRunnerAdded(r.ID))
                 {
-                    AddRunner(new Runner(r.ID, r.Name, r.Club, r.Class, r.SourceId));
+                    AddRunner(new Runner(r.ID, r.Name, r.Club, r.Class, r.SourceId, r.Bib));
                 }
                 else
                 {
-                    UpdateRunnerInfo(r.ID, r.Name, r.Club, r.Class, r.SourceId);
+                    UpdateRunnerInfo(r.ID, r.Name, r.Club, r.Class, r.SourceId, r.Bib);
                 }
 
 
@@ -675,13 +682,13 @@ namespace LiveResults.Model
                         if (currentRunner != null)
                         {
                             runner.ID = currentRunner.ID;
-                            UpdateRunnerInfo(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
+                            UpdateRunnerInfo(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId, runner.Bib);
                         }
                         else
                         {
                             //New runner
                             runner.ID = m_nextInternalId++;
-                            var newRunner = new Runner(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId);
+                            var newRunner = new Runner(runner.ID, runner.Name, runner.Club, runner.Class, runner.SourceId, runner.Bib);
                             AddRunner(newRunner);
                         }
                         UpdateRunnerTimes(runner);
@@ -727,7 +734,7 @@ namespace LiveResults.Model
                     foreach (var runner in classGroup)
                     {
                         runner.ID = m_nextInternalId++;
-                        var newRunner = new Runner(runner.ID,runner.Name, runner.Club, runner.Class, runner.SourceId);
+                        var newRunner = new Runner(runner.ID,runner.Name, runner.Club, runner.Class, runner.SourceId, runner.Bib);
                         AddRunner(newRunner);
                         UpdateRunnerTimes(runner);
                     }
@@ -868,9 +875,10 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetBytes(r.Name));
                                         cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetBytes(r.Club ?? ""));
                                         cmd.Parameters.AddWithValue("?class", Encoding.UTF8.GetBytes(r.Class));
+                                        cmd.Parameters.AddWithValue("?bib", Encoding.UTF8.GetBytes(r.Bib));
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
-                                        cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid) VALUES (?compid,?name,?club,?class,0,?id)";
+                                        cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid,bib) VALUES (?compid,?name,?club,?class,0,?id,?bib)";
                                        
 
                                         try

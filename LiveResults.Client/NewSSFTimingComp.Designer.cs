@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewSSFTimingComp));
             this.wizard1 = new Gui.Wizard.Wizard();
             this.wizardPage5 = new Gui.Wizard.WizardPage();
+            this.chkAnoSplits = new System.Windows.Forms.CheckBox();
             this.chkCreateRadioControls = new System.Windows.Forms.CheckBox();
             this.txtCompName = new System.Windows.Forms.TextBox();
             this.label10 = new System.Windows.Forms.Label();
@@ -51,7 +52,6 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.chkAnoSplits = new System.Windows.Forms.CheckBox();
             this.wizard1.SuspendLayout();
             this.wizardPage5.SuspendLayout();
             this.wizardPage3.SuspendLayout();
@@ -61,21 +61,20 @@
             // 
             // wizard1
             // 
+            this.wizard1.Controls.Add(this.wizardPage1);
             this.wizard1.Controls.Add(this.wizardPage5);
             this.wizard1.Controls.Add(this.wizardPage3);
             this.wizard1.Controls.Add(this.wizardPage2);
-            this.wizard1.Controls.Add(this.wizardPage1);
             this.wizard1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizard1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.wizard1.Location = new System.Drawing.Point(0, 0);
-            this.wizard1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.wizard1.Name = "wizard1";
             this.wizard1.Pages.AddRange(new Gui.Wizard.WizardPage[] {
             this.wizardPage1,
             this.wizardPage2,
             this.wizardPage3,
             this.wizardPage5});
-            this.wizard1.Size = new System.Drawing.Size(675, 209);
+            this.wizard1.Size = new System.Drawing.Size(506, 170);
             this.wizard1.TabIndex = 0;
             // 
             // wizardPage5
@@ -89,58 +88,62 @@
             this.wizardPage5.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizardPage5.IsFinishPage = false;
             this.wizardPage5.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage5.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.wizardPage5.Name = "wizardPage5";
-            this.wizardPage5.Size = new System.Drawing.Size(675, 150);
+            this.wizardPage5.Size = new System.Drawing.Size(506, 122);
             this.wizardPage5.TabIndex = 5;
             this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
+            // 
+            // chkAnoSplits
+            // 
+            this.chkAnoSplits.AutoSize = true;
+            this.chkAnoSplits.Location = new System.Drawing.Point(221, 46);
+            this.chkAnoSplits.Name = "chkAnoSplits";
+            this.chkAnoSplits.Size = new System.Drawing.Size(109, 17);
+            this.chkAnoSplits.TabIndex = 5;
+            this.chkAnoSplits.Text = "Anonymous splits";
+            this.chkAnoSplits.UseVisualStyleBackColor = true;
             // 
             // chkCreateRadioControls
             // 
             this.chkCreateRadioControls.AutoSize = true;
             this.chkCreateRadioControls.Checked = true;
             this.chkCreateRadioControls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCreateRadioControls.Location = new System.Drawing.Point(295, 33);
-            this.chkCreateRadioControls.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.chkCreateRadioControls.Location = new System.Drawing.Point(221, 27);
             this.chkCreateRadioControls.Name = "chkCreateRadioControls";
-            this.chkCreateRadioControls.Size = new System.Drawing.Size(236, 21);
+            this.chkCreateRadioControls.Size = new System.Drawing.Size(189, 17);
             this.chkCreateRadioControls.TabIndex = 4;
             this.chkCreateRadioControls.Text = "Automatically create radiocontrols";
             this.chkCreateRadioControls.UseVisualStyleBackColor = true;
             // 
             // txtCompName
             // 
-            this.txtCompName.Location = new System.Drawing.Point(20, 80);
-            this.txtCompName.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtCompName.Location = new System.Drawing.Point(15, 65);
             this.txtCompName.Name = "txtCompName";
-            this.txtCompName.Size = new System.Drawing.Size(232, 24);
+            this.txtCompName.Size = new System.Drawing.Size(175, 21);
             this.txtCompName.TabIndex = 3;
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(16, 60);
-            this.label10.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label10.Location = new System.Drawing.Point(12, 49);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(43, 17);
+            this.label10.Size = new System.Drawing.Size(34, 13);
             this.label10.TabIndex = 2;
             this.label10.Text = "Name";
             // 
             // txtCompID
             // 
-            this.txtCompID.Location = new System.Drawing.Point(20, 31);
-            this.txtCompID.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtCompID.Location = new System.Drawing.Point(15, 25);
             this.txtCompID.Name = "txtCompID";
-            this.txtCompID.Size = new System.Drawing.Size(232, 24);
+            this.txtCompID.Size = new System.Drawing.Size(175, 21);
             this.txtCompID.TabIndex = 1;
             // 
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(16, 11);
-            this.label9.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label9.Location = new System.Drawing.Point(12, 9);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(94, 17);
+            this.label9.Size = new System.Drawing.Size(73, 13);
             this.label9.TabIndex = 0;
             this.label9.Text = "CompetitonID";
             // 
@@ -151,19 +154,17 @@
             this.wizardPage3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizardPage3.IsFinishPage = false;
             this.wizardPage3.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage3.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.wizardPage3.Name = "wizardPage3";
-            this.wizardPage3.Size = new System.Drawing.Size(675, 150);
+            this.wizardPage3.Size = new System.Drawing.Size(506, 122);
             this.wizardPage3.TabIndex = 3;
             this.wizardPage3.ShowFromNext += new System.EventHandler(this.wizardPage3_ShowFromNext);
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(17, 5);
-            this.label7.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label7.Location = new System.Drawing.Point(13, 4);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(44, 17);
+            this.label7.Size = new System.Drawing.Size(35, 13);
             this.label7.TabIndex = 1;
             this.label7.Text = "Event";
             // 
@@ -173,10 +174,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbOLAComp.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOLAComp.FormattingEnabled = true;
-            this.cmbOLAComp.Location = new System.Drawing.Point(16, 25);
-            this.cmbOLAComp.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.cmbOLAComp.Location = new System.Drawing.Point(12, 20);
             this.cmbOLAComp.Name = "cmbOLAComp";
-            this.cmbOLAComp.Size = new System.Drawing.Size(641, 25);
+            this.cmbOLAComp.Size = new System.Drawing.Size(482, 21);
             this.cmbOLAComp.TabIndex = 0;
             // 
             // wizardPage2
@@ -186,9 +186,8 @@
             this.wizardPage2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizardPage2.IsFinishPage = false;
             this.wizardPage2.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage2.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.wizardPage2.Name = "wizardPage2";
-            this.wizardPage2.Size = new System.Drawing.Size(675, 150);
+            this.wizardPage2.Size = new System.Drawing.Size(506, 122);
             this.wizardPage2.TabIndex = 2;
             this.wizardPage2.ShowFromNext += new System.EventHandler(this.wizardPage2_ShowFromBack);
             // 
@@ -198,20 +197,17 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.lstDB.FormattingEnabled = true;
-            this.lstDB.ItemHeight = 17;
-            this.lstDB.Location = new System.Drawing.Point(17, 32);
-            this.lstDB.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.lstDB.Location = new System.Drawing.Point(13, 26);
             this.lstDB.Name = "lstDB";
-            this.lstDB.Size = new System.Drawing.Size(640, 89);
+            this.lstDB.Size = new System.Drawing.Size(481, 69);
             this.lstDB.TabIndex = 1;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(16, 11);
-            this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label6.Location = new System.Drawing.Point(12, 9);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(65, 17);
+            this.label6.Size = new System.Drawing.Size(53, 13);
             this.label6.TabIndex = 0;
             this.label6.Text = "Database";
             // 
@@ -228,102 +224,81 @@
             this.wizardPage1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizardPage1.IsFinishPage = false;
             this.wizardPage1.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.wizardPage1.Name = "wizardPage1";
-            this.wizardPage1.Size = new System.Drawing.Size(675, 150);
+            this.wizardPage1.Size = new System.Drawing.Size(506, 131);
             this.wizardPage1.TabIndex = 1;
             // 
             // txtPw
             // 
-            this.txtPw.Location = new System.Drawing.Point(97, 113);
-            this.txtPw.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtPw.Location = new System.Drawing.Point(73, 92);
             this.txtPw.Name = "txtPw";
-            this.txtPw.Size = new System.Drawing.Size(227, 24);
+            this.txtPw.Size = new System.Drawing.Size(171, 21);
             this.txtPw.TabIndex = 9;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(16, 117);
-            this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label5.Location = new System.Drawing.Point(12, 95);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(66, 17);
+            this.label5.Size = new System.Drawing.Size(53, 13);
             this.label5.TabIndex = 8;
             this.label5.Text = "Password";
             // 
             // txtUser
             // 
-            this.txtUser.Location = new System.Drawing.Point(97, 80);
-            this.txtUser.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtUser.Location = new System.Drawing.Point(73, 65);
             this.txtUser.Name = "txtUser";
-            this.txtUser.Size = new System.Drawing.Size(227, 24);
+            this.txtUser.Size = new System.Drawing.Size(171, 21);
             this.txtUser.TabIndex = 7;
             // 
             // txtPort
             // 
-            this.txtPort.Location = new System.Drawing.Point(97, 47);
-            this.txtPort.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtPort.Location = new System.Drawing.Point(73, 38);
             this.txtPort.Name = "txtPort";
-            this.txtPort.Size = new System.Drawing.Size(227, 24);
+            this.txtPort.Size = new System.Drawing.Size(171, 21);
             this.txtPort.TabIndex = 6;
             // 
             // txtHost
             // 
-            this.txtHost.Location = new System.Drawing.Point(99, 14);
-            this.txtHost.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtHost.Location = new System.Drawing.Point(74, 11);
             this.txtHost.Name = "txtHost";
-            this.txtHost.Size = new System.Drawing.Size(225, 24);
+            this.txtHost.Size = new System.Drawing.Size(170, 21);
             this.txtHost.TabIndex = 5;
             // 
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(16, 84);
-            this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label4.Location = new System.Drawing.Point(12, 68);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(69, 17);
+            this.label4.Size = new System.Drawing.Size(55, 13);
             this.label4.TabIndex = 4;
             this.label4.Text = "Username";
             // 
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(53, 50);
-            this.label3.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label3.Location = new System.Drawing.Point(40, 41);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(34, 17);
+            this.label3.Size = new System.Drawing.Size(27, 13);
             this.label3.TabIndex = 3;
             this.label3.Text = "Port";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(51, 17);
-            this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.label2.Location = new System.Drawing.Point(38, 14);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(36, 17);
+            this.label2.Size = new System.Drawing.Size(29, 13);
             this.label2.TabIndex = 2;
             this.label2.Text = "Host";
             // 
-            // chkAnoSplits
-            // 
-            this.chkAnoSplits.AutoSize = true;
-            this.chkAnoSplits.Location = new System.Drawing.Point(295, 56);
-            this.chkAnoSplits.Margin = new System.Windows.Forms.Padding(4);
-            this.chkAnoSplits.Name = "chkAnoSplits";
-            this.chkAnoSplits.Size = new System.Drawing.Size(137, 21);
-            this.chkAnoSplits.TabIndex = 5;
-            this.chkAnoSplits.Text = "Anonymous splits";
-            this.chkAnoSplits.UseVisualStyleBackColor = true;
-            // 
             // NewSSFTimingComp
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(675, 209);
+            this.ClientSize = new System.Drawing.Size(506, 170);
             this.Controls.Add(this.wizard1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "NewSSFTimingComp";
             this.Text = "New SSF Timing connection";
             this.wizard1.ResumeLayout(false);

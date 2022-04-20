@@ -221,7 +221,7 @@ namespace LiveResults.Client
                     c.AddRunner(new Runner(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class));
                 }
                 else
-                    c.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class, null);
+                    c.UpdateRunnerInfo(newResult.ID, newResult.RunnerName, newResult.RunnerClub, newResult.Class, null,newResult.bib);
 
 
                 if (newResult.StartTime >= 0)

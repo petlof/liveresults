@@ -105,11 +105,11 @@ namespace LiveResults.Client
                     int version = Convert.ToInt32(cmd.ExecuteScalar());
 
                     string baseCommand = "select results.bibNumber, results.individualCourseId, results.rawDataFromElectronicPunchingCardsId, results.modifyDate, results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, results.runnerStatus, results.entryid, results.allocatedStartTime, results.starttime, entries.allocationControl, entries.allocationEntryId from results, entries, Persons, organisations, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and results.modifyDate > " + paramOper;
-                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
+                    string splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.bibNumber, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and  splitTimes.modifyDate > " + paramOper;
 
                     if (version >= 564)
                     {
-                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID,results.bibNumber, results.entryid, results.allocatedStartTime, results.starttime, persons.familyname as lastname, persons.firstname as firstname, organisations.shortname as clubname, eventclasses.shortName, splittimes.passedCount,entries.allocationControl, entries.allocationEntryId from splittimes, results, Controls, eventClasses, raceClasses, Persons, organisations, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and entries.competitorid = persons.personid and persons.defaultorganisationid = organisations.organisationid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                     }
 
                     RelayEventCache relayEventCache = null;
@@ -144,10 +144,10 @@ namespace LiveResults.Client
 
 
                         baseCommand = "select results.bibNumber, results.individualCourseId, results.rawDataFromElectronicPunchingCardsId, results.modifyDate,results.totalTime, results.position, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName, raceclasses.relayleg, results.runnerStatus, results.resultId as entryId, results.finishTime, results.allocatedStartTime, results.starttime from results, entries, Persons, raceclasses,eventclasses where raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and  results.modifyDate > " + paramOper + " order by relayLeg";
-                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, results.starttime from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
+                        splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID,results.bibNumber, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, results.starttime from splittimes, results, SplitTimeControls, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.splitTimeControlID = SplitTimeControls.splitTimeControlID and SplitTimeControls.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                         if (version >= 564)
                         {
-                            splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, results.starttime from splittimes, results, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
+                            splitbaseCommand = "select splittimes.modifyDate, splittimes.passedTime, Controls.ID, results.bibNumber, results.resultId as entryId, results.allocatedStartTime, persons.familyname as lastname, persons.firstname as firstname, entries.teamName as clubname, eventclasses.shortName,raceclasses.relayleg, splittimes.passedCount,results.allocatedStartTime, results.starttime from splittimes, results, Controls, eventClasses, raceClasses, Persons, entries where splittimes.resultraceindividualnumber = results.resultid and SplitTimes.timingControl = Controls.controlid and Controls.eventRaceId = " + m_eventRaceId + " and raceclasses.eventClassID = eventClasses.eventClassID and results.raceClassID = raceclasses.raceclassid and raceClasses.eventRaceId = " + m_eventRaceId + " and eventclasses.eventid = " + m_eventID + " and results.entryid = entries.entryid and results.relaypersonid = persons.personid and raceClasses.raceClassStatus <> 'notUsed' and splitTimes.modifyDate > " + paramOper;
                         }
                     }
 
@@ -225,7 +225,7 @@ namespace LiveResults.Client
                             while (reader.Read())
                             {
                                 int time = 0, runnerID = 0, iStartTime = 0;
-                                string famName = "", fName = "", club = "", classN = "", status = "";
+                                string famName = "", fName = "", club = "", classN = "", status = "", bib = null;
                                 
                                 try
                                 {
@@ -246,6 +246,9 @@ namespace LiveResults.Client
                                     club = (reader["clubname"] as string);
                                     classN = (reader["shortname"] as string);
                                     status = reader["runnerStatus"] as string; // reader.GetString(7);
+
+                                    if (reader["bibNumber"] != null && reader["bibNumber"] != DBNull.Value)
+                                        bib = reader["bibNumber"] as string;
 
                                     DateTime startTime = DateTime.MinValue;
 
@@ -339,8 +342,8 @@ namespace LiveResults.Client
                                             Class = classN,
                                             StartTime = iStartTime,
                                             Time = time,
-                                            Status = rstatus
-
+                                            Status = rstatus,
+                                            bib = bib
                                         };
 
                                         CheckAndCreatePairRunner(isRelay, reader, runnerPairs, runnerID, res);
@@ -509,6 +512,9 @@ namespace LiveResults.Client
 
                                     var club = reader["clubname"] as string; 
                                     var classn = reader["shortname"] as string;
+                                    string bib = null;
+                                    if (reader["bibNumber"] != null && reader["bibNumber"] != DBNull.Value)
+                                        bib = reader["bibNumber"] as string;
 
                                     if (isRelay)
                                     {
@@ -525,7 +531,8 @@ namespace LiveResults.Client
                                             StartTime = 0,
                                             Time = -2,
                                             Status = 0,
-                                            SplitTimes = times
+                                            SplitTimes = times,
+                                            bib=bib
                                         };
                                         CheckAndCreatePairRunner(isRelay, reader, runnerPairs, entryid, res);
                                     }
@@ -602,8 +609,8 @@ namespace LiveResults.Client
 				c.controlId=cwpc.controlid and 
 				c.typeCode = 'WTC' and 
                         rc.eventClassId = ec.eventClassId AND
-                        rc.eventRaceId=1 AND 
-                        ec.eventId = 1
+                        rc.eventRaceId=" + m_eventRaceId + @" AND 
+                        ec.eventId = " + m_eventID + @"
                     UNION
                     select c.ID, ec.shortName as className, rc.relayLeg, rccsc.ordered, rccsc.name from 
 				                    controls c, raceClasses rc, eventClasses ec, raceclasssplittimecontrols rccsc
@@ -611,8 +618,8 @@ namespace LiveResults.Client
 				                    rccsc.splittimeControlId = c.controlId and 				
 				                    c.typeCode = 'WTC' and 
                                             rc.eventClassId = ec.eventClassId AND
-                                            rc.eventRaceId=1 AND 
-                                            ec.eventId = 1) a
+                                            rc.eventRaceId=" + m_eventRaceId + @" AND 
+                                            ec.eventId = " + m_eventID + @") a
                       ORDER BY className, ordered";
                 }
 
