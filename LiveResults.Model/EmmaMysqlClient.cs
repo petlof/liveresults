@@ -875,7 +875,7 @@ namespace LiveResults.Model
                                         cmd.Parameters.AddWithValue("?name", Encoding.UTF8.GetBytes(r.Name));
                                         cmd.Parameters.AddWithValue("?club", Encoding.UTF8.GetBytes(r.Club ?? ""));
                                         cmd.Parameters.AddWithValue("?class", Encoding.UTF8.GetBytes(r.Class));
-                                        cmd.Parameters.AddWithValue("?bib", Encoding.UTF8.GetBytes(r.Bib));
+                                        cmd.Parameters.AddWithValue("?bib", r.Bib != null ? Encoding.UTF8.GetBytes(r.Bib) : null);
 
                                         cmd.Parameters.AddWithValue("?id", r.ID);
                                         cmd.CommandText = "REPLACE INTO runners (tavid,name,club,class,brick,dbid,bib) VALUES (?compid,?name,?club,?class,0,?id,?bib)";
