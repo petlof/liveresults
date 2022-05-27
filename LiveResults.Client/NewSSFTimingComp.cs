@@ -274,7 +274,7 @@ namespace LiveResults.Client
             FrmMonitor monForm = new FrmMonitor();
             this.Hide();
             SSFTimingParser pars = new SSFTimingParser(GetDBConnection(lstDB.SelectedItem as string), 
-                (cmbOLAComp.SelectedItem as OlaComp).Id, chkCreateRadioControls.Checked);
+                (cmbOLAComp.SelectedItem as OlaComp).Id, chkCreateRadioControls.Checked, chkAnoSplits.Checked);
             monForm.SetParser(pars as IExternalSystemResultParser);
             monForm.CompetitionID = Convert.ToInt32(txtCompID.Text);
             monForm.ShowDialog(this);

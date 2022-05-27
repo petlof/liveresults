@@ -30,6 +30,13 @@
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(NewSSFTimingComp));
             this.wizard1 = new Gui.Wizard.Wizard();
+            this.wizardPage5 = new Gui.Wizard.WizardPage();
+            this.chkAnoSplits = new System.Windows.Forms.CheckBox();
+            this.chkCreateRadioControls = new System.Windows.Forms.CheckBox();
+            this.txtCompName = new System.Windows.Forms.TextBox();
+            this.label10 = new System.Windows.Forms.Label();
+            this.txtCompID = new System.Windows.Forms.TextBox();
+            this.label9 = new System.Windows.Forms.Label();
             this.wizardPage3 = new Gui.Wizard.WizardPage();
             this.label7 = new System.Windows.Forms.Label();
             this.cmbOLAComp = new System.Windows.Forms.ComboBox();
@@ -45,25 +52,19 @@
             this.label4 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
-            this.wizardPage5 = new Gui.Wizard.WizardPage();
-            this.chkCreateRadioControls = new System.Windows.Forms.CheckBox();
-            this.txtCompName = new System.Windows.Forms.TextBox();
-            this.label10 = new System.Windows.Forms.Label();
-            this.txtCompID = new System.Windows.Forms.TextBox();
-            this.label9 = new System.Windows.Forms.Label();
             this.wizard1.SuspendLayout();
+            this.wizardPage5.SuspendLayout();
             this.wizardPage3.SuspendLayout();
             this.wizardPage2.SuspendLayout();
             this.wizardPage1.SuspendLayout();
-            this.wizardPage5.SuspendLayout();
             this.SuspendLayout();
             // 
             // wizard1
             // 
+            this.wizard1.Controls.Add(this.wizardPage1);
             this.wizard1.Controls.Add(this.wizardPage5);
             this.wizard1.Controls.Add(this.wizardPage3);
             this.wizard1.Controls.Add(this.wizardPage2);
-            this.wizard1.Controls.Add(this.wizardPage1);
             this.wizard1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.wizard1.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.wizard1.Location = new System.Drawing.Point(0, 0);
@@ -75,6 +76,76 @@
             this.wizardPage5});
             this.wizard1.Size = new System.Drawing.Size(506, 170);
             this.wizard1.TabIndex = 0;
+            // 
+            // wizardPage5
+            // 
+            this.wizardPage5.Controls.Add(this.chkAnoSplits);
+            this.wizardPage5.Controls.Add(this.chkCreateRadioControls);
+            this.wizardPage5.Controls.Add(this.txtCompName);
+            this.wizardPage5.Controls.Add(this.label10);
+            this.wizardPage5.Controls.Add(this.txtCompID);
+            this.wizardPage5.Controls.Add(this.label9);
+            this.wizardPage5.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.wizardPage5.IsFinishPage = false;
+            this.wizardPage5.Location = new System.Drawing.Point(0, 0);
+            this.wizardPage5.Name = "wizardPage5";
+            this.wizardPage5.Size = new System.Drawing.Size(506, 122);
+            this.wizardPage5.TabIndex = 5;
+            this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
+            // 
+            // chkAnoSplits
+            // 
+            this.chkAnoSplits.AutoSize = true;
+            this.chkAnoSplits.Location = new System.Drawing.Point(221, 46);
+            this.chkAnoSplits.Name = "chkAnoSplits";
+            this.chkAnoSplits.Size = new System.Drawing.Size(109, 17);
+            this.chkAnoSplits.TabIndex = 5;
+            this.chkAnoSplits.Text = "Anonymous splits";
+            this.chkAnoSplits.UseVisualStyleBackColor = true;
+            // 
+            // chkCreateRadioControls
+            // 
+            this.chkCreateRadioControls.AutoSize = true;
+            this.chkCreateRadioControls.Checked = true;
+            this.chkCreateRadioControls.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.chkCreateRadioControls.Location = new System.Drawing.Point(221, 27);
+            this.chkCreateRadioControls.Name = "chkCreateRadioControls";
+            this.chkCreateRadioControls.Size = new System.Drawing.Size(189, 17);
+            this.chkCreateRadioControls.TabIndex = 4;
+            this.chkCreateRadioControls.Text = "Automatically create radiocontrols";
+            this.chkCreateRadioControls.UseVisualStyleBackColor = true;
+            // 
+            // txtCompName
+            // 
+            this.txtCompName.Location = new System.Drawing.Point(15, 65);
+            this.txtCompName.Name = "txtCompName";
+            this.txtCompName.Size = new System.Drawing.Size(175, 21);
+            this.txtCompName.TabIndex = 3;
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(12, 49);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(34, 13);
+            this.label10.TabIndex = 2;
+            this.label10.Text = "Name";
+            // 
+            // txtCompID
+            // 
+            this.txtCompID.Location = new System.Drawing.Point(15, 25);
+            this.txtCompID.Name = "txtCompID";
+            this.txtCompID.Size = new System.Drawing.Size(175, 21);
+            this.txtCompID.TabIndex = 1;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(12, 9);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(73, 13);
+            this.label9.TabIndex = 0;
+            this.label9.Text = "CompetitonID";
             // 
             // wizardPage3
             // 
@@ -128,7 +199,7 @@
             this.lstDB.FormattingEnabled = true;
             this.lstDB.Location = new System.Drawing.Point(13, 26);
             this.lstDB.Name = "lstDB";
-            this.lstDB.Size = new System.Drawing.Size(481, 82);
+            this.lstDB.Size = new System.Drawing.Size(481, 69);
             this.lstDB.TabIndex = 1;
             // 
             // label6
@@ -154,7 +225,7 @@
             this.wizardPage1.IsFinishPage = false;
             this.wizardPage1.Location = new System.Drawing.Point(0, 0);
             this.wizardPage1.Name = "wizardPage1";
-            this.wizardPage1.Size = new System.Drawing.Size(506, 122);
+            this.wizardPage1.Size = new System.Drawing.Size(506, 131);
             this.wizardPage1.TabIndex = 1;
             // 
             // txtPw
@@ -221,65 +292,6 @@
             this.label2.TabIndex = 2;
             this.label2.Text = "Host";
             // 
-            // wizardPage5
-            // 
-            this.wizardPage5.Controls.Add(this.chkCreateRadioControls);
-            this.wizardPage5.Controls.Add(this.txtCompName);
-            this.wizardPage5.Controls.Add(this.label10);
-            this.wizardPage5.Controls.Add(this.txtCompID);
-            this.wizardPage5.Controls.Add(this.label9);
-            this.wizardPage5.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.wizardPage5.IsFinishPage = false;
-            this.wizardPage5.Location = new System.Drawing.Point(0, 0);
-            this.wizardPage5.Name = "wizardPage5";
-            this.wizardPage5.Size = new System.Drawing.Size(506, 122);
-            this.wizardPage5.TabIndex = 5;
-            this.wizardPage5.CloseFromNext += new Gui.Wizard.PageEventHandler(this.wizardPage5_CloseFromNext);
-            // 
-            // chkCreateRadioControls
-            // 
-            this.chkCreateRadioControls.AutoSize = true;
-            this.chkCreateRadioControls.Checked = true;
-            this.chkCreateRadioControls.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkCreateRadioControls.Location = new System.Drawing.Point(221, 27);
-            this.chkCreateRadioControls.Name = "chkCreateRadioControls";
-            this.chkCreateRadioControls.Size = new System.Drawing.Size(189, 17);
-            this.chkCreateRadioControls.TabIndex = 4;
-            this.chkCreateRadioControls.Text = "Automatically create radiocontrols";
-            this.chkCreateRadioControls.UseVisualStyleBackColor = true;
-            // 
-            // txtCompName
-            // 
-            this.txtCompName.Location = new System.Drawing.Point(15, 65);
-            this.txtCompName.Name = "txtCompName";
-            this.txtCompName.Size = new System.Drawing.Size(175, 21);
-            this.txtCompName.TabIndex = 3;
-            // 
-            // label10
-            // 
-            this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(12, 49);
-            this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(34, 13);
-            this.label10.TabIndex = 2;
-            this.label10.Text = "Name";
-            // 
-            // txtCompID
-            // 
-            this.txtCompID.Location = new System.Drawing.Point(15, 25);
-            this.txtCompID.Name = "txtCompID";
-            this.txtCompID.Size = new System.Drawing.Size(175, 21);
-            this.txtCompID.TabIndex = 1;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(12, 9);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(73, 13);
-            this.label9.TabIndex = 0;
-            this.label9.Text = "CompetitonID";
-            // 
             // NewSSFTimingComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -290,14 +302,14 @@
             this.Name = "NewSSFTimingComp";
             this.Text = "New SSF Timing connection";
             this.wizard1.ResumeLayout(false);
+            this.wizardPage5.ResumeLayout(false);
+            this.wizardPage5.PerformLayout();
             this.wizardPage3.ResumeLayout(false);
             this.wizardPage3.PerformLayout();
             this.wizardPage2.ResumeLayout(false);
             this.wizardPage2.PerformLayout();
             this.wizardPage1.ResumeLayout(false);
             this.wizardPage1.PerformLayout();
-            this.wizardPage5.ResumeLayout(false);
-            this.wizardPage5.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -326,5 +338,6 @@
         private System.Windows.Forms.TextBox txtCompName;
         private System.Windows.Forms.Label label10;
         public System.Windows.Forms.CheckBox chkCreateRadioControls;
+        public System.Windows.Forms.CheckBox chkAnoSplits;
     }
 }

@@ -121,6 +121,7 @@ namespace LiveResults.Model
         private string m_name;
         private string m_club;
         private string m_class;
+        private string m_bib;
         private int m_start;
         private int m_time;
         private int m_status;
@@ -131,7 +132,7 @@ namespace LiveResults.Model
         public bool StartTimeUpdated;
 
         private readonly Dictionary<int,SplitTime> m_splitTimes;
-        public Runner(int dbID, string name, string club, string Class, string sourceId = null)
+        public Runner(int dbID, string name, string club, string Class, string sourceId = null, string bib = null)
         {
             RunnerUpdated = true;
             ResultUpdated = false;
@@ -143,6 +144,7 @@ namespace LiveResults.Model
             m_club = club;
             m_class = Class;
             m_sourceId = sourceId;
+            m_bib = bib;
         }
 
         public string SourceId
@@ -168,6 +170,18 @@ namespace LiveResults.Model
                 m_id = value;
             }
 
+        }
+
+        public string Bib
+        {
+            get
+            {
+                return m_bib;
+            }
+            set
+            {
+                m_bib = value;
+            }
         }
 
         public bool HasUpdatedSplitTimes()
