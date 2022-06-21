@@ -40,6 +40,8 @@ namespace LiveResults.Client.Parsers
             {
                 BibNo = bibNo;
                 LegNo = legNo;
+                if (bibNo > 0)
+                    Bib = bibNo.ToString();
             }
 
         }
@@ -440,7 +442,8 @@ namespace LiveResults.Client.Parsers
                                 }).ToList(),
                                 StartTime = r.StartTime,
                                 Status = r.Status,
-                                Time = r.Time
+                                Time = r.Time,
+                                bib = r.Bib
                             });
                         }
                     }
