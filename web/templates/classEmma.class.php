@@ -215,7 +215,7 @@ public static function UpdateCompetition($id,$name,$org,$date,$public,$timediff)
         }
 
 
-	function Emma($compID)
+	function __construct($compID)
 
 	{
 
