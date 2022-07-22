@@ -328,7 +328,7 @@ namespace LiveResults.Client
 
                                     if (isRelay)
                                     {
-                                        relayEventCache.SetTeamLegResult(runnerID, classN, club, fName + " " + famName, Convert.ToInt32(reader["relayLeg"].ToString()),
+                                        relayEventCache.SetTeamLegResult(runnerID, classN, club, bib, fName + " " + famName, Convert.ToInt32(reader["relayLeg"].ToString()),
                                             iStartTime, time, rstatus);
                                     }
                                     else
@@ -518,7 +518,7 @@ namespace LiveResults.Client
 
                                     if (isRelay)
                                     {
-                                        relayEventCache.SetTeamLegSplitResult(entryid, classn, club, name, Convert.ToInt32(reader["relayLeg"].ToString()), (int)startTime.TimeOfDay.TotalSeconds * 100, sCont, (int)time, passedCount);
+                                        relayEventCache.SetTeamLegSplitResult(entryid, classn, club, bib, name, Convert.ToInt32(reader["relayLeg"].ToString()), (int)startTime.TimeOfDay.TotalSeconds * 100, sCont, (int)time, passedCount);
                                     }
                                     else
                                     {
