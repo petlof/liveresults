@@ -160,6 +160,9 @@ namespace LiveResults.Client
                     IDbCommand cmdSplits = m_connection.CreateCommand();
                     IDbCommand cmdSplitTimes = m_connection.CreateCommand();
                     cmdSplits.CommandText = splitbaseCommand;
+
+
+
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "date";
                     if (m_connection is MySql.Data.MySqlClient.MySqlConnection || m_connection is System.Data.H2.H2Connection)
@@ -220,7 +223,7 @@ namespace LiveResults.Client
                             if (!string.IsNullOrEmpty(splitsPaths))
                              splitsToRead = new List<object[]>();
 
-                            cmd.Prepare();
+                            
                             reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
