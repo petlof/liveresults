@@ -21,7 +21,7 @@ namespace LiveResults.Client
         private bool m_continue;
         private bool m_useTenth = false;
         private bool m_anynomousSplits = false;
-        int baseNum = 30000;
+        int baseNum = 10000;
         public SSFTimingParser(IDbConnection conn, int eventID, bool recreateRadioControls = true, bool anynomousSplits=false)
         {
             m_connection = conn;
@@ -324,13 +324,13 @@ and dbclass.classid = dbName.classid", m_eventID);
                             {
                                 cmd.CommandText = initialCommand +
                                                   string.Format(
-                                                      @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID,
+                                                      @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1} and isnumeric(startno)=1)", m_eventID,
                                                       lastId);
                                 ParseReader(cmd, out lastRunner, isRelay, relayLegs);
 
                                 cmdSplits.CommandText = initialSplitCommand +
                                                   string.Format(
-                                                      @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1})", m_eventID,
+                                                      @" and dbName.Startno in (select distinct startno from dbLog where raceId={0} and logid > {1} and isnumeric(startno)=1)", m_eventID,
                                                       lastId);
                                 ParseReaderSplits(cmdSplits, out lastRunner, isRelay, relayLegs);
                             }
@@ -384,6 +384,9 @@ and dbclass.classid = dbName.classid", m_eventID);
                     string bibNumber = reader["startno"].ToString();
                     try
                     {
+
+                       /* if (!int.TryParse(reader["startno"] as string, out int sn))
+                            continue;*/
                        runnerID = Convert.ToInt32(reader["startno"].ToString());
                         if (baseNum > 0)
                             runnerID = baseNum + runnerID;
@@ -518,6 +521,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                     int time = -2;
                     int status = 0;
                     var splits = new List<ResultStruct>();
+                    /*if (!int.TryParse(reader["startno"] as string, out int sn))
+                        continue;*/
                     string bibNumber = reader["startno"].ToString();
                     try
                     {

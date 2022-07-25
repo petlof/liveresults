@@ -160,6 +160,9 @@ namespace LiveResults.Client
                     IDbCommand cmdSplits = m_connection.CreateCommand();
                     IDbCommand cmdSplitTimes = m_connection.CreateCommand();
                     cmdSplits.CommandText = splitbaseCommand;
+
+
+
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "date";
                     if (m_connection is MySql.Data.MySqlClient.MySqlConnection || m_connection is System.Data.H2.H2Connection)
@@ -220,7 +223,7 @@ namespace LiveResults.Client
                             if (!string.IsNullOrEmpty(splitsPaths))
                              splitsToRead = new List<object[]>();
 
-                            cmd.Prepare();
+                            
                             reader = cmd.ExecuteReader();
                             while (reader.Read())
                             {
@@ -328,7 +331,7 @@ namespace LiveResults.Client
 
                                     if (isRelay)
                                     {
-                                        relayEventCache.SetTeamLegResult(runnerID, classN, club, fName + " " + famName, Convert.ToInt32(reader["relayLeg"].ToString()),
+                                        relayEventCache.SetTeamLegResult(runnerID, classN, club, bib, fName + " " + famName, Convert.ToInt32(reader["relayLeg"].ToString()),
                                             iStartTime, time, rstatus);
                                     }
                                     else
@@ -518,7 +521,7 @@ namespace LiveResults.Client
 
                                     if (isRelay)
                                     {
-                                        relayEventCache.SetTeamLegSplitResult(entryid, classn, club, name, Convert.ToInt32(reader["relayLeg"].ToString()), (int)startTime.TimeOfDay.TotalSeconds * 100, sCont, (int)time, passedCount);
+                                        relayEventCache.SetTeamLegSplitResult(entryid, classn, club, bib, name, Convert.ToInt32(reader["relayLeg"].ToString()), (int)startTime.TimeOfDay.TotalSeconds * 100, sCont, (int)time, passedCount);
                                     }
                                     else
                                     {

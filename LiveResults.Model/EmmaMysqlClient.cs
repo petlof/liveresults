@@ -355,35 +355,7 @@ namespace LiveResults.Model
             }
         }
 
-       /* private void LoadDataForPreviousStages(MySqlCommand cmd)
-        {
-            MySqlDataReader reader;
-            if (!string.IsNullOrEmpty(ConfigurationManager.AppSettings["multistage_day1"]))
-            {
-                int stageId = Convert.ToInt32(ConfigurationManager.AppSettings["multistage_day1"]);
-                cmd.CommandText = "select dbid, time, status from results where control = 1000 and tavid = " + stageId;
-                reader = cmd.ExecuteReader();
-
-                while (reader.Read())
-                {
-                    var dbId = Convert.ToInt32(reader["dbId"]);
-                    int time = Convert.ToInt32(reader["time"]);
-                    int status = Convert.ToInt32(reader["status"]);
-                    m_runnerPreviousDaysTotalTime.Add(dbId, new int[]
-                    {
-                        time, status
-                    });
-
-                    if (m_runners.ContainsKey(dbId))
-                    {
-                        m_runners[dbId].SetResultFromPreviousDays(time, status);
-                    }
-                }
-                reader.Close();
-                
-            }
-        }*/
-
+       
         public void UpdateRunnerInfo(int id, string name, string club, string Class, string sourceId, string bib)
         {
             if (m_runners.ContainsKey(id))

@@ -61,7 +61,7 @@ namespace LiveResults.Client.Model
        
         private readonly Dictionary<string,Dictionary<string,TeamHolder>> m_cache = new Dictionary<string, Dictionary<string, TeamHolder>>();
 
-        public void SetTeamLegSplitResult(int dbId, string className, string teamName, string runnerName, int leg, int startTime, int controlCode, int time, int passCounter)
+        public void SetTeamLegSplitResult(int dbId, string className, string teamName,string bib, string runnerName, int leg, int startTime, int controlCode, int time, int passCounter)
         {
             if (!m_cache.ContainsKey(className))
             {
@@ -73,7 +73,8 @@ namespace LiveResults.Client.Model
                 {
                     ClassName = className,
                     Legs = new TeamLegHolder[0],
-                    TeamName = teamName
+                    TeamName = teamName,
+                    Bib = bib
                 });
             }
 
@@ -119,7 +120,7 @@ namespace LiveResults.Client.Model
             TriggerUpdateOnTeamRunners(className, teamName, leg);
         }
 
-        public void SetTeamLegResult(int dbId, string className, string teamName, string runnerName, int leg, int startTime, int time, int status)
+        public void SetTeamLegResult(int dbId, string className, string teamName,string bib, string runnerName, int leg, int startTime, int time, int status)
         {
             if (!m_cache.ContainsKey(className))
             {
@@ -130,7 +131,8 @@ namespace LiveResults.Client.Model
                 m_cache[className].Add(teamName, new TeamHolder{
                     ClassName = className,
                     Legs = new TeamLegHolder[0],
-                    TeamName = teamName
+                    TeamName = teamName,
+                    Bib = bib
                 });
             }
 
@@ -174,6 +176,7 @@ namespace LiveResults.Client.Model
                     RunnerName = legItem.RunnerName,
                     SplitTimes = GetSplitTimes(team,legItem,classConfig),
                     StartTime = legItem.StartTime,
+                    bib = team.Bib
                 };
                 res.Status = m_cache[className][teamName].GetTeamTotalStatusAfterLeg(legItem.Leg);
                 if (legItem.Status == 10)
@@ -214,6 +217,7 @@ namespace LiveResults.Client.Model
     {
         public string ClassName { get; set; }
         public string TeamName { get; set; }
+        public string Bib { get; set; }
         public TeamLegHolder[] Legs { get; set; }
 
         public int GetTeamTotalStatusAfterLeg(int leg)

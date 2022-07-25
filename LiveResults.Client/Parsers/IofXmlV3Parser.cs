@@ -54,9 +54,9 @@ namespace LiveResults.Client.Parsers
                                     string leg = legNode.InnerText;
 
                                     var startTimeNode = teamMemberStartNode.SelectSingleNode("iof:Start/iof:StartTime", nsMgr);
-                                    if (startTimeNode == null)
-                                        continue;
-                                    string starttime = startTimeNode.InnerText;
+                                    string starttime = "";
+                                    if (startTimeNode != null)
+                                        starttime = startTimeNode.InnerText;
 
                                     var runner = new Runner(-1, name, teamName, className + "-" + leg);
 
@@ -64,6 +64,10 @@ namespace LiveResults.Client.Parsers
                                     {
                                         int istarttime = ParseTime(starttime);
                                         runner.SetStartTime(istarttime);
+                                    }
+                                    else
+                                    {
+                                        runner.SetResult(-9, 9);
                                     }
 
                                     runners.Add(runner);

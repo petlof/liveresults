@@ -21,7 +21,7 @@ namespace LiveResults.Client
         public NewOLAComp()
         {
             InitializeComponent();
-            comboBox1.DataSource = new string[] { "OLA Intern Databas", "Mysql-Server", "SQL-Server" };
+            comboBox1.DataSource = new string[] { "OLA Intern Databas", "Mysql-Server"};
             comboBox1.SelectedIndex = 1;
             txtUser.Text = "live";
             txtPw.Text = "live";
@@ -193,9 +193,8 @@ namespace LiveResults.Client
                     conn = GetDBConnection();
                     if (conn != null)
                     {
-                        conn.Open();
                         lstDB.DataSource = null;
-
+                        conn.Open();
                         string[] databases = GetDatabases(conn);
                         lstDB.DataSource = databases;
                     }
@@ -242,7 +241,7 @@ namespace LiveResults.Client
             }
             return dbs.ToArray();
         }
-
+        
         private IDbConnection GetDBConnection()
         {
             return GetDBConnection(null);
