@@ -113,24 +113,42 @@ namespace LiveResults.Client.Parsers
                         string time = tmp.Substring(idxSlash + 1, idxSlash2 - idxSlash - 1).Trim();
                         string status = tmp.Substring(idxSlash2 + 1).Trim();
 
-                        
-
                         if (!siToRunner.ContainsKey(si))
                         {
                             continue;
                         }
 
-
-
                         var runner = siToRunner[si];
+                        int rtime = -10;
+                        int rstatus = 10;
 
-                        int rstatus = 0;
-                        if (status == "DISQ" || status == "OVRT")
-                            rstatus = 4;
-                        else if (status == "MP" || status == "DNF")
-                            rstatus = 3;
-                        else if (status == "DNS")
-                            rstatus = 1;
+                        switch (status)
+                        {
+                            case "MP":
+                                rstatus = 3;
+                                rtime = -3;
+                                break;
+                            case "DISQ":
+                                rstatus = 4;
+                                break;
+                            case "DNF":
+                                rstatus = 2;
+                                rtime = -3;
+                                break;
+                            case "DNS":
+                                rstatus = 1;
+                                rtime = -3;
+                                break;
+                            case "OVRT":
+                                rstatus = 5;
+                                break;
+                            case "NC":
+                                rstatus = 11;
+                                break;
+                            case "O.K.":
+                                rstatus = 0;
+                                break;
+                        }
 
                         if (rstatus == 0)
                         {
@@ -140,7 +158,7 @@ namespace LiveResults.Client.Parsers
                         }
                         else
                         {
-                            runner.SetResult(-rstatus, rstatus);
+                            runner.SetResult(rtime, rstatus);
                         }
                     }
                 }
