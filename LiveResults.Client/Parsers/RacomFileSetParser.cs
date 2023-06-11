@@ -98,7 +98,7 @@ namespace LiveResults.Client.Parsers
                 string tmp;
                 while ((tmp = sr.ReadLine()) != null)
                 {
-                    Dictionary<int,int> teamstatus = new Dictionary<int, int>();
+//                    Dictionary<int,int> teamstatus = new Dictionary<int, int>();
                     if (!string.IsNullOrEmpty(tmp) && !string.IsNullOrEmpty(tmp.Trim()))
                     {
                         int idxColon = tmp.IndexOf(":", StringComparison.Ordinal);
@@ -263,7 +263,7 @@ namespace LiveResults.Client.Parsers
                     if (tmp.Length != 65)
                     {
                         if (OnLogMessage != null)
-                            OnLogMessage("Incorrect start line size ! (lenght is " + tmp.Length + ")");
+                            OnLogMessage("Incorrect start line size ! (length is " + tmp.Length + ")");
                     }
                     try
                     {
@@ -340,9 +340,11 @@ namespace LiveResults.Client.Parsers
         private double parseTime(string start)
         {
             int iDot = start.IndexOf(".", StringComparison.Ordinal);
-            string minutes = start.Substring(0, iDot);
+            bool bMinus = start.IndexOf("-", StringComparison.Ordinal) == 0; // first in -
+            string minutes = start.Substring(bMinus ? 1 : 0, bMinus ? iDot-1: iDot);
             string secs = start.Substring(iDot + 1).Replace(",", ".");
-            return int.Parse(minutes)*60 + double.Parse(secs, CultureInfo.InvariantCulture);
+            double time = int.Parse(minutes) * 60 + double.Parse(secs, CultureInfo.InvariantCulture);
+            return bMinus ? time *= -1 : time;
         }
 
         private bool m_continue = false;
