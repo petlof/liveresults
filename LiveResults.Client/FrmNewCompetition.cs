@@ -120,7 +120,7 @@ namespace LiveResults.Client
             if (newRacomComp.ShowDialog(this) == DialogResult.OK)
             {
                 FrmMonitor monForm = new FrmMonitor();
-                monForm.SetParser(new RacomFileSetParser(newRacomComp.txtStartlist.Text, newRacomComp.txtRawSplits.Text, newRacomComp.txtRaceFile.Text,
+                monForm.SetParser(new RacomFileSetParser(newRacomComp.txtStartlist.Text, newRacomComp.cbStart.Checked, newRacomComp.txtRawSplits.Text, newRacomComp.txtRaceFile.Text,
                     newRacomComp.txtRadioControls.Text, newRacomComp.dtZeroTime.Value, newRacomComp.checkBox1.Checked));
                 monForm.CompetitionID = int.Parse(newRacomComp.txtCompID.Text);
                 monForm.ShowDialog(this);

@@ -12,6 +12,7 @@ namespace LiveResults.Client.Parsers
     public class RacomFileSetParser : IExternalSystemResultParser
     {
         private readonly string m_startListFile;
+        private readonly bool m_useCsvStartlist;
         private readonly string m_splitsFile;
         private readonly string m_finishFile;
         private readonly string m_radioDefinitionFile;
@@ -21,9 +22,10 @@ namespace LiveResults.Client.Parsers
         {
         }
 
-        public RacomFileSetParser(string startlistFile, string splitsFile, string finishFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay)
+        public RacomFileSetParser(string startlistFile, bool useCsvStartlist, string splitsFile, string finishFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay)
         {
             m_startListFile = startlistFile;
+            m_useCsvStartlist = useCsvStartlist;
             m_splitsFile = splitsFile;
             m_finishFile = finishFile;
             m_radioDefinitionFile = radioDefinitionFile;
@@ -48,12 +50,15 @@ namespace LiveResults.Client.Parsers
 
 
 
-        public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile)
+        public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile, bool useCsvStartlist)
         {
             var ret = new List<Runner>();
             var siToRunner = new Dictionary<int, Runner>();
             var enc = Encoding.GetEncoding("Windows-1250");
-            ReadStartList(zeroTime, startlistFile, ret, siToRunner,enc);
+            if (useCsvStartlist)
+                ReadStartListCsvUtf8(zeroTime, startlistFile, ret, siToRunner);
+            else
+                ReadStartList(zeroTime, startlistFile, ret, siToRunner, enc);
             //ReadAndApplyRaceFile(raceFile, ret, enc);
             ReadAndApplyFINFile(finFile, siToRunner, enc);
             ReadAndApplySplitsFile(splitsFile, siToRunner,enc);
@@ -188,7 +193,7 @@ namespace LiveResults.Client.Parsers
                         var code = int.Parse(tmp.Substring(idxColon + 1, idxSlash - idxColon-1));
                         string time = tmp.Substring(idxSlash + 1);
 
-                        if (!siToRunner.ContainsKey(si))
+                        if (!siToRunner.ContainsKey(si) || time == "No time ")
                         {
                             continue;
                         }
@@ -312,11 +317,85 @@ namespace LiveResults.Client.Parsers
                                 OnLogMessage("Duplicate SI-NO: " + sinr + ", skipping " + name);
                         }
                     }
-                    catch (System.Exception ex)
+                    catch (System.Exception)
                     {
                         if (OnLogMessage != null)
                             OnLogMessage("Parsing start list error on line : " + tmp);
                     }
+                }
+            }
+        }
+
+        private void ReadStartListCsvUtf8(DateTime zeroTime, string startlistFile, List<Runner> ret, Dictionary<int, Runner> siToRunner)
+        {
+            if (!System.IO.File.Exists(startlistFile))
+            {
+                if (OnLogMessage != null)
+                    OnLogMessage("Read StartList - file not found");
+                return;
+            }
+            var csvRows = System.IO.File.ReadAllLines(startlistFile, Encoding.UTF8).ToList();
+            foreach (var row in csvRows.Skip(1))    // first row is header
+            {
+                var columns = row.Split(';');
+                if (columns.Length < 7)
+                {
+                    if (OnLogMessage != null)
+                        OnLogMessage("Incorrect start line columns count! (" + columns.Length + ")");
+                }
+                try
+                {
+                    // columns are :
+                    // ID, Class, SI, Name, Starttime, Club, Bib, [Leg]
+                    string id = columns[0].Trim();
+                    string stnr = columns[6].Trim();
+                    string sinr = columns[2].Trim();
+                    string className = columns[1].Trim();
+                    string name = columns[3].Trim();
+                    string start = columns[4].Trim();
+                    string club = columns[5].Trim();
+                    int leg = 0;
+                    if (columns.Length > 7)
+                        leg = int.Parse(columns[7].Trim());
+
+                    if (string.IsNullOrEmpty(id))
+                    {
+                        if (OnLogMessage != null)
+                            OnLogMessage("Startnumber empty: runner: " + name + " in class " + className);
+                        continue;
+                    }
+
+                    int dbId = m_isRelay ? leg * 100000 + int.Parse(id) : int.Parse(id);
+                    var r = new RacomRunner(int.Parse(stnr), dbId, name, club, className, m_isRelay ? (int?)leg : null);
+
+                    if (m_isRelay)
+                    {
+                        r.ClassWithoutLeg = className;
+                        if (!string.IsNullOrEmpty(r.ClassWithoutLeg))
+                            r.ClassWithoutLeg = r.ClassWithoutLeg.Trim();
+
+                        r.Class = r.ClassWithoutLeg + " " + leg;
+                    }
+
+                    var startTime = zeroTime.AddSeconds(parseTime(start));
+                    r.SetStartTime(startTime.Hour * 360000 + startTime.Minute * 6000 + startTime.Second * 100 + startTime.Millisecond / 10);
+                    r.SetResult(-9, 9);
+
+                    ret.Add(r);
+                    if (!siToRunner.ContainsKey(int.Parse(sinr)))
+                    {
+                        siToRunner.Add(int.Parse(sinr), r);
+                    }
+                    else
+                    {
+                        if (OnLogMessage != null)
+                            OnLogMessage("Duplicate SI-NO: " + sinr + ", skipping " + name);
+                    }
+                }
+                catch (System.Exception)
+                {
+                    if (OnLogMessage != null)
+                        OnLogMessage("Parsing start list error on line : " + row);
                 }
             }
         }
@@ -444,7 +523,7 @@ namespace LiveResults.Client.Parsers
                     {
 
                     
-                    var runners = ParseFiles(m_zeroTime, m_startListFile, m_splitsFile, m_finishFile);
+                    var runners = ParseFiles(m_zeroTime, m_startListFile, m_splitsFile, m_finishFile, m_useCsvStartlist);
                     if (OnResult != null)
                     {
                         foreach (var r in runners)
