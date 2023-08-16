@@ -246,6 +246,41 @@ elseif ($_GET['method'] == 'getclubresults')
 			echo(", $br \"hash\": \"". $hash."\"}");
 		}
 }
+elseif ($_GET['method'] == 'getpending')
+{
+	$currentComp = new Emma($_GET['comp']);
+	$limit = 50;
+	if (isset($_GET['limit'])) {
+		$limit = $_GET['limit'];
+	}
+	$results = $currentComp->getPending($_GET['comp'], $limit);
+	$ret = "";
+	$sep = "";
+
+	foreach ($results as $res)
+	{
+		$ret .= $sep . '{"name":"'.$res['Name'].'","club":"'.$res['Club'].',"class":"'.$res['Class'].'",status":'.$res['Status'];
+
+		if (isset($res['start']))
+		{
+			$ret .= ',"start":'.$res['start'];
+		}
+		$ret .= '}';
+
+		# from the second loop, we have to separate the array items with a comma
+		$sep = ',';
+	}
+
+	$hash = MD5($ret);
+	if (isset($_GET['last_hash']) && $_GET['last_hash'] == $hash)
+	{
+		echo('{"status":"NOT MODIFIED"}');
+	}
+	else
+	{
+		echo('{"status":"OK","pending":['.$ret.'],"hash":"'.$hash.'"}');
+	}
+}
 elseif ($_GET['method'] == 'getsplitcontrols')
 {
 	$currentComp = new Emma($_GET['comp']);
