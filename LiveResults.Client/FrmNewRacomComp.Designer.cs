@@ -51,6 +51,9 @@
             this.btnSplits = new System.Windows.Forms.Button();
             this.btnFinish = new System.Windows.Forms.Button();
             this.btnSCodes = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // label1
@@ -165,7 +168,7 @@
             this.txtCompID.Location = new System.Drawing.Point(20, 223);
             this.txtCompID.Margin = new System.Windows.Forms.Padding(4);
             this.txtCompID.Name = "txtCompID";
-            this.txtCompID.Size = new System.Drawing.Size(716, 22);
+            this.txtCompID.Size = new System.Drawing.Size(313, 22);
             this.txtCompID.TabIndex = 13;
             // 
             // label5
@@ -286,11 +289,44 @@
             this.btnSCodes.UseVisualStyleBackColor = true;
             this.btnSCodes.Click += new System.EventHandler(this.btnSCodes_Click);
             // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(526, 203);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(162, 17);
+            this.label3.TabIndex = 25;
+            this.label3.Text = "Control number of Finish";
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(529, 224);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            30,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(207, 22);
+            this.numericUpDown1.TabIndex = 26;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            2,
+            0,
+            0,
+            0});
+            // 
             // FrmNewRacomComp
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(753, 374);
+            this.Controls.Add(this.numericUpDown1);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.btnSCodes);
             this.Controls.Add(this.btnFinish);
             this.Controls.Add(this.btnSplits);
@@ -316,6 +352,7 @@
             this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "FrmNewRacomComp";
             this.Text = "New Racom Connection";
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -346,5 +383,7 @@
         private System.Windows.Forms.Button btnSplits;
         private System.Windows.Forms.Button btnFinish;
         private System.Windows.Forms.Button btnSCodes;
+        private System.Windows.Forms.Label label3;
+        public System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }

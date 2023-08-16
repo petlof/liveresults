@@ -18,11 +18,12 @@ namespace LiveResults.Client.Parsers
         private readonly string m_radioDefinitionFile;
         private readonly DateTime m_zeroTime;
         private readonly bool m_isRelay;
+        private readonly int m_finishCode;
         public RacomFileSetParser()
         {
         }
 
-        public RacomFileSetParser(string startlistFile, bool useCsvStartlist, string splitsFile, string finishFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay)
+        public RacomFileSetParser(string startlistFile, bool useCsvStartlist, string splitsFile, string finishFile, string radioDefinitionFile, DateTime zeroTime, bool isRelay, int finishCode)
         {
             m_startListFile = startlistFile;
             m_useCsvStartlist = useCsvStartlist;
@@ -31,6 +32,7 @@ namespace LiveResults.Client.Parsers
             m_radioDefinitionFile = radioDefinitionFile;
             m_zeroTime = zeroTime;
             m_isRelay = isRelay;
+            m_finishCode = finishCode;
         }
 
         public class RacomRunner : Runner
@@ -50,7 +52,7 @@ namespace LiveResults.Client.Parsers
 
 
 
-        public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile, bool useCsvStartlist)
+        public Runner[] ParseFiles(DateTime zeroTime, string startlistFile, string splitsFile, string finFile, bool useCsvStartlist, int finishCode)
         {
             var ret = new List<Runner>();
             var siToRunner = new Dictionary<int, Runner>();
@@ -61,7 +63,7 @@ namespace LiveResults.Client.Parsers
                 ReadStartList(zeroTime, startlistFile, ret, siToRunner, enc);
             //ReadAndApplyRaceFile(raceFile, ret, enc);
             ReadAndApplyFINFile(finFile, siToRunner, enc);
-            ReadAndApplySplitsFile(splitsFile, siToRunner,enc);
+            ReadAndApplySplitsFile(splitsFile, siToRunner, finishCode, enc);
 
             if (m_isRelay)
             {
@@ -172,7 +174,7 @@ namespace LiveResults.Client.Parsers
 
         
         private static
-             void ReadAndApplySplitsFile(string splitsFile, Dictionary<int, Runner> siToRunner, Encoding enc)
+             void ReadAndApplySplitsFile(string splitsFile, Dictionary<int, Runner> siToRunner, int finishCode, Encoding enc)
         {
             if (!File.Exists(splitsFile))
                 return;
@@ -200,19 +202,22 @@ namespace LiveResults.Client.Parsers
 
                         var runner = siToRunner[si];
 
-                        if (!siSplitPunches.ContainsKey(si))
-                        {
-                            siSplitPunches.Add(si, new List<CodeTimeHolder>());
-                        }
-
                         var passTime = DateTime.ParseExact(time, "HH:mm:ss.f", CultureInfo.InvariantCulture);
-                        var asTime = passTime.Hour*360000 + passTime.Minute*6000 + passTime.Second*100 + passTime.Millisecond/10;
+                        var asTime = passTime.Hour * 360000 + passTime.Minute * 6000 + passTime.Second * 100 + passTime.Millisecond / 10;
 
-                        siSplitPunches[si].Add(new CodeTimeHolder
+                        if (code == finishCode)
+                            runner.SetResult(asTime - runner.StartTime, (runner.Status == 9) ? 0  : runner.Status);
+                        else
                         {
-                            Code = code,
-                            Time = asTime - runner.StartTime
-                        });
+                            if (!siSplitPunches.ContainsKey(si))
+                                siSplitPunches.Add(si, new List<CodeTimeHolder>());
+
+                            siSplitPunches[si].Add(new CodeTimeHolder
+                            {
+                                Code = code,
+                                Time = asTime - runner.StartTime
+                            });
+                        }
                     }
                 }
 
@@ -523,7 +528,7 @@ namespace LiveResults.Client.Parsers
                     {
 
                     
-                    var runners = ParseFiles(m_zeroTime, m_startListFile, m_splitsFile, m_finishFile, m_useCsvStartlist);
+                    var runners = ParseFiles(m_zeroTime, m_startListFile, m_splitsFile, m_finishFile, m_useCsvStartlist, m_finishCode);
                     if (OnResult != null)
                     {
                         foreach (var r in runners)

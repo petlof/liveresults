@@ -39,7 +39,7 @@ namespace LiveResults.Client
                         txtCompID.Text = s.CompetitionID;
                         dtZeroTime.Value = s.zeroTime;
                         checkBox1.Checked = s.IsRelay;
-
+                        numericUpDown1.Value = s.FinishCode;
                     }
                 }
                 catch
@@ -70,16 +70,16 @@ namespace LiveResults.Client
         {
             try
             {
-                var s = new Settings{
+                var s = new Settings {
                     StartlistFile = txtStartlist.Text,
                     UseCsvStartlist = cbStart.Checked,
                     CompetitionID = txtCompID.Text,
                     RaceFile = txtRaceFile.Text,
                     RadioControlFile = txtRadioControls.Text,
-                    RawSplitsFile = txtRawSplits.Text
-                    ,
+                    RawSplitsFile = txtRawSplits.Text,
                     zeroTime = dtZeroTime.Value,
-                    IsRelay = checkBox1.Checked
+                    IsRelay = checkBox1.Checked,
+                    FinishCode = Decimal.ToInt32(numericUpDown1.Value)
                 };
 
                 
@@ -103,6 +103,7 @@ namespace LiveResults.Client
             public string RadioControlFile { get; set; }
             public string CompetitionID { get; set; }
             public bool IsRelay { get; set; }
+            public int FinishCode { get; set; }
         }
 
         private void btn_loadsetting_Click(object sender, EventArgs e)
