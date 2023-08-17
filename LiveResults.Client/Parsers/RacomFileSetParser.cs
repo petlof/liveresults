@@ -206,7 +206,10 @@ namespace LiveResults.Client.Parsers
                         var asTime = passTime.Hour * 360000 + passTime.Minute * 6000 + passTime.Second * 100 + passTime.Millisecond / 10;
 
                         if (code == finishCode)
-                            runner.SetResult(asTime - runner.StartTime, (runner.Status == 9) ? 0  : runner.Status);
+                        {
+                            if (runner.Status >= 9)
+                                runner.SetResult(asTime - runner.StartTime, 0 );
+                        }
                         else
                         {
                             if (!siSplitPunches.ContainsKey(si))
