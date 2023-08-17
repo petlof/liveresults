@@ -207,7 +207,7 @@ namespace LiveResults.Client.Parsers
 
                         if (code == finishCode)
                         {
-                            if (runner.Status >= 9)
+                            if (runner.Status == 9 || runner.Status == 10)  // is still pending
                                 runner.SetResult(asTime - runner.StartTime, 0 );
                         }
                         else
