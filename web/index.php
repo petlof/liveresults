@@ -93,6 +93,7 @@ el.style.backgroundColor = "";
 			| <?php echo($lang == "fi" ? "<img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi" : "<a href=\"?lang=fi\" style='text-decoration: none'><img src='images/fi.png' border='0' alt='Suomeksi'> Suomeksi</a>")?>
 			| <?php echo($lang == "ru" ? "<img src='images/ru.png' border='0' alt='Русский'> Русский" : "<a href=\"?lang=ru\" style='text-decoration: none'><img src='images/ru.png' border='0' alt='Русский'> Русский</a>")?>
 			| <?php echo($lang == "cz" ? "<img src='images/cz.png' border='0' alt='Česky'> Česky" : "<a href=\"?lang=cz\" style='text-decoration: none'><img src='images/cz.png' border='0' alt='Česky'> Česky</a>")?>
+			| <?php echo($lang == "sk" ? "<img src='images/sk.png' border='0' alt='Slovensky'> Slovensky" : "<a href=\"?lang=sk\" style='text-decoration: none'><img src='images/sk.png' border='0' alt='Slovensky'> Slovensky</a>")?>
 			| <?php echo($lang == "de" ? "<img src='images/de.png' border='0' alt='Deutsch'> Deutsch" : "<a href=\"?lang=de\" style='text-decoration: none'><img src='images/de.png' border='0' alt='Deutsch'> Deutsch</a>")?>
 			| <?php echo($lang == "bg" ? "<img src='images/bg.png' border='0' alt='български'> български" : "<a href=\"?lang=bg\" style='text-decoration: none'><img src='images/bg.png' border='0' alt='български'> български</a>")?>
 			| <?php echo($lang == "fr" ? "<img src='images/fr.png' border='0' alt='Français'> Français" : "<a href=\"?lang=fr\" style='text-decoration: none'><img src='images/fr.png' border='0' alt='Français'> Français</a>")?>
