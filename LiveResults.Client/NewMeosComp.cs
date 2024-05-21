@@ -164,7 +164,7 @@ namespace LiveResults.Client
         private IDbConnection GetDBConnection(string schema)
         {
 
-            return new MySql.Data.MySqlClient.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : "") + ";charset=utf8;ConnectionTimeout=30");
+            return new MySqlConnector.MySqlConnection("Server=" + txtHost.Text + ";User Id=" + txtUser.Text + ";Port=" + txtPort.Text + ";Password=" + txtPw.Text + (schema != null ? ";Initial Catalog=" + schema : "") + ";charset=utf8;ConnectionTimeout=30");
         }
 
         private void wizardPage3_ShowFromNext(object sender, EventArgs e)

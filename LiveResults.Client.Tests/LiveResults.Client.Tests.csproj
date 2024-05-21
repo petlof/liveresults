@@ -110,6 +110,7 @@
       <Link>TestFiles\os2010_splits_sve.csv</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="app.config" />
     <None Include="packages.config" />
     <None Include="TestFiles\Racom\Middle\STV00071.CSV" />
     <None Include="TestFiles\Racom\Middle\w_test2\run" />

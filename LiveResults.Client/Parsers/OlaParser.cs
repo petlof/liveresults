@@ -83,7 +83,7 @@ namespace LiveResults.Client
                     }
 
                     string paramOper = "?";
-                    if (m_connection is MySql.Data.MySqlClient.MySqlConnection)
+                    if (m_connection is MySqlConnector.MySqlConnection)
                     {
                         paramOper = "?date";
                     }
@@ -165,7 +165,7 @@ namespace LiveResults.Client
 
                     IDbDataParameter param = cmd.CreateParameter();
                     param.ParameterName = "date";
-                    if (m_connection is MySql.Data.MySqlClient.MySqlConnection || m_connection is System.Data.H2.H2Connection)
+                    if (m_connection is MySqlConnector.MySqlConnection || m_connection is System.Data.H2.H2Connection)
                     {
                         param.DbType = DbType.String;
                         param.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -179,7 +179,7 @@ namespace LiveResults.Client
 
                     IDbDataParameter splitparam = cmdSplits.CreateParameter();
                     splitparam.ParameterName = "date";
-                    if (m_connection is MySql.Data.MySqlClient.MySqlConnection || m_connection is System.Data.H2.H2Connection)
+                    if (m_connection is MySqlConnector.MySqlConnection || m_connection is System.Data.H2.H2Connection)
                     {
                         splitparam.DbType = DbType.String;
                         splitparam.Value = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
@@ -208,7 +208,7 @@ namespace LiveResults.Client
                         {
                             /*Kontrollera om nya klasser*/
                             /*Kontrollera om nya resultat*/
-                            if (cmd is MySql.Data.MySqlClient.MySqlCommand || m_connection is System.Data.H2.H2Connection)
+                            if (cmd is MySqlConnector.MySqlCommand || m_connection is System.Data.H2.H2Connection)
                             {
                                 (cmd.Parameters["date"] as IDbDataParameter).Value = lastDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
                                 (cmdSplits.Parameters["date"] as IDbDataParameter).Value = lastSplitDateTime.ToString("yyyy-MM-dd HH:mm:ss.fff");
