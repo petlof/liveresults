@@ -2,10 +2,10 @@
   `user` varchar(50) NOT NULL DEFAULT '',
   `pass` varchar(50) DEFAULT NULL,
   `tavid` int DEFAULT NULL,
-  `compName` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `compName` varchar(50) DEFAULT NULL,
   `compDate` datetime DEFAULT NULL,
   `public` tinyint DEFAULT NULL,
-  `organizer` varchar(50) CHARACTER SET utf8 DEFAULT NULL,
+  `organizer` varchar(50) DEFAULT NULL,
   `timediff` int NOT NULL DEFAULT 0,
   `multidaystage` int DEFAULT NULL,
   `multidayparent` int DEFAULT NULL,
@@ -15,7 +15,7 @@
  `timezone` varchar(10) DEFAULT NULL,
   `country` varchar(2) DEFAULT NULL,
   PRIMARY KEY (`user`)
-) DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8mb4;
 
  CREATE TABLE `results` (
   `tavid` int NOT NULL DEFAULT 0,
@@ -27,13 +27,13 @@
   PRIMARY KEY (`tavid`,`dbid`,`control`),
   KEY `Results_Indexd` (`tavid`,`status`,`time`),
   KEY `resIndex2` (`tavid`,`dbid`,`control`,`status`,`time`)
-) DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8mb4;
 
  CREATE TABLE `runners` (
   `tavid` int NOT NULL DEFAULT 0,
-  `name` varchar(50) character set 'utf8' NOT NULL DEFAULT '',
-  `club` varchar(50) character set 'utf8' DEFAULT NULL,
-  `class` varchar(50) character set 'utf8' DEFAULT NULL,
+  `name` varchar(50) NOT NULL DEFAULT '',
+  `club` varchar(50) DEFAULT NULL,
+  `class` varchar(50) DEFAULT NULL,
   `brick` int DEFAULT NULL,
   `dbid` int NOT NULL DEFAULT '0',
   `bib` varchar(10) DEFAULT NULL,
@@ -41,29 +41,29 @@
   KEY `runners_class` (`class`),
   KEY `runnersComp_class` (`tavid`,`class`),
   KEY `runnersComp_club` (`tavid`,`club`)
-) DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `runneraliases` (
   `compid` int NOT NULL,
   `sourceid` varchar(50) NOT NULL,
   `id` int NOT NULL,
   PRIMARY KEY (`compid`,`sourceid`)
-) DEFAULT CHARSET=utf8;
+) DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE `splitcontrols` (
   `tavid` int NOT NULL,
-  `classname` varchar(50) character set 'utf8' NOT NULL DEFAULT '',
+  `classname` varchar(50) NOT NULL DEFAULT '',
   `corder` int NOT NULL,
   `code` int NOT NULL,
-  `name` varchar(50) character set 'utf8' DEFAULT NULL,
+  `name` varchar(50) DEFAULT NULL,
   PRIMARY KEY (`tavid`,`classname`,`corder`,`code`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE classproperties (
   `tavid` integer NOT NULL,
-  `className`  varchar(50) character set 'utf8' not null,
+  `className`  varchar(50) not null,
   `resolution` varchar(10),
   `havebibnumbers` bit default 0,
   `startallocation` varchar(20),
   PRIMARY KEY (tavid, className)
-);
+) DEFAULT CHARSET=utf8mb4;
