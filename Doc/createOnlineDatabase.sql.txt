@@ -36,6 +36,7 @@
   `class` varchar(50) character set 'utf8' DEFAULT NULL,
   `brick` int(11) DEFAULT NULL,
   `dbid` int(11) NOT NULL DEFAULT '0',
+  `bib` varchar(10) DEFAULT NULL,
   PRIMARY KEY (`dbid`,`tavid`),
   KEY `runners_class` (`class`),
   KEY `runnersComp_class` (`tavid`,`class`),
