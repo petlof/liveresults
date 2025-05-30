@@ -50,9 +50,6 @@ CREATE TABLE `runneraliases` (
   PRIMARY KEY (`compid`,`sourceid`)
 ) DEFAULT CHARSET=utf8;
 
-create index idx_runner_club on runners(tavid,club);
-create index idx_runner_class on runners(tavid,class);
-
 CREATE TABLE `splitcontrols` (
   `tavid` int NOT NULL,
   `classname` varchar(50) character set 'utf8' NOT NULL DEFAULT '',
