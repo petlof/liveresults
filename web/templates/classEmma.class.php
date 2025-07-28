@@ -7,7 +7,7 @@ class Emma
 	public static $db_database = "liveresultat";
 	public static $db_user = "liveresultat";
 	public static $db_pw= "web";
-	public static $MYSQL_CHARSET = "utf8";
+	public static $MYSQL_CHARSET = "utf8mb4";
 	var $m_CompId;
 
    var $m_CompName;
