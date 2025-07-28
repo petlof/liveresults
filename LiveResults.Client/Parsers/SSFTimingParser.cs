@@ -470,6 +470,7 @@ and dbclass.classid = dbName.classid", m_eventID);
                         var res = new Result
                         {
                             ID = runnerID,
+                            bib = bibNumber,
                             RunnerName = "(" + bibNumber + ") " + fName + " " + famName,
                             RunnerClub = club,
                             Class = classN,
@@ -503,8 +504,8 @@ and dbclass.classid = dbName.classid", m_eventID);
                     rstatus = 2;
                     break;
                 case "DSQ":
-                    time = -4;
-                    rstatus = 4;
+                    time = -3;
+                    rstatus = 3;
                     break;
             }
             return rstatus;
@@ -591,6 +592,7 @@ and dbclass.classid = dbName.classid", m_eventID);
 
                     var res = new Result{
                         ID = runnerID,
+                        bib = bibNumber,
                         RunnerName = "(" + bibNumber + ") "+ fName + " " + famName,
                         RunnerClub = club,
                         Class = classN,
