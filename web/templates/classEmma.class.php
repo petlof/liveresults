@@ -541,6 +541,44 @@ function getAllSplitControls()
 			return $ret;
 	}
 
+	function getPending($compId, $limit)
+	{
+		$ret = Array();
+		$q = "SELECT runners.Name, runners.Club, results.Time, runners.Class ,results.Status, results.DbID, results.Control ";
+		$q .= "FROM runners,results ";
+		$q .= "WHERE results.DbID = runners.DbId AND results.TavId = ". $this->m_CompId ." AND runners.TavId = ".$this->m_CompId ." AND results.Status in (9,10) ";
+		$q .= "ORDER BY runners.Class, runners.Name ";
+		$q .= "LIMIT $limit";
+
+		if ($result = mysqli_query($this->m_Conn, $q))
+		{
+			while ($row = mysqli_fetch_array($result))
+			{
+				$dbId = $row['DbID'];
+				if (!isset($ret[$dbId]))
+				{
+					$ret[$dbId] = Array();
+					$ret[$dbId]["DbId"] = $dbId;
+					$ret[$dbId]["Name"] = $row['Name'];
+					$ret[$dbId]["Club"] = $row['Club'];
+					$ret[$dbId]["Class"] = $row['Class'];
+					$ret[$dbId]["Status"] = $row['Status'];
+				}
+
+				$split = $row['Control'];
+				if ($split == 100)
+				{
+					$ret[$dbId]["start"] = $row['Time'];
+				}
+			}
+			mysqli_free_result($result);
+		}
+		else
+			die(mysqli_error($this->m_Conn));
+
+		return $ret;
+	}
+
 		function getAllSplitsForClass($className)
 
 		{
